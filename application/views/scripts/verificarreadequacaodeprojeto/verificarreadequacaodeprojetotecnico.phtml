@@ -1,0 +1,582 @@
+<?php
+$historicoLink = $this->url(array('controller' => 'verificarreadequacaodeprojeto', 'action' => 'historico'));
+?>
+    
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li>Acompanhamento</li>
+        <li class="last">Verificar readequa&ccedil;&atilde;o de projeto</li>
+    </ul>
+</div>
+    
+    
+    
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Verificar readequa&ccedil;&atilde;o de projeto</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <script type='text/javascript' src='<?php echo $this->baseUrl(); ?>/public/js/projetosGerenciar.js'></script>
+
+    <div style="width:100%; margin: 0 auto;">
+        <table class="tabela" summary=" ">
+            <tr>
+                <th width="90%" style="text-align:left; padding-left:2%" colspan="2">TIPOS DE READEQUAÇÕES</th>
+                <th width="10%" align="center">Quantidade de Projetos</th>
+            </tr>
+        </table>
+
+	<!-- MODAL PARA VISUALIZAR HISTÓRICO -->
+	<?php foreach($this->HistoricoUnico as $HistoricoUnico): ?>
+		<div style="display:none;" id="visualizarhist<?php echo $HistoricoUnico->idAvaliacaoItemPedidoAlteracao; ?>" title="Visualizar Histórico" >
+			<div id="recebeValor"></div>									
+		</div>
+	<?php endforeach; ?>
+	<!-- FIM DO MODAL PARA VISUALIZAR HISTÓRICO -->
+
+		<table class="tabela" summary="nome do projeto">
+		   <tr>
+		     <td width="90%"><input type="button" name="grid1" id="g1_nomedoprojeto" class="btn_adicionar" title="Expandir" /> Nome do Projeto</td>
+		     <td width="10%" align="center"><?php echo count($this->AguardAnalise5);?></td>
+		   </tr>
+		</table>
+		<div id="div_g1_nomedoprojeto" class="miolo_grid_01 sumir">
+			<table class="tabela">
+				<tr>
+                    <th width="7%" align="center">PRONAC</th>
+				    <th width="45%" style="text-align:left;">Nome do projeto</th>
+				    <th width="20%" align="center">Área / Segmento</th>
+				    <th width="5%" align="center">Qtd de dias</th>
+				    <th width="8%" align="center">Data de Recebimento</th>
+				    <th width="5%" align="center">Estado(s)</th>
+				    <th>Analisar Readequa&ccedil;&atilde;o</th>
+				    <th>Diligenciar</th>
+				    <th width="8%" align="center">Visualizar Histórico</th>
+				    <th width="10%" align="center">Controle</th>
+				</tr>
+				<?php foreach($this->AguardAnalise5 as $AguardAnalise5): ?>
+				<tr class="tblGerenciar_projetos">
+					<td align="center"><a href="<?php echo $this->baseUrl(); ?>/consultardadosprojeto/index?idPronac=<?php echo $AguardAnalise5->ID_PRONAC; ?>" target="_blank"><?php echo $AguardAnalise5->PRONAC; ?></a></td>
+					<td style="text-align:left;"><?php echo $AguardAnalise5->NomeProjeto; ?></td>
+					<td align="center"><?php echo $AguardAnalise5->areaDesc." / ".$AguardAnalise5->segmentoDesc; ?></td>
+					<td align="center"><?php if($AguardAnalise5->DataEnvio==''){echo '';} else{ ?>     <script>document.write(diasDecorridosEntreDuasDatas('<?php echo date('d/m/Y'); ?>', '<?php echo Data::tratarDataZend($AguardAnalise5->DataEnvio,'brasileiro'); ?>'));</script><?php } ?></td>
+					<td align="center"><?php if($AguardAnalise5->DataEnvio==''){echo 'Não há registro';} else{ echo Data::tratarDataZend($AguardAnalise5->DataEnvio,'brasileiro');} ?></td>
+					<td align="center">
+						<?php foreach($this->UFs as $UFs): ?>
+						<?php if($AguardAnalise5->ID_PRONAC == $UFs->ID_PRONAC ){ echo $UFs->Sigla;} ?>
+						<?php endforeach; ?>
+					</td>
+                                        <td class="centro"><img style="cursor: pointer;" src="../public/img/ico/kdict.png" width="25px" alt="Avaliar" title="Avaliar" onclick="redirecionar('<?php echo $this->baseUrl(); ?>/verificaralteracaotecnico/solaltnomproj?idpedidoalteracao=<?php echo $AguardAnalise5->ID_PRONAC; ?>');" /></td>
+                    <td class="centro">
+						<?php
+						echo $this->iconeDiligencia($this->checarDiligencia($AguardAnalise5->ID_PRONAC, null, array(171)), $AguardAnalise5->ID_PRONAC, 171, $this->verificarSituacaoProjeto($AguardAnalise5->ID_PRONAC));
+						?>
+                    </td>
+					<td align="center"><img style="cursor: pointer;" border="0" class="abrirJanela" src="../public/img/table_multiple.png" idAvaliacao="<?php echo $AguardAnalise5->idAvaliacaoItemPedidoAlteracao; ?>" alt="Visualizar Histórico" /></td>
+					<td align="center">
+						<?php echo $this->verificarStatusAnalise($AguardAnalise5->DataEnvio); ?>
+					</td>
+				</tr>
+				<?php endforeach; ?>
+
+                <?php if (count($this->AguardAnalise5) <= 0) : ?>
+                <tr>
+                	<td colspan="10" class="centro">N&atilde;o existe(m) Projeto(s) com solicita&ccedil;&atilde;o de readequa&ccedil;&atilde;o!</td>
+                </tr>
+                <?php endif; ?>
+
+	    	</table>
+		</div>
+	
+		<table class="tabela" summary="troca de proponente">
+		   <tr>
+		     <td width="90%"><input type="button" name="grid1" id="g1_razaosocial" class="btn_adicionar" title="Expandir" /> Troca de Proponente</td>
+		     <td width="10%" align="center"><?php echo count($this->AguardAnalise2);?></td>
+		   </tr>
+		</table>
+		<div id="div_g1_razaosocial" class="miolo_grid_01 sumir">
+			<table class="tabela">
+				<tr>
+                    <th width="7%" align="center">PRONAC</th>
+				    <th width="45%" style="text-align:left;">Nome do projeto</th>
+				    <th width="20%" align="center">Área / Segmento</th>
+				    <th width="5%" align="center">Qtd de dias</th>
+				    <th width="8%" align="center">Data de Recebimento</th>
+				    <th width="5%" align="center">Estado(s)</th>
+				    <th>Analisar Readequa&ccedil;&atilde;o</th>
+				    <th>Diligenciar</th>
+				    <th width="8%" align="center">Visualizar Histórico</th>
+				    <th width="10%" align="center">Controle</th>
+				</tr>
+				<?php foreach($this->AguardAnalise2 as $AguardAnalise2): ?>
+				<tr class="tblGerenciar_projetos">
+					<td align="center"><a href="<?php echo $this->baseUrl(); ?>/consultardadosprojeto/index?idPronac=<?php echo $AguardAnalise2->ID_PRONAC; ?>" target="_blank"><?php echo $AguardAnalise2->PRONAC; ?></a></td>
+					<td style="text-align:left;"><?php echo $AguardAnalise2->NomeProjeto; ?></td>
+					<td align="center"><?php echo $AguardAnalise2->areaDesc." / ".$AguardAnalise2->segmentoDesc; ?></td>
+					<td align="center"><?php if($AguardAnalise2->DataEnvio==''){echo '';} else { ?>     <script>document.write(diasDecorridosEntreDuasDatas('<?php echo date('d/m/Y'); ?>', '<?php echo Data::tratarDataZend($AguardAnalise2->DataEnvio,'brasileiro'); ?>'));</script><?php } ?></td>
+					<td align="center"><?php if($AguardAnalise2->DataEnvio==''){echo 'Não há registro';} else{ echo Data::tratarDataZend($AguardAnalise2->DataEnvio,'brasileiro');} ?></td>
+					<td align="center">
+						<?php foreach($this->UFs as $UFs): ?>
+						<?php if($AguardAnalise2->ID_PRONAC == $UFs->ID_PRONAC ){ echo $UFs->Sigla;} ?>
+						<?php endforeach; ?>
+					</td>
+                    <td class="centro"><img style="cursor: pointer;" src="../public/img/ico/kdict.png" width="25px" alt="Avaliar" title="Avaliar" onclick="redirecionar('<?php echo $this->baseUrl(); ?>/verificaralteracaotecnico/solaltrazsoc?idpedidoalteracao=<?php echo $AguardAnalise2->ID_PRONAC; ?>');" /></td>
+                    <td class="centro">
+						<?php
+						echo $this->iconeDiligencia($this->checarDiligencia($AguardAnalise2->ID_PRONAC, null, array(171)), $AguardAnalise2->ID_PRONAC, 171, $this->verificarSituacaoProjeto($AguardAnalise2->ID_PRONAC));
+						?>
+                    </td>
+					<td align="center"><img style="cursor: pointer;" border="0" class="abrirJanela" src="../public/img/table_multiple.png" idAvaliacao="<?php echo $AguardAnalise2->idAvaliacaoItemPedidoAlteracao; ?>" alt="Visualizar Histórico" /></td>
+					<td align="center">
+						<?php echo $this->verificarStatusAnalise($AguardAnalise2->DataEnvio); ?>
+					</td>
+				</tr>
+				<?php endforeach; ?>
+
+                <?php if (count($this->AguardAnalise2) <= 0) : ?>
+                <tr>
+                	<td colspan="10" class="centro">N&atilde;o existe(m) Projeto(s) com solicita&ccedil;&atilde;o de readequa&ccedil;&atilde;o!</td>
+                </tr>
+                <?php endif; ?>
+
+	    	</table>
+		</div>
+		
+		
+		<table class="tabela" summary="local de realização">
+		   <tr>
+		     <td width="90%"><input type="button" name="grid1" id="g1_localderealizacao" class="btn_adicionar" title="Expandir" /> Local de Realização</td>
+		     <td width="10%" align="center"><?php echo count($this->AguardAnalise4);?></td>
+		   </tr>
+		</table>
+		<div id="div_g1_localderealizacao" class="miolo_grid_01 sumir">
+			<table class="tabela">
+				<tr>
+                    <th width="7%" align="center">PRONAC</th>
+				    <th width="45%" style="text-align:left;">Nome do projeto</th>
+				    <th width="20%" align="center">Área / Segmento</th>
+				    <th width="5%" align="center">Qtd de dias</th>
+				    <th width="8%" align="center">Data de Recebimento</th>
+				    <th width="5%" align="center">Estado(s)</th>
+				    <th>Analisar Readequa&ccedil;&atilde;o</th>
+				    <th>Diligenciar</th>
+				    <th width="8%" align="center">Visualizar Histórico</th>
+				    <th width="10%" align="center">Controle</th>
+				</tr>
+				<?php foreach($this->AguardAnalise4 as $AguardAnalise4): ?>
+				<tr class="tblGerenciar_projetos">
+					<td align="center"><a href="<?php echo $this->baseUrl(); ?>/consultardadosprojeto/index?idPronac=<?php echo $AguardAnalise4->ID_PRONAC; ?>" target="_blank"><?php echo $AguardAnalise4->PRONAC; ?></a></td>
+					<td style="text-align:left;"><?php echo $AguardAnalise4->NomeProjeto; ?></td>
+					<td align="center"><?php echo $AguardAnalise4->areaDesc." / ".$AguardAnalise4->segmentoDesc; ?></td>
+					<td align="center"><?php if($AguardAnalise4->DataEnvio==''){echo '';} else { ?>     <script>document.write(diasDecorridosEntreDuasDatas('<?php echo date('d/m/Y'); ?>', '<?php echo Data::tratarDataZend($AguardAnalise4->DataEnvio,'brasileiro'); ?>'));</script><?php } ?></td>
+					<td align="center"><?php if($AguardAnalise4->DataEnvio==''){echo 'Não há registro';} else{ echo Data::tratarDataZend($AguardAnalise4->DataEnvio,'brasileiro');} ?></td>
+					<td align="center">
+						<?php foreach($this->UFs as $UFs): ?>
+						<?php if($AguardAnalise4->ID_PRONAC == $UFs->ID_PRONAC ){ echo $UFs->Sigla;} ?>
+						<?php endforeach; ?>
+					</td>
+                    <td class="centro"><img style="cursor: pointer;" src="../public/img/ico/kdict.png" width="25px" alt="Avaliar" title="Avaliar" onclick="redirecionar('<?php echo $this->baseUrl(); ?>/verificaralteracaotecnico/solaltlocrel?idpedidoalteracao=<?php echo $AguardAnalise4->ID_PRONAC; ?>');" /></td>
+                    <td class="centro">
+						<?php
+						echo $this->iconeDiligencia($this->checarDiligencia($AguardAnalise4->ID_PRONAC, null, array(171)), $AguardAnalise4->ID_PRONAC, 171, $this->verificarSituacaoProjeto($AguardAnalise4->ID_PRONAC));
+						?>
+                    </td>
+					<td align="center"><img style="cursor: pointer;" border="0" class="abrirJanela" src="../public/img/table_multiple.png" idAvaliacao="<?php echo $AguardAnalise4->idAvaliacaoItemPedidoAlteracao; ?>" alt="Visualizar Histórico" /></td>
+					<td align="center">
+						<?php echo $this->verificarStatusAnalise($AguardAnalise4->DataEnvio); ?>
+					</td>
+				</tr>
+				<?php endforeach; ?>
+
+                <?php if (count($this->AguardAnalise4) <= 0) : ?>
+                <tr>
+                	<td colspan="10" class="centro">N&atilde;o existe(m) Projeto(s) com solicita&ccedil;&atilde;o de readequa&ccedil;&atilde;o!</td>
+                </tr>
+                <?php endif; ?>
+
+	    	</table>
+		</div>
+		
+		
+		<table class="tabela" summary="nome do proponente">
+		   <tr>
+		     <td width="90%"><input type="button" name="grid1" id="g1_nomedoproponente" class="btn_adicionar" title="Expandir" /> Nome do Proponente</td>
+		     <td width="10%" align="center"><?php echo count($this->AguardAnalise1);?></td>
+		   </tr>
+		</table>
+		<div id="div_g1_nomedoproponente" class="miolo_grid_01 sumir">
+			<table class="tabela">
+				<tr>
+                    <th width="7%" align="center">PRONAC</th>
+				    <th width="45%" style="text-align:left;">Nome do projeto</th>
+				    <th width="20%" align="center">Área / Segmento</th>
+				    <th width="5%" align="center">Qtd de dias</th>
+				    <th width="8%" align="center">Data de Recebimento</th>
+				    <th width="5%" align="center">Estado(s)</th>
+				    <th>Analisar Readequa&ccedil;&atilde;o</th>
+				    <th>Diligenciar</th>
+				    <th width="8%" align="center">Visualizar Histórico</th>
+				    <th width="10%" align="center">Controle</th>
+				</tr>
+				<?php foreach($this->AguardAnalise1 as $AguardAnalise1): ?>
+				<tr class="tblGerenciar_projetos">
+					<td align="center"><a href="<?php echo $this->baseUrl(); ?>/consultardadosprojeto/index?idPronac=<?php echo $AguardAnalise1->ID_PRONAC; ?>" target="_blank"><?php echo $AguardAnalise1->PRONAC; ?></a></td>
+					<td style="text-align:left;"><?php echo $AguardAnalise1->NomeProjeto; ?></td>
+					<td align="center"><?php echo $AguardAnalise1->areaDesc." / ".$AguardAnalise1->segmentoDesc; ?></td>
+					<td align="center"><?php if($AguardAnalise1->DataEnvio==''){echo '';} else{ ?>     <script>document.write(diasDecorridosEntreDuasDatas('<?php echo date('d/m/Y'); ?>', '<?php echo Data::tratarDataZend($AguardAnalise1->DataEnvio,'brasileiro'); ?>'));</script><?php } ?></td>
+					<td align="center"><?php if($AguardAnalise1->DataEnvio==''){echo 'Não há registro';} else{ echo Data::tratarDataZend($AguardAnalise1->DataEnvio,'brasileiro');} ?></td>
+					<td align="center">
+						<?php foreach($this->UFs as $UFs): ?>
+						<?php if($AguardAnalise1->ID_PRONAC == $UFs->ID_PRONAC ){ echo $UFs->Sigla;} ?>
+						<?php endforeach; ?>
+					</td>
+                    <td class="centro"><img style="cursor: pointer;" src="../public/img/ico/kdict.png" width="25px" alt="Avaliar" title="Avaliar" onclick="redirecionar('<?php echo $this->baseUrl(); ?>/verificaralteracaotecnico/solaltnomprp?idpedidoalteracao=<?php echo $AguardAnalise1->ID_PRONAC; ?>');" /></td>
+                    <td class="centro">
+						<?php
+						echo $this->iconeDiligencia($this->checarDiligencia($AguardAnalise1->ID_PRONAC, null, array(171)), $AguardAnalise1->ID_PRONAC, 171, $this->verificarSituacaoProjeto($AguardAnalise1->ID_PRONAC));
+						?>
+                    </td>
+					<td align="center"><img style="cursor: pointer;" border="0" class="abrirJanela" src="../public/img/table_multiple.png" idAvaliacao="<?php echo $AguardAnalise1->idAvaliacaoItemPedidoAlteracao; ?>" alt="Visualizar Histórico" /></td>
+					<td align="center">
+						<?php echo $this->verificarStatusAnalise($AguardAnalise1->DataEnvio); ?>
+					</td>
+				</tr>
+				<?php endforeach; ?>
+
+                <?php if (count($this->AguardAnalise1) <= 0) : ?>
+                <tr>
+                	<td colspan="10" class="centro">N&atilde;o existe(m) Projeto(s) com solicita&ccedil;&atilde;o de readequa&ccedil;&atilde;o!</td>
+                </tr>
+                <?php endif; ?>
+
+	    	</table>
+		</div>
+		
+		
+		<table class="tabela" summary="ficha técnica">
+		   <tr>
+		     <td width="90%"><input type="button" name="grid1" id="g1_fichatecnica" class="btn_adicionar" title="Expandir" /> Ficha Técnica</td>
+		     <td width="10%" align="center"><?php echo count($this->AguardAnalise3);?></td>
+		   </tr>
+		</table>
+		<div id="div_g1_fichatecnica" class="miolo_grid_01 sumir">
+			<table class="tabela">
+				<tr>
+                    <th width="7%" align="center">PRONAC</th>
+				    <th width="45%" style="text-align:left;">Nome do projeto</th>
+				    <th width="20%" align="center">Área / Segmento</th>
+				    <th width="5%" align="center">Qtd de dias</th>
+				    <th width="8%" align="center">Data de Recebimento</th>
+				    <th width="5%" align="center">Estado(s)</th>
+				    <th>Analisar Readequa&ccedil;&atilde;o</th>
+				    <th>Diligenciar</th>
+				    <th width="8%" align="center">Visualizar Histórico</th>
+				    <th width="10%" align="center">Controle</th>
+				</tr>
+				<?php foreach($this->AguardAnalise3 as $AguardAnalise3): ?>
+				<tr class="tblGerenciar_projetos">
+					<td align="center"><a href="<?php echo $this->baseUrl(); ?>/consultardadosprojeto/index?idPronac=<?php echo $AguardAnalise3->ID_PRONAC; ?>" target="_blank"><?php echo $AguardAnalise3->PRONAC; ?></a></td>
+					<td style="text-align:left;"><?php echo $AguardAnalise3->NomeProjeto; ?></td>
+					<td align="center"><?php echo $AguardAnalise3->areaDesc." / ".$AguardAnalise3->segmentoDesc; ?></td>
+					<td align="center"><?php if($AguardAnalise3->DataEnvio==''){echo '';} else{ ?>     <script>document.write(diasDecorridosEntreDuasDatas('<?php echo date('d/m/Y'); ?>', '<?php echo Data::tratarDataZend($AguardAnalise3->DataEnvio,'brasileiro'); ?>'));</script><?php } ?></td>
+					<td align="center"><?php if($AguardAnalise3->DataEnvio==''){echo 'Não há registro';} else{ echo Data::tratarDataZend($AguardAnalise3->DataEnvio,'brasileiro');} ?></td>
+					<td align="center">
+						<?php foreach($this->UFs as $UFs): ?>
+						<?php if($AguardAnalise3->ID_PRONAC == $UFs->ID_PRONAC ){ echo $UFs->Sigla;} ?>
+						<?php endforeach; ?>
+					</td>
+                    <td class="centro"><img style="cursor: pointer;" src="../public/img/ico/kdict.png" width="25px" alt="Avaliar" title="Avaliar" onclick="redirecionar('<?php echo $this->baseUrl(); ?>/verificaralteracaotecnico/solaltfictec?idpedidoalteracao=<?php echo $AguardAnalise3->ID_PRONAC; ?>');" /></td>
+                    <td class="centro">
+						<?php
+						echo $this->iconeDiligencia($this->checarDiligencia($AguardAnalise3->ID_PRONAC, null, array(171)), $AguardAnalise3->ID_PRONAC, 171, $this->verificarSituacaoProjeto($AguardAnalise3->ID_PRONAC));
+						?>
+                    </td>
+					<td align="center"><img style="cursor: pointer;" border="0" class="abrirJanela" src="../public/img/table_multiple.png" idAvaliacao="<?php echo $AguardAnalise3->idAvaliacaoItemPedidoAlteracao; ?>" alt="Visualizar Histórico" /></td>
+					<td align="center">
+						<?php echo $this->verificarStatusAnalise($AguardAnalise3->DataEnvio); ?>
+					</td>
+				</tr>
+				<?php endforeach; ?>
+
+                <?php if (count($this->AguardAnalise3) <= 0) : ?>
+                <tr>
+                	<td colspan="10" class="centro">N&atilde;o existe(m) Projeto(s) com solicita&ccedil;&atilde;o de readequa&ccedil;&atilde;o!</td>
+                </tr>
+                <?php endif; ?>
+
+	    	</table>
+		</div>
+		
+		
+		<table class="tabela" summary="prorrogação de prazos - captação">
+		   <tr>
+		     <td width="90%"><input type="button" name="grid1" id="g1_prorrogacaocaptacao" class="btn_adicionar" title="Expandir" /> Prorrogação de Prazos - Captação</td>
+		     <td width="10%" align="center"><?php echo count($this->AguardAnalise8);?></td>
+		   </tr>
+		</table>
+		<div id="div_g1_prorrogacaocaptacao" class="miolo_grid_01 sumir">
+			<table class="tabela">
+				<tr>
+                    <th width="7%" align="center">PRONAC</th>
+				    <th width="45%" style="text-align:left;">Nome do projeto</th>
+				    <th width="20%" align="center">Área / Segmento</th>
+				    <th width="5%" align="center">Qtd de dias</th>
+				    <th width="8%" align="center">Data de Recebimento</th>
+				    <th width="5%" align="center">Estado(s)</th>
+				    <th>Analisar Readequa&ccedil;&atilde;o</th>
+				    <th>Diligenciar</th>
+				    <th width="8%" align="center">Visualizar Histórico</th>
+				    <th width="10%" align="center">Controle</th>
+				</tr>
+				<?php foreach($this->AguardAnalise8 as $AguardAnalise8): ?>
+				<tr class="tblGerenciar_projetos">
+					<td align="center"><a href="<?php echo $this->baseUrl(); ?>/consultardadosprojeto/index?idPronac=<?php echo $AguardAnalise8->ID_PRONAC; ?>" target="_blank"><?php echo $AguardAnalise8->PRONAC; ?></a></td>
+					<td style="text-align:left;"><?php echo $AguardAnalise8->NomeProjeto; ?></td>
+					<td align="center"><?php echo $AguardAnalise8->areaDesc." / ".$AguardAnalise8->segmentoDesc; ?></td>
+					<td align="center"><?php if($AguardAnalise8->DataEnvio==''){echo '';} else{ ?>     <script>document.write(diasDecorridosEntreDuasDatas('<?php echo date('d/m/Y'); ?>', '<?php echo Data::tratarDataZend($AguardAnalise8->DataEnvio,'brasileiro'); ?>'));</script><?php } ?></td>
+					<td align="center"><?php if($AguardAnalise8->DataEnvio==''){echo 'Não há registro';} else{ echo Data::tratarDataZend($AguardAnalise8->DataEnvio,'brasileiro');} ?></td>
+					<td align="center">
+						<?php foreach($this->UFs as $UFs): ?>
+						<?php if($AguardAnalise8->ID_PRONAC == $UFs->ID_PRONAC ){ echo $UFs->Sigla;} ?>
+						<?php endforeach; ?>
+					</td>
+                    <td class="centro"><img style="cursor: pointer;" src="../public/img/ico/kdict.png" width="25px" alt="Avaliar" title="Avaliar" onclick="redirecionar('<?php echo $this->baseUrl(); ?>/verificaralteracaotecnico/solaltprogprazcap?idpedidoalteracao=<?php echo $AguardAnalise8->ID_PRONAC; ?>');" /></td>
+                    <td class="centro">
+						<?php
+						echo $this->iconeDiligencia($this->checarDiligencia($AguardAnalise8->ID_PRONAC, null, array(171)), $AguardAnalise8->ID_PRONAC, 171, $this->verificarSituacaoProjeto($AguardAnalise8->ID_PRONAC));
+						?>
+                    </td>
+					<td align="center"><img style="cursor: pointer;" border="0" class="abrirJanela" src="../public/img/table_multiple.png" idAvaliacao="<?php echo $AguardAnalise8->idAvaliacaoItemPedidoAlteracao; ?>" alt="Visualizar Histórico" /></td>
+					<td align="center">
+						<?php echo $this->verificarStatusAnalise($AguardAnalise8->DataEnvio); ?>
+					</td>
+				</tr>
+				<?php endforeach; ?>
+
+                <?php if (count($this->AguardAnalise8) <= 0) : ?>
+                <tr>
+                	<td colspan="10" class="centro">N&atilde;o existe(m) Projeto(s) com solicita&ccedil;&atilde;o de readequa&ccedil;&atilde;o!</td>
+                </tr>
+                <?php endif; ?>
+
+	    	</table>
+		</div>
+		
+		
+		<table class="tabela" summary="prorrogação de prazos - execução">
+		   <tr>
+		     <td width="90%"><input type="button" name="grid1" id="g1_prorrogacaoexecucao" class="btn_adicionar" title="Expandir" /> Prorrogação de Prazos - Execução</td>
+		     <td width="10%" align="center"><?php echo count($this->AguardAnalise9);?></td>
+		   </tr>
+		</table>
+		<div id="div_g1_prorrogacaoexecucao" class="miolo_grid_01 sumir">
+			<table class="tabela">
+				<tr>
+                    <th width="7%" align="center">PRONAC</th>
+				    <th width="45%" style="text-align:left;">Nome do projeto</th>
+				    <th width="20%" align="center">Área / Segmento</th>
+				    <th width="5%" align="center">Qtd de dias</th>
+				    <th width="8%" align="center">Data de Recebimento</th>
+				    <th width="5%" align="center">Estado(s)</th>
+				    <th>Analisar Readequa&ccedil;&atilde;o</th>
+				    <th>Diligenciar</th>
+				    <th width="8%" align="center">Visualizar Histórico</th>
+				    <th width="10%" align="center">Controle</th>
+				</tr>
+				<?php foreach($this->AguardAnalise9 as $AguardAnalise9): ?>
+				<tr class="tblGerenciar_projetos">
+					<td align="center"><a href="<?php echo $this->baseUrl(); ?>/consultardadosprojeto/index?idPronac=<?php echo $AguardAnalise9->ID_PRONAC; ?>" target="_blank"><?php echo $AguardAnalise9->PRONAC; ?></a></td>
+					<td style="text-align:left;"><?php echo $AguardAnalise9->NomeProjeto; ?></td>
+					<td align="center"><?php echo $AguardAnalise9->areaDesc." / ".$AguardAnalise9->segmentoDesc; ?></td>
+					<td align="center"><?php if($AguardAnalise9->DataEnvio==''){echo '';} else{ ?>     <script>document.write(diasDecorridosEntreDuasDatas('<?php echo date('d/m/Y'); ?>', '<?php echo Data::tratarDataZend($AguardAnalise9->DataEnvio,'brasileiro'); ?>'));</script><?php } ?></td>
+					<td align="center"><?php if($AguardAnalise9->DataEnvio==''){echo 'Não há registro';} else{ echo Data::tratarDataZend($AguardAnalise9->DataEnvio,'brasileiro');} ?></td>
+					<td align="center">
+						<?php foreach($this->UFs as $UFs): ?>
+						<?php if($AguardAnalise9->ID_PRONAC == $UFs->ID_PRONAC ){ echo $UFs->Sigla;} ?>
+						<?php endforeach; ?>
+					</td>
+                    <td class="centro"><img style="cursor: pointer;" src="../public/img/ico/kdict.png" width="25px" alt="Avaliar" title="Avaliar" onclick="redirecionar('<?php echo $this->baseUrl(); ?>/verificaralteracaotecnico/solaltprogprazexec?idpedidoalteracao=<?php echo $AguardAnalise9->ID_PRONAC; ?>');" /></td>
+                    <td class="centro">
+						<?php
+						echo $this->iconeDiligencia($this->checarDiligencia($AguardAnalise9->ID_PRONAC, null, array(171)), $AguardAnalise9->ID_PRONAC, 171, $this->verificarSituacaoProjeto($AguardAnalise9->ID_PRONAC));
+						?>
+                    </td>
+					<td align="center"><img style="cursor: pointer;" border="0" class="abrirJanela" src="../public/img/table_multiple.png" idAvaliacao="<?php echo $AguardAnalise9->idAvaliacaoItemPedidoAlteracao; ?>" alt="Visualizar Histórico" /></td>
+					<td align="center">
+						<?php echo $this->verificarStatusAnalise($AguardAnalise9->DataEnvio); ?>
+					</td>
+				</tr>
+				<?php endforeach; ?>
+
+                <?php if (count($this->AguardAnalise9) <= 0) : ?>
+                <tr>
+                	<td colspan="10" class="centro">N&atilde;o existe(m) Projeto(s) com solicita&ccedil;&atilde;o de readequa&ccedil;&atilde;o!</td>
+                </tr>
+                <?php endif; ?>
+
+	    	</table>
+		</div>
+		
+		
+		<table class="tabela" summary="produtos">
+		   <tr>
+		     <td width="90%"><input type="button" name="grid1" id="g1_produtos" class="btn_adicionar" title="Expandir" /> Produtos</td>
+		     <td width="10%" align="center"><?php echo count($this->AguardAnalise7);?></td>
+		   </tr>
+		</table>
+		<div id="div_g1_produtos" class="miolo_grid_01 sumir">
+			<table class="tabela">
+				<tr>
+                    <th width="7%" align="center">PRONAC</th>
+				    <th width="45%" style="text-align:left;">Nome do projeto</th>
+				    <th width="20%" align="center">Área / Segmento</th>
+				    <th width="5%" align="center">Qtd de dias</th>
+				    <th width="8%" align="center">Data de Recebimento</th>
+				    <th width="5%" align="center">Estado(s)</th>
+				    <th>Analisar Readequa&ccedil;&atilde;o</th>
+				    <th>Diligenciar</th>
+				    <th width="8%" align="center">Visualizar Histórico</th>
+				    <th width="10%" align="center">Controle</th>
+				</tr>
+				<?php foreach($this->AguardAnalise7 as $AguardAnalise7): ?>
+				<tr class="tblGerenciar_projetos">
+					<td align="center"><a href="<?php echo $this->baseUrl(); ?>/consultardadosprojeto/index?idPronac=<?php echo $AguardAnalise7->ID_PRONAC; ?>" target="_blank"><?php echo $AguardAnalise7->PRONAC; ?></a></td>
+					<td style="text-align:left;"><?php echo $AguardAnalise7->NomeProjeto; ?></td>
+					<td align="center"><?php echo $AguardAnalise7->areaDesc." / ".$AguardAnalise7->segmentoDesc; ?></td>
+					<td align="center"><?php if($AguardAnalise7->DataEnvio==''){echo '';} else{ ?>     <script>document.write(diasDecorridosEntreDuasDatas('<?php echo date('d/m/Y'); ?>', '<?php echo Data::tratarDataZend($AguardAnalise7->DataEnvio,'brasileiro'); ?>'));</script><?php } ?></td>
+					<td align="center"><?php if($AguardAnalise7->DataEnvio==''){echo 'Não há registro';} else{ echo Data::tratarDataZend($AguardAnalise7->DataEnvio,'brasileiro');} ?></td>
+					<td align="center">
+						<?php foreach($this->UFs as $UFs): ?>
+						<?php if($AguardAnalise7->ID_PRONAC == $UFs->ID_PRONAC ){ echo $UFs->Sigla;} ?>
+						<?php endforeach; ?>
+					</td>
+                    <td class="centro"><img style="cursor: pointer;" src="../public/img/ico/kdict.png" width="25px" alt="Avaliar" title="Avaliar" onclick="redirecionar('<?php echo $this->baseUrl(); ?>/verificarreadequacaodeprojeto/readequacaoprodutoseditar?id=<?php echo $AguardAnalise7->ID_PRONAC; ?>');" /></td>
+                    <td class="centro">
+						<?php
+						echo $this->iconeDiligencia($this->checarDiligencia($AguardAnalise7->ID_PRONAC, null, array(171)), $AguardAnalise7->ID_PRONAC, 171, $this->verificarSituacaoProjeto($AguardAnalise7->ID_PRONAC));
+						?>
+                    </td>
+					<td align="center"><img style="cursor: pointer;" border="0" class="abrirJanela" src="../public/img/table_multiple.png" idAvaliacao="<?php echo $AguardAnalise7->idAvaliacaoItemPedidoAlteracao; ?>" alt="Visualizar Histórico" /></td>
+					<td align="center">
+						<?php echo $this->verificarStatusAnalise($AguardAnalise7->DataEnvio); ?>		
+					</td>
+				</tr>
+				<?php endforeach; ?>
+
+                <?php if (count($this->AguardAnalise7) <= 0) : ?>
+                <tr>
+                	<td colspan="10" class="centro">N&atilde;o existe(m) Projeto(s) com solicita&ccedil;&atilde;o de readequa&ccedil;&atilde;o!</td>
+                </tr>
+                <?php endif; ?>
+
+	    	</table>
+		</div>
+		
+		
+		<table class="tabela" summary="proposta pedagogica">
+		   <tr>
+		     <td width="90%"><input type="button" name="grid1" id="g1_propostapedagogica" class="btn_adicionar" title="Expandir" /> Proposta Pedagógica</td>
+		     <td width="10%" align="center"><?php echo count($this->AguardAnalise6);?></td>
+		   </tr>
+		</table>
+		<div id="div_g1_propostapedagogica" class="miolo_grid_01 sumir">
+			<table class="tabela">
+				<tr>
+                    <th width="7%" align="center">PRONAC</th>
+				    <th width="45%" style="text-align:left;">Nome do projeto</th>
+				    <th width="20%" align="center">Área / Segmento</th>
+				    <th width="5%" align="center">Qtd de dias</th>
+				    <th width="8%" align="center">Data de Recebimento</th>
+				    <th width="5%" align="center">Estado(s)</th>
+				    <th>Analisar Readequa&ccedil;&atilde;o</th>
+				    <th>Diligenciar</th>
+				    <th width="8%" align="center">Visualizar Histórico</th>
+				    <th width="10%" align="center">Controle</th>
+				</tr>
+				<?php foreach($this->AguardAnalise6 as $AguardAnalise6): ?>
+				<tr class="tblGerenciar_projetos">
+					<td align="center"><a href="<?php echo $this->baseUrl(); ?>/consultardadosprojeto/index?idPronac=<?php echo $AguardAnalise6->ID_PRONAC; ?>" target="_blank"><?php echo $AguardAnalise6->PRONAC; ?></a></td>
+					<td style="text-align:left;"><?php echo $AguardAnalise6->NomeProjeto; ?></td>
+					<td align="center"><?php echo $AguardAnalise6->areaDesc." / ".$AguardAnalise6->segmentoDesc; ?></td>
+					<td align="center"><?php if($AguardAnalise6->DataEnvio==''){echo '';} else{ ?>     <script>document.write(diasDecorridosEntreDuasDatas('<?php echo date('d/m/Y'); ?>', '<?php echo Data::tratarDataZend($AguardAnalise6->DataEnvio,'brasileiro'); ?>'));</script><?php } ?></td>
+					<td align="center"><?php if($AguardAnalise6->DataEnvio==''){echo 'Não há registro';} else{ echo Data::tratarDataZend($AguardAnalise6->DataEnvio,'brasileiro');} ?></td>
+					<td align="center">
+						<?php foreach($this->UFs as $UFs): ?>
+						<?php if($AguardAnalise6->ID_PRONAC == $UFs->ID_PRONAC ){ echo $UFs->Sigla;} ?>
+						<?php endforeach; ?>
+					</td>
+                    <td class="centro"><img style="cursor: pointer;" src="../public/img/ico/kdict.png" width="25px" alt="Avaliar" title="Avaliar" onclick="redirecionar('<?php echo $this->baseUrl(); ?>/verificarreadequacaodeprojeto/propostapedagogicaeditar?id=<?php echo $AguardAnalise6->ID_PRONAC; ?>');" /></td>
+                    <td class="centro">
+						<?php
+						echo $this->iconeDiligencia($this->checarDiligencia($AguardAnalise6->ID_PRONAC, null, array(171)), $AguardAnalise6->ID_PRONAC, 171, $this->verificarSituacaoProjeto($AguardAnalise6->ID_PRONAC));
+						?>
+                    </td>
+					<td align="center"><img style="cursor: pointer;" border="0" class="abrirJanela" src="../public/img/table_multiple.png" idAvaliacao="<?php echo $AguardAnalise6->idAvaliacaoItemPedidoAlteracao; ?>" alt="Visualizar Histórico" /></td>
+					<td align="center">
+						<?php echo $this->verificarStatusAnalise($AguardAnalise6->DataEnvio); ?>
+					</td>
+				</tr>
+				<?php endforeach; ?>
+
+                <?php if (count($this->AguardAnalise6) <= 0) : ?>
+                <tr>
+                	<td colspan="10" class="centro">N&atilde;o existe(m) Projeto(s) com solicita&ccedil;&atilde;o de readequa&ccedil;&atilde;o!</td>
+                </tr>
+                <?php endif; ?>
+
+	    	</table>
+		</div>
+
+
+</div>
+<br />
+<p align="center" style="font-weight: bold">TOTAL DE SOLICITAÇÕES: <?php echo $this->AguardAnaliseQNTD;?></p>
+<br />
+
+</div>
+<script type="text/javascript">
+$('.abrirJanela').click(function(){
+	visualizarhist($(this).attr('idAvaliacao'),'<?php echo $historicoLink;?>');
+});
+$('.abrirJanela').keypress(function(){
+	visualizarhist($(this).attr('idAvaliacao'),'<?php echo $historicoLink;?>');
+});
+</script>
+
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+<!-- MODAL DILIGENCIAR -->
+<div style="display:none;" id="diligencia" title="Diligenciar" >
+    <form name="formdiligencia" id="formdiligencia" method="post" action="<?php echo $this->baseUrl(); ?>/verificaralteracaotecnico/solaltprogprazexec">
+        <table class="tabela">
+            <tr>
+                <th>PRONAC</th>
+                <th>Nome do Projeto</th>
+            </tr>
+            <tr>
+                <td><?php echo $this->dados->IdPRONAC; ?></td>
+                <td><?php echo $this->resultConsulta['NomeProjeto']; ?></td>
+            </tr>
+        </table>
+        <br /><label for="solicitacao">Solicitação:</label><br />
+        <textarea name="solicitacao" id="solicitacao" rows="6" cols="50" style="width:100%;" class="textarea_simples"></textarea>
+        <input type="hidden" name="IdPronac" value="<?php echo $this->dados->IdPRONAC; ?>" />
+        <p align="left" style="margin-top:1%;">
+            <input id="btn_enviar" type="submit" value=" " name="diligenciar" class="btn_enviar" />
+        </p>
+    </form>
+</div>
+<!-- FIM DO MODAL DILIGENCIAR -->
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

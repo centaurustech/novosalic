@@ -1,0 +1,371 @@
+<?php
+    $SalvarHref                 = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'cadastrardispensa')).'?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $ExcluirItensCustoHref      = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'excluiritenscusto')).'?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $AnexarHref                 = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'anexar')).'?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $CancelarHref               = $this->url(
+        array(
+            'controller' => 'comprovarexecucaofinanceira',
+            'action' => 'dispensa',
+            'idusuario' => $this->idusuario,
+            'idpronac' => $this->idpronac,
+        ), null, true
+    );
+    $ExcluirDocumentoHref       = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'excluirdocumento')).'?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $carregarSelectHref         = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'carregaselectajax')).'?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+
+    $alterar = false;
+    if($this->iddispensa == '')
+        $alterar = true;
+
+    $idNome = 'iddispensa';
+    $corpo  = 'incluirdispensaAjax';
+    $inputID = '<input type="hidden" name="'.$idNome.'" id="'.$idNome.'" value="'.$this->iddispensa.'"/><input type="hidden" name="idpronac" id="idpronac" value="'.$this->idpronac.'"/>';
+    $idformulario = 'formularioDispensa';
+
+    include_once 'scripts/comprovarexecucaofinanceira/inc/menu.inc.php';
+?>
+<style>
+<!--
+    table caption {
+        background: none repeat scroll 0 0 #ABDA5D;
+        color: #3A7300;
+        font-size: 11px;
+        padding: 8px;
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+-->
+</style>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principalproponente', 'action' => ''), null, true); ?>" title="Ir para p&aacute;gina inicial" onclick="carregandoModal();">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')) . '?idPronac=' . Seguranca::encrypt($this->idpronac); ?>" title="Ir para In&iacute;cio">Consultar dados do Projeto</a></li>
+        <li>Comprovar Execu&ccedil;&atilde;o Financeira</li>
+        <li><a href="<?php echo $this->link_menu_lateral; ?>" title="Pagamento" onclick="carregandoModal();">Dispensa</a></li>
+        <li class="last"><?php echo isset($this->nrDispensaLicitacao) ? 'Alterar' : 'Nova'?> Dispensa</li>
+    </ul>
+</div> <!-- final: #breadcrumb -->
+
+<div id="titulo">
+    <div><?php echo isset($this->nrDispensaLicitacao) ? 'Alterar' : 'Nova'?> Dispensa<span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+
+<div id="conteudo" align="center">
+    <div id="<?php echo $corpo;?>">
+
+        <form id="<?php echo $idformulario;?>" method="post" action="<?php echo $SalvarHref; ?>">
+            <?php
+            echo $inputID;
+            ?>
+
+            <table class="tabela">
+                <tr>
+                    <th colspan="2">Dados da Dispensa</th>
+                </tr>
+            </table>
+
+            <table class="tabela">
+                <tr>
+                    <td class="destacar w200 bold" align="right">N&uacute;mero da Dispensa<span style='color:red'>*</span></td>
+                    <td colspan="3"><input type="text" name="nrDispensaLicitacao" maxlength="9" null="false" sonumero="true" value="<?php echo $this->nrDispensaLicitacao;?>"/></td>
+                </tr>
+                <tr align="center" class="fundo_linha3">
+                    <td class="bold" align="center" colspan="3">Identifica&ccedil;&atilde;o do Contratado
+                        <input type="hidden" name="idAgente" id="idAgente" value="<?php echo $this->idAgente;?>"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="destacar w200 bold">Tipo do Fornecedor<span style='color:red'>*</span></td>
+                    <td class="destacar w200 bold">CNPJ/CPF<span style='color:red'>*</span></td>
+                    <td class="destacar w200 bold">Nome/Raz&atilde;o Social<span style='color:red'>*</span></td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="radio" name="tpFornecedor" class="tpFornecedor" null="false" <?php if($this->TipoPessoa==0) echo 'checked';?> value="cpf"/> CPF
+                        <input type="radio" name="tpFornecedor" class="tpFornecedor" <?php if($this->TipoPessoa==1) echo 'checked';?> value="cnpj"/> CNPJ
+                    </td>
+                    <td><input type="text" autocomplete="off" name="CNPJCPF" null="false" idAgente="idAgente" idDescricao="Descricao" cnpjcpf="true" classaux="tpFornecedor" value="<?php echo $this->CNPJCPF;?>"/></td>
+                    <td><input type="text" size="30" name="Descricao"  <?php if($this->idAgente) echo 'readonly';?> id="Descricao" null="false" value="<?php echo $this->Descricao;?>"/></td>
+                </tr>
+                <tr>
+                    <td class="destacar w200 bold">Valor</td>
+                    <td class="destacar w200 bold" colspan="2">Data<span style='color:red'>*</span></td>
+                </tr>
+                <tr>
+                    <td><input type="text" name="valorContratado" null="false"  dinheiro="true" value="<?php echo $this->valorContratado;?>"/></td>
+                    <td colspan="2"><input type="text" name="dataContrato" null="false" data="true" value="<?php echo $this->dataContrato;?>"/></td>
+                </tr>
+                <tr>
+                    <td class="destacar w200 bold" align="right">Motivo de Dispensa<span style='color:red'>*</span></td>
+                    <td colspan="2"><textarea cols="100" rows="10" name="motivoDispensa" null="false"><?php echo $this->motivoDispensa;?></textarea></td>
+                </tr>
+            </table>
+
+            <table class="tabela">
+                <caption>Vincular Itens de Custo</caption>
+                <tr>
+                    <td class="destacar bold">Produto</td>
+                    <td class="destacar bold">Etapa</td>
+                    <td class="destacar bold">Itens</td>
+                    <td class="destacar bold w50">A&ccedil;&atilde;o</td>
+                </tr>
+                <tr>
+                    <td>
+                        <select name="produtoSelect" id="produto">
+                            <option value="">Selecione</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="etapaSelect" id="etapa">
+                            <option value="">Selecione</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="itensSelect" id="itens">
+                            <option value="">Selecione</option>
+                        </select>
+                    </td>
+                    <td class="w50 centro">
+                        <a href="<?php echo $Incluir;?>" id="additemcusto" padrao="false"><img border="0" title="Incluir" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/incluir.gif"></a>
+                    </td>
+                </tr>
+            </table>
+
+            <table id="tableItensCusto" class="tabela linhaMaior1 <?php if($alterar) echo 'displayNone';?>">
+                <tr>
+                    <td class="destacar bold" align="center">Produto</td>
+                    <td class="destacar bold" align="center">Etapa</td>
+                    <td class="destacar bold" align="center">Item</td>
+                    <td class="destacar bold" align="center">Desvincular</td>
+                </tr>
+                <?php foreach ($this->itensVinculados as $itensVinculados) { ?>
+                <tr>
+                    <td><?php echo $itensVinculados->dsProduto ? $itensVinculados->dsProduto : 'Administração do Projeto'; ?></td>
+                    <td><?php echo $itensVinculados->dsEtapa; ?></td>
+                    <td><?php echo $itensVinculados->dsItem; ?></td>
+                    <td>
+                        <span class="btnExcluirItem" idDispensa="<?php echo $itensVinculados->idDispensaLicitacao; ?>" idetapa="<?php echo $itensVinculados->idEtapa; ?>" idItem="<?php echo $itensVinculados->idPlanilhaAprovacao; ?>" idpronac="<?php echo $this->idpronac; ?>">
+                            <center><img border="0" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/excluir.gif" title="Excluir" style="cursor: pointer;"></center>
+                        </span>
+                    </td>
+                </tr>
+                <?php } ?>
+            </table>
+
+            <br />
+
+            <div style="text-align: center;">
+                <input type="button" class="btn_salvar" id="salvar" />
+                <a href="<?php echo $CancelarHref;?>" id="btnCancelar" style="text-decoration:none;"><input type="button" class="btn_cancelar" /></a>
+            </div>
+        </form>
+    </div>
+    <br clear="left" />
+</div>
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />
+
+<div id="msgAlerta" class="sumir"></div>
+<div id="msgConfirm" class="sumir"></div>
+
+<script type="text/javascript">
+    var corpo  = '#<?php echo $corpo;?>';
+    $(document).ready(function(){
+
+        $('.btnExcluirItem').click(function(){
+            var iddispensa = $(this).attr('idDispensa'),
+                idItem = $(this).attr('idItem'),
+                obj = $(this);
+
+            $("#msgConfirm").dialog("destroy");
+            $("#msgConfirm").html("Deseja realmente excluir dados?");
+            $("#msgConfirm").dialog({
+                resizable: false,
+                title: 'Alerta!',
+                width:340,
+                height:160,
+                modal: true,
+                buttons : {
+                    'Não' : function(){
+                        $("#msgConfirm").dialog('close');
+                    },
+                    'Sim' : function(){
+                        $("#msgConfirm").dialog('close');
+                        $.ajax({
+                            type: 'POST',
+                            url: '<?php echo $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'excluiritenscusto')); ?>',
+                            data: {
+                                iddispensa: iddispensa,
+                                idItem: idItem
+                            },
+                            success: function(dados) {
+                                obj.parent().parent().remove();
+                                $("#msgAlerta").dialog("destroy");
+                                $("#msgAlerta").html("Excluído com sucesso!");
+                                $("#msgAlerta").dialog({
+                                    resizable: false,
+                                    title: 'Alerta!',
+                                    width:300,
+                                    height:160,
+                                    modal: true,
+                                    buttons : {
+                                        'OK' : function(){
+                                            $("#msgAlerta").dialog('close');
+                                        }
+                                    }
+                                });
+                                $('.ui-dialog-titlebar-close').remove();
+                                return false;
+                            }
+                        });
+                    }
+                }
+            });
+            $('.ui-dialog-titlebar-close').remove();
+            return false;
+        });
+
+        mascaras(corpo);
+
+        $(corpo+' a').click(function(){
+            if ('btnCancelar' == $(this).attr('id')) { return true; }
+            if($(this).attr('retorna')==undefined){
+                var info = {
+                    este        :   this,
+                    corpo       :   '<?php echo $corpo;?>',
+                    parametros  :   {<?php echo $idNome;?>:$('#<?php echo $corpo;?> #<?php echo $idNome;?>').val(),idpronac:'<?php echo $this->idpronac;?>'},
+                    formularioModal : 'upForm'
+                };
+                acoesLink(info);
+                return false;
+            }
+        });
+
+        var idProduto = carregarSelect('<?php echo $carregarSelectHref;?>','#produto',{tpSelect:'produto',idpronac:'<?php echo $this->idpronac?>'},'Selecione');
+        if(idProduto != undefined){
+            var idEtapa = carregarSelect('<?php echo $carregarSelectHref;?>','#etapa',{tpSelect:'etapa',idpronac:'<?php echo $this->idpronac?>',idProduto:idProduto},'Selecione');
+            if(idEtapa != undefined){
+                carregarSelect('<?php echo $carregarSelectHref;?>','#itens',{tpSelect:'itens',idpronac:'<?php echo $this->idpronac?>',idProduto:idProduto,idEtapa:idEtapa},'Selecione');
+                buscarDadosItens();
+            }
+        }
+
+        $('#produto').change(function (){
+            if($(this).val() == ''){
+                $('#etapa.select_simples').html('<option value="">Selecione</option>');
+                $('#itens.select_simples').html('<option value="">Selecione</option>');
+            } else {
+                carregarSelect('<?php echo $carregarSelectHref;?>','#etapa',{tpSelect:'etapa',idpronac:'<?php echo $this->idpronac?>',idProduto:$('#produto').val()},'Todos');
+                carregarSelect('<?php echo $carregarSelectHref;?>','#itens',{tpSelect:'itens',idpronac:'<?php echo $this->idpronac?>',idProduto:$('#produto').val(),idEtapa:$('#etapa').val()},'Todos');
+            }
+        });
+        $('#etapa').change(function (){
+            if($(this).val() == ''){
+                $('#itens.select_simples').html('<option value="">Todos</option>');
+            } else {
+                carregarSelect('<?php echo $carregarSelectHref;?>','#itens',{tpSelect:'itens',idpronac:'<?php echo $this->idpronac?>',idProduto:$('#produto').val(),idEtapa:$('#etapa').val()},'Todos');
+            }
+        });
+        
+        $(corpo+' #additemcusto').click(function(){
+			$('#tableItensCusto').show();
+            var info = {
+                <?php echo $idNome;?>   :   $('#<?php echo $idNome;?>').val(),
+                corpo                   :   corpo,
+                tabela                  :   corpo+' #tableItensCusto',
+                produto                 :   buscarHtmlSelect(corpo+' #produto'),
+                idProduto               :   $(corpo+' #produto').val(),
+                etapa                   :   buscarHtmlSelect(corpo+' #etapa'),
+                idEtapa                 :   $(corpo+' #etapa').val(),
+                itens                   :   buscarHtmlSelect(corpo+' #itens'),
+                idItem                  :   $(corpo+' #itens').val(),
+                idpronac                :   '<?php echo $this->idpronac;?>',
+                cadastro                :   true
+            }
+            //verifica se foi setado os valores necessarios para inserir no banco
+            if(info.idProduto != ''){
+                $('#tableItensCusto').show();
+                listaPEI(info);
+            }
+        });
+
+        $(corpo+' #salvar').click(function(){
+             if(validarFormulario('#formularioDispensa',ag1)){
+                $('#formularioDispensa').submit();
+            }
+        
+            /*var info = {
+                este                :   this,
+                corpo               :   '<?php //echo $corpo;?>',
+                idformulario        :   '<?php //echo $idformulario;?>',
+                idNome              :   '<?php //echo $idNome;?>'
+            };
+
+            salvar(info);
+            return false;*/
+        });
+        
+        
+        $(corpo+ '.btn_cancelar').click(function(){
+            voltar();
+        });
+        
+        $('.linkArquivos').click(function(){
+            var este = this;
+            var nomeJanelaAlerta =   janelaObj({
+                parametros : {
+                    width:      400,
+                    autoOpen:   false,
+                    resizable:  false,
+                    modal:      true,
+                    buttons: {
+                        'N\u00e3o':function(){
+                            $(this).dialog('close');
+                        },
+                        Sim: function() {
+                            var dados = {
+                                iddispensa : $('#<?php echo $corpo;?> #<?php echo $idNome;?>').val(),
+                                id          : $(este).attr('id')
+                            }
+                            var resposta = buscarJson($(este).attr('href'),dados);
+                            if(resposta.retorno){
+                                $('#'+$(este).attr('complemento')+$(este).attr('id')).remove();
+                            }
+                            janelaAlerta(resposta.mensagem);
+
+                            $(this).dialog('close');
+                        }
+                    }
+                },
+                removerBtFechar:true,
+                title : 'Alerta'
+            });
+            nomeJanelaAlerta.divConteudo.html(ag4);
+            nomeJanelaAlerta.abrirJanela();
+            return false;
+        });
+    });
+
+function carregarSelect(pagina,idSelect,dados,textoIni){
+    var idRetorno = undefined;
+    if(textoIni == undefined)
+        textoIni = 'Todos';
+
+    var resposta    = buscarJson(pagina,dados);
+    var cont = 0;
+    for(var j in resposta){
+        select += '<option value="'+resposta[j].id+'">'+resposta[j].nome+'</option>';
+        cont++;
+        if(cont>1)
+            idRetorno = undefined;
+        else
+            idRetorno = resposta[j].id;
+    }
+//    if(cont>1 || cont==0)
+        var select      = '<option value="">'+textoIni+'</option>'+select;
+    $(idSelect).html(select);
+    return idRetorno;
+}
+</script>

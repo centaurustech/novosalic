@@ -1,0 +1,46 @@
+<?php 
+$contador = 1;
+if(is_object($this->opcoes) and count($this->opcoes)>0)
+foreach ($this->opcoes as $questao){
+    if($questao->stTipoObjetoPgr != 'TA' and $questao->stTipoObjetoPgr != 'IT'){
+        ?>
+        <div class="ui-state-default-branco" style="height: 24px;line-height: 24px;width: 95%;" >
+            <div style="float: left; width: 70%;overflow: hidden; height: 18px;text-align: left;margin-left: 5px;">
+                <?php echo utf8_encode($questao['dsOpcao']);?>
+                <input type="hidden"  name="dsOpcaoR[<?php echo $contador; ?>]" value="<?php echo utf8_encode($questao->dsOpcao);?>" />
+            </div>
+            <div style="float: right; ">
+                <img class="excluirOpcao" src="<?php echo $this->baseUrl(); ?>/public/img/botaoExcluir.png" alt="Excluir"  style="cursor: pointer"  />
+            </div>
+            <?php
+            if($questao->stTipoObjetoPgr == 'CK' or $questao->stTipoObjetoPgr == 'RB' or $questao->stTipoObjetoPgr == 'IC' or $questao->stTipoObjetoPgr == 'IR'){
+                ?>
+                <div style="float: right;margin-right: 5px;" >
+                    <input type="checkbox" <?php if($questao->stTipoObjetoPgr == 'IC' or $questao->stTipoObjetoPgr == 'IR') echo 'checked'; ?> id="" name="justificativa[<?php echo $contador; ?>]" value="1" /> Justificativa
+                </div>
+                <?php
+            }
+            ?>
+        </div>
+        <?php
+        $contador++;
+    }
+}
+?>
+<script>
+$(function() {
+    contador = <?php echo $contador; ?>;
+    $('.excluirOpcao').click(function(){
+        var linha = $(this).parent().parent();
+        alerta('Deseja realmente remover? <br />Obs.: A exclus&atilde;o desta op&ccedil;&atilde;o s&oacute; ser&aacute; efetuado se clicar no bot&atilde;o alterar!','Alerta!',{
+            'N\u00e3o': function() {
+                $(this).dialog('close');
+            },
+            'Sim': function() {
+                linha.remove();
+                $(this).dialog('close');
+            }
+        });
+    });
+});
+</script>

@@ -1,0 +1,174 @@
+<?php
+include_once 'scripts/admissibilidade/inc/menu.inc.php';
+$buscarDocumento  = $this->url(array('controller' => 'admissibilidade', 'action' => 'buscardocumento'));
+$novo             = $this->url(array('controller' => 'admissibilidade', 'action' => 'analisedocumental'))."?idPreProjeto=".$this->idPreProjeto;
+$inserirDocumento = $this->url(array('controller' => 'admissibilidade', 'action' => 'inserirdocumento'));
+$updateDocumento  = $this->url(array('controller' => 'admissibilidade', 'action' => 'updatedocumento'));
+$excluirDocumento = $this->url(array('controller' => 'admissibilidade', 'action' => 'deletedocumento'));
+?>
+<!--<div id="breadcrumb">
+    <ul>
+        <li class="first"> <a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'projetos')); ?>" title="Ir para Projetos">Projetos</a></li>
+        <li class="last">Listar Propostas</li>
+    </ul>
+</div>-->
+<form method="POST" id="formGerarPdf" name="formGerarPdf" action="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'gerarpdf')); ?>" style="display:none">
+    <textarea name="html" id="conteudoImprimir"></textarea>
+</form>
+<div id="titulo">
+    <div>Admissibilidade de propostas - Análise documental <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<div id="conteudo">
+    <form id="formDocumento" method="post" action="<?php echo $inserirDocumento ?>?idPreProjeto=<?php echo $this->idPreProjeto;?>">
+        <input type="hidden" name="idprojeto" id="idprojeto" value="" />
+        <input type="hidden" name="iddocantigo" id="iddocantigo" value="" />
+        <input type="hidden" name="idcontador" id="idcontador" value="" />
+
+    <table class="tabela">
+        <tr>
+            <th>
+                <?php echo $this->proposta->idPreProjeto; ?> - <?php echo $this->proposta->NomeProjeto; ?>
+            </th>
+        </tr>
+        <tr>
+            <td align="center">
+	    	Proponente : <?php echo $this->agente->Descricao; ?>
+            </td>
+        </tr>
+    </table>
+    <table class="tabela">
+        <tr>
+            <th>
+                Tipo do documento
+            </th>
+        </tr>
+        <tr>
+            <td align="center">
+                <input type="radio" name="tipoDocumento" class="tipoDocumento" value="1" /> Proponente
+                <input type="radio" name="tipoDocumento" class="tipoDocumento" value="2" /> Projeto
+            </td>
+        </tr>
+        <tr>
+            <th>
+                Documento *
+            </th>
+        </tr>
+        <tr>
+            <td align="left" style="padding-left:100px">
+                <select id="documento" name="documento" class="select_simples">
+                    <option value=""> - Selecione um Tipo de Documento - &nbsp;</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+    <table class="tabela">
+    <tr>
+    <td class="centro">
+		<input type="button" class="btn_novo sumir" title="Novo" value=" " id="novo" onclick="redirecionar('<?php echo $novo ?>');" /> 
+		<input type="button" class="btn_salvar salvar" title="Salvar" value=" " /> 
+		<input type="button" class="btn_imprimir" title="Imprimir" value=" " onclick='$("#conteudoImprimir").val($(".conteudoImprimivel").html()); $("#formGerarPdf").submit();' />
+    </td>
+    </tr>
+    </table>
+    </form>
+    <div class="conteudoImprimivel" id="conteudoImprimivel">
+    <table class="tabela">
+        <tr>
+            <th style="width: 90%">
+                Documento
+            </th>
+            <th style="width: 10%">
+                A&ccedil;&atilde;o
+            </th>
+        </tr>
+        <?php
+         if(is_array($this->itensDocumentoPendente) and count($this->itensDocumentoPendente)>0){
+            foreach ($this->itensDocumentoPendente as $pendente){
+         ?>
+
+        <tr>
+            <td style="width: 90%" align="center">
+                <?php echo $pendente->Descricao ?>
+            </td>
+            <td style="width: 15%" align="center" nowrap>
+                <input type="button" title="Editar" class="editar btn_editar" style="width: 88px" value=" " opcao="<?php echo $pendente->Opcao ?>" projeto="<?php echo $pendente->idProjeto ?>" documento="<?php echo $pendente->CodigoDocumento ?>" contador="<?php echo $pendente->Contador ?>" />
+                <input type="button" title="Excluir" class="btn_excluir" style="width: 88px" value=" " onclick="window.location='<?php echo $excluirDocumento; ?>?idDocumento=<?php echo $pendente->Contador ?>&idPreProjeto=<?php echo $this->idPreProjeto; ?>&tipoDocumento=<?php echo $pendente->Opcao ?>';"/>
+            </td>
+        </tr>
+        <?php
+            }
+         }else{
+        ?>
+        <tr>
+            <td colspan="2" style="width: 100%" align="center">Nenhum documento encontrado</td>
+        </tr>
+        <?php
+         }
+        ?>
+    </table>
+    </div><!-- fecha conteudo imprimivel -->
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />
+<script type="text/javascript">
+<!--
+$(document).ready(function(){
+
+    $("#formDocumento").validate({
+        rules: {
+            documento: { required: true }
+        },
+        messages: {
+            documento: { required: "<br>Dado obrigat&oacute;rio n&atilde;o informado" }
+        },
+        submitHandler: function(form) {
+            form.submit();
+        }
+    });
+
+    $('.tipoDocumento').click(function(){
+        //alert("<?php //echo $buscarDocumento; ?>?idOpcao='+$(this).val()");
+        jqAjaxLinkSemLoading('<?php echo $buscarDocumento; ?>?idOpcao='+$(this).val(), "", "documento");
+    });
+
+    $('.editar').click(function(){
+        var este = this;
+        $('#idprojeto').val($(este).attr('projeto'));
+        $('#iddocantigo').val($(este).attr('documento'));
+        if( $(este).attr('opcao') == 1){
+            $('[name=tipoDocumento]:first').attr('checked','checked');
+        }else{
+            $('[name=tipoDocumento]:last').attr('checked','checked');
+        }
+
+        jqAjaxLinkSemLoading('<?php echo $buscarDocumento; ?>?idDocumento='+$(este).attr('documento')+'&idOpcao='+$(este).attr('opcao'), "", "documento");
+        document.getElementById('novo').style.display = '';
+        //document.getElementById('excluir').style.display = '';
+        $('#formDocumento').attr('action','<?php echo $updateDocumento;?>?idPreProjeto=<?php echo $this->idPreProjeto;?>');
+    });
+});
+
+$(function(){
+
+     $('.salvar').click(function(){
+        $('#formDocumento').submit();
+     });
+
+      $('.excluir').click(function(){
+        $('#idcontador').val($(este).attr('contador'));
+        $('#formDocumento').attr('action','<?php echo $excluirDocumento;?>');
+        $('#formDocumento').submit();
+     });
+});
+//-->
+</script>
+
+<style type="text/css">
+<!--
+label.error{ color:red; font-weight: normal; }
+-->
+</style>

@@ -1,0 +1,295 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+
+        $('form#frmReciboCaptacao').find('input:not(.btn_limpar,.btn_pesquisar)').live("keypress", function(e){
+            if(e.keyCode == 13){
+                $(".btn_pesquisar").click();
+            }
+        });
+
+        $(".btn_pesquisar").click(function(){
+            //$("#resultadoConsulta").html("");
+            //jqAjaxForm(document.getElementById("frmReciboCaptacao"), "resultadoConsulta");
+            $("#msgErroRadio").html("");
+            $("#msgErroPronac").html("");
+            $("#msgErroProponente").html("");
+            $("#msgErroIncentivador").html("");
+            
+            var n = $("input:radio[name='tpPesquisa']:checked").length;
+            var valor = $("input:radio[name='tpPesquisa']:checked").attr("value");
+            
+            if(n <=0 ){
+                $("#msgErroRadio").html("Campo obrig&oacute;torio n&atilde;o informado!");
+                return false;
+            }
+            if(valor == 1 && $("#pronac").val()==""){
+                $("#msgErroPronac").html("Campo obrig&oacute;torio n&atilde;o informado!");
+                return false;
+            }
+            if(valor == 2 && $("#proponente").val()==""){
+                $("#msgErroProponente").html("Campo obrig&oacute;torio n&atilde;o informado!");
+                return false;
+            }
+            if(valor == 3 && $("#incentivador").val()==""){
+                $("#msgErroIncentivador").html("Campo obrig&oacute;torio n&atilde;o informado!");
+                return false;
+            }
+            $("#frmReciboCaptacao").submit();
+        });
+
+        $("#tpDtLote").change(function(){
+            if(($("#spandtLote").css("display")=="none" || $("#spandtLote").css("display")=="inline") && $(this).val() == "entre"){
+                $("#spandtLote").show();
+            }else{
+                $("#spandtLote").hide();
+            }
+            //$("#spanDtFinal").toggle();
+        });
+
+        $("#tpDtCaptacao").change(function(){
+            if(($("#spanDtCaptacao").css("display")=="none" || $("#spanDtCaptacao").css("display")=="inline") && $(this).val() == "entre"){
+                $("#spanDtCaptacao").show();
+            }else{
+                $("#spanDtCaptacao").hide();
+            }
+            //$("#spanDtFinal").toggle();
+        });
+
+        $(function()
+        {
+            $.datepicker.regional['pt-BR'] = {
+                closeText: 'Fechar',
+                prevText: '&#x3c;Anterior',
+                nextText: 'Pr&oacute;ximo&#x3e;',
+                currentText: 'Hoje',
+                monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+                monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+                dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+                dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                weekHeader: 'Sm',
+                dateFormat: 'dd/mm/yy',
+                firstDay: 0,
+                isRTL: false,
+                showMonthAfterYear: false,
+                yearSuffix: ''};
+            $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+            $(".cmpData").datepicker($.datepicker.regional['pt-BR']);
+        });
+        
+        $(".cmpNumerico").numeric().attr("maxlength", "9");
+
+        $("input[@type='radio'][name='tpPesquisa']").click(function(i) {
+
+            $("#tblFiltros").show();
+            $("#msgErroRadio").html("");
+            $("#msgErroPronac").html("");
+            $("#msgErroProponente").html("");
+            $("#msgErroIncentivador").html("");
+            
+            $(this).each(function() {
+                
+                var valor = $(this).val();
+                
+                if(valor == 1){
+                    $("#trPronac").show();
+                    $("#trProponente").hide();
+                    $("#trIncentivador").hide();
+                }
+                if(valor == 2){
+                    $("#trPronac").hide();
+                    $("#trProponente").show();
+                    $("#trIncentivador").hide();
+                }
+                if(valor == 3){
+                    $("#trPronac").hide();
+                    $("#trProponente").hide();
+                    $("#trIncentivador").show();
+                }
+            });
+            
+        });
+    });
+    
+    function JSTravaCampos(obj){
+
+        var id = $(obj).attr("id");
+        var n = $("#"+id).val().length;
+        if(n > 0){
+            /*$("#dtLote").attr("disabled",true);
+            $("#dtLote_Final").attr("disabled",true);
+            $("#dtCaptacao").attr("disabled",true);
+            $("#dtCaptacao_Final").attr("disabled",true);
+            $("#tpDtLote").attr("disabled",true);
+            $("#tpDtCaptacao").attr("disabled",true);*/
+            
+            $("#dtLote").val('');
+            $("#dtLote_Final").val('');
+            $("#dtCaptacao").val('');
+            $("#dtCaptacao_Final").val('');
+            $("#tpDtLote").val('');
+            $("#tpDtCaptacao").val('');
+            
+            $('#camposDataDtLote').hide(); 
+            $('#camposDataDtCaptacao').hide();
+        }/*else{
+            $("#dtLote").attr("disabled",false);
+            $("#dtLote_Final").attr("disabled",false);
+            $("#dtCaptacao").attr("disabled",false);
+            $("#dtCaptacao_Final").attr("disabled",false);
+            $("#tpDtLote").attr("disabled",false);
+            $("#tpDtCaptacao").attr("disabled",false);
+        }*/
+    }
+    
+    function JSLiberaCampos(){
+        /*$("#dtLote").attr("disabled",false);
+        $("#dtLote_Final").attr("disabled",false);
+        $("#dtCaptacao").attr("disabled",false);
+        $("#dtCaptacao_Final").attr("disabled",false);
+        $("#tpDtLote").attr("disabled",false);
+        $("#tpDtCaptacao").attr("disabled",false);*/
+    }
+    
+    function JSResetaPesquisa(){
+        $("#tblFiltros").hide();
+        $('#camposDataDtLote').hide(); 
+        $('#camposDataDtCaptacao').hide(); 
+    }
+</script>
+
+<?php require_once 'scripts/controlarmovimentacaobancaria/inc/menu.inc.php'; ?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second">Relat&oacute;rios</li>
+        <li class="last">Recibo de capta&ccedil;&atilde;o</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Recibo de capta&ccedil;&atilde;o</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="conteudo" align="center">
+    <form action="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-relatorio-recibo-captacao')); ?>" method="get" name="frmReciboCaptacao" id="frmReciboCaptacao">
+        <input type="hidden" name="modal" id="modal" value="n">
+        <table class="tabela">
+            <tr>
+                <td class="destacar bold" align="right" width="120">Pesquisar por</td>
+                <td align="left" colspan="2">
+                    <input type="radio" name="tpPesquisa" id="tpPesquisa" value="1"> PRONAC
+                    <input type="radio" name="tpPesquisa" id="tpPesquisa" value="2"> Proponente
+                    <input type="radio" name="tpPesquisa" id="tpPesquisa" value="3"> Incentivador <span id="msgErroRadio" class="red"></span>
+                </td>
+            </tr>
+        </table>
+
+        <table class="tabela sumir" id="tblFiltros">
+            <tr id="trPronac" class="sumir">
+                <td class="destacar bold" align="right" width="120">PRONAC</td>
+                <td align="left" colspan="2">
+                    <input class="input_simples" name="pronac" id="pronac" maxlength="8" type="text">
+                    <span id="msgErroPronac" class="red"></span>
+                </td>
+            </tr>
+            <tr id="trProponente" class="sumir">
+                <td class="destacar bold" align="right" width="120">Proponente</td>
+                <td align="left" colspan="2">
+                    <input class="input_simples" name="proponente" id="proponente" maxlength="18" type="text" onblur="mascaraCnpjCpf(this);"  onkeydown="mascaraCnpjCpf(this);" onkeypress="mascaraCnpjCpf(this);" onkeyup="mascaraCnpjCpf(this);">
+                    <span id="msgErroProponente" class="red"></span>
+                </td>
+            </tr>
+            <tr id="trIncentivador" class="sumir">
+                <td class="destacar bold" align="right" width="120">Incentivador</td>
+                <td align="left" colspan="2">
+                    <input class="input_simples" name="incentivador" id="incentivador" maxlength="18" type="text" onblur="mascaraCnpjCpf(this);"  onkeydown="mascaraCnpjCpf(this);" onkeypress="mascaraCnpjCpf(this);" onkeyup="mascaraCnpjCpf(this);">
+                    <span id="msgErroIncentivador" class="red"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right" width="120">Num. Lote</td>
+                <td align="left" colspan="2">
+                    <input class="input_simples cmpNumerico" name="numLote" id="numLote" maxlength="10" type="text">
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right" width="120">Data do lote</td>
+                <td width="150" align="center">
+                    <select name="tpDtLote" id="tpDtLote" class="select_simples" onchange="if($(this).val()=='OT' || $(this).val()=='U7' || $(this).val()=='SP' || $(this).val()=='MM' || $(this).val()=='UM' || $(this).val()==''){$('#camposDataDtLote').css('display','none');}else{$('#camposDataDtLote').css('display','');}">
+                        <OPTGROUP LABEL="Normais">
+                            <option value="">Selecione</option>
+                            <option value="igual">Exatamente Igual</option>
+                            <option value="entre">Entre dois valores</option>
+                            <option value="maior">Maior ou igual a </option>
+                            <option value="menor">Menor ou igual a</option>
+                        </OPTGROUP>
+                        <OPTGROUP LABEL="Especiais">
+                            <option value="OT">Ontem</option>
+                            <option value="U7">&Uacute;ltimos 7 dias</option>
+                            <option value="MM">Este m&ecirc;s</option>
+                            <option value="UM">&Uacute;ltimo m&ecirc;s</option>
+                        </OPTGROUP>
+                    </select>
+                </td>
+                <td align="left">
+                    <span id="camposDataDtLote" style="display: none;">
+                        <input name="dtLote" id="dtLote" value="" class="input_simples cmpData" onkeyup="mascara(this, format_data);"/>
+                        <span id="spandtLote" style="display: none;">&nbsp;e&nbsp;<input name="dtLote_Final" id="dtLote_Final" value="" class="input_simples cmpData"  onkeyup="mascara(this, format_data);"/></span>
+                        (dd/mm/aaaa)
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right" width="120">Data da capta&ccedil;&atilde;o</td>
+                <td width="150" align="center">
+                    <select name="tpDtCaptacao" id="tpDtCaptacao" class="select_simples" onchange="if($(this).val()=='OT' || $(this).val()=='U7' || $(this).val()=='SP' || $(this).val()=='MM' || $(this).val()=='UM' || $(this).val()==''){$('#camposDataDtCaptacao').css('display','none');}else{$('#camposDataDtCaptacao').css('display','');}">
+                        <OPTGROUP LABEL="Normais">
+                            <option value="">Selecione</option>
+                            <option value="igual">Exatamente Igual</option>
+                            <option value="entre">Entre dois valores</option>
+                            <option value="maior">Maior ou igual a </option>
+                            <option value="menor">Menor ou igual a</option>
+                        </OPTGROUP>
+                        <OPTGROUP LABEL="Especiais">
+                            <option value="OT">Ontem</option>
+                            <option value="U7">&Uacute;ltimos 7 dias</option>
+                            <option value="MM">Este m&ecirc;s</option>
+                            <option value="UM">&Uacute;ltimo m&ecirc;s</option>
+                        </OPTGROUP>
+                    </select>
+                </td>
+                <td align="left">
+                    <span id="camposDataDtCaptacao" style="display: none;">
+                        <input name="dtCaptacao" id="dtCaptacao" value="" class="input_simples cmpData"  onkeyup="mascara(this, format_data);"/>
+                        <span id="spanDtCaptacao" style="display: none;">&nbsp;e&nbsp;<input name="dtCaptacao_Final" id="dtCaptacao_Final" value="" class="input_simples cmpData"  onkeyup="mascara(this, format_data);"/></span>
+                        (dd/mm/aaaa)
+                    </span>
+                </td>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <td align="center">
+                    <input type="button" class="btn_pesquisar" id="btn_pesquisar" value=""/>
+                    <input type="reset" class="btn_limpar" id="btn_limpar" value="" onclick="JSLiberaCampos(); JSResetaPesquisa();"/>
+                </td>
+            </tr>
+        </table>
+    </form>
+<div id="resultadoConsulta"></div>
+    
+</div>
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

@@ -1,0 +1,169 @@
+<script>
+    function limitaTextarea(valor) {
+        id = 'dsJustificativa';
+        quant = 300; /* Total de caracteres */
+        total = valor.length;
+        document.getElementById(id).value = valor.substr(0,quant);
+    }
+
+    $(document).ready(function(){
+
+		$("#myTable").tablesorter({
+			headers: {
+			0: {
+				sorter: false
+			},
+			4: {
+				sorter: false
+			}
+						
+		}
+		
+	});
+
+
+        $(".avaliar").click(function(){
+            var pronac = $("#idPronac").val();
+            var responsavel = $(this).parent().parent().find('td:nth-child(4)').html();
+            var nomeprojeto = $(this).parent().parent().find('td:nth-child(2)').html();
+            //var tipo = $(this).attr('tipo');
+            var idprocuracao = $(this).attr('idprocuracao');
+            var msg = "Deseja realmente 'Aprovar ou Reprovar' a procura&ccedil;&atilde;o do Respons&aacute;vel: "+responsavel+", para o Projeto: "+nomeprojeto+"? ";
+            msg += '<br /><br /><form name="formJustificativa" id="formJustificativa" action="<?php echo $this->url(array('controller' => 'procuracao', 'action' => 'analisar')); ?>" method="post">';
+            msg += '<input type="hidden" name="idProcuracao" value="' + idprocuracao +'">';
+            msg += '<input type="hidden" name="siProcuracao" id="siProcuracaos">';
+            msg += '<input type="hidden" name="Pronac" id="Pronac" value="' + pronac +'" >';
+            msg += '<center><textarea name="dsJustificativa" id="dsJustificativa" class="textarea_simples w400 h100" onkeyup="limitaTextarea(this.value)"></textarea></center>';
+            msg += '<b><p>m&aacute;ximo de 300 caracteres</p></b>';
+            msg += '</form>';
+
+            alerta(msg);
+        });
+
+		
+    });
+    function alerta(msg){
+   
+        $("#confirm").html(msg);
+
+        $("#confirm").dialog({
+            resizable: true,
+            width:550,
+            height:350,
+            modal: true,
+            autoOpen:false,
+            closeOnEscape : false,
+            title : 'An&aacute;lisar',
+            buttons: {
+                'Rejeitar': function(){
+                    if($('#dsJustificativa').val() == ''){
+                        alertModal("ALERT!", "exemplo-alert1", 360, 180);
+                        return false;
+                    } else if($('#dsJustificativa').val().length < 20){
+                        alertModal("ALERT!", "exemplo-alert2", 360, 180);
+                        return false;
+                    } else {
+                        $('#siProcuracaos').val('2');
+                        $('#formJustificativa').submit();
+                    }
+                },
+                'Aprovar': function(){
+                    if($('#dsJustificativa').val() == ''){
+                        alertModal("ALERT!", "exemplo-alert1", 360, 180);
+                        return false;
+                    } else if($('#dsJustificativa').val().length < 20){
+                        alertModal("ALERT!", "exemplo-alert2", 360, 180);
+                        return false;
+                    } else {
+                        $('#siProcuracaos').val('1');
+                        $('#formJustificativa').submit();
+                    }
+                }
+            }
+        });
+        $("#confirm").dialog('open');
+    }
+</script>
+
+<div id="exemplo-alert1" class="sumir">Informe a justificativa</div>
+<div id="exemplo-alert2" class="sumir">Informe 20</div>
+
+<!-- ========== INï¿½CIO BREADCRUMB (LINKS TOPO) ========== -->
+<a class="no_seta last" href='<?php echo $this->url(array('controller' => 'procuracao', 'action' => 'cadastramento', 'idpreprojeto'=>$this->projeto)); ?>'></a>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="last"><a href="<?php echo $this->url(array('controller' => 'procuracao', 'action' => 'analisar')); ?>" title="Ir para Filtro">Filtro</a></li>
+        <li class="last">Analisar Procura&ccedil;&atilde;o</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+<!-- ========== INï¿½CIO Tï¿½TULO ========== -->
+<div id="titulo">
+    <div>Analisar Procura&ccedil;&atilde;o <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM Tï¿½TULO ========== -->
+
+<!-- ========== INï¿½CIO CONTEï¿½DO ========== -->
+<div id="conteudo">
+    <div id="confirm"></div>
+    
+    <?php if (count($this->procuracao) > 0) : ?>
+    <table id="myTable" class="tabela tablesorter">
+    	<thead>
+        <tr class="titulo_tabela">
+            <th width="300">Procuração</th>
+            <th>Nome do Proponente</th>
+            <th>Nome do Respons&aacute;vel</th>
+            <th>data de envio</th>
+            <th>Situação</th>
+        </tr>
+        </thead>
+        <?php
+        $iddoc = 0;
+        
+        	foreach ($this->procuracao as $procuracao):
+        	if($procuracao->idDocumento != $iddoc):
+        ?>
+        <tr>
+            <td align="left"><a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id=<?php echo $procuracao->idArquivo; ?>"><?php echo $procuracao->nmArquivo ?></a></td>
+            <td align="center"><?php echo $procuracao->NomeProponente ?></td>
+            <td align="center"><?php echo $procuracao->NomeResponsavel ?></td>
+            <td align="center"><?php echo Data::tratarDataZend($procuracao->dtEnvio, 'brasileiro', true); ?></td>
+            <td class="centro">
+	            <?php if(($procuracao->siProcuracao) == 0): ?>
+	            	<a href="<?php echo $this->url(array('controller' => 'procuracao', 'action' => 'avaliar','idDocumento' => $procuracao->idDocumento)); ?>">Analisar</a>
+				<?php else: ?>
+					<a href="<?php echo $this->url(array('controller'=>'procuracao', 'action'=>'visualizar', 'idDocumento' => $procuracao->idDocumento) );?>" >
+						<?php echo $this->situacaoProcuracao($procuracao->siProcuracao); ?>
+					</a>					
+				<?php endif; ?>
+            </td>
+        </tr>
+                <?php
+            endif;
+            $iddoc = $procuracao->idDocumento;
+            endforeach;
+        ?>
+
+    </table>
+    <form id="formAceiteProcuracao" method="post" action="<?php echo $this->url(array('controller'=>'procuracao', 'action'=>'analisar') );?>">
+        <input type="hidden" id="idProcuracao" name="idProcuracao"/>
+        <input type="hidden" id="siProcuracao" name="siProcuracao"/>
+    </form>
+    <?php else: ?>
+    <table class="tabela">
+    	<tr>
+    		<td>NENHUMA PROCURAÇÃO PARA SER ANALISADA</td>
+    	</tr>
+    </table>    
+    <?php endif; ?>    
+</div>
+
+<!-- ========== FIM CONTEï¿½DO ========== -->
+
+<!-- ========== INï¿½CIO RODAPï¿½ DO CONTEï¿½DO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPï¿½ DO CONTEï¿½DO ========== -->
+
+<br clear="all" />

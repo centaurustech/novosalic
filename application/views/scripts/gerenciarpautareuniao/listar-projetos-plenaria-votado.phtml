@@ -1,0 +1,72 @@
+<?php
+/**
+ * Parecer Consolidado
+ * @author Equipe RUP - Politec
+ * @since 12/05/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.realizaranaliseprojeto
+ * @copyright ï¿½ 2010 - Ministï¿½rio da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+
+<table class="tabela">
+    <tr>
+        <td><input type="button" id="projetosSubmetidosVotado" class="<?php echo (empty($this->parametrosBusca["ordenacaoVotado"])) ? 'btn_adicionar' : 'btn_remover'?>" onclick="JSMostraOcultaElemento('projetosSubmetidosVotado');" /><b>Projetos votados <div style="float: right">Quantidade: (<span id="qtdeProjPlenariaVotado"><?php echo $this->qtdvotados; ?></span>)</div></b></td>
+    </tr>
+</table>
+<table class="<?php echo (empty($this->parametrosBusca["ordenacaoVotado"])) ? 'sumir' : ''?> tabela tablesorter projetosSubmetidosVotado">
+    <thead>
+        <tr class="titulo_tabela">
+            <th>N&uacute;mero</th>
+            <th>Análise do Projeto</th>
+            <th width="5%">PRONAC</th>
+            <th width="35%">Nome do Projeto</th>
+            <?php if ($this->grupoativo == '119') { //presidente CNIC ?>
+                <th width="10%">Área do Projeto</th>
+                <th width="10%">Segmento</th>
+            <?php } ?>
+            <th width="5%">Parecer Favor&aacute;vel</th>
+            <th width="15%">Componente da Comiss&atilde;o</th>
+            <?php if ($this->grupoativo == '118' || $this->grupoativo == '133') { //118 = componente da comissao  133 = membros natos ?>
+                <th>Seu Voto</th>
+            <?php } ?>
+            <th>Resultado da Reunião</th>
+        </tr>
+    </thead>
+    <?php
+    $a = 1;
+    if(count($this->projetosvotados)){
+        foreach ($this->projetosvotados as $plenario) {
+            $tipoagente = '';
+            ?>
+            <tr class="tradd" id="<?php echo $a."_".$plenario['IdPRONAC']; ?>" aberto="false">
+                <td class="centro"><?php echo $a ?></td>
+                <td class="centro"><a style="text-decoration:underline;cursor:pointer;" onClick="abrirdados('<?php echo $a."_".$plenario['IdPRONAC']; ?>', <?php echo $plenario['IdPRONAC']; ?>, '<?php echo $tipoagente; ?>','s')" title="An&aacute;lise do Projeto"><img src="<?php echo $this->baseUrl();?>/public/img/ico/kdict.png" title="Dados da Análise do Projeto" alt="Dados da Análise do Projeto" width="20px"/></a></td>
+                <!--<td class="centro"><a id="consultarprojetos" href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'), '', true); ?>?idPronac=<?php echo $plenario['IdPRONAC'];?>" target="_new" title="Ir para Consultar Projetos"><?php echo $plenario['pronac'] ?></a></td>-->
+                <td class="centro"><a id="consultarprojetos" href="<?php echo $this->url(array('controller' => 'dadosprojeto', 'action' => 'index', 'idpronac'=>$plenario['IdPRONAC']),'',true); ?>" target="_new" title="Ir para Consultar Projetos"><?php echo $plenario['pronac'] ?></a></td>
+                <td><?php echo $plenario['NomeProjeto'] ?></td>
+                <?php if ($this->grupoativo == '119') { //presidente CNIC ?>
+                    <td><?php echo $plenario['area'] ?></td>
+                    <td><?php echo $plenario['segmento'] ?></td>
+                <?php } ?>
+                <td class="centro"><?php echo $plenario['ParecerFavoravel'] == '2' ? 'Sim' : 'N&atilde;o'; ?></td>
+                <td><?php echo $plenario['nomeComponente'] ?></td>
+                <?php if ($this->grupoativo == '118' || $this->grupoativo == '133') { //118 = componente da comissao  133 = membros natos ?>
+                    <td class="centro"><?php echo $plenario['seuVoto'] ?></td>
+                <?php } ?>
+                <td class="centro"><?php echo $plenario['resultadoPlenaria'] ?></td>
+            </tr>
+            <?php $a++;
+        } 
+        
+    }else{ ?>
+    <tr>
+        <td colspan="9" class="centro">
+            <em><b>Não há projetos votados</b></em>
+        </td>
+    </tr>
+<?php } ?>
+</table>

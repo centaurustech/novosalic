@@ -1,0 +1,110 @@
+
+<script>
+
+function dadosProjeto(idEdital, nomeOrgao, nomeEdital){
+
+	//alert(idEdital); return false;
+
+	Texto = "Projetos selecionados do órgão " + nomeOrgao + " para o edital "+ nomeEdital;
+	$('#tabelaDados').html('');
+	$('#mensagemErro').html('');
+	$('#botaoPDF').html('');
+	$("#dadosProjeto").dialog("destroy");
+	$("#dadosProjeto").dialog
+	({
+		width:800,
+		height:300,
+		EscClose:false,
+		title: Texto,
+		modal:true
+		,buttons:
+		{
+			'Fechar':function()
+			{
+				$(this).dialog('close'); // fecha a modal
+			}
+		}
+	});
+	$('.ui-dialog-titlebar-close').remove();
+	
+	$.ajax({
+	    url : '<?php echo $this->url(array('controller' => 'gerarrelatorios', 'action' => 'listarselecionados')); ?>',
+	    data :
+	    {
+			idEdital: idEdital,
+			msg : 'ok'
+	    },
+	    success: function(data){
+                var    html = '<tabela>';
+		var	recebe = $('#tabelaDados');
+		var	botao = $('#botaoPDF');
+		var	tabela = '<tr><th>Pronac</th><th>Nome do Projeto</th><th>Nota Final</th></tr>';
+		var	mensagem = '<tr><td>Não há registros a serem exibidos.</td></tr>';
+	        if(data.resposta){
+	            recebe.html(tabela);
+	            for (i in data.conteudo)
+	            {
+		            recebe.append('<tr><td align=center>'+data.conteudo[i].PRONAC+'</td><td align=center>'+data.conteudo[i].nmProjeto+'</td><td align=center>'+data.conteudo[i].nrNotaFinal+'</td></tr>');
+	            }
+	            //botao.html('<input type="button" onclick="gerarPDF();" class="btn_pdf"></input>');
+	        } else {
+        		$('#mensagemErro').html(mensagem);
+	        }
+	        
+	        //alert(data);
+		},
+	    type : 'post'
+	    ,dataType : 'json'
+	});
+}
+
+function gerarPDF(){
+	x =	$('#tabelaDados').html();
+	$("#html").val(x);
+	document.forms["frmPDF"].submit();
+}
+
+</script>
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+
+	
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+<form id="frmPDF" name="frmPDF" action="<?php echo $this->url(array('controller' => 'Listareditais', 'action' => 'listarselecionados'));?>" method="post">
+<input type="hidden" name="html" id="html"></input>
+</form>
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+
+<table class="tabela">
+ 		<tr>
+ 			<th width="30%" align="center" >Nr. Edital</th>
+ 			<th width="70%"  align="center" >Edital</th>			
+ 		</tr>
+ 		<?php $numeroEdital = $this->numeroEdital;?>
+ 		<?php foreach ($numeroEdital as $dados){ ?>
+ 
+        	
+
+
+		 		<tr>
+		 			<td align="center"><u><a style="cursor:pointer;" onclick="dadosProjeto('<?php echo $dados->idEdital; ?>', '<?php echo $this->nomeOrgao; ?>', '<?php echo $dados->NomeEdital; ?>');"><?php echo $dados->NrEdital; ?></a></u></td>
+		 			<td align="center"><u><a style="cursor:pointer;" onclick="dadosProjeto('<?php echo $dados->idEdital; ?>', '<?php echo $this->nomeOrgao; ?>', '<?php echo $dados->NomeEdital; ?>');"><?php echo $dados->NomeEdital; ?></a></u></td>
+		
+		 		</tr>
+
+ 		
+ 		<?php }?>
+		
+ </table>
+ 
+ <div style="display: none" id="dadosProjeto">
+ 
+ <table class="tabela" id="tabelaDados">
+ </table>
+  <p id="botaoPDF"></p>
+ <div id="mensagemErro" style="color: red; display: inherit;"></div>
+ </div>
+ 

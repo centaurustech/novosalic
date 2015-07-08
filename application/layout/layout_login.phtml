@@ -1,0 +1,25 @@
+<?php
+/**
+ * Carrega o Layout Padrão da Área de Login
+ * @author Equipe RUP - Politec
+ * @since 26/05/2011
+ * @version 1.0
+ * @package application
+ * @subpackage application.layout
+ * @copyright © 2011 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+
+/* ========== TOPO ========== */
+echo $this->render('header_login.phtml');
+
+
+
+/* ========== CONTEÚDO ========== */
+echo $this->layout()->content;
+
+
+
+/* ========== RODAPÉ ========== */
+echo $this->render('footer_login.phtml');
+?>

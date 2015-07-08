@@ -1,0 +1,437 @@
+<input type="hidden" name="idAgenteGeral" id="idAgenteGeral" value="<?php echo $_GET['idAgenteGeral']; ?>" />
+<div id="confirma"></div>
+<!-- ========== INÍCIO TABELA DADOS ========== -->
+<table id="tabDados" class="tabela">
+
+	<tr>
+		<td colspan="2">
+			<label for="cpf">CPF:</label>
+			<br />
+			<div class="left"></div>
+			<input class="input" type="text" name="cpf" id="cpf" maxlength="14" onkeyup="mascara(this, format_cpf);" value="<?php echo (!empty($_GET['cpf']) ? Mascara::addMaskCPF($_GET['cpf']) : ' '); ?>" 
+				onclick="limpar_campo(this, ' ');" onkeypress="limpar_campo(this, ' ');" 
+				onblur="restaurar_campo(this, ' '); buscardadosdirigente();" onmouseout="restaurar_campo(this, ' ');" />
+			<div class="right"></div>
+			&nbsp; <span id="erroCpf" class="spanError"></span>
+			<input type="hidden" id="idAgente" name="idAgente" />
+			<?php
+			// caso o cpf venha via get, chama a função para buscar os dados de acordo com o cpf
+			if (!empty($_GET['cpf']))
+			{
+				echo "<script>buscardadosdirigente();</script>";
+			}
+			?>
+		</td>
+		<td colspan="2">
+			<label for="nome">Nome *</label>	
+			<br />
+			<div class="left"></div>
+			<input class="input" type="text" name="nome" id="nome" maxlength="70" size="50" readonly="readonly" value="<?php echo (!empty($_GET['nome']) ? $_GET['nome'] : ' '); ?>" 
+				onclick="limpar_campo(this, ' ');" onkeypress="limpar_campo(this, ' ');" 
+				onblur="restaurar_campo(this, ' ');" onmouseout="restaurar_campo(this, ' ');" />
+			<div class="right"></div>
+			&nbsp; <span id="erroNome" class="spanError"></span>
+		</td>
+	</tr>
+
+	<tr>
+		<td>
+			<label for="cep">CEP *</label>
+			<br />
+			<div class="left"></div>
+			<input class="input" type="text" name="cep" id="cep" maxlength="10" onkeyup="mascara(this, format_cep);" onblur="buscar_cep(this.value);" readonly="readonly" 
+				onclick="limpar_campo(this, ' ');" onkeypress="limpar_campo(this, ' ');" 
+				onblur="restaurar_campo(this, ' ');" onmouseout="restaurar_campo(this, ' ');" value=" " />
+			<div class="right"></div>
+			&nbsp; <span id="erroCep" class="spanError"></span>
+		</td>
+		<td>
+			<label for="uf">UF *</label>
+			<br />
+			<select name="uf" id="uf" onchange="carregar_combo(this.value,'cidade','../cidade/combo',' - Selecione primeiro o UF - ');" disabled="disabled">
+
+				<?php if (!isset($this->uf) || empty($this->uf)) { ?>
+				<option value="0"> -- </option>
+				<?php } ?>
+
+				<?php foreach ($this->comboestados as $comboestado): ?>
+				<option value="<?php echo $comboestado->id; ?>" <?php if ($this->uf == $comboestado->id) echo "selected=\"selected\""; ?>>
+					<?php echo $comboestado->descricao; ?>
+				</option>
+				<?php endforeach; ?>
+
+			</select>
+			&nbsp; <span id="erroUf" class="spanError"></span>
+		</td>
+		<td colspan="2">
+			<label for="cidade">Cidade *</label>
+			<br />
+			<select name="cidade" id="cidade" style="width:20%;" disabled="disabled">
+				<option value="0"> - Selecione - </option>
+
+				<?php foreach ($this->combocidades as $combocidade): ?>
+				<option value="<?php echo $combocidade->id; ?>" 
+					id="<?php echo $combocidade->idUF; ?>" 
+					<?php if ($this->cidade == $combocidade->id) echo "selected=\"selected\""; ?>>
+					<?php echo $combocidade->descricao; ?>
+				</option>
+				<?php endforeach; ?>
+
+			</select>
+			&nbsp; <span id="erroCidade" class="spanError"></span>
+		</td>
+	</tr>
+
+	<tr>
+		<td colspan="2">
+			<label for="tipoEndereco">Tipo de Endereço *</label>
+			<br />
+			<select name="tipoEndereco" id="tipoEndereco" style="width:20%;">
+
+				<?php if (!isset($this->tipoEndereco) || empty($this->tipoEndereco)) { ?>
+				<option value="0"> - Selecione - </option>
+				<?php } ?>
+
+				<?php foreach ($this->combotiposenderecos as $combotipoendereco): ?>
+				<option value="<?php echo $combotipoendereco->id; ?>" <?php if ($this->tipoEndereco == $combotipoendereco->id) echo "selected=\"selected\""; ?>>
+					<?php echo $combotipoendereco->descricao; ?>
+				</option>
+				<?php endforeach; ?>
+
+			</select>
+			&nbsp; <span id="erroTipoEndereco" class="spanError"></span>
+		</td>
+		<td colspan="2">
+			<label for="tipoLogradouro">Tipo de Logradouro *</label>
+			<br />
+			<select name="tipoLogradouro" id="tipoLogradouro" style="width:20%;">
+
+				<?php if (!isset($this->tipoLogradouro) || empty($this->tipoLogradouro)) { ?>
+				<option value="0"> - Selecione - </option>
+				<?php } ?>
+
+				<?php foreach ($this->combotiposlogradouros as $combotipologradouro): ?>
+				<option value="<?php echo $combotipologradouro->id; ?>" <?php if ($this->tipoLogradouro == $combotipologradouro->id) echo "selected=\"selected\""; ?>>
+					<?php echo $combotipologradouro->descricao; ?>
+				</option>
+				<?php endforeach; ?>
+
+			</select>
+			&nbsp; <span id="erroTipoLogradouro" class="spanError"></span>
+		</td>
+	</tr>
+
+	<tr>
+		<td colspan="2">
+			<label for="logradouro">Logradouro *</label>
+			<br />
+			<div class="left"></div>
+			<input class="input" type="text" name="logradouro" id="logradouro" 
+				onclick="limpar_campo(this, ' ');" onkeypress="limpar_campo(this, ' ');" 
+				onblur="restaurar_campo(this, ' ');" onmouseout="restaurar_campo(this, ' ');" value=" " size="40" maxlength="50" readonly="readonly" />
+			<div class="right"></div>
+			&nbsp; <span id="erroLogradouro" class="spanError"></span>
+		</td>
+		<td colspan="2">
+			<label for="numero">Número *</label>
+			<br />
+			<div class="left"></div>
+			<input class="input" type="text" name="numero" id="numero" maxlength="10" onkeyup="mascara(this, format_num);" readonly="readonly" 
+				onclick="limpar_campo(this, ' ');" onkeypress="limpar_campo(this, ' ');" 
+				onblur="restaurar_campo(this, ' ');" onmouseout="restaurar_campo(this, ' ');" 
+				value=" " />
+			<div class="right"></div>
+			&nbsp; <span id="erroNumero" class="spanError"></span>
+		</td>
+	</tr>
+
+	<tr>
+		<td colspan="2">
+			<label for="complemento">Complemento *</label>
+			<br />
+			<div class="left"></div>
+			<input class="input" type="text" name="complemento" id="complemento" maxlength="50" onkeyup=" " onblur=" " value=" " 
+				onclick="limpar_campo(this, ' ');" onkeypress="limpar_campo(this, ' ');" 
+				onblur="restaurar_campo(this, ' ');" onmouseout="restaurar_campo(this, ' ');" value=" " />
+			<div class="right"></div>
+			&nbsp; <span id="erroComplemento" class="spanError"></span>
+		</td>
+		<td colspan="2">
+			<label for="bairro">Bairro *</label>
+			<br />
+			<span class="left"></span>
+			<input class="input" type="text" name="bairro" id="bairro" maxlength="50" size="40" 
+				onclick="limpar_campo(this, ' ');" onkeypress="limpar_campo(this, ' ');" 
+				onblur="restaurar_campo(this, ' ');" onmouseout="restaurar_campo(this, ' ');" value=" " />
+			<span class="right"></span>
+			&nbsp; <span id="erroBairro" class="spanError"></span>
+		</td>
+	</tr>
+
+	<tr>
+		<td colspan="2">
+			<label>Autorizo divulgar o endereço</label>
+			<input type="radio" name="divulgarEndereco" id="divulgarEnderecoS" class="checkradio" value="1" style="background: none; border: 0%; float:none; clear:auto; display:inline;" />
+			<label for="divulgarEnderecoS">Sim</label> 
+			<input type="radio" name="divulgarEndereco" id="divulgarEnderecoN" class="checkradio" value="0" checked="checked" style="background: none; border: 0%; float:none; clear:auto; display:inline;" />
+			<label for="divulgarEnderecoN">Não</label>
+		</td>
+		<td colspan="2">
+			<label>Endereço para correspondências?</label>
+			<input type="radio" name="enderecoCorrespondencia" id="enderecoCorrespondenciaS" value="1" class="checkradio" checked="checked" style="background: none; border: 0%; float:none; clear:auto; display:inline;" /> 
+			<label for="enderecoCorrespondenciaS">Sim</label> 
+			<input type="radio" name="enderecoCorrespondencia" id="enderecoCorrespondenciaN" value="0" class="checkradio" style="background: none; border: 0%; float:none; clear:auto; display:inline;" />
+			<label for="enderecoCorrespondenciaN">Não</label>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="4"><span id="erroVisao" class="spanError"></span> &nbsp; 
+			<label for="visao"> Visão do Agente: </label>
+			<select name="visao" id="visao" style="width:20%;">
+				<option value="198">Dirigente</option>
+			</select>
+			&nbsp; <span id="erroVisao" class="spanError"></span>
+		</td>
+	</tr>
+
+</table>
+<!-- ========== FIM TABELA DADOS ========== -->
+
+
+
+<!-- ========== INÍCIO FORMULÁRIO FONE ========== -->
+<table id="tabFone" class="tabela sumir">
+
+	<tr>
+		<th colspan="6">ADICIONE TELEFONES ATRAVÉS DO FORMULÁRIO ABAIXO!</th>
+	</tr>
+
+	<tr>
+		<td>
+			<label for="tipoFone">Tipo *</label>
+			<br />
+			<select name="tipoFone" id="tipoFone">
+				<option value=""> - Selecione - </option>
+
+				<?php foreach ($this->combotipostelefones as $combotipotelefone){ ?>
+				<option value="<?php echo $combotipotelefone->id; ?>"><?php echo $combotipotelefone->descricao; ?></option>
+				<?php } ?>
+
+			</select>
+		</td>
+		<td>
+			<label for="ufFone">UF *</label>
+			<br />
+			<select name="ufFone" id="ufFone" onchange="carregar_combo(this.value,'dddFone','../ddd/combo');">
+				<option value="0"> -- </option>
+
+				<?php foreach ($this->comboestados as $combouffone){ ?>
+				<option value="<?php echo $combouffone->id; ?>"><?php echo $combouffone->descricao; ?></option>
+				<?php } ?>
+
+			</select>
+		</td>
+		<td>
+			<label for="dddFone">DDD *</label>
+			<br />
+			<select name="dddFone" id="dddFone">
+				<option value=""> -- </option>
+			</select>
+		</td>
+		<td>
+			<label for="fone">Telefone *</label>
+			<br />
+			<div class="left"></div>
+			<input type="text" name="fone" id="fone" maxlength="9" class="input w100" onkeyup="mascara(this, format_tel);" 
+				onclick="limpar_campo(this, ' ');" onkeypress="limpar_campo(this, ' ');" 
+				onblur="restaurar_campo(this, ' ');" onmouseout="restaurar_campo(this, ' ');" value=" " />
+			<div class="right"></div>
+		</td>
+		<td>
+			<label>Divulgar? *</label>
+			<br />
+			<input type="radio" name="divulgarFone" id="divulgarFoneS" value="1" class="checkradio"  style="background: none; border: 0%; float:none; clear:auto; display:inline;" /> 
+			<label for="divulgarFoneS">Sim</label> 
+			<input type="radio" name="divulgarFone" id="divulgarFoneN" value="0" class="checkradio" checked="checked"  style="background: none; border: 0%; float:none; clear:auto; display:inline;" /> 
+			<label for="divulgarFoneN">Não</label>
+		</td>
+		<td class="centro" width="3%">
+			<div class="botao_texto">
+				<a id="btnAddFone" class="incluir" href="#" title="Adicionar Telefone" onclick="adicionar_fone_agente(true);">Incluir</a>
+			</div>
+		</td>
+	</tr>
+
+</table>
+<!-- ========== FIM FORMULÁRIO FONE ========== -->
+
+
+
+<!-- ========== INÍCIO FORMULÁRIO E-MAIL ========== -->
+<table id="tabEmail" class="tabela sumir">
+
+	<tr>
+		<th colspan="6">ADICIONE E-MAILS ATRAVÉS DO FORMULÁRIO ABAIXO</th>
+	</tr>
+
+	<tr>
+		<td>
+			<label for="tipoEmail">Tipo *</label> 
+			<br />
+			<select name="tipoEmail" id="tipoEmail">
+				<option value="0">- Selecione - </option>
+
+				<?php foreach ($this->combotiposemails as $combotipoemail){ ?>
+				<option value="<?php echo $combotipoemail->id; ?>"><?php echo $combotipoemail->descricao; ?></option>
+				<?php } ?>
+
+			</select>
+		</td>
+		<td>
+			<label for="email">E-mail *</label>
+			<br />
+        	<div class="left"></div>
+			<input type="text" name="email" id="email" class="input w200" size="50" maxlength="70" 
+				onclick="limpar_campo(this, ' ');" onkeypress="limpar_campo(this, ' ');" 
+				onblur="restaurar_campo(this, ' ');" onmouseout="restaurar_campo(this, ' ');" value=" " />
+        	<div class="right"></div>
+		</td>
+		<td>
+			<label>Posso Divulgar? *</label> 
+			<br />
+			<input type="radio" name="divulgarEmail" id="divulgarEmailS" value="1" style="background: none; border: 0%; float:none; clear:auto; display:inline;" /> 
+			<label for="divulgarEmailS">Sim</label> 
+			<input type="radio" name="divulgarEmail" id="divulgarEmailN" value="0" class="checkradio" checked="checked"   style="background: none; border: 0%; float:none; clear:auto; display:inline;"/> 
+			<label for="divulgarEmailN">Não</label>
+		</td>
+		<td>
+			<label>Para correpondência? *</label> 
+			<br />
+			<input type="radio" name="enviarEmail" id="enviarEmailS" value="1" class="checkradio" checked="checked"  style="background: none; border: 0%; float:none; clear:auto; display:inline;"/> 
+			<label for="enviarEmailS">Sim</label> 
+			<input type="radio" name="enviarEmail" id="enviarEmailN" value="0" class="checkradio"  style="background: none; border: 0%; float:none; clear:auto; display:inline;"/> 
+			<label for="enviarEmailN">Não</label>
+		</td>
+		<td class="centro" width="3%">
+			<div class="botao_texto">
+				<a id="btnAddEmail" class="incluir" href="#" title="Adicionar E-mail" onclick="adicionar_email_agente(true);">Incluir</a>
+			</div>
+		</td>
+	</tr>
+
+</table>
+<!-- ========== FIM FORMULÁRIO E-MAIL ========== -->
+
+
+
+
+
+<!--
+==================================================
+INÍCIO TELEFONE E E-MAILS ADICIONADOS
+==================================================
+-->
+
+
+
+<!-- ========== INÍCIO BUSCA FONES ADICIONADOS ========== -->
+<table id="tabBuscarFone" class="tabela sumir">
+
+	<tr>
+		<th>TIPO</th>
+		<th>UF</th>
+		<th>DDD</th>
+		<th>TELEFONE</th>
+		<th>DIVULGAR?</th>
+		<th width="6%">AÇÃO</th>
+	</tr>
+
+	<?php if (isset($this->Fones)): ?>
+		<?php for ($i = 0; $i < count($this->Fones); $i++): ?>
+		<tr id="fone<?php echo $i; ?>">
+			<td>
+				<?php foreach ($this->combotipostelefones as $combotipotelefone){ ?>
+				<?php echo $this->tipoFones[$i] == $combotipotelefone->id ? $combotipotelefone->descricao : ''; ?>
+				<?php } ?>
+				<input type="hidden" name="tipoFones[]" id="tipoFones[]" value="<?php echo $this->tipoFones[$i]?>" />
+			</td>
+			<td class="centro">
+				<?php foreach ($this->comboestados as $combouffone){ ?>
+				<?php echo $this->ufFones[$i] == $combouffone->id ?  $combouffone->descricao: ''; ?>
+				<?php } ?>
+				<input type="hidden" name="ufFones[]" id="ufFones[]" value="<?php echo $this->ufFones[$i]?>" />
+			</td>
+			<td class="centro">
+				<?php echo $this->dddFones[$i] ?>
+				<input type="hidden" name="dddFones[]" id="dddFones[]" value="<?php echo $this->dddFones[$i]?>" />
+			</td>
+			<td class="centro">
+				<?php echo $this->Fones[$i] ?>
+				<input type="hidden" name="Fones[]" id="Fones[]" value="<?php echo $this->Fones[$i] ?>" />
+			</td>
+			<td class="centro">
+				<?php echo $this->divulgarFones[$i] == 1 ? 'Sim' : 'Não'; ?>
+				<input type="hidden" name="divulgarFones[]" id="divulgarFones[]" value="<?php echo $this->divulgarFones[$i]?>" />
+			</td>
+			<td class="centro">
+				<div class="botao_icone">
+					<a class="cancelar_ico" href="#" title=" Excluir Fone " onclick="$('#fone<?php echo $i; ?>').remove();">Incluir</a>
+				</div>
+			</td>
+		</tr>
+		<?php endfor; ?>
+	<?php endif; ?>
+
+</table>
+<!-- ========== FIM BUSCA FONES ADICIONADOS ========== -->
+
+
+
+<!-- ========== INÍCIO BUSCA E-MAILS ADICIONADOS ========== -->
+<table id="tabBuscarEmail" class="tabela sumir">
+
+	<tr>
+		<th>TIPO</th>
+		<th>E-MAIL</th>
+		<th>DIVULGAR?</th>
+		<th>PARA CORRESPONDÊNCIA?</th>
+		<th>AÇÃO</th>
+	</tr>
+
+	<?php if (isset($this->Emails)): ?>
+		<?php for ($i = 0; $i < count($this->Emails); $i++): ?>
+		<tr id="email<?php echo $i; ?>">
+			<td>
+				<?php foreach ($this->combotiposemails as $combotipoemail){ ?>
+				<?php echo $this->tipoEmails[$i] == $combotipoemail->id ? $combotipoemail->descricao : ''; ?>
+				<?php } ?>
+				<input type="hidden" name="tipoEmails[]" id="tipoEmails[]" value="<?php echo $this->tipoEmails[$i]?>" />
+			</td>
+			<td>
+				<?php echo $this->Emails[$i] ?>
+				<input type="hidden" name="Emails[]" id="Emails[]" value="<?php echo $this->Emails[$i]?>" />
+			</td>
+			<td class="centro">
+				<?php echo $this->divulgarEmails[$i] == 1 ? 'Sim' : 'Não'; ?>
+				<input type="hidden" name="divulgarEmails[]" id="divulgarEmails[]" value="<?php echo $this->divulgarEmails[$i]?>" />
+			</td>
+			<td class="centro">
+				<?php echo $this->enviarEmails[$i] == 1 ? 'Sim' : 'Não'; ?>
+				<input type="hidden" name="enviarEmails[]" id="enviarEmails[]" value="<?php echo $this->enviarEmails[$i]?>" />
+			</td>
+			<td class="centro">
+				<input type="button" title=" Excluir E-mail " class="btn_excluir" onclick="$('#email<?php echo $i; ?>').remove();" />
+			</td>
+		</tr>
+		<?php endfor; ?>
+	<?php endif; ?>
+
+</table>
+
+
+
+<!--
+==================================================
+FIM TELEFONE E E-MAILS ADICIONADOS
+==================================================
+-->

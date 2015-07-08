@@ -1,0 +1,176 @@
+<?php
+$linkProjetosProdutos = $this->url(array('controller' => 'Analisarprojetoparecer', 'action' => 'projetosprodutos'));
+
+/* INICIO DA GUIA DE LINKS */
+$controller = 'Analisarprojetoparecer';
+$links = array();
+$links[] = array('Projetos/Produtos para Análise' => array());
+montaGuiaLinks($controller, $links);
+/* FIM DA GUIA DE LINKS */
+?>
+
+
+<!-- ========== INÃƒÂ CIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="total">
+
+    <!-- ========== FIM BREADCRUMB (LINKS TOPO)========== -->
+    <br clear="all">
+    <div id="divDestao">
+
+    </div>
+
+    <!-- ==========INÃƒÂ CIO TÃƒÂ TULO========== -->
+
+    <div id="titulo">
+        <div>
+            Projetos/Produtos para Análise
+            <?php echo montaBotaoVoltar($controller, $links); ?>
+        </div>
+
+    </div>
+
+    <!-- ========== FIM TÃƒÂ TULO ========== -->
+
+    <!-- ========== INÃƒÂ CIO CONTEÃƒÅ¡DO ==========-->
+
+
+    <div id="conteudo">
+        <table class="tabela">
+            <tr>
+                <td>
+                    <div style="float: left;"><img src="<?php echo $this->baseUrl(); ?>/public/img/notice1.png" width="20px"/></div><div style="margin-top: 2px; margin-right: 15px; margin-left: 3px; float: left;"> A diligenciar</div>
+                    <div style="float: left;"><img src="<?php echo $this->baseUrl(); ?>/public/img/notice.png" width="20px"/></div><div style="margin-top: 2px;  margin-right: 15px; margin-left: 3px; float: left"> Diligenciado</div>
+                    <div style="float: left;"><img src="<?php echo $this->baseUrl(); ?>/public/img/notice3.png" width="20px"/></div><div style="margin-top: 2px; margin-right: 15px; margin-left: 3px; float: left"> Diligência não respondida</div>
+                    <div style="float: left;"><img src="<?php echo $this->baseUrl(); ?>/public/img/notice2.png" width="20px"/></div><div style="margin-top: 2px; margin-right: 15px; margin-left: 3px; float: left"> Diligência respondida</div>
+                </td>
+            </tr>
+        </table>
+
+        <?php if($this->qtdRegistro != 0): ?>	
+		<table class="tabela">
+			<tr>
+				<th width="5"></th>
+				<th width="50">PRONAC</th>
+				<th width="300">Nome do Projeto</th>
+				<th>Produto</th>
+				<th width="100">Tipo de produto</th>
+				<th width="120">Data de Recebimento</th>
+				<th width="90">Tempo Restante</th>
+				<th width="70">Diligência</th>
+				<th width="120">Tempo da Diligência</th>
+				<th width="70">Historico</th>
+				<th width="70">Conclusão</th>
+			</tr>
+			<?php 
+				$contador = 1; 
+				$rp = '';
+				$diligenciado = '';
+				$Titlediligenciado = '';
+				foreach($this->buscar as $d): 
+				
+				switch ($d->stDiligenciado) 
+				{
+			    	case 0:
+			        	$diligenciado = "notice1.png";
+			        	$Titlediligenciado = "A Diligenciar";
+			        	break;
+			        case 1:
+			        	$diligenciado = "notice.png";
+			        	$Titlediligenciado = "Diligenciado";
+			        	break;
+			        case 2:
+			        	$diligenciado = "notice2.png";
+			        	$Titlediligenciado = "Diligencia não respondida";
+			        	break;
+			        case 3:
+			        	$diligenciado = "notice3.png";
+			        	$Titlediligenciado = "Diligencia respondida";
+			        	break;
+			     }
+				
+			    $diligencia = NULL;
+	            $tempoRestante = NULL;
+	            $tempoDiligencia = NULL;
+	
+	            /* Diligencia */
+	            if ($d->DtSolicitacao && $d->DtResposta == NULL) {
+	                $diligencia = 1;
+	            } else if ($d->DtSolicitacao && $d->DtResposta != NULL) {
+	                $diligencia = 2;
+	            } else if ($d->DtSolicitacao && round(data::CompararDatas($d->DtDistribuicao)) > $d->tempoFimDiligencia) {
+	                $diligencia = 3;
+	            } else {
+	                $diligencia = 0;
+	            }
+			     
+			      /* Tempo Restante */
+	            switch ($diligencia) {
+	                case 0:
+	                    $tempoRestante = round(data::CompararDatas($d->DtDistribuicao));
+	                    break;
+	                case 1:
+	                    $tempoRestante = round(data::CompararDatas($d->DtDistribuicao, $d->DtSolicitacao));
+	                    break;
+	                case 2:
+	                    $tempoRestante = round(data::CompararDatas($d->DtResposta));
+	                    break;
+	                case 3: $tempoRestante = round(data::CompararDatas($d->DtResposta));
+	                    break;
+	            }
+	            /* Tempo Diligencia */
+	            switch ($diligencia) {
+	                case 1: $tempoDiligencia = round(data::CompararDatas($d->DtSolicitacao));
+	                    break;
+	            }
+				
+			?>
+			<tr>
+				<td><?php echo $contador; ?></td>
+				<td align="center">
+					<a target="_blank" href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'),'',true); ?>?idPronac=<?php echo $d->IdPRONAC?>"><?php if($d->PRONAC != $rp){echo $d->PRONAC;}else{echo '';} ?></a>
+				</td>
+				<td><?php if($d->PRONAC != $rp){echo $d->NomeProjeto;}else{echo '';} ?></td>
+				<td><a href="<?php echo $this->url(array('controller' => 'Analisarprojetoparecer', 'action' => 'produto')); ?>?idPronac=<?php echo $d->IdPRONAC; ?>&idProduto=<?php echo $d->idProduto; ?>&stPrincipal=<?php echo $d->stPrincipal; ?>" > <?php echo $d->dsProduto; ?></a></td>
+				<td align="center"><?php if($d->stPrincipal == 1): ?><img src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png" width="20px" style="cursor: pointer;" title="Produto principal" /><?php endif;?></td>
+				<td align="center"><?php echo $d->DtEnvio; ?></td>
+				<td align="center"><?php echo $tempoRestante.'/'. $d->tempoFimParecer; ?></td>
+				<td align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/<?php echo $diligenciado; ?>" title="<?php echo $Titlediligenciado; ?>" width="30px" onclick="redirecionar('<?php echo $this->url(array('controller' => 'diligenciar', 'action' => 'listardiligenciaanalista'))?>?idPronac=<?php echo $d->IdPRONAC ?>&idProduto=<?php echo $d->idProduto ;?>')" style="cursor: pointer;" /></td>
+				<td align="center"><?php echo $d->tempoFimDiligencia; ?></td>
+				<td align="center">
+					<img src="<?php echo $this->baseUrl(); ?>/public/img/edit_ico.gif" style="cursor: pointer;" title="Histórico" onclick="redirecionar('<?php echo $this->url(array('controller' => 'Analisarprojetoparecer', 'action' => 'historico', 'idPronac'=> $d->IdPRONAC, 'stPrincipal'=> $d->stPrincipal, 'idProduto' => $d->idProduto)); ?>')" />
+				</td>
+				<td align="center">
+					<img src="<?php echo $this->baseUrl(); ?>/public/img/save.gif" onclick="redirecionar('<?php echo $this->url(array('controller' => 'Analisarprojetoparecer', 'action' => 'fecharparecer', 'idPronac'=> $d->IdPRONAC, 'tipoanalise'=> $d->TipoAnalise, 'idProduto' => $d->idProduto)); ?>')" style="cursor: pointer;" />
+				</td>
+			</tr>
+			<?php 
+				$rp = $d->PRONAC;
+				$contador++;
+				endforeach; 
+			?>
+		</table>
+		
+			<!-- ========== PAGINAÇÃO ========== -->
+			<?php if($this->qtdRegistro > 5){ echo "<p>" . $this->buscar . "</p>"; } ?>
+			<!-- ========== FIM PAGINAÇÃO ========== -->
+		
+		<?php else: ?>
+		<table class="tabela" style="width: 95%;">
+			<tr>
+				<td align="center">NENHUM REGISTRO ENCONTRADO</td>
+			</tr>
+		</table>	
+		<?php endif; ?>    
+		   
+        
+        
+    </div>
+    <!-- ========== FIM CONTEÃƒÅ¡DO ========== -->
+
+    <!-- ========== INÃƒÂ CIO RODAPÃƒâ€° DO CONTEÃƒÅ¡DO ========== // -->
+
+    <div id="rodapeConteudo_com_menu" ><span></span></div>
+    <!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+    <br clear="all" />
+</div>
+

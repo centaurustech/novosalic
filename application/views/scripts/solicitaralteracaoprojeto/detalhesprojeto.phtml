@@ -1,0 +1,97 @@
+<script>
+
+    function envia(idPronac, tipoAlteracao)
+    {
+        $(function(){
+            $("#tela").dialog({
+                resizable: true,
+                width:1024,
+                height:600,
+                modal: true,
+                autoOpen:false
+            });
+            $("#tela").dialog('open');
+            $.get('../solicitaralteracaoprojeto/tipoalteracaoprojeto',{idPronac:idPronac,tipoAlteracao:tipoAlteracao},function(data)
+            {
+                $("#tela").html(data);
+            });
+            return false;
+        });
+    }
+ </script>
+<?php require_once "inc/menu.inc.php"; // menu
+?>
+<div id="tela"></div>
+<div id="conteudo">
+
+    <div id="miolo">
+
+        <div id="Jquery">
+
+            <fieldset>
+                <legend>
+                     Solicitar Alteração do Projeto
+                </legend>
+
+
+            <table width="100%" border="0" cellpadding="0" cellspacing="1">
+            <?php $resultado = $this->buscaprojeto; ?>
+                <thead>
+                    <tr>
+                        <th align="center">Nº PRONAC:</th>
+                        <th align="center">Nome do Projeto:</th>
+
+                    </tr>
+                </thead>
+                <tbody><tr class="linha">
+
+                        <td align="center"><?php echo $this->escape($resultado[0]->nrpronac); ?></td>
+                        <td align="center"><?php echo $this->escape($resultado[0]->NomeProjeto); ?></td>
+                    </tr>
+                </tbody>
+
+                <tr>
+                    <th align="center">CPNJ/CPF:</th>
+                    <th align="center">Proponente:</th>
+
+                </tr>
+
+                <tbody><tr class="linha">
+
+                        <td align="center"><?php
+        $valor = $this->escape($resultado[0]->CgcCpf);
+
+        echo Validacao::mascaraCPFCNPJ($valor);
+        ?></td>
+                        <td align="center"><?php echo $this->escape($resultado[0]->Descricao); ?></td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+
+            </fieldset>
+
+        </div>
+
+
+    </div>
+
+
+
+</div><!-- final: conteÃºdo principal #conteudo -->
+
+
+<!-- inÃ­cio: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+
+<br clear="all" />
+
+
+<script>
+
+    
+
+</script>

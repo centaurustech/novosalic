@@ -1,0 +1,143 @@
+<?php $historicoLink = $this->url(array('controller' => 'verificarreadequacaodeprojeto', 'action' => 'historico')); ?>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.abrirJanela').click(function(){
+            var id_div = $(this).attr('idAvaliacao');
+            $('#visualizarhist').dialog({
+                autoOpen: false,
+                height: 350,
+                width: 800,
+                modal: true
+            });
+            $('#visualizarhist').dialog('open');
+
+            $.ajax({
+                url : '<?php echo $historicoLink; ?>',
+                type : 'post',
+                data : {
+                    idavaliacao : id_div
+                },
+                success: function(data){
+                    var recebe = $('#visualizarhist').find('#recebeValor');
+                    recebe.html(data);
+                }
+            });
+        });
+    });
+</script>
+
+<?php if ( isset ( $_GET['msg'] ) ) { ?>
+<div class="msgCONFIRM">
+    <div class="float_right"><input type="button" class="btn_close" title="Fechar mensagem" id="msgCONFIRM" onclick="$('.msgCONFIRM').hide();" onkeypress="$('.msgCONFIRM').hide();"/></div>
+    <div><?php
+
+    $msgFinal = str_replace("atilde", "&atilde;",$_GET['msg'] );
+
+    echo $msgFinal ?></div>
+</div>
+<?php } ?>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li>Acompanhamento</li>
+        <li class="last">Verificar readequa&ccedil;&atilde;o de projeto</li>
+    </ul>
+</div>
+    
+    
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Verificar readequa&ccedil;&atilde;o de projeto</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div class="sumir" id="visualizarhist" title="Visualizar Histórico">
+    <div id="recebeValor"></div>
+</div>
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <script type='text/javascript' src='<?php echo $this->baseUrl(); ?>/public/js/projetosGerenciar.js'></script>
+
+    <div style="width:100%; margin: 0 auto;">
+        <table class="tabela" summary=" ">
+            <tr>
+                <th width="90%" style="text-align:left; padding-left:2%" colspan="2">TIPOS DE READEQUAÇÕES</th>
+                <th width="10%" align="center">Quantidade de Projetos</th>
+            </tr>
+        </table>
+
+        <!-- MODAL PARA VISUALIZAR HISTÓRICO -->
+        <?php /*foreach ($this->HistoricoUnico as $HistoricoUnico): ?>
+        <div style="display:none;" id="visualizarhist<?php echo $HistoricoUnico->idAvaliacaoItemPedidoAlteracao; ?>" title="Visualizar Histórico" >
+            <div id="recebeValor"></div>
+        </div>
+        <?php endforeach;*/ ?>
+        <!-- FIM DO MODAL PARA VISUALIZAR HISTÓRICO -->
+
+        <table class="tabela" summary="itens de custo">
+            <tr class="destacar bold">
+                <td width="90%"><input type="button" name="grid1" id="g1_itensdecusto" class="btn_remover" title="Recolher" /> ITENS DE CUSTO</td>
+                <td width="10%"  align="center"><?php echo count($this->AguardAnalise10); ?></td>
+            </tr>
+        </table>
+        <div id="div_g1_itensdecusto" class="miolo_grid_01">
+            <table class="tabela" summary="Lista - Itens de Custo">
+                <tr>
+                    <th width="7%" align="center">PRONAC</th>
+                    <th width="37%" style="text-align:left;">Nome do projeto</th>
+                    <th width="20%" align="center">Área / Segmento</th>
+                    <th width="5%" align="center">Qtd de dias</th>
+                    <th width="8%" align="center">Data de Recebimento</th>
+                    <th width="5%" align="center">Estado(s)</th>
+                    <th>Verificar Readequa&ccedil;&atilde;o</th>
+                    <th>Diligenciar</th>
+                    <!--<th>Enviar mensagem</th>-->
+                    <th width="8%" align="center">Visualizar Histórico</th>
+                    <th width="10%" align="center">Controle</th>
+                </tr>
+                <?php foreach($this->AguardAnalise10 as $AguardAnalise10): ?>
+                <tr class="tblGerenciar_projetos">
+                    <td align="center"><a href="<?php echo $this->baseUrl(); ?>/consultardadosprojeto/index?idPronac=<?php echo $AguardAnalise10->ID_PRONAC; ?>" target="_blank"><?php echo $AguardAnalise10->PRONAC; ?></a></td>
+                    <td style="text-align:left;"><?php echo $AguardAnalise10->NomeProjeto; ?></td>
+                    <td align="center"><?php echo $AguardAnalise10->areaDesc." / ".$AguardAnalise10->segmentoDesc; ?></td>
+                    <td align="center"><?php if($AguardAnalise10->DataEnvio==''){echo '';} else { ?>  <script>document.write(diasDecorridosEntreDuasDatas('<?php echo date('d/m/Y'); ?>', '<?php echo Data::tratarDataZend($AguardAnalise10->DataEnvio,'brasileiro'); ?>'));</script><?php } ?></td>
+                    <td align="center"><?php if($AguardAnalise10->DataEnvio==''){echo 'Não há registro';} else{ echo Data::tratarDataZend($AguardAnalise10->DataEnvio,'brasileiro');} ?></td>
+                    <td align="center">
+                        <?php foreach($this->UFs as $UFs): ?>
+                        <?php if($AguardAnalise10->ID_PRONAC == $UFs->ID_PRONAC ){ echo $UFs->Sigla;} ?>
+                        <?php endforeach; ?>
+                    </td>
+                    <td class="centro"><img style="cursor: pointer;" src="../public/img/ico/kdict.png" width="25px" alt="Avaliar" title="Avaliar" onclick="redirecionar('<?php echo $this->baseUrl(); ?>/verificarreadequacaodeprojeto/readequacaoitensdecustoeditar?id=<?php echo $AguardAnalise10->ID_PRONAC; ?>');" /></td>
+                    <td class="centro">
+                        <?php echo $this->iconeDiligencia($this->checarDiligencia($AguardAnalise10->ID_PRONAC, null, array(179)), $AguardAnalise10->ID_PRONAC, 179, $this->verificarSituacaoProjeto($AguardAnalise10->ID_PRONAC)); ?>
+                    </td>
+                    <!--<td class="centro"><a target='_blank' href='<?php //echo $this->url(array('controller' => 'mantermensagens', 'action' => 'consultarmensagem'), '', true); ?>/idpronac/<?php //echo $AguardAnalise10->ID_PRONAC; ?>'><img src='<?php //echo $this->baseUrl() ?>/public/img/buttons/sair-p.gif' title='Enviar mensagem'/></a></td>-->
+                    <td align="center"><img style="cursor: pointer;" border="0" class="abrirJanela" src="../public/img/table_multiple.png" idAvaliacao="<?php echo $AguardAnalise10->idAvaliacaoItemPedidoAlteracao; ?>" alt="Visualizar Histórico" /></td>
+                    <td align="center">
+                        <?php echo $this->verificarStatusAnalise($AguardAnalise10->DataEnvio); ?>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+
+                <?php if(count($this->AguardAnalise10) <= 0){ ?>
+                <tr>
+                    <td colspan="11" class="centro">N&atilde;o existe(m) Projeto(s) com solicita&ccedil;&atilde;o de readequa&ccedil;&atilde;o!</td>
+                </tr>
+                <?php } ?>
+            </table>
+        </div>
+    </div>
+    <br />
+    <p align="center" style="font-weight: bold">TOTAL DE SOLICITAÇÕES: <?php echo $this->AguardAnaliseQNTD; ?></p>
+    <br />
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

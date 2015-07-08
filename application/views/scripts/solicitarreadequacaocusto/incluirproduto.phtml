@@ -1,0 +1,890 @@
+<script language="javascript" type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/jquery.maskedinput.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/jquery.maskMoney.0.2.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.js"></script>
+
+<style type="text/css">
+    select {
+        font-size: 10pt;
+        color: #000000;
+    }
+</style>
+    
+
+<script type="text/javascript">
+
+    function ufcarregar(iduf, idmun){
+        var iduf = iduf;
+        var idmun = idmun;
+        
+        $.ajax({ //funcao jquery para enviar os formularios via ajax
+            type: "POST",
+            url:  "<?php echo $this->url(array('controller' => 'solicitarreadequacaocusto', 'action' => 'incluirproduto')); ?>",
+            data: {
+                ufAjax : iduf
+            },
+            success: function(data)
+            {
+                if(!data.error){
+                    $("#municipio").find('option').remove();
+                    $("#municipio").append('<option value="">Selecione...</option>');
+                    for ( i in data){
+                        if(i != 'error'){
+                            if(idmun == data[i].idMunicipioIBGE){
+                                $("#municipio").append('<option value="'+data[i].idMunicipioIBGE+'" selected="selected">'+data[i].nomeMunicipio+'</option>');
+                            }
+                            else{
+                                $("#municipio").append('<option value="'+data[i].idMunicipioIBGE+'">'+data[i].nomeMunicipio+'</option>');
+                            }
+                        }
+                    }
+                }
+                else{
+                    $("#municipio").find('option').remove();
+                    $("#municipio").append('<option value="">Selecione...</option>');
+                }
+            }
+            , dataType : 'json'
+        });
+    }
+
+    function etapacarregar(idetapa, iditem){
+        var idetapa = idetapa;
+        var iditem = iditem;
+    
+        $.ajax({ //funcao jquery para enviar os formularios via ajax
+            type: "POST",
+            url:  "<?php echo $this->url(array('controller' => 'solicitarreadequacaocusto', 'action' => 'incluirproduto')); ?>",
+            data: {
+                idEtapa : idetapa
+            },
+            success: function(data)
+            {
+                if(!data.error){
+                    $("#item").find('option').remove();
+                    $("#item").append('<option value="">Selecione...</option>');
+                    for ( i in data){
+                        if(i != 'error'){
+                            if(iditem == data[i].IdItem){
+                                $("#item").append('<option value="'+data[i].IdItem+'" selected="selected">'+data[i].NomeItem+'</option>');
+                            }
+                            else{
+                                $("#item").append('<option value="'+data[i].IdItem+'">'+data[i].NomeItem+'</option>');
+                            }
+                        }
+                    }
+                }
+                else{
+                    $("#item").find('option').remove();
+                    $("#item").append('<option value="">Selecione...</option>');
+                }
+            }
+            , dataType : 'json'
+        });
+    }
+
+    $(document).ready(function(){
+
+        $('#vUnitario').priceFormat({
+            limit:6,
+            centsLimit: 2
+        });
+
+        $("#loader").dialog({
+            resizable: false,
+            width:300,
+            height:150,
+            modal: true,
+            autoOpen:false
+        });
+        $("#error").dialog({
+            title :'Alerta',
+            resizable: false,
+            width:400,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'OK': function() {
+                    $(this).dialog('close');
+                }
+            }
+        });
+        
+        $("#confirm").dialog({
+            title :'Confirma',
+            resizable: false,
+            width:400,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'OK': function() {
+                    $(this).dialog('close');
+                    $('#acao').html('Solicitação de readequação realizada com sucesso! Deseja fazer nova readequação?');
+                    $('#acao').dialog('open');
+                }
+            }
+        });
+
+        $("#acao").dialog({
+            title :'Alteração',
+            resizable: false,
+            width:400,
+            height:170,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'Não': function() {
+                    $.ajax({ //funcao jquery para enviar os formularios via ajax
+                        type: "POST",
+                        url:  "<?php echo $this->url(array('controller' => 'solicitarreadequacaocusto', 'action' => 'incluirproduto')); ?>",
+                        data: {
+                            status : 'A',
+                            verifica : 'N',
+                            idpronac : <?php echo $_GET['idpronac'] ?>
+                        },
+                        success: function(data) {
+                            $("#abrir_produto").css('display','')
+                            $("#abrir_adm").css('display','')
+                            $("#menunovo").css('display','')
+                            window.location='<?php echo $this->url(array('controller' => 'solicitarreadequacaocusto', 'action' => 'index')); ?>?idpronac=<?php echo $_GET['idpronac'] ?>&idAgente=<?php echo $_GET['idAgente'] ?>&idPessoa=<?php echo $_GET['idPessoa'] ?>';
+                        }
+                    });
+                },
+                'Sim': function() {
+                    $("#abrir_produto").css('display','')
+                    $("#abrir_adm").css('display','')
+                    $("#menunovo").css('display','')
+                    window.location.reload();
+                }
+            }
+        });
+
+        $('#dias').keyup(function(){
+            mascara(this, format_num); // somente números
+        });
+        
+        $('#qtd').priceFormat({
+            limit:6,
+            centsLimit: 1,
+             centsSeparator: ".",
+            thousandsSeparator: ""
+        });
+
+        
+        $('.soma').keyup(function(){
+            var soma = 0;
+            var vlunitario = $("#vUnitario").val().replace('R$','');
+            vlunitario = $.trim(vlunitario.replace('.',''));
+            vlunitario = vlunitario.replace(',','.');
+            vlunitario = new Number(vlunitario);
+            var qtd = new Number($("#qtd").val());
+            var ocorrencia = new Number($("#ocorrencia").val());
+            soma = qtd*ocorrencia*vlunitario;
+            soma = soma.toFixed(2);
+            $("#total").val('R$ ' + soma).priceFormat({
+                limit:10,
+                centsLimit: 2
+            });
+        });
+
+        $('#sLetapa').change(function(){
+            etapacarregar($(this).val());
+        });
+
+        $('#uf').change(function(){
+            ufcarregar($(this).val());
+        });
+
+        $(".readequar").click(function(){
+            $("#loader").dialog('open');
+            $(".ui-dialog-titlebar-close").remove();
+            var idaprovacao = $(this).attr('idplanilhaaprovacao');
+            //alert(idaprovacao);
+            $.ajax({ //funcao jquery para enviar os formularios via ajax
+                type: "POST",
+                url:  "<?php echo $this->url(array('controller' => 'solicitarreadequacaocusto', 'action' => 'incluirproduto')); ?>",
+                data: {
+                    idPlanilhaAprovacao : idaprovacao,
+                    idProduto : <?php echo isset($_GET['idProduto']) ? $_GET['idProduto'] : 0; ?>,
+                    verificaPlanilha : 'S'
+                },
+                success: function(data)
+                {
+                	// limpa os campos
+                    $("#sLetapa").val();
+                    $("#unidade").val();
+                    $("#qtd").val();
+                    $("#ocorrencia").val();
+                    $("#vUnitario").val();
+                    $("#total").val();
+                    $("#dias").val();
+                    $("#fonte").val();
+                    $("#uf").val();
+                    $("#justificativa").val();
+                    $("#idPlanilha").val();
+                    $("#idPlanilhaAP").val();
+
+                    $("#idPlanilha").val(idaprovacao);
+                    $("#idPlanilhaAP").val(data.idPlanilhaAprovacao);
+
+                    $("#sLetapa").val(data.idPlanilhaEtapa);
+                    etapacarregar(data.idPlanilhaEtapa, data.idPlanilhaItem);
+                    $("#unidade").val(data.idUnidade);
+                    $("#qtd").val(data.qtItem);
+                    $("#ocorrencia").val(data.nrOcorrencia);
+                    $("#vUnitario").val(data.vlUnitario.replace('.',','));
+                    $("#total").val('R$ ' + parseFloat(data.Total).toFixed(2).replace('.',','));
+                    $("#dias").val(data.qtDias);
+                    $("#fonte").val(data.nrFonteRecurso);
+                    $("#uf").val(data.iduf);
+                    ufcarregar(data.iduf, data.idmun);
+                    //$("#justificativa").val(data.dsjustificativa);
+                    $("#btAlterar").css('display','');
+                    $("#btExcluir").css('display','');
+                    $("#btIncluir").css('display','none');
+                    $("#loader").dialog('close');
+                    $('html, body').animate({scrollTop: $("#ancora").offset().top}, 2000);
+                }
+                , dataType : 'json'
+            });
+        });
+
+        $(".readequarsolicitacao").click(function(){
+            $("#loader").dialog('open');
+            $(".ui-dialog-titlebar-close").remove();
+            var idaprovacao = $(this).attr('idplanilhaaprovacao');
+            var idetapa = $(this).attr('idetapa');
+            $.ajax({ //funcao jquery para enviar os formularios via ajax
+                type: "POST",
+                url:  "<?php echo $this->url(array('controller' => 'solicitarreadequacaocusto', 'action' => 'planilhareadequada')); ?>",
+                data: {
+                    idPlanilhaAprovacao : idaprovacao,
+                    idProduto : <?php echo isset($_GET['idProduto']) ? $_GET['idProduto'] : 0; ?>,
+                    idPronac : <?php echo $_GET['idpronac'] ?>,
+                    idEtapa: idetapa,
+                    verificaPlanilha : 'S'
+                },
+                success: function(data)
+                {
+                	// limpa os campos
+                    $("#sLetapa").val();
+                    $("#unidade").val();
+                    $("#qtd").val();
+                    $("#ocorrencia").val();
+                    $("#vUnitario").val();
+                    $("#total").val();
+                    $("#dias").val();
+                    $("#fonte").val();
+                    $("#uf").val();
+                    $("#justificativa").val();
+                    $("#idPlanilha").val();
+                    $("#idPlanilhaAP").val();
+
+                    $("#sLetapa").val(data.idPlanilhaEtapa);
+                    etapacarregar(data.idPlanilhaEtapa, data.idPlanilhaItem);
+                    $("#unidade").val(data.idUnidade);
+                    $("#qtd").val(data.qtItem);
+                    $("#ocorrencia").val(data.nrOcorrencia);
+                    $("#vUnitario").val(data.vlUnitario.replace('.',','));
+                    $("#total").val('R$ ' + parseFloat(data.Total).toFixed(2).replace('.',','));
+                    $("#dias").val(data.qtDias);
+                    $("#fonte").val(data.nrFonteRecurso);
+                    $("#uf").val(data.iduf);
+                    ufcarregar(data.iduf, data.idmun);
+
+                    $("#idPlanilha").val(idaprovacao);
+                    $("#idPlanilhaAP").val(data.idPlanilhaAprovacao);
+
+                    $("#justificativa").val(data.dsjustificativa);
+                    $("#btAlterar").css('display','');
+                    $("#btExcluir").css('display','');
+                    $("#btIncluir").css('display','none');
+                    $("#loader").dialog('close');
+                    $('html, body').animate({scrollTop: $("#ancora").offset().top}, 2000);
+
+                }
+                , dataType : 'json'
+            });
+        });
+
+        $(".enviar").click(function(){
+            carregandoModal();
+            var tipoacao = $(this).attr('tipoacao'); 
+            var varnull = true;
+            var justificativa =  $('#justificativa').val();
+            //var idaprovacao = $('#idPlanilha').val();
+
+            $(".validar").each(function(){
+                if($.trim($(this).val()) == ''){
+                    varnull = false;
+                }
+            });
+
+            if(justificativa.length == 0){
+                varnull = false;
+            }
+
+            if(varnull == false){
+                $('#error').html('Dados obrigatórios não informados!');
+                $(".ui-dialog-titlebar-close").remove();
+                $('#error').dialog('open');
+                fecharModal('carregandoModalAjax');
+            } else {
+                var idProduto = <?php echo isset($_GET['idProduto']) ? $_GET['idProduto'] : 0; ?>;
+                var idPronac = <?php echo $_GET['idpronac']; ?>;
+                var idAgente = <?php echo $_GET['idAgente']; ?>;
+                var idTipoPessoa = <?php echo $_GET['idPessoa']; ?>;
+                var vlunitario = $("#vUnitario").val().replace('R$','');
+                var vlunitario = $.trim(vlunitario.replace('.',''));
+                vlunitario = vlunitario.replace(',','.')
+                var soma = $("#qtd").val()*$("#ocorrencia").val()*vlunitario;
+
+                //alert(idaprovacao);
+                $.ajax({ //funcao jquery para enviar os formularios via ajax
+                    type: "POST",
+                    async : true,
+                    url:  "<?php echo $this->url(array('controller' => 'solicitarreadequacaocusto', 'action' => 'incluirproduto')); ?>",
+                    data: {
+                        idProduto : idProduto,
+                        idpronac : idPronac,
+                        idAgente : idAgente,
+                        idTipoPessoa : idTipoPessoa,
+                        etapa : $("#sLetapa").val(),
+                        item : $("#item").val(),
+                        unidade : $("#unidade").val(),
+                        qtd : $("#qtd").val(),
+                        ocorrencia : $("#ocorrencia").val(),
+                        vlUnitario : vlunitario,
+                        total : soma,
+                        dias : $("#dias").val(),
+                        fonte : $("#fonte").val(),
+                        uf : $("#uf").val(),
+                        municipio : $("#municipio").val(),
+                        justificativa : $("#justificativa").val(),
+                        acao : tipoacao,
+                        idaprovacaoA : $("#idPlanilha").val(),
+                        idPlanilhaAP: $("#idPlanilhaAP").val()
+                    },
+                    success: function(data)
+                    {
+                        fecharModal('carregandoModalAjax');
+                        if(!data.error){
+                            $('#tipoAcao').val(tipoacao);
+                            if(tipoacao == 'A'){
+                                $('#confirm').html('Alteração enviada com sucesso!');
+                            }
+                            else{
+                                $('#confirm').html('Solicitação enviada com sucesso!');
+                            }
+                            $(".ui-dialog-titlebar-close").remove();
+                            $('#confirm').dialog('open');
+                        }else{
+                            $('#error').html(data.descricao);
+                            $(".ui-dialog-titlebar-close").remove();
+                            $('#error').dialog('option','height',200);
+                            $('#error').dialog('open');
+                        }
+                    }
+                    , dataType : 'json'
+                });
+            }
+        });
+        
+    });
+</script>
+
+
+<?php require_once "inc/menu.inc.php"; // menu ?>
+
+<?php 
+    if (!empty($this->buscastatus) && $this->buscastatus['stPedidoAlteracao'] == "A") {
+    	$readonly = 'readonly="readonly"';
+    } else {
+    	$readonly = '';
+    }
+?>
+
+<?php $etapa = ""; // menu ?>
+<!-- início: navegação local #qm0 -->
+
+    <?php $resultado = $this->buscaprojeto;
+
+        if ( !empty ($_GET['idProduto'] ) )
+        {
+            $tipoCusto = "Custo por produto";
+        }
+        else
+        {
+            $tipoCusto = "Administraç&atilde;o do projeto";
+        }
+    ?>
+
+<!-- início: #breadcrumb -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'principalproponente', 'action' => 'index')); ?>" title="Ir para p&aacute;gina inicial">In&iacute;cio</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index')); ?>?idPronac=<?php echo $_GET['idpronac'] ?>" title="Ir para consultar dados do projeto">Consultar dados do projeto</a></li>
+        <li class="last">Readequa&ccedil;&atilde;o de custo</li>
+    </ul>
+</div>
+<!-- final: #breadcrumb -->
+
+<!-- início: #titulo -->
+<div id="titulo">
+    <div>Readequa&ccedil;&atilde;o de custo <span class="voltar"><a onclick="history.go(-1)" href="#" >Voltar</a></span></div>
+</div>
+<!-- final: #titulo -->
+
+<!-- início: área principal #conteudo -->
+<div id="loader" class="carregando sumir" style="width:100%; height:100%;" title="Carregando..."><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" alt="carregando"><br/><br/> Carregando...</div>
+<div id="error" class="sumir" style="text-align: center;"></div>
+<div id="confirm" style="text-align: center;"></div>
+<div id="acao" style="text-align: center;"></div>
+<div id="conteudo">
+    
+
+    
+    
+    <input id="tipoAcao" type="hidden" value=""/>
+
+        <table class="tabela">
+            <thead>
+                <tr>
+                    <th align="center" width="50%">N&ordm; PRONAC</th>
+                    <th align="center" width="50%">Nome do Projeto</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="linha">
+                    <td align="center"><?php echo $this->escape($resultado['nrpronac']); ?></td>
+                    <td align="center"><?php echo $this->escape($resultado['NomeProjeto']); ?></td>
+                </tr>
+            </tbody>
+            <tr>
+                <th align="center">CNPJ/CPF</th>
+                <th align="center">Proponente</th>
+            </tr>
+            <tbody>
+                <tr class="linha">
+                    <td align="center">
+                        <?php $valor = $this->escape($resultado['CgcCpf']);
+                            echo Validacao::mascaraCPFCNPJ($valor);
+                        ?>
+                    </td>
+                    <td align="center"><?php echo $this->escape($resultado['Nome']); ?></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div id="div_custoAprovada" >
+            <table class="tabela">
+            	<tr>
+            		<th colspan="10">Planilha Aprovada</th>
+            	</tr>
+                <?php $classPai = 'tr_f_AP'; ?>
+                <tr class="tr_f_PCA">
+                    <td colspan="10">
+                        <div class="icn_mais trpai" idFilho="<?php echo $classPai; ?>" style="width:90%; margin-left:4%; font-size:1.4em;"><span class="orange del_link"><?php echo $tipoCusto ?></span></div>
+                    </td>
+                </tr>
+                
+                <?php
+                    $countPlan = 0;
+                    $sem_planilha = 1;
+                    if(count($this->buscaprodutositens) > 0){
+                        foreach ($this->buscaetapa as $valueEtapa) {
+                            $classfilho = $classPai . '_' . $valueEtapa->idPlanilhaEtapa;
+                            foreach ($this->buscaprodutositens[$valueEtapa->idPlanilhaEtapa] as $valueProdutosItens) {
+                                
+                                if($valueProdutosItens->tpAcao == null){
+                                    $cor = 'black';
+                                }
+                                else {
+                                    if($valueProdutosItens->tpAcao == 'A'){
+                                        $cor = 'blue';
+                                    } else {
+                                        $cor = 'red';
+                                    }
+                                }
+
+                                if ($etapa != $valueProdutosItens->Etapa) {
+                                	
+                                ?>
+
+                                    <tr>
+                                        <td colspan="10" >
+                                            <?php echo '<div class="icn_mais trpai" idFilho="' . $classfilho . '"  style="width:90%; margin-left:8%; font-size:1.2em;"><span class="orange del_link">' . $valueProdutosItens->Etapa . '</span></div>'; ?>
+                                        </td>
+                                    </tr>
+
+                                <?php } ?>
+
+                                <?php if($countPlan == 0) { ?>
+
+                                    <tr class=<?php echo $classfilho; ?> idFilhoTitulo" style="display: none">
+                                        <th>Item</th>
+                                        <th>Unidade</th>
+                                        <th>Quant.</th>
+                                        <th>Ocorr.</th>
+                                        <th>Vl. Unit&aacute;rio</th>
+                                        <th>Total</th>
+                                        <th>Qtd. Dias</th>
+                                        <th>Fonte de Recurso</th>
+                                        <th>UF</th>
+                                        <th>Munic&iacute;pio</th>
+                                    </tr>
+
+                                <?php $countPlan++; } ?>
+
+                                    <tr class=<?php echo $classfilho; ?> idFilhoTitulo"  style="display:none;color: <?php echo $cor; ?>;" >
+                                        <td><a class="readequar" style="text-decoration:underline;cursor:pointer;" idplanilhaaprovacao="<?php echo $valueProdutosItens->idPlanilhaAprovacao ?>"> <?php echo $valueProdutosItens->Item; ?></a></td>
+                                        <td><?php echo $valueProdutosItens->Unidade; ?></td>
+                                        <td><?php echo $valueProdutosItens->qtItem; ?></td>
+                                        <td><?php echo $valueProdutosItens->nrOcorrencia; ?></td>
+                                        <td><?php echo $this->formatarReal($valueProdutosItens->vlUnitario); ?></td>
+                                        <td><?php echo $this->formatarReal($valueProdutosItens->Total); ?></td>
+                                        <td><?php echo $valueProdutosItens->qtDias; ?></td>
+                                        <td><?php echo $valueProdutosItens->FonteRecurso; ?></td>
+                                        <td><?php echo $valueProdutosItens->uf; ?></td>
+                                        <td><?php echo $valueProdutosItens->Municipio; ?></td>
+                                    </tr>
+                
+                                    <?php $etapa = $valueProdutosItens->Etapa; $sem_planilha = 0; } //} ?>
+
+                        <?php $countPlan = 0; }
+                        
+                    } if ($sem_planilha == 1) { ?>
+                        <tr>
+                            <td colspan="10" align="center">N&atilde;o Existe(m) Item(ns) Aprovado(s) para esse produto.</td>
+                        </tr>
+                <?php } ?>
+            </table>
+
+            <?php if (empty($readonly)) { ?>
+            <form name='formulario' id="formulario" method='post' action='<?php echo $this->url(array('controller' => 'solicitarreadequacaodoprojeto', 'action' => 'incluirproduto')); ?>'>
+				<a name="ancora" id="ancora"></a>
+				<input type="hidden" name="idPlanilhaAP" id="idPlanilhaAP" />
+                <table class="tabela">
+                    <tr>
+                        <th colspan="2">
+                            <?php if (isset($_GET['idProduto']) && $_GET['idProduto'] != 0) { ?>
+                                Nome do Produto:
+                            <?php
+                                foreach ($this->prods as $bc):
+                                    if ($bc->idProduto == $_GET['idProduto']):
+                                        echo $bc->produto;
+                                    endif;
+                                endforeach;
+                            ?>
+                            <?php } else { ?>
+                                Custo Administrativo:
+                            <?php } ?>
+                        </th>
+                    </tr>
+                    <tr class="destacar bold">
+                        <td align="center">ETAPA / META</td>
+                        <td align="center">ITEM</td>
+                    </tr> 
+                    <tr class="linha">
+                        <td align="center" width="30%">
+                            <label for="sLetapa"> </label>
+                            <select  class="select_simples validar" id="sLetapa" name="sLetapa">
+                                <option value="0">Selecione</option>
+                                    <?php foreach ($this->buscaetapa as $buscaetapa) { ?>
+                                        <?php if($buscaetapa->idPlanilhaEtapa != 6) { ?>
+                                    <option value='<?php echo $buscaetapa->idPlanilhaEtapa ?>'>
+                                        <?php echo $buscaetapa->Descricao; ?>
+                                    </option>";
+                                        <?php } ?>
+                                    <?php } ?>
+                            </select>
+                        </td>
+                        <td class='off'>
+                            <label for="item"> </label>
+                            <select id="item" name="item" style="width: 100%;" class="select_simples validar">
+                                <option value="">Selecione</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+
+                <table class="tabela">
+                    <tr>
+                        <th colspan="6">Identificadores</th>
+                    </tr>
+                    <tr class="destacar bold">
+                        <td align="center" colspan="3">F&Iacute;SICOS</td>
+                        <td align="center" colspan="2">FINANCEIROS</td>
+                        <td align="center">TEMPO DE DURA&Ccedil;&Atilde;O</td>
+                    </tr>
+                    <tr>
+                        <td align="left" class='off'>
+                            <label for="unidade">Unidade*</label><br />
+                            <select class="select_simples validar" name="unidade" id="unidade">
+                                <option value="">Selecione</option>
+                                <?php foreach ($this->buscaunidade as $valueUnidade) { ?>
+                                    <option value="<?php echo $valueUnidade->idUnidade ?>">
+                                        <?php echo $valueUnidade->Descricao ?>
+                                    </option>
+                                <?php } ?>
+                            </select>
+                        </td>
+                        <td align="left" class='off'>
+                            <label for="qtd">Quantidade*</label><br />
+                            <input class="input_simples numero soma validar" maxlength="12"  type="text" name="qtd" id="qtd" style="width: 8em;" null="false"/>
+                        </td>
+                        <td align="left" class='off'>
+                            <label for="ocorrencia">Ocorr&ecirc;ncia*</label><br />
+                            <input  class="input_simples numero soma validar" maxlength="4" type="text" name="ocorrencia" id="ocorrencia" style="width: 8em;" null="false"/>
+                        </td>
+                        <td align="center" class='off'>
+                            <label for="vUnitario">Valor Unit&aacute;rio*</label><br />
+                            <input class="input_simples soma validar" type="text"  name="vUnitario" id="vUnitario" maxlength="10" style="width: 8em;" null="false"/></td>
+                        <td align="left" class='off'>
+                            <label for="total">Total</label><br />
+                            <input class="input_simples" type="text" name="total" id="total" disabled="disable" style="width: 8em;" null="false"/>
+                        </td>
+                        <td align="left" class='off'>
+                            <label for="dias">Qtd. de Dias*</label><br />
+                            <input class="input_simples numero validar" type="text" maxlength="6" name="dias" id="dias" style="width: 8em; " null="false"/>
+                            <input type="hidden" name="idPlanilha" id="idPlanilha" style="width: 8em; " />
+                        </td>
+                    </tr>
+                </table>
+
+                <table class="tabela">
+                    <tr>
+                        <th colspan="2">Despesas</th>
+                    </tr>
+                    <tr class="destacar bold">
+                        <td align="center" >DESPESAS</td>
+                        <td align="center">LOCALIZA&Ccedil;&Atilde;O DE DESPESAS</td>
+                    </tr>
+                    <tr class="linha">
+                        <td align="left">
+                            <label for="fonte">Fonte de Recurso</label><br />
+                            <select class="select_simples validar" name="fonte" id="fonte" null="false">
+                                <option value="">Selecione</option>
+                                <?php foreach ($this->buscafonterecurso as $valueFonteRecurso) { ?>
+                                    <option value="<?php echo $valueFonteRecurso->idVerificacao ?>">
+                                        <?php echo $valueFonteRecurso->VerificacaoDescricao ?>
+                                    </option>
+                                <?php } ?>
+                            </select>
+                        </td>
+
+                        <td align="left">
+                            <label for="uf">UF*</label>
+                            <select class="select_simples validar" name="uf" id="uf" null="false">
+                                <option value="">Selecione</option>
+                                <?php foreach ($this->buscauf as $valueUF) { ?>
+                                    <option value="<?php echo $valueUF->idUF ?>">
+                                        <?php echo $valueUF->Sigla ?>
+                                    </option>
+                                <?php } ?>
+                            </select>
+
+                            <label for="municipio">Munic&iacute;pio*</label>
+                            <select class="select_simples validar" name="municipio" id="municipio" null="false">
+                                <option value="">Selecione</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+
+                <table class="tabela">
+                    <tr>
+                        <th>Justificativa</th>
+                    </tr>
+                    <tr>
+                        <td><textarea class="input_simples" cols="" id="justificativa" name="justificativa" rows="10" style="width: 99%;" ></textarea></td>
+                    </tr>
+                </table>
+
+            <table class="tabela">
+                <tr>
+                    <td class="centro" colspan="2" align="center">
+                        <div id="botoes" name="botoes">
+                            <input id='btIncluir' type='button' value='' class='btn_salvar enviar' tipoacao="I"/>
+                            <input id='btAlterar' type='button' value='' class='btn_salvar enviar' tipoacao="A" style="display:none;" />
+                            <input id='btExcluir' type='button' value='' class='btn_exclusao enviar' tipoacao="E" style="display:none;" />
+                            <input id='btCancelar' type='button' value='' class='btn_cancelar enviar' onClick="history.go(-1)" onkeypress=" " />
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <?php } ?>
+
+</div>
+
+    <div id="div_custoSolicitada" >
+            <table class="tabela">
+            	<tr>
+            		<th colspan="11">Planilha Solicitada</th>
+            	</tr>
+                <?php
+                    $countPlanS = 0;
+                    $classPai = 'tr_f_AP';
+                ?>
+                <tr class="tr_f_PCA">
+                    <td colspan="11">
+                        <div class="icn_mais trpai" idFilho="<?php echo $classPai; ?>" style="width:90%; margin-left:4%; font-size:1.4em;"><span class="orange del_link"><?php echo $tipoCusto ?></span></div>
+                    </td>
+                </tr>
+                <?php $etapa = ''; foreach ($this->buscaetapa as $valueEtapa) {
+                        $classfilho = $classPai . '-' . $valueEtapa->idPlanilhaEtapa;
+
+                      if ( !empty ( $this->buscaprodutositensinseridos[$valueEtapa->idPlanilhaEtapa] )  ) {
+                            foreach ($this->buscaprodutositensinseridos[$valueEtapa->idPlanilhaEtapa] as $valueProdutosItens) {
+               
+                                if ($etapa != $valueProdutosItens->Etapa) {
+                ?>
+
+                <tr>
+                    <td colspan="11" >
+                        <?php echo '<div class="icn_mais trpai" idFilho="' . $classfilho . '"  style="width:90%; margin-left:8%; font-size:1.2em;"><span class="orange del_link">' . $valueProdutosItens->Etapa . '</span></div>'; ?>
+                    </td>
+                </tr>
+                                <?php } ?>
+                <?php if($countPlanS == 0) { ?>
+
+                <tr class=<?php echo $classfilho; ?> idFilhoTitulo" style="display: none">
+                    <th>Item</th>
+                    <th>Unidade</th>
+                    <th>Quant.</th>
+                    <th>Ocorr.</th>
+                    <th>Vl. Unit&aacute;rio</th>
+                    <th>Total</th>
+                    <th>Qtd. Dias</th>
+                    <th>Fonte de Recurso</th>
+                    <th>UF</th>
+                    <th>Munic&iacute;pio</th>
+                    <th>A&ccedil;&atilde;o</th>
+                </tr>
+
+            <?php  $countPlanS++; } ?>
+
+                <tr class="<?php echo $classfilho; ?> idFilhoTitulo"  style="display:none">
+                    <td><a class="readequarsolicitacao" style="text-decoration:underline;cursor:pointer;" idetapa="<?php echo $valueEtapa->idPlanilhaEtapa; ?>" idplanilhaaprovacao="<?php echo $valueProdutosItens->idPlanilhaAprovacao ?>"> <?php echo $valueProdutosItens->Item; ?></a></td>
+                    <td><?php echo $valueProdutosItens->Unidade; ?></td>
+                    <td><?php echo $valueProdutosItens->qtItem; ?></td>
+                    <td><?php echo $valueProdutosItens->nrOcorrencia; ?></td>
+                    <td><?php echo $this->formatarReal($valueProdutosItens->vlUnitario); ?></td>
+                    <td><?php echo $this->formatarReal($valueProdutosItens->Total); ?></td>
+                    <td><?php echo $valueProdutosItens->qtDias; ?></td>
+                    <td><?php echo $valueProdutosItens->FonteRecurso; ?></td>
+                    <td><?php echo $valueProdutosItens->uf; ?></td>
+                    <td><?php echo $valueProdutosItens->Municipio; ?></td>
+                    <td>
+                        <?php
+                            if($valueProdutosItens->tpAcao == 'E'){
+                                echo "Excluir";
+                            }
+                            if($valueProdutosItens->tpAcao == 'I'){
+                                echo "Incluir";
+                            }
+                            if($valueProdutosItens->tpAcao == 'A'){
+                                echo "Alterar";
+                            }
+                        ?>
+                    </td>
+                </tr>
+
+                <?php $etapa = $valueProdutosItens->Etapa; }
+                    }
+                    $countPlanS = 0;
+                    }
+                ?>
+
+            </table>
+    </div>
+    <?php $i = 1;?>
+    <div id="div_produto" style="display:none">
+        <table class="tabela">
+            <tr>
+                <th colspan="2">Custo por Produto</th>
+            </tr>
+            <tr>
+                <td colspan="2">&nbsp;</td>
+            </tr>
+            <tr class="destacar bold">
+                <td align="center" colspan="2">NOME DO PRODUTO</td>
+            </tr>
+            <?php foreach ($this->produtosxitens as $resultadoprodutos) { ?>
+                <tr class="linha">
+                    <td align="center" width="1%"><?php echo $i; ?></td>
+                    <td style="padding: 13px;"><a style="cursor: pointer; padding: 5px; text-decoration: none; font-size: 14px; font-family:sans-serif;" class="input_simples" href="<?php echo $this->url(array('controller' => 'solicitarreadequacaocusto', 'action' => 'incluirproduto'));?>?idpronac=<?php echo $resultadoprodutos["produto"]->IdPRONAC;?>&idProduto=<?php echo $resultadoprodutos["produto"]->idProduto;?>&idAgente=<?php echo $resultadoprodutos["produto"]->idAgente;?>&idPessoa=<?php echo $resultadoprodutos["produto"]->TipoPessoa;?>"><?php echo $this->escape($resultadoprodutos["produto"]->produto); ?></a>
+                        <?php if(empty($resultadoprodutos["itens"]) || !in_array($resultadoprodutos["produto"]->idProduto, $this->Xitens)){ echo ' - <span style="color:red;">Cadastrar Planilha de Custo</span>';} ?>
+                    </td>
+                </tr>
+            <?php $i++; } ?>
+        </table>
+    </div>
+               
+</div><!-- final: conteúdo principal #conteudo -->
+
+<!-- início: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span><br /><br /></span></div>
+<br clear="all" />
+
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+<?php if (isset($_GET['menu']) && $_GET['menu'] == 'produtos') : ?>
+<script type="text/javascript">
+    //$('#abrir_produto').click(function(){
+        $('#div_custoAprovada').hide();
+        $('#div_custoSolicitada').hide();
+        //$('#div_produto').toggle('slow');
+        $('#div_produto').show();
+    //});
+</script>
+<?php endif; ?>
+
+<script type="text/javascript">
+    $('.trpai').click(function(){
+        filhos(this);
+    });
+
+    function filhos(pai) {
+        var idtr = '.'+$(pai).attr('idFilho');
+        $(idtr).toggle();
+        if ($(pai).hasClass('icn_mais'))
+        {
+            $(pai).addClass('icn_menos');
+            $(pai).removeClass('icn_mais');
+        }
+        else
+        {
+            $(pai).addClass('icn_mais');
+            $(pai).removeClass('icn_menos');
+        }
+
+        if ($(idtr).attr('idFilho')!= undefined)
+        {
+            filhos($(idtr).attr('idFilho'));
+        }
+    }
+
+    function abrirFecharFilhos(){
+        $('.trFilho, .idFilhoTitulo').toggle();
+
+        $('.trpai').each(function(){
+            if ($(this).hasClass('icn_mais'))
+            {
+                $(this).addClass('icn_menos');
+                $(this).removeClass('icn_mais');
+                $('#abrir_fechar').addClass('icn_menos');
+                $('#abrir_fechar').removeClass('icn_mais');
+            }
+            else
+            {
+                $(this).addClass('icn_mais');
+                $(this).removeClass('icn_menos');
+                $('#abrir_fechar').addClass('icn_mais');
+                $('#abrir_fechar').removeClass('icn_menos');
+            }
+        });
+    }
+</script>

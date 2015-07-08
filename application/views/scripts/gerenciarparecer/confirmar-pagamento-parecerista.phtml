@@ -1,0 +1,125 @@
+<?php include_once 'scripts/gerenciarparecer/inc/menu-parecerista.inc.php'; ?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'),'',true); ?>" title="Ir para Início">Início</a></li>
+        <li class="last">Confirmar Pagamento de Parecerista</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<div id="modal"></div>
+<div id="confirma"></div>
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Confirmar Pagamento de Parecerista <span class="voltar"><a href="javascript:voltar();" title="Página Anterior">Voltar</a></span></div>
+</div>
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+
+<div id="conteudo">
+    
+    <?php if(count($this->listaDePagamentos) > 0): ?>
+    <?php foreach($this->listaDePagamentos as $pa):?>
+    <form id="form_<?php echo $pa['idGerarPagamentoParecerista']; ?>" action="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'gerar-despacho-pagamento-parecerista')); ?>" method="POST">
+        <table class="tabela">
+            <tr>
+                <td colspan="5" class="fundo_linha2" style="font-size: 15px;">
+                    Nº Despacho: <strong><?php echo $pa['nrDespacho']; ?></strong>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    Parecerista: <strong><?php echo $pa['nmParecerista']; ?></strong>
+                </td>
+            </tr>
+            <tr class="titulo_tabela">
+                <th width="25">Item</th>
+                <th width="100">PRONAC</th>
+                <th width="">PROJETO</th>
+                <th width="300">Vinculada</th>
+                <th width="130">Valor a ser Pago</th>
+            </tr>
+            <?php $i = 1;?>
+            <?php foreach($pa['Projetos'] as $pag):?>
+            <tr>
+                <td style="text-align: center;"><?php echo $i; ?></td>
+                <td style="text-align: center;"><?php echo $pag['pronac']; ?></td>
+                <td><?php echo $pag['NomeProjeto']; ?></td>
+                <td><?php echo $pag['UnidadeAnalise']; ?></td>
+                <td style="text-align: right;"><?php echo $this->formatarReal($pag['vlPagamento']); ?></td>
+            </tr>
+            <?php $i++; ?>
+            <?php endforeach; ?>
+            
+            <tr>
+                <td style="text-align: right;" colspan="4">Total:</td>
+                <td style="text-align: right;"><?php echo $this->formatarReal($pa['vlTotalPagamento']); ?></td>
+            </tr>
+            <tr>
+                <td colspan="2">RPA Parecerista:</td>
+                <td colspan="3"><a href="">Documento enviado pelo parecerista</a></td>
+            </tr>
+            <tr>
+                <td colspan="5" style="text-align: center;"><input type="button" class="btn_confirmar" value=" " onclick="efetivarPagamento('<?php echo $pa['idGerarPagamentoParecerista']; ?>');" /></td>
+            </tr>
+        </table>
+        <br />
+    </form>
+    <?php endforeach; ?>
+    <?php else: ?>
+        <table class="tabela">
+            <tr>
+                <td align="center"><b style="color: green">NENHUM REGISTRO ENCONTRADO!</b></td>
+            </tr>
+        </table>
+    <?php endif; ?>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />
+
+<script>
+
+    $(document).ready(function(){
+       
+       $('.dataPicker').mask('99/99/9999');
+       
+    });
+    
+    function efetivarPagamento(id){
+        
+        var retorno = true;
+        $('#rpa_'+id).css('border','solid 1px #ccc');
+        $('#nrOrdemBancaria_'+id).css('border','solid 1px #ccc');
+        $('#dtOrdemBancaria_'+id).css('border','solid 1px #ccc');
+        
+        if($('#rpa_'+id).is(":empty")){
+            $('#rpa_'+id).css('border','solid 1px red');
+            $('#label_'+id).html('É preciso fazer o Upload do RPA! &nbsp; &nbsp; &nbsp;');
+            retorno = false;
+        }
+        
+        if($('#nrOrdemBancaria_'+id).val() == ''){
+            $('#nrOrdemBancaria_'+id).css('border','solid 1px red');
+            retorno = false;
+        }
+
+        if($('#dtOrdemBancaria_'+id).val() == ''){
+            $('#dtOrdemBancaria_'+id).css('border','solid 1px red');
+            retorno = false;
+        }
+
+        return false;
+
+        if(retorno){
+//        $('#form_'+id).submit();
+        }
+        
+        
+        
+    }
+
+</script>

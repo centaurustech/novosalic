@@ -1,0 +1,374 @@
+<?php
+/**
+ * An�lise de Conteudo
+ * @author Equipe RUP - Politec
+ * @since 12/05/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.views.scripts.analisedeconteudo
+ * @copyright � 2010 - Minist�rio da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+<!-- ========== SCRIPT MODAL ========== -->
+
+ <?php foreach ($this->dados as $p): ?>
+
+        <!-- ========== IN�CIO TABELA CONSELHEIRO ========== -->
+
+
+        <table class="tabela">
+            <!-- ========== IN�CIO T�TULO P�GINA ========== -->
+            <tr>
+                <th colspan="6">
+                    <p>An&aacute;lise de Conte&uacute;do</p>
+                    <p><strong>Pronac N&ordm; <?php echo $this->dadosprojeto['AnoProjeto'].$this->dadosprojeto['Sequencial']; ?>  - <?php echo $this->dadosprojeto['NomeProjeto']; ?></strong></p>
+                    <p <?php if($p->stPrincipal == 1){ echo 'style="color: red"'; } ?> >Produto <?php if($p->stPrincipal == 1){ echo ' Principal'; } ?>: <?php echo $p->produto; ?></p>
+                </th>
+            </tr>
+            <!-- ========== FIM T�TULO P�GINA ========== -->
+            <tr>
+                <td colspan="3">
+
+
+                    <!-- ========== IN�CIO MODAL ========== -->
+                    <div id="dialog-modal" class="sumir" title="An&aacute;lise de Conte&uacute;do do Projeto">
+                        <form name="form" id="form" action="<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'analisedeconteudo')); ?>?idPronac=<?php echo $_GET['idPronac'] ?>" method="post">
+                            <input type="hidden" name="IdPRONAC" value="<?php echo $this->dadosprojeto['IdPRONAC']; ?>" />
+                            <input type="hidden" name="idProduto" value="<?php echo $p->idProduto; ?>" />
+                            <input type="hidden" name="idPlanilha" value="<?php echo $p->idAnaliseAprovacao; ?>" />
+                            <input type="hidden" name="page" value="<?php echo (isset($_GET['page']) ? $_GET['page'] : '1'); ?>" />
+                            <table class="tabela">
+                                <tr>
+                                    <th colspan="6">
+                                        <p><strong>Pronac N&ordm; <?php echo $this->dadosprojeto['AnoProjeto'].$this->dadosprojeto['Sequencial']; ?>  - <?php echo $this->dadosprojeto['NomeProjeto']; ?></strong></p>
+                                        <p>Produto: <?php echo (isset($p->DescricaoProduto) ? $p->DescricaoProduto : 'Administra&ccedil;&atilde;o do Projeto'); ?></p>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <td class="w300">
+                                        <strong>Lei 8.313 alterada pela Lei 9.874/1999*</strong><br />
+                                        <input type="radio" name="stLei8313" value="1" id="lei9874_S" class="checkradio lei8313" onclick="escolherLei_8313();" onkeypress=" " <?php if ($p->stLei8313 == 1)
+            echo "checked=\"checked\""; ?> /> <label for="lei9874_S">Sim</label>
+                                    <input type="radio" name="stLei8313" value="0" id="lei9874_N" class="checkradio" onclick="escolherLei_8313();" onkeypress=" " <?php if ($p->stLei8313 == 0)
+                                               echo "checked=\"checked\""; ?> /> <label for="lei9874_N">N&atilde;o</label>
+                                </td>
+                                <td cospan="2">
+                                    <table class="w400 delFormatTD">
+                                        <tr>
+                                            <td class="delFormatTD">
+                                                <strong>Artigo 3</strong><br />
+                                                <input type="radio" name="stArtigo3" value="1" id="artigo3_S" class="checkradio lei8313" onclick="escolherArtigo3();" onkeypress=" " <?php if ($p->stArtigo3 == 1)
+                                               echo "checked=\"checked\""; ?> /> <label for="artigo3_S">Sim</label>
+                                                <input type="radio" name="stArtigo3" value="0" id="artigo3_N" class="checkradio lei8313" onclick="escolherArtigo3();" onkeypress=" " <?php if ($p->stArtigo3 == 0)
+                                                           echo "checked=\"checked\""; ?> /> <label for="artigo3_N">N&atilde;o</label>
+                                            </td>
+                                            <td class="delFormatTD"><strong><label for="inciso_artigo3">Inciso</label></strong><br />
+                                                <select class="input_simples w50 lei8313" name="nrIncisoArtigo3" id="inciso_artigo3" >
+                                                    <option value="0" <?php if (empty($p->nrIncisoArtigo3))
+                                                           echo "selected=\"selected\""; ?>> -- </option>
+                                                    <option value="1" <?php if ($p->nrIncisoArtigo3 == 1)
+                                                                echo "selected=\"selected\""; ?>> I </option>
+                                                    <option value="2" <?php if ($p->nrIncisoArtigo3 == 2)
+                                                                echo "selected=\"selected\""; ?>> II </option>
+                                                    <option value="3" <?php if ($p->nrIncisoArtigo3 == 3)
+                                                                echo "selected=\"selected\""; ?>> III </option>
+                                                    <option value="4" <?php if ($p->nrIncisoArtigo3 == 4)
+                                                                echo "selected=\"selected\""; ?>> IV </option>
+                                                    <option value="5" <?php if ($p->nrIncisoArtigo3 == 5)
+                                                                echo "selected=\"selected\""; ?>> V </option>
+                                                </select>
+                                            </td>
+                                            <td class="delFormatTD"><strong><label for="dsAlineaArt3">Alinea</label></strong><br />
+                                                <input class="input_simples w50 lei8313" type="text" name="dsAlineaArt3" id="dsAlineaArt3" value="<?php echo $p->dsAlineaArt3; ?>" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="delFormatTD">
+                                                <strong>Artigo 18</strong><br />
+                                                <input type="radio" name="stArtigo18" id="stArtigo18_S" value="1" class="checkradio lei8313" onclick="escolherArt_18();" onkeypress=" " <?php if ($p->stArtigo18 == 1)
+                                                                echo "checked=\"checked\""; ?> /> <label for="stArtigo18_S">Sim</label>
+                                                     <input type="radio" name="stArtigo18" id="stArtigo18_N" value="0" class="checkradio lei8313" onclick="escolherArt_18();" onkeypress=" " <?php if ($p->stArtigo18 == 0)
+                                                                echo "checked=\"checked\""; ?> /> <label for="stArtigo18_N">N&atilde;o</label>
+                                                 </td>
+                                                 <td class="delFormatTD"><strong><label for="dsAlineaArt18">Alinea</label></strong><br />
+                                                     <input class="input_simples w50 lei8313" type="text" name="dsAlineaArtigo18" id="dsAlineaArt18" value="<?php echo $p->dsAlineaArtigo18; ?>" />
+                                                     <input type="hidden" name="AlineaArt18" id="AlineaArt18" value="<?php echo $p->dsAlineaArtigo18; ?>" />
+                                                 </td>
+                                                 <td class="delFormatTD">
+                                                     <strong>Artigo 26</strong><br />
+                                                     <input type="radio" name="stArtigo26" id="stArtigo26_S" value="1" class="checkradio lei8313" onclick="escolherArt_26();" onkeypress=" " <?php if ($p->stArtigo26 == 1)
+                                                                echo "checked=\"checked\""; ?> /> <label for="stArtigo26_S">Sim</label>
+                                                     <input type="radio" name="stArtigo26" id="stArtigo26_N" value="0" class="checkradio lei8313" onclick="escolherArt_26();" onkeypress=" " <?php if ($p->stArtigo26 == 0)
+                                                                echo "checked=\"checked\""; ?> /> <label for="stArtigo26_N">N&atilde;o</label>
+                                                 </td>
+                                             </tr>
+                                         </table>
+                                     </td>
+                                 </tr>
+                                 <tr>
+                                     <td>
+                                         <strong><label for="stLei5761">Decreto 5761/2006*</label></strong><br />
+                                         <input type="radio" name="stLei5761" id="Lei5761_S" value="1" class="checkradio lei8313" onclick="escolherDecreto5761();" onkeypress=" " <?php if ($p->stLei5761 == 1)
+                                                                echo "checked=\"checked\""; ?> /> <label for="Lei5761_S">Sim</label>
+                                                     <input type="radio" name="stLei5761" id="Lei5761_N" value="0" class="checkradio lei8313" onclick="escolherDecreto5761();" onkeypress=" " <?php if ($p->stLei5761 == 0)
+                                                                echo "checked=\"checked\""; ?> /> <label for="Lei5761_N">N&atilde;o</label>
+                                                 </td>
+                                                 <td colspan="2">
+                                                     <table class="w400 delFormatTD">
+                                                         <tr>
+                                                             <td class="delFormatTD">
+                                                                 <strong><label>Artigo 27</label></strong><br />
+                                                                 <input type="radio" name="stArtigo27" id="Art27_S" value="1" class="checkradio lei8313" <?php if ($p->stArtigo27 == 1)
+                                                                echo "checked=\"checked\""; ?> /> <label for="Art27_S">Sim</label>
+                                                     <input type="radio" name="stArtigo27" id="Art27_N" value="0" class="checkradio lei8313" <?php if ($p->stArtigo27 == 0)
+                                                                echo "checked=\"checked\""; ?> /> <label for="Art27_N">N&atilde;o</label>
+                                                 </td>
+                                                 <td class="delFormatTD" valign="top">
+                                                     <strong>Inciso(s)</strong><br />
+                                                     <input type="checkbox" name="stIncisoArtigo27_I" id="stIncisoArtigo27_I" value="1" class="checkradio lei8313 art27_N" <?php if ($p->stIncisoArtigo27_I == 1)
+                                                                echo "checked=\"checked\""; ?> /> <label for="stIncisoArtigo27_I">I</label>
+                                                     <input type="checkbox" name="stIncisoArtigo27_II" id="stIncisoArtigo27_II" value="1" class="checkradio lei8313 art27_N" <?php if ($p->stIncisoArtigo27_II == 1)
+                                                                echo "checked=\"checked\""; ?> /> <label for="stIncisoArtigo27_II">II</label>
+                                                     <input type="checkbox" name="stIncisoArtigo27_III" id="stIncisoArtigo27_III" value="1" class="checkradio lei8313 art27_N" <?php if ($p->stIncisoArtigo27_III == 1)
+                                                                echo "checked=\"checked\""; ?> /> <label for="stIncisoArtigo27_III">III</label>
+                                                     <input type="checkbox" name="stIncisoArtigo27_IV" id="stIncisoArtigo27_IV" value="1" class="checkradio lei8313 art27_N" <?php if ($p->stIncisoArtigo27_IV == 1)
+                                                                echo "checked=\"checked\""; ?> /> <label for="stIncisoArtigo27_IV">IV</label>
+                                                 </td>
+                                             </tr>
+                                         </table>
+                                     </td>
+                                 </tr>
+                                 <tr>
+                                     <td colspan="3">
+                                         <strong><label for="">Parecer Favor&aacute;vel?*</label></strong><br />
+                                         <input type="radio" name="stAvaliacao" id="stAv1" value="1" class="checkradio lei8313" <?php if ($p->stAvaliacao == 1)
+                                                                echo "checked=\"checked\""; ?> /> <label for="stAv1">Sim</label>
+                                                     <input type="radio" name="stAvaliacao" id="stAv0" value="0" class="checkradio lei8313" <?php if ($p->stAvaliacao != 1)
+                                                                echo "checked=\"checked\""; ?> /> <label for="stAv0">N&atilde;o</label>
+                                                 </td>
+                                             </tr>
+                                             <tr>
+                                                 <td colspan="6">
+                                                     <label for="dsAvaliacao"><strong>Justificativa</strong></label><br />
+                                                     <textarea class="textarea_simples w680 h100 lei8313" name="dsAvaliacao" id="dsAvaliacao" cols="70" rows="10" <?php echo $this->contadorTextarea('form.dsAvaliacao', 'form.exibirContadorTextarea', 5000); ?>><?php echo $p->dsAvaliacao; ?> </textarea>
+                                    <?php echo $this->exibirContadorTextarea('exibirContadorTextarea', 4, 5000, strlen($p->dsAvaliacao)); ?>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </form>
+                                        </div>
+                                        <!-- ========== FIM MODAL ========== -->
+
+
+                                        <strong>Tipo Parecer</strong><br />
+                <?php echo $this->tipoParecer($p->stAvaliacao); ?>
+                                                        </td>
+                                                        <td colspan="3">
+                                                            <strong>Parecer Favor&aacute;vel?</strong><br />
+                <?php
+                                                            if ($p->stAvaliacao == 1)
+                                                            {
+                                                                echo "Sim";
+                                                            }
+                                                            else
+                                                            {
+                                                                echo "N&atilde;o";
+                                                            }
+                ?>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th colspan="6" class="fundo_linha2 center blue">Lei 8.313/91</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="6">
+                                                            <strong>Lei 8.313/91 alterada pela Lei 9.874/1999*</strong><br />
+                <?php echo ($p->stLei8313 == 1) ? 'Sim' : 'N&atilde;o'; ?>
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="fundo_linha2">
+                                                        <th colspan="3" class="center blue">Artigo 3&ordm;</th>
+                                                        <th colspan="2" class="center blue">Artigo 18</th>
+                                                        <th class="center blue">Artigo 26</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>Artigo 3</strong></td>
+                                                        <td><strong>Inciso</strong></td>
+                                                        <td><strong>Alinea</strong></td>
+                                                        <td><strong>Artigo 18</strong></td>
+                                                        <td><strong>Alinea</strong></td>
+                                                        <td><strong>Artigo 26</strong></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><?php echo ($p->stArtigo3 == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                                                        <td>
+                <?php
+                                                            if ($p->nrIncisoArtigo3 == 1)
+                                                                echo 'I';
+                                                            if ($p->nrIncisoArtigo3 == 2)
+                                                                echo 'II';
+                                                            if ($p->nrIncisoArtigo3 == 3)
+                                                                echo 'III';
+                                                            if ($p->nrIncisoArtigo3 == 4)
+                                                                echo 'IV';
+                ?>
+                                                        </td>
+                                                        <td><?php echo $p->dsAlineaArt3; ?></td>
+                                                        <td><?php echo ($p->stArtigo18 == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                                                        <td><?php echo $p->dsAlineaArtigo18; ?></td>
+                                                        <td><?php echo ($p->stArtigo26 == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th colspan="6" class="fundo_linha2 center blue">Decreto 5761/2006*</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>Lei 5.761</strong></td>
+                                                        <td><strong>Artigo 27</strong></td>
+                                                        <td><strong>Inciso I</strong></td>
+                                                        <td><strong>Inciso II</strong></td>
+                                                        <td><strong>Inciso III</strong></td>
+                                                        <td><strong>Inciso IV</strong></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><?php echo ($p->stLei5761 == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                                                        <td><?php echo ($p->stArtigo27 == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                                                        <td><?php echo ($p->stIncisoArtigo27_I == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                                                        <td><?php echo ($p->stIncisoArtigo27_II == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                                                        <td><?php echo ($p->stIncisoArtigo27_III == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                                                        <td><?php echo ($p->stIncisoArtigo27_IV == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th colspan="6" class="fundo_linha2 center blue"><strong>Parecer</strong></th>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="6"><?php echo (!empty($p->dsAvaliacao) ? $p->dsAvaliacao : '<em>N&atilde;o informado</em>'); ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="6">&nbsp;</td>
+                                                    </tr>
+                                                </table>
+
+                                                <!-- ========== FIM TABELA CONSELHEIRO ========== -->
+
+
+
+    <?php
+                                                            if ($p->stLei8313 != $p->stLei8313_Antigo ||
+                                                                    $p->stArtigo3 != $p->stArtigo3_Antigo ||
+                                                                    $p->nrIncisoArtigo3 != $p->nrIncisoArtigo3_Antigo ||
+                                                                    $p->dsAlineaArt3 != $p->dsAlineaArt3_Antigo ||
+                                                                    $p->stArtigo18 != $p->stArtigo18_Antigo ||
+                                                                    $p->stArtigo26 != $p->stArtigo26_Antigo ||
+                                                                    $p->stLei5761 != $p->stLei5761_Antigo ||
+                                                                    $p->stArtigo27 != $p->stArtigo27_Antigo ||
+                                                                    $p->stIncisoArtigo27_I != $p->stIncisoArtigo27_I_Antigo ||
+                                                                    $p->stIncisoArtigo27_II != $p->stIncisoArtigo27_II_Antigo ||
+                                                                    $p->stIncisoArtigo27_III != $p->stIncisoArtigo27_III_Antigo ||
+                                                                    $p->stIncisoArtigo27_IV != $p->stIncisoArtigo27_IV_Antigo ||
+                                                                    $p->stAvaliacao != $p->stAvaliacao_Antigo ||
+                                                                    $p->dsAvaliacao != $p->dsAvaliacao_Antigo) :
+    ?>
+                                                                <br />
+                                                                <p>
+                                                                <div id="icn_mais"><div class="icn_mais" style="width:90%; margin-left:2%;"><span><a href="#icn_menos" onclick="$('#parecerista, #icn_menos').show(); $('#icn_mais').hide();">An&aacute;lise de Conte&uacute;do do Parecerista</a></span></div></div>
+                                                                <div id="icn_menos" class="sumir"><div class="icn_menos" style="width:90%; margin-left:2%;"><span><a href="#icn_mais" onclick="$('#parecerista, #icn_menos').hide(); $('#icn_mais').show();">An&aacute;lise de Conte&uacute;do do Parecerista</a></span></div></div>
+                                                                <br />
+    <?php endif; ?>
+
+
+
+                                                                <!-- ========== IN�CIO TABELA PARECERISTA ========== -->
+
+                                                                <table class="tabela sumir" id="parecerista">
+                                                                    <tr>
+                                                                        <td colspan="3">
+                                                                            <strong>Tipo Parecer</strong><br />
+                <?php echo $this->tipoParecer($p->TipoParecer); ?>
+                                                            </td>
+                                                            <td colspan="3">
+                                                                <strong>Parecer Favor&aacute;vel?</strong><br />
+                <?php
+                                                                if ($p->stAvaliacao_Antigo == 1)
+                                                                {
+                                                                    echo "Sim";
+                                                                }
+                                                                else
+                                                                {
+                                                                    echo "N&atilde;o";
+                                                                }
+                ?>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th colspan="6" class="fundo_linha2 center blue">Lei 8.313/91</th>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="6">
+                                                                <strong>Lei 8.313/91 alterada pela Lei 9.874/1999*</strong><br />
+                <?php echo ($p->stLei8313_Antigo == 1) ? 'Sim' : 'N&atilde;o'; ?>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="fundo_linha2">
+                                                            <th colspan="3" class="center blue">Artigo 3�</th>
+                                                            <th colspan="2" class="center blue">Artigo 18</th>
+                                                            <th class="center blue">Artigo 26</th>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><strong>Artigo 3</strong></td>
+                                                            <td><strong>Inciso</strong></td>
+                                                            <td><strong>Alinea</strong></td>
+                                                            <td><strong>Artigo 18</strong></td>
+                                                            <td><strong>Alinea</strong></td>
+                                                            <td><strong>Artigo 26</strong></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><?php echo ($p->stArtigo3_Antigo == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                                                            <td>
+                <?php
+                                                                if ($p->nrIncisoArtigo3_Antigo == 1)
+                                                                    echo 'I';
+                                                                if ($p->nrIncisoArtigo3_Antigo == 2)
+                                                                    echo 'II';
+                                                                if ($p->nrIncisoArtigo3_Antigo == 3)
+                                                                    echo 'III';
+                                                                if ($p->nrIncisoArtigo3_Antigo == 4)
+                                                                    echo 'IV';
+                ?>
+                                                            </td>
+                                                            <td><?php echo $p->dsAlineaArt3_Antigo; ?></td>
+                                                            <td><?php echo ($p->stArtigo18_Antigo == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                                                            <td><?php echo $p->dsAlineaArtigo18_Antigo; ?></td>
+                                                            <td><?php echo ($p->stArtigo26_Antigo == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th colspan="6" class="fundo_linha2 center blue">Decreto 5761/2006*</th>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><strong>Lei 5.761</strong></td>
+                                                            <td><strong>Artigo 27</strong></td>
+                                                            <td><strong>Inciso I</strong></td>
+                                                            <td><strong>Inciso II</strong></td>
+                                                            <td><strong>Inciso III</strong></td>
+                                                            <td><strong>Inciso IV</strong></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><?php echo ($p->stLei5761_Antigo == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                                                            <td><?php echo ($p->stArtigo27_Antigo == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                                                            <td><?php echo ($p->stIncisoArtigo27_I_Antigo == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                                                            <td><?php echo ($p->stIncisoArtigo27_II_Antigo == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                                                            <td><?php echo ($p->stIncisoArtigo27_III_Antigo == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                                                            <td><?php echo ($p->stIncisoArtigo27_IV_Antigo == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th colspan="6" class="fundo_linha2 center blue"><strong>Parecer</strong></th>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="6"><?php echo (!empty($p->dsAvaliacao_Antigo) ? $p->dsAvaliacao_Antigo : '<em>N&atilde;o informado</em>'); ?></td>
+                                                        </tr>
+                                                    </table>
+
+                                                    <!-- ========== FIM TABELA PARECERISTA ========== -->
+
+    <?php endforeach; ?>

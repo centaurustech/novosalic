@@ -1,0 +1,56 @@
+<?php
+$edital = "";
+if(isset($_GET['edital']) && $_GET['edital']=="s"){
+    require_once 'scripts/manterpropostaedital/inc/menu.inc.php'; // menu de manter proposta por edital
+    $edital = "&edital=s";
+}else {
+    require_once "scripts/manterpropostaincentivofiscal/inc/menu.inc.php"; // menu de manter proposta por incentivo fiscal
+}
+?>
+<?php
+        $controller = "Manterpropostaedital";
+        $links = array(
+            array('Lista de Propostas' => array('controller' => 'manterpropostaincentivofiscal','action' => 'listar-propostas')),
+            array('Local e Per&iacute;odo de Realiza&ccedil;&atilde;o' => array())
+        );
+montaGuiaLinks($controller, $links);
+?>
+
+
+<!-- ========== INULO ========== -->
+<div id="titulo">
+    <div>Documentos Pendentes<?php echo montaBotaoVoltar($controller, $links); ?></div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+
+
+
+<!-- ========== IDO ========== -->
+<div id="conteudo">
+    <br />
+    <table class="tabela" style="margin-bottom: 100px">
+
+        <tr class="titulo_tabela" >
+            <th width="70%">Documentos Pendentes</th>
+            <th>Tipo</th>
+        </tr>
+        <?php $ct=0; ?>
+        <?php foreach($this->documentosPendentes as $documento): ?>
+        <tr class="fundo">
+            <td class="centro"><?php echo $documento->Descricao; ?></td>
+            <td class="centro"><?php echo ($documento->Opcao==2)?"Projeto":"Proponente"; ?></td>
+        </tr>
+        <?php $ct++; ?>
+        <?php endforeach; ?>
+        <?php if($ct==0): ?>
+        <tr class="fundo">
+            <td class="centro" colspan="2" style="height: 50px"><b>No Momento n&atilde;o há pendências</b></td>
+        </tr>
+        <?php endif; ?>
+    </table>
+</div><!-- ========== FIM CONTEUDO ========== -->
+<br clear="all" />
+<!-- ========== I ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RO ========== -->
+

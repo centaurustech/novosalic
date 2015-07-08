@@ -1,0 +1,82 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#seleciona').change(function(){
+            pagina = $('#seleciona').val();
+            window.location.href='<?php echo $this->baseUrl(); ?>/operacional/exibirresultadoprojetoporsituacao?situacao=<?php echo $_GET['situacao']; ?>&orgao=<?php echo $_GET['orgao']; ?>&pag='+pagina;
+        });
+    });
+</script>
+
+<?php require_once 'scripts/operacional/inc/menu.inc.php'; ?>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''), '', true); ?>" title="Ir para Página Inicial">Início</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'diagnostico')); ?>">Relatório Operacional</a></li>
+        <li class="last">Diagnóstico</li>
+    </ul>
+</div>
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Resultado pesquisa diagnóstico<span class="voltar"><a href="javascript:voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="conteudo" align="center">
+
+    <table class="tabela">
+        <tbody>
+            <tr>
+                <th valign="middle" align="center" bgcolor="#abda5d">PRONAC</th>
+                <th valign="middle" align="center" bgcolor="#abda5d">Nome do Projeto</th>
+                <th valign="middle" align="center" bgcolor="#abda5d">Dt. Situação</th>
+            </tr>
+            <?php foreach($this->dados as $dado): ?>
+            <tr>
+                <td valign="middle" align="center"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')); ?>?idPronac=<?php echo $dado->IdPRONAC; ?>"><?php echo $dado->AnoProjeto.$dado->Sequencial; ?></a></td>
+                <td valign="middle" align="left"><?php echo $dado->NomeProjeto; ?></td>
+                <td class="centro"><?php echo Data::formatarDataMssql($dado->DtSituacao, 'Brasileira'); ?></td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+    <!-- ========== PAGINAÇÃO ========== -->
+    <?php if(!isset($_GET['pag'])) {
+            $pagina=1;
+        } else {
+            $pagina=$_GET['pag'];
+        }
+
+        if($pagina<=1) { ?>
+        <input type="button" class="btn_p_anterior-off"/>
+        <?php } else {?>
+        <input type="button" class="btn_p_anterior" id="btn_p_anterior" onclick="window.location.href='<?php echo $this->baseUrl(); ?>/operacional/exibirresultadoprojetoporsituacao?situacao=<?php echo $_GET['situacao']; ?>&orgao=<?php echo $_GET['orgao']; ?>&pag=<?php echo $pagina - 1;?>'"/>
+        <?php } ?>
+
+        <select id="seleciona" class="select_simples">
+        <?php $i=1; while ($i <= $this->qtdRegistro) { if($i==$pagina){ ?>
+            <option value="<?php echo $i;?>" selected="selected"><?php echo $i;?></option>
+        <?php } else { ?>
+            <option value="<?php echo $i;?>"><?php echo $i;?></option>
+        <?php } $i++; } ?>
+        </select>
+
+        <?php if($this->qtdRegistro==$pagina) {?>
+        <input type="button" class="btn_p_proximo-off" id="btn_p_proximo">
+        <?php }else { ?>
+        <input type="button" class="btn_p_proximo" id="btn_p_proximo" onclick="window.location.href='<?php echo $this->baseUrl(); ?>/operacional/exibirresultadoprojetoporsituacao?situacao=<?php echo $_GET['situacao']; ?>&orgao=<?php echo $_GET['orgao']; ?>&pag=<?php echo $pagina + 1;?>'"/>
+        <?php } ?>
+        <input type="button" class="btn_imprimir" id="btn_imprimir" onclick="window.open('<?php echo $this->baseUrl(); ?>/operacional/imprimirresultadoprojetoporsituacao?situacao=<?php echo $_GET['situacao']; ?>&orgao=<?php echo $_GET['orgao']; ?>')"/>
+        <br clear="all" />
+        <br clear="all" />
+        <!-- ========== FIM PAGINAÇÃO ========== -->
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

@@ -1,0 +1,41 @@
+<!-- ========== MENU ========== -->
+<?php 
+    require_once 'scripts/controlarmovimentacaobancaria/inc/menu.inc.php';
+?>
+<!--?php include_once 'scripts/aprovacaoeparecer/inc/menu.inc.php';     ?>
+<!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="index" title="Ir para Início">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'liberarcontabancaria', 'action' => '')); ?>" title="Ir para Liberar conta banc&aacute;ria">Liberar conta banc&aacute;ria</a></li>
+        <li class="last">Projetos que inabilitam o proponente</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== BUTTON VOLTAR ========== -->
+<div id="titulo">
+    <div>Projetos que inabilitam o proponente<span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+
+<div id="conteudo">
+    <table class="tabela">
+ 		<tr class="">
+ 			<th width="20%">Pronac</th>
+ 			<th width="60%">Nome do Projeto</th>
+ 			<th width="20%">&Oacute;rg&atilde;o/Unidade</th>
+ 		</tr>
+ 		<?php foreach ($this->projetos as $projetos){?>
+ 		<tr class="">
+ 			<td align="center"><a target="_blank" href='<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'))."?idPronac=$projetos->IdPRONAC"?>'><?php echo $projetos->Pronac;?></a></td>
+ 			<td align="center"><?php echo $projetos->NomeProjeto;?></td>
+ 			<td align="center"><?php echo $projetos->Orgao;?></td>
+ 		</tr>
+ 		<?php }?>
+ 	</table>
+</div>
+<!-- ========== IN??CIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

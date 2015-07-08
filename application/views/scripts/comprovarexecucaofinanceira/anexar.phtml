@@ -1,0 +1,21 @@
+<?php
+$cadastraranexoHref     = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'cadastraranexo')).'?idusuario='.$this->idusuario;
+?>
+<div id="miolo">
+    <fieldset>
+        <form action="<?php echo $cadastraranexoHref;?>" id="upForm" name="upForm" enctype="multipart/form-data" method="post">
+            <input type="hidden" name="idlicitacao" value="<?php echo $this->idlicitacao;?>"/>
+            <input type="hidden" name="iddispensa"  value="<?php echo $this->iddispensa;?>"/>
+            <input type="hidden" name="idcontrato"  value="<?php echo $this->idcontrato;?>"/>
+            <input type="hidden" name="idcotacao"   value="<?php echo $this->idcotacao;?>"/>
+            <input type="hidden" name="idpronac"    value="<?php echo $this->idpronac;?>"/>
+            <div style="margin-left: 20%;margin-top: 5px;">
+                <div id="status" style="display: none;"><?php echo $this->message;?></div>
+                <div style="float: left;width: 100%;margin-top: 5px; margin-top: 5px;">
+                    <div style="float: left;width: 300px;">Arquivo*</div>
+                    <div style="float: left;"><input type="file" name="arquivo" id="arquivo" null="null" size="60"></div>
+                </div>
+            </div>
+           </form>
+    </fieldset>
+</div>

@@ -1,0 +1,53 @@
+<?php header('Content-Type: text/plain; charset=ISO-8859-1'); ?>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        //ATUALIZA TITULO DA PAGINA
+        window.parent.$("#titulo").html("<div>Relat&oacute;rio f&iacute;sico</div>");
+        window.parent.$("#caminhoLocalAtual").html("Relat&oacute;rio f&iacute;sico");
+    });
+</script>
+
+<table class="tabela">
+    <tr class="destacar">
+        <td align="center"><b>PRONAC</b></td>
+        <td align="center"><b>Nome do Projeto</b></td>
+    </tr>
+    <tr class="linha">
+        <td align="center"><?php echo $this->DadosProjeto->pronac; ?></td>
+        <td align="center"><?php echo $this->DadosProjeto->nomeProjeto; ?></td>
+    </tr>
+</table>
+
+<table class="tabela">
+    <?php $x=1; $vlTotal=0; $idPlanilhaEtapaAnterior=0; if(count($this->relatorioFisico) > 0) { ?>
+    <tr class="centro">
+        <td width="1" class="destacar bold">Seq.</td>
+        <td width="1" class="destacar bold">Etapa</td>
+        <td width="1" class="destacar bold">Item</td>
+        <td width="1" class="destacar bold">Unidade</td>
+        <td width="1" class="destacar bold">Qtde Programada</td>
+        <td width="1" class="destacar bold">Vl. Programado</td>
+        <td width="1" class="destacar bold">% Executado</td>
+        <td width="1" class="destacar bold">Vl. Executado</td>
+        <td width="1" class="destacar bold">% A Executar</td>
+    </tr>
+    <?php foreach ($this->relatorioFisico as $r) { ?>
+    <tr>
+        <td align="center"><?php echo $x; ?></td>
+        <td><?php echo ($r->idPlanilhaEtapa!=$idPlanilhaEtapaAnterior)? $r->Etapa : ''; ?></td>
+        <td><?php echo $r->Item; ?></td>
+        <td><?php echo $r->Unidade; ?></td>
+        <td align="right"><?php echo $r->qteProgramada; ?></td>
+        <td align="right"><?php echo number_format($r->vlProgramado, 2, ",", "."); ?></td>
+        <td align="right"><?php echo number_format($r->PercExecutado, 2, ',', '').'%'; ?></td>
+        <td align="right"><?php echo number_format($r->vlExecutado, 2, ",", "."); ?></td>
+        <td align="right"><?php echo number_format($r->PercAExecutar, 2, ',', '').'%'; ?></td>
+    </tr>
+    <?php $x++; $vlTotal=$vlTotal+$r->vlExecutado; $idPlanilhaEtapaAnterior=$r->idPlanilhaEtapa; } ?>
+    <?php } else { ?>
+    <tr>
+        <td align="center">Nenhum registro encontrado.</td>
+    </tr>
+    <?php } ?>
+</table>

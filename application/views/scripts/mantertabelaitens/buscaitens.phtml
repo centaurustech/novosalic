@@ -1,0 +1,12 @@
+<td>
+<table width="100%" style="margin: 0px; padding: 0px; style="padding-left: 25px;">
+      	<tr>
+        	<th align="left" style="padding-left: 50px;">Item(ns)</th>
+        </tr>
+        <?php foreach($this->itens as $i): ?>
+        <tr>
+        	<td style="padding-left: 50px;"><?php echo utf8_decode(htmlentities($i->NomeDoItem));?></td>
+        </tr>
+        <?php endforeach; ?>
+</table>
+</td>

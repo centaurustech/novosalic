@@ -1,0 +1,31 @@
+<?php
+/**
+ * Menu de Abas: DADOS, TELEFONE, E-MAIL e DIRIGENTES
+ * @author Equipe RUP - Politec
+ * @since 26/05/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.views.scripts.conselheiro.inc
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+
+<!-- ========== MENU DE ABAS ========== -->
+<ul id="menuAgentes">
+	<li>
+		<a href="#" id="menuDados" title="Informe os dados pessoais" onclick="mostrar_menu_dados_agente(<?php echo $this->grupoAtivo?>);">DADOS</a>
+	</li>
+        <li>
+            <a href="#" id="menuEndereco" title="Informe os endereços para contato" onclick="mostrar_menu_endereco_agente();">ENDEREÇO</a>
+        </li>
+	<li>
+		<a href="#" id="menuFone" title="Informe os telefones para contato"	onclick="mostrar_menu_fone_agente();">TELEFONE</a>
+	</li>
+	<li>
+		<a href="#" id="menuEmail" title="Informe os e-mails para contato" onclick="mostrar_menu_email_agente();">E-MAIL</a>
+	</li>
+	<li id="menuDirigentes" class="sumir">
+		<a href="#" id="menuDirigente" title="Adicione Dirigentes para este Agente" onclick="mostrar_menu_dirigente_agente();">DIRIGENTES</a>
+	</li>
+</ul>

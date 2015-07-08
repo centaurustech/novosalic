@@ -1,0 +1,176 @@
+<?php header('Content-Type: text/plain; charset=ISO-8859-1'); ?>
+
+<script type="text/javascript">
+    /**
+     * Funções que são chamadas após a página ser carregada
+     */
+    $(document).ready(function(){
+        // máscaras dos campos
+        $('#dtInicio, #dtFim').keyup(function(){
+            mascara(this, format_data); // data
+        });
+
+        $('#inc2_pronac').keypress(function(event){
+            var pronac = $(this).val();
+            if ( event.which == 13 ) {
+                $('tr.inc2_resultado.'+pronac).removeClass('sumir');
+                $('tr.inc2_resultado:not(.'+pronac+'*)').addClass('sumir');
+            } else {
+                $('tr.inc2_resultado').removeClass('sumir');
+            }
+        });
+
+        // calendário
+        $.datepicker.regional['pt-BR'] = {
+            closeText: 'Fechar',
+            prevText: '&#x3c;Anterior',
+            nextText: 'Pr&oacute;ximo&#x3e;',
+            currentText: 'Hoje',
+            monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+            dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','S&aacute;bado'],
+            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            weekHeader: 'Sm',
+            dateFormat: 'dd/mm/yy',
+            firstDay: 0,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: ''
+        };
+        $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+
+        // id dos campos que utilizarão o calendário
+        $('#dtInicio, #dtFim').datepicker($.datepicker.regional['pt-BR']);
+    }); // fim $(document).ready()
+
+    /**
+     * Função responsável pela correção das inconsistências
+     */
+    function corrigirInconsistenciaCaptacaoNaoVigente(item, tipo){
+        if (tipo != ''){
+            inconsistencia = $('#captacao_nao_vigente' + item).find('option').filter(':selected').text(); // pega a inconsistência
+            $('#inconsistenciaCaptacaoNaoVigente').text(inconsistencia); // ajusta o texto da inconsistência na modal
+            $('#dtInicio, #dtFim').val(''); // limpa os campos com a nova data
+
+            // carrega a modal
+            $('#modalCaptacaoNaoVigente').dialog({
+                modal: true,
+                resizable: false,
+                width: 700,
+                height: 370,
+                title: 'Corrigir Inconsistência',
+                buttons: {
+                    Não: function(){
+                        $(this).dialog('close');
+                        $('#captacao_nao_vigente' + item).find('option[value=""]').attr('selected',true);
+                    },
+                    'Sim': function(){
+                        $('#formCaptacaoNaoVigente').submit();
+                        carregandoModal();
+                    }
+                }
+            });
+            $('.ui-dialog-titlebar-close').remove();
+        }
+    } // fecha função corrigirInconsistenciaCaptacaoNaoVigente()
+</script>
+
+<div id="modalCaptacaoNaoVigente" class="sumir">
+    <p align="center">Deseja corrigir a inconsistência como: <strong id="inconsistenciaCaptacaoNaoVigente"></strong>?</p>
+    <form name="formCaptacaoNaoVigente" id="formCaptacaoNaoVigente" action="<?php echo $this->url(array("controller" => "movimentacaodeconta", "action" => "corrigir-inconsistencias")); ?>" method="post">
+        <input type="hidden" name="tpInconsistencia" id="tpInconsistencia" value="2" />
+        <table class="tabela">
+            <tr>
+                <th colspan="4">Prorrogar Prazo de Capta&ccedil;&atilde;o</th>
+            </tr>
+            <tr>
+                <td colspan="4">&nbsp;</td>
+            </tr>
+            <tr class="destacar bold" align="center">
+                <td colspan="2" class="w50p">PER&Iacute;ODO DE CAPTA&Ccedil;&Atilde;O ATUAL</td>
+                <td colspan="2" class="w50p">NOVO PER&Iacute;ODO DE CAPTA&Ccedil;&Atilde;O</td>
+            </tr>
+            <tr align="center">
+                <td><label for="dtInicioCaptacao">Data de In&iacute;cio Atual</label> <input type="text" name="dtInicioCaptacao" id="dtInicioCaptacao" class="input_simples btn_calendario-off" maxlength="10" readonly="readonly" value="" /></td>
+                <td><label for="dtFimCaptacao">Data de Fim Atual </label> <input type="text" name="dtFimCaptacao" id="dtFimCaptacao" class="input_simples btn_calendario-off" maxlength="10" readonly="readonly" value="" /></td>
+                <td><label for="dtInicio">Data de In&iacute;cio </label> <input type="text" name="dtInicio" id="dtInicio" class="input_simples btn_calendario" maxlength="10" /></td>
+                <td><label for="dtFim">Data de Fim </label> <input type="text" name="dtFim" id="dtFim" class="input_simples btn_calendario" maxlength="10" /></td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<table class="tabela">
+    <?php if ($this->registros->count() <= 0) : ?>
+    <tr>
+        <td align="center" ><em>Consulta efetuada com sucesso, por&eacute;m, n&atilde;o existem contas com captações identificadas para o filtro solicitado!</em></td>
+    </tr>
+    <?php else: ?>
+        <?php $ct=1;
+        $arrProjeto =array();
+        $arrIncentivador =array();
+    foreach($this->registros as $projeto): //xd($projeto);?>
+        <?php if($ct==1) { ?>
+    <thead>
+        <tr class="">
+            <th width="10%"><!--<a href="#" class="orderBy" valorOrdenacao="1">-->Pronac</th>
+            <th width="20%"><!--<a href="#" class="orderBy" valorOrdenacao="8">-->Nome do Projeto</th>
+            <th width="12%"><!--<a href="#" class="orderBy" valorOrdenacao="3">-->Proponente</th>
+            <th width="10%" nowrap><!--<a href="#" class="orderBy" valorOrdenacao="14">-->Ag&ecirc;ncia</th>
+            <th width="10%" nowrap><!--<a href="#" class="orderBy" valorOrdenacao="15">-->Conta</th>
+            <th width="13%" nowrap><!--<a href="#" class="orderBy" valorOrdenacao="4">-->Incentivador</th>
+            <th width="15%" nowrap><!--<a href="#" class="orderBy" valorOrdenacao="5">-->Data de Cr&eacute;dito</th>
+            <th width="10%" nowrap><!--<a href="#" class="orderBy" valorOrdenacao="6">-->Valor do Cr&eacute;dito</th>
+            <th width="5%" nowrap>Dilig&ecirc;ncia</th>
+            <th width="10%" nowrap>Corrigir</th>
+        </tr>
+    </thead>
+    <tbody>
+    <?php } ?>
+        <tr class="inc2_resultado <?php echo $projeto->pronac; ?>">
+            <td align="center">
+        <?php //if(!in_array($projeto->pronac,$arrProjeto)): $arrProjeto[] = $projeto->pronac; ?>
+                        <?php if (!empty($projeto->pronac)) { ?>
+                <a target="_blank" href='<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'))."?idPronac={$projeto->IdPRONAC}"?>'><?php echo $projeto->pronac;?></a>
+                            <?php }else { ?>
+                Conta sem PRONAC
+            <?php } ?>
+        <?php //endif; ?>
+            </td>
+            <td>
+                        <?php if (!empty($projeto->pronac)) { ?>
+            <?php echo $projeto->NomeProjeto;?>
+                            <?php }else { ?>
+                Conta sem Nome de Projeto
+            <?php } ?>
+            </td>
+            <td align="center"><?php echo Validacao::mascaraCPFCNPJ($projeto->nrCpfCnpjProponente); ?></td>
+            <td align="center"><?php echo !empty($projeto->Agencia) ? $projeto->Agencia : '<em>Não informada</em>'; ?></td>
+            <td align="center"><?php echo !empty($projeto->ContaBloqueada) ? $projeto->ContaBloqueada : '<em>Não informada</em>'; ?></td>
+            <td align="center"><?php echo Validacao::mascaraCPFCNPJ($projeto->nrCpfCnpjIncentivador); ?></td>
+            <td align="center"><?php echo $projeto->dtCredito; ?></td>
+            <td align="right" class="<?php echo ($projeto->vlValorCredito == 'D') ? 'red' : 'blue' ; ?>"><?php echo $this->formatarReal($projeto->vlValorCredito); ?></td>
+            <td align="center" >
+                <?php $arrPrazo = $this->prazoRespostaDiligencia($projeto->IdPRONAC, 183);
+                $icone = $arrPrazo['iconeDiligencia']['icone'];
+                $title = $arrPrazo['iconeDiligencia']['title']; ?>
+                <a target="_blank" href="<?php echo $this->url(array('controller' => 'diligenciar', 'action' =>'listardiligenciaanalista')).'?idPronac=' . $projeto->IdPRONAC . '&situacao=E50&tpDiligencia=183';?>" ><img src="<?php echo $this->baseUrl(); ?>/public/img/<?php echo $icone; ?>" title="<?php echo $title; ?>" width="30px"/></a><br>
+            </td>
+            <td class="centro" id="coluna_<?php echo $projeto->tpValidacao."_".$ct; ?>">
+                <?php /*<select class="input_simples" name="captacao_nao_vigente" id="captacao_nao_vigente<?php echo $ct; ?>" onchange="corrigirInconsistenciaCaptacaoNaoVigente('<?php echo $ct; ?>', this.value);">*/?>
+                <select class="input_simples updateTmpCaptacao" idTmpCaptacao="<?php echo $projeto->idTmpCaptacao; ?>">
+                    <option value="0">- Selecione a correção -</option>
+                    <option value="2" <?php echo $projeto->cdPatrocinio == 2 ? 'selected="selected"' : ''; ?>>Patrocínio</option>
+                    <option value="1" <?php echo $projeto->cdPatrocinio == 1 ? 'selected="selected"' : ''; ?>>Doação</option>
+                    <option value="3" <?php echo $projeto->cdPatrocinio == 3 ? 'selected="selected"' : ''; ?>>Devolução Judicial</option>
+                    <option value="5" <?php echo $projeto->cdPatrocinio == 5 ? 'selected="selected"' : ''; ?>>Devolução FNC</option>
+                    <option value="4" <?php echo $projeto->cdPatrocinio == 4 ? 'selected="selected"' : ''; ?>>Outras devoluções</option>
+                </select>
+            </td>
+        </tr>
+            <?php $ct++;
+    endforeach;?>
+    </tbody>
+<?php endif;?>
+</table>

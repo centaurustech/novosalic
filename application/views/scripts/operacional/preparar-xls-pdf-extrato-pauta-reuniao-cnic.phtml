@@ -1,0 +1,73 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#conteudoXLS').val($('#conteudoImprimivel').html());
+        $('#formGerarXls').submit();
+    });
+</script>
+<form method="POST" id="formGerarXls" name="formGerarXls" action="<?php echo $this->url(array('controller' => 'operacional', 'action' => ($this->tipo == 'xls') ? 'gerar-xls' : 'html2-pdf')); ?>" style="display:none">
+    <textarea name="html" id="conteudoXLS"></textarea>
+</form>
+<div class="conteudoImprimivel" id="conteudoImprimivel" style="display:none">
+    <table class="tabela" width="80%">
+        <tbody>
+            <tr>
+                <?php if(@in_array("cmpsOrd_p.AnoProjeto+p.Sequencial", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#abda5d">PRONAC</th><?php endif; ?>
+                <th valign="middle" align="left" bgcolor="#abda5d">Nome do Projeto</th>
+                <?php if(@in_array("cmpsOrd_Nome", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#abda5d">Proponente</th><?php endif; ?>
+                <?php if(@in_array("cmpsOrd_#parecerfavoravel", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#abda5d">Parecer</th><?php endif; ?>
+                <?php if(@in_array("cmpsOrd_SolicitadoReal", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="right" bgcolor="#abda5d">Solicitado</th><?php endif; ?>
+                <?php if(@in_array("cmpsOrd_SugeridoReal", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="right" bgcolor="#abda5d">Sugerido</th><?php endif; ?>
+                <?php if(@in_array("cmpsOrd_Processo", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#abda5d">Processo</th><?php endif; ?>
+                <?php if(@in_array("cmpsOrd_o.Sigla", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#abda5d">Órg&atilde;o</th><?php endif; ?>
+                <?php if(@in_array("cmpsOrd_TipoParecer", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#abda5d">Tipo de Parecer</th><?php endif; ?>
+                <?php if(@in_array("cmpsOrd_NumeroReuniao", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#abda5d">Nr. Reuni&atilde;o</th><?php endif; ?>
+                <?php if(@in_array("cmpsOrd_#ResumoParecer", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#abda5d">Parecer Técnico</th><?php endif; ?>
+                <?php if(@in_array("cmpsOrd_#cgccpf", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#abda5d">CNPJ/CPF</th><?php endif; ?>
+                <?php if(@in_array("cmpsOrd_s.Descricao", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#abda5d">Situa&ccedil;&atilde;o</th><?php endif; ?>
+                <?php if(@in_array("cmpsOrd_Cidade", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#abda5d">Cidade</th><?php endif; ?>
+                <?php if(@in_array("cmpsOrd_Uf", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#abda5d">UF</th><?php endif; ?>
+            </tr>
+            <?php $auxArea = ""; ?>
+            <?php if(count($this->projetos) > 0):?>
+            <?php foreach($this->projetos as $projeto):?>
+            <?php if($auxArea == "" || $projeto->Area != $auxArea):?>
+            <tr>
+                <th colspan="<?php echo count($this->parametrosBusca["visaoAgente"])+1; ?>" align="left" bgcolor="#d1e4cf">&Aacute;rea Cultural: <?php echo $projeto->Area?></th>
+            </tr>
+            <?php endif; ?>
+            <tr>
+                <?php if(@in_array("cmpsOrd_p.AnoProjeto+p.Sequencial", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><a href="#"><?php echo $projeto->AnoProjeto.$projeto->Sequencial?></a></td><?php endif; ?>
+                <td valign="top" align="left"><?php echo $projeto->NomeProjeto?></td>
+                <?php if(@in_array("cmpsOrd_Nome", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><a href="#"><?php echo $projeto->Proponente?></a></td><?php endif; ?>
+                <?php if(@in_array("cmpsOrd_#parecerfavoravel", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><a href="#"><?php //echo $projeto->TipoParecer?></a></td><?php endif; ?>
+                <?php if(@in_array("cmpsOrd_SolicitadoReal", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="right" nowrap="nowrap"><?php echo $projeto->Solicitado?></td><?php endif; ?>
+                <?php if(@in_array("cmpsOrd_SugeridoReal", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="right" nowrap="nowrap"><?php echo $projeto->Sugerido?></td><?php endif; ?>
+                <?php if(@in_array("cmpsOrd_Processo", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><?php echo $projeto->Processo?></td><?php endif; ?>
+                <?php if(@in_array("cmpsOrd_o.Sigla", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><?php echo $projeto->Orgao?></td><?php endif; ?>
+                <?php if(@in_array("cmpsOrd_TipoParecer", $this->parametrosBusca["visaoAgente"])): ?>
+                <td valign="top" align="left">
+                    <?php
+                        $arrAux = array(1=>"Aprova&ccedil;&atilde;o", 2=>"Complementa&ccedil;&atilde;o", 3=>"Prorroga&ccedil;&atilde;o", 4=>"Redu&ccedil;&atilde;o");
+                        echo $arrAux[$projeto->TipoParecer];
+                    ?>
+                </td>
+                <?php endif; ?>
+                <?php if(@in_array("cmpsOrd_NumeroReuniao", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><?php echo $projeto->NrReuniao?></td><?php endif; ?>
+                <?php if(@in_array("cmpsOrd_#ResumoParecer", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><a name="#resumoJustificativa" style="cursor:pointer;" onclick="abrirModal( $('#<?php echo $projeto->AnoProjeto.$projeto->Sequencial?>').html() );"><img src="<?php echo $this->baseUrl();?>/public/img/ico/kdict.png" /></a><span id="<?php echo $projeto->AnoProjeto.$projeto->Sequencial?>" class="naoImprimir" style="display: none;"><?php echo $projeto->ParecerTecnico?></span></td><?php endif; ?>
+                <?php if(@in_array("cmpsOrd_#ResumoProjeto", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><?php //echo $projeto->NomeProjeto?></td><?php endif; ?>
+                <?php if(@in_array("cmpsOrd_s.Descricao", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><?php echo $projeto->Situacao?></td><?php endif; ?>
+                <?php if(@in_array("cmpsOrd_Cidade", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><?php echo $projeto->Cidade?></td><?php endif; ?>
+                <?php if(@in_array("cmpsOrd_Uf", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><?php echo $projeto->Uf?></td><?php endif; ?>
+            </tr>
+            <?php $auxArea = $projeto->Area; ?>
+            <?php endforeach; ?>
+            <?php else: ?>
+            <tr>
+                <td colspan="16" valign="top" align="center">Nenhum Registro Encontrado</td>
+            </tr>
+    <?php endif; ?>
+        </tbody>
+    </table>
+</div>
+
+

@@ -1,0 +1,645 @@
+<?php
+$cadastraraceitacaofiscalizacaoHref = $this->url(array('controller' => 'Pesquisarprojetofiscalizacao', 'action' => 'cadastraraceitacaofiscalizacao'));
+
+$buscarTecnicoHref = $this->url(array('controller' => 'Pesquisarprojetofiscalizacao', 'action' => 'buscartecnico'));
+
+$ExcluirHref = $this->url(array('controller' => 'Pesquisarprojetofiscalizacao', 'action' => 'excluir'));
+/* INICIO DA GUIA DE LINKS */
+$controller = 'Pesquisarprojetofiscalizacao';
+$links = array(
+    array('Fiscaliza&ccedil;&atilde;o do Projeto' => array(
+            'controller' => 'Pesquisarprojetofiscalizacao',
+            'action' => 'painelcontroleentidade')),
+    array('Oficializar Fiscaliza&ccedil;&atilde;o' => array())
+);
+montaGuiaLinks('Pesquisarprojetofiscalizacao', $links);
+/* FIM DA GUIA DE LINKS */
+?>
+<div id="total" style="width: 100%;">
+    <div>
+        <!-- início: #titulo -->
+        <div id="titulo">
+            <div>
+                Oficializar Fiscaliza&ccedil;&atilde;o
+                <?php echo montaBotaoVoltar($controller, $links); ?>
+            </div>
+        </div>
+        <!-- final: #titulo -->
+        <!-- início: área principal #conteudo -->
+        <div id="conteudo">
+            <div id="miolo">
+
+                    <div>
+                        <form action="<?php echo $cadastraraceitacaofiscalizacaoHref; ?>" id="frOficializar" method="post" enctype="multipart/form-data">
+                            <input type="hidden" name="idPronac" value="<?php echo $this->idPronac; ?>" />
+                            <input type="hidden" name="idFiscalizacao" id="idFiscalizacao" value="<?php echo $this->infoProjeto[0]->idFiscalizacao; ?>" />
+
+                            <fieldset>
+                            <legend>Identifica&ccedil;&atilde;o</legend>
+                            <table id="tableItensCusto" class="tabela">
+								<tr>
+									<th width="50%">Pronac</th>
+									<th>Nome do Projeto</th>
+								</tr>
+								<tr>
+									<td><?php echo $this->infoProjeto[0]->AnoProjeto . $this->infoProjeto[0]->Sequencial; ?></td>
+									<td><?php echo $this->infoProjeto[0]->NomeProjeto; ?></td>
+								</tr>
+								<tr>
+									<th>CNPJ/CPF</th>
+									<th>Nome do Proponente</th>
+								</tr>
+								<tr>
+									<td><?php echo Validacao::mascaraCPFCNPJ($this->infoProjeto[0]->CgcCpf); ?></td>
+									<td><?php echo $this->infoProjeto[0]->nmAgente; ?></td>
+								</tr>
+									<th colspan="2">&Aacute;rea</th>
+								</tr>
+								<tr>
+									<td colspan="2"><?php echo $this->infoProjeto[0]->dsArea; ?></td>
+								</tr>
+							</table>
+							</fieldset>
+
+                            <table  id="tableItensCusto" class="tabela" >
+                                <tr>
+                                    <th>
+                                        Locais
+                                    </th>
+                                </tr>
+                            </table>
+                            <table  id="tableItensCusto" class="tabela" >
+                                <tr>
+                                    <th>
+                                        Regi&atilde;o
+                                    </th>
+                                    <th>
+                                        UF
+                                    </th>
+                                    <th>
+                                        Cidade
+                                    </th>
+                                </tr>
+                                <?php
+                                foreach ($this->infoProjeto as $value) {
+                                    ?>
+                                    <tr>
+                                        <td>
+                                            <?php echo $value->Regiao; ?>
+                                        </td>
+                                        <td>
+                                            <?php echo $value->uf; ?>
+                                        </td>
+                                        <td>
+                                            <?php echo $value->cidade; ?>
+                                        </td>
+                                    </tr>
+                                    <?php
+                                }
+                                ?>
+                            </table>
+                            <table  id="tableItensCusto" class="tabela" >
+                                <tr>
+                                    <th>
+                                        Oficializar Fiscaliza&ccedil;&atilde;o
+                                    </th>
+                                </tr>
+                            </table>
+                            <div style="margin-left: 20%;margin-top: 5px;">
+
+                                <div style="float: left;width: 100%;margin-top: 5px;">
+                                    <div style="float: left;width: 200px;">Data In&iacute;cio </div>
+                                    <div style="float: left;">
+                                        <?php
+                                        if ($this->infoProjeto[0]->dtInicioFiscalizacaoProjeto != '') {
+                                            echo date('d/m/Y', strtotime($this->infoProjeto[0]->dtInicioFiscalizacaoProjeto));
+                                        } else {
+                                        	echo 'Não informada';
+                                        }
+                                        ?>
+                                    </div>
+                                    <div style="float: left;width: 200px; margin-left: 5px; text-align: right;">Data Fim&nbsp; </div>
+                                    <div style="float: left;width: 200px;">
+<?php
+if ($this->infoProjeto[0]->dtFimFiscalizacaoProjeto != '') {
+    echo date('d/m/Y', strtotime($this->infoProjeto[0]->dtFimFiscalizacaoProjeto));
+} else {
+	echo 'Não informada';
+}
+?>
+                                    </div>
+                                </div>
+                                <div style="float: left;width: 100%;margin-top: 5px;">
+                                    <div style="float: left;width: 200px;">Demandante&nbsp;da&nbsp;Fiscaliza&ccedil;&atilde;o </div>
+                                    <div style="float: left;">
+                                        <?php
+                                        if ($this->infoProjeto[0]->tpDemandante == 0)
+                                            echo 'SEFIC';
+                                        if ($this->infoProjeto[0]->tpDemandante == 1)
+                                            echo 'SAV';
+                                        ?>
+                                    </div>
+                                </div>
+                                <div style="float: left;width: 100%;margin-top: 5px;">
+                                    <div style="float: left;width: 200px;">Data&nbsp;de&nbsp;Resposta&nbsp;at&eacute;* </div>
+                                    <div style="float: left;">
+<?php if ($this->infoProjeto[0]->dtRespostaSolicitada != '')
+    echo date('d/m/Y', strtotime($this->infoProjeto[0]->dtRespostaSolicitada)); ?>
+                                    </div>
+                                </div>
+
+                                <div style="margin-top: 5px;">
+                                    <div style="float: left;width: 300px;">Identifica&ccedil;&atilde;o do T&eacute;cnico*</div>
+                                    <div style="float: left;width: 100%;margin-top: 5px;margin-left: 20px;">
+                                        <div style="float: left;width: 180px;">CPF</div>
+                                        <div style="float: left;"><?php echo Validacao::mascaraCPFCNPJ($this->infoProjeto[0]->cpfTecnico); ?></div>
+                                    </div>
+                                    <div style="float: left;width: 100%;margin-top: 5px;margin-left: 20px;">
+                                        <div style="float: left;width: 180px;">Nome</div>
+                                        <div style="float: left;"><?php echo $this->infoProjeto[0]->nmTecnico; ?></div>
+                                    </div>
+                                </div>
+
+                                <div style="float: left;width: 100%;margin-top: 5px;">
+                                    <div style="float: left;width: 200px;">Dados para Fiscaliza&ccedil;&atilde;o </div>
+                                    <div style="float: left; overflow: auto; height: 100px;">
+<?php echo !empty($this->infoProjeto[0]->dsFiscalizacaoProjeto) ? $this->infoProjeto[0]->dsFiscalizacaoProjeto : 'Não informado'; ?>
+                                    </div>
+                                </div>
+
+                                <div style="float: left;width: 100%;margin-top: 5px;">
+                                    <div style="float: left;">Ir&aacute; indicar um parecerista para realizar a fiscaliza&ccedil;&atilde;o? </div>
+                                    <div style="float: left;margin-left: 10px;">
+                                        <input type="radio" name="indicar" id="indicarSim" value="sim"/>Sim
+                                    </div>
+                                    <div style="float: left;margin-left: 10px;">
+                                        <input type="radio" name="indicar" id="indicarNao"  value="nao"/>N&atilde;o
+                                    </div>
+                                </div>
+
+
+                                <div id="parecerista" style="margin-top: 5px;display: none;">
+<!--                                    <div style="float: left;width: 300px;">Identifica&ccedil;&atilde;o do Parecerista*</div>
+                                    <input type="hidden" name="idAgente" id="idAgente" value="<?php //echo $this->infoProjeto[0]->idTecnico; ?>"/>
+                                    <div style="float: left;width: 100%;margin-top: 5px;margin-left: 20px;">
+                                        <div style="float: left;width: 180px;">CPF *</div>
+                                        <div style="float: left;"><input type="text" name="CNPJCPF" id="CNPJCPF" idAgente="idAgente" null="" cnpjcpf="true" idDescricao="Descricao" classaux="tpFornecedor" value=""/></div>
+                                    </div>
+                                    <div style="float: left;width: 100%;margin-top: 5px;margin-left: 20px;">
+                                        <div style="float: left;width: 180px;">Nome *</div>
+                                        <div style="float: left;"><input type="text" readonly size="60" name="Descricao" readonly id="Descricao" null="" value=""/></div>
+                                    </div>-->
+                                    
+
+                                <div style="float: left;width: 100%;margin-top: 5px;">
+                                    <div style="float: left;width: 180px;">Parecerista*</div>
+                                    <div style="float: left;">
+                                        <select id="selectAgente" name="idAgente" null="false">
+                                            <option value="">- Selecione -</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+
+
+                                </div>
+                                <div style="float: left;width: 100%;margin-top: 5px;">
+                                    <div style="float: left;width: 200px;">Observa&ccedil;&atilde;o * </div>
+                                    <div style="float: left;">
+                                        <textarea name="dsObservacao" null="false" cols="80" rows="5"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <br clear="left"/>
+                            <table class="tabela" >
+                                <tr>
+                                    <th>
+                                        Documentos Anexados
+                                    </th>
+                                </tr>
+                            </table>
+                            <table class="tabela">
+                                <tr>
+                                    <th>
+                                        Nome do Arquivo
+                                    </th>
+                                    <th>
+                                        Tamanho
+                                    </th>
+                                    <th>
+                                        Data de Envio
+                                    </th>
+                                </tr>
+                                <?php
+                                if (is_object($this->arquivos))
+                                    foreach ($this->arquivos as $documentos) {
+                                        ?>
+                                        <tr id="linhaDoc<?php echo $documentos->idArquivo; ?>">
+                                            <td><a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id=<?php echo $documentos->idArquivo; ?>" padrao="false" retorna="true"><?php echo ($documentos->nmArquivo); ?></a></td>
+                                            <td><?php echo round($documentos->nrTamanho / 1024); ?> KB </td>
+                                            <td><?php echo Data::formatarDataMssql($documentos->dtEnvio); ?> </td>
+                                        </tr>
+        <?php
+    }
+?>
+                            </table>
+
+                            <br clear="left"/>
+                            <br clear="left"/>
+                            <div style="text-align: center;">
+                                <input type="submit" class="btn_enviar" name="enviar" value=""/>
+                            </div>
+                        </form>
+                    </div>
+
+            </div>
+        </div><!-- final: conteúdo principal #conteudo -->
+        <div id="rodapeConteudo" ><span></span></div>
+        <!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+    </div>
+    <br clear="all" />
+</div>
+<script>
+    var perfil = 94;
+    $(function(){
+        buscarFornecedor('#selectAgente');
+        mascaras('#frOficializar');
+//        $('#CNPJCPF').focusout(function(){
+//            buscarFornecedor(this);
+//        });
+        $('#indicarSim').click(function(){
+            if($(this).attr('checked')){
+                $('#parecerista').css('display','');
+                $('#CNPJCPF').attr('null','false');
+                $('#Descricao').attr('null','false');
+                $('#CNPJCPF').attr('cnpjcpf','true');
+            }
+        });
+        $('#indicarNao').click(function(){
+            if($(this).attr('checked')){
+                $('#parecerista').css('display','none');
+                $('#CNPJCPF').attr('null','');
+                $('#Descricao').attr('null','');
+                $('#CNPJCPF').attr('cnpjcpf','');
+                $('#CNPJCPF').val('');
+                $('#Descricao').val('');
+                $('#idAgente').val('');
+            }
+        });
+
+        $('#addAnexo').click(function (){
+            var divAnexos = $('#divAnexos');
+            var div = $('<div></div>').css('marginLeft', '200px').appendTo(divAnexos);
+            var file = $('<input />').attr('type','file').attr('name','arquivo[]').addClass('input_simples').appendTo(div);
+            var excluir = $('<input />').attr('type','button').addClass('btn_excluir').click(function(){
+                div.remove();
+            }).appendTo(div);
+
+        });
+        $('#addOrgao').click(function (){
+
+            var tbOrgao   = $('#tbOrgao');
+            var orgAdd    = $('#orgao').val();
+            var proceguir = true;
+            $(tbOrgao).find('.inpOrg').each(function(){
+                if(orgAdd == $(this).val())
+                    proceguir = false;
+            });
+            if(proceguir &&  orgAdd!=''){
+                var tr      = $('<tr></tr>').appendTo(tbOrgao);
+                var texto = '';
+                $('#orgao').find('option').each(function(){
+                    if(orgAdd == $(this).val())
+                        texto = $(this).html();
+                });
+                var td1      = $('<td></td>').html(texto).appendTo(tr);
+                var td2      = $('<td></td>').appendTo(tr);
+                var hidden = $('<input />').attr('type','hidden').addClass('inpOrg').attr('name','idOrgao[]').val(orgAdd).appendTo(td2);
+                var excluir = $('<input />').attr('type','button').addClass('btn_excluir').click(function(){
+                    tr.remove();
+                }).appendTo(td2);
+            }
+        });
+
+        $('#frOficializar').submit(function(){
+            return validarFormulario('#frOficializar','Preencher campos obrigatórios!');
+        });
+
+        $('.btn_excluir').click(function(){
+            var este = this;
+            var nomeJanelaAlerta =   janelaObj({
+                parametros : {
+                    width:      400,
+                    autoOpen:   false,
+                    resizable:  false,
+                    modal:      true,
+                    buttons: {
+                        'N\u00e3o': function() {
+                            $(this).dialog('close');
+                        },
+                        Sim: function() {
+
+                            var resp;
+                            if($(este).attr('idOrgaoFiscalizador') != undefined){
+                                resp = buscarJson('<?php echo $ExcluirHref; ?>',{idOrgaoFiscalizador:$(este).attr('idOrgaoFiscalizador')});
+                            }
+                            if($(este).attr('idArquivoFiscalizacao') != undefined && $(este).attr('idArquivo') != undefined ){
+                                resp = buscarJson('<?php echo $ExcluirHref; ?>',{idArquivoFiscalizacao:$(este).attr('idArquivoFiscalizacao'),idArquivo:$(este).attr('idArquivo')});
+                            }
+                            if(resp.result){
+                                $(este).parent().parent().remove();
+                            }
+                            janelaAlerta(resp.mensagem);
+
+                            $(this).dialog('close');
+                        }
+                    }
+                },
+                removerBtFechar:true,
+                title : 'Alerta'
+            });
+            nomeJanelaAlerta.divConteudo.html('Deseja excluir?');
+            nomeJanelaAlerta.abrirJanela();
+        });
+
+    });
+    function requisicaoAjaxObj(){
+        var ajaxObj={
+            pagina          :   '',
+            parametros      :   {},
+            type            :   'post',
+            dataType        :   '',
+            resposta        :   '#conteudo',
+            async           :   true,
+            funcaoRetorno   :   function (resposta){
+                $(this.resposta).html(resposta);
+            },
+            executar        :   function(dados){
+                this.refineParametrosObj(dados);
+                var esteObj = this;
+                if(this.resposta != undefined && this.resposta != '')
+                    $(this.resposta).html('<img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" alt="carregando"><br/><br/>Carregando...<br>Por Favor, aguarde!!');
+                $.ajax({
+                    type      : esteObj.type,
+                    url       : esteObj.pagina,
+                    data      : esteObj.parametros,
+                    async     : esteObj.async,
+                    success   : function(resp){
+                        esteObj.funcaoRetorno(resp);
+                    }
+                    ,dataType  : esteObj.dataType
+                });
+            },
+            refineParametrosObj : function(data){
+                if(data!= undefined)
+                    for(var j in data){
+
+                        this[j]=data[j];
+                    }
+            }
+        }
+        return ajaxObj;
+    }
+    function buscarJson(pagina,dados){
+        var retorno = '';
+        var select = requisicaoAjaxObj();
+        select.executar({
+            pagina          :   pagina,
+            parametros      :   dados,
+            resposta        :   undefined,
+            async           :   false,
+            funcaoRetorno   :   function (resposta){
+                //alert(resposta);
+                retorno = resposta;
+            }
+            ,dataType        :   'json'
+        });
+        return retorno;
+    }
+    function mascaras(form){
+        $('input[type!=submit]|[type!=button]').addClass('input_simples');
+        $('textarea').addClass('textarea_simples');
+        $('select[id!=perfilXgrupo]').addClass('select_simples');
+        $(form).find('[data=true]').each(function(){
+            $(this).keyup(function(){
+                mascara(this,format_data);
+                var este = this;
+                setTimeout(function(){
+                    $(este).val($(este).val().substr(0,10));
+                },2);
+            });
+            $(this).datepicker({
+                showOn: 'button',
+                buttonImage: '<?php echo $this->baseUrl(); ?>/public/img/ico/calendar.gif',
+                buttonImageOnly: true,
+                dateFormat:'dd/mm/yy'
+            });
+        });
+        $(form).find('[sonumero=true]').keyup(function(){
+            mascara(this,format_num);
+        });
+        $(form).find('[dinheiro=true]').keyup(function(){
+            mascara(this,format_moeda);
+        });
+
+        $(form).find('[cnpjcpf=true]').each(function(){
+            var este = this;
+            $('.'+$(este).attr('classaux')).click(function(){
+                mascaraCNPJCPF(este);
+            });
+        });
+        $(form).find('[cnpjcpf=true]').keyup(function(){
+            mascaraCNPJCPF(this);
+        });
+    }
+//    function buscarFornecedor(este){
+//        if($(este).val() != null && $(este).val() != ''){
+//            if($(este).val().length == 14){
+//                var fornecedor = buscarJson('<?php echo $buscarTecnicoHref; ?>',{cnpjcpf:$(este).val(),perfil:perfil});
+//                if(fornecedor.length >= 1 && fornecedor != 0){
+//                var retorno =  fornecedor[0];
+//                    $('#'+$(este).attr('idAgente')).val(retorno.idAgente);
+//                    $('#Descricao').val(retorno.nome).attr('readonly',true);
+//                }
+//                else{
+//                    $(este).val('');
+//                    $('#'+$(este).attr('idAgente')).val('');
+//                    $('#Descricao').val('').attr('readonly',true);
+//                }
+//            }
+//            else{
+//                $(este).val('')
+//                $('#'+$(este).attr('idAgente')).val('');
+//                $('#Descricao').val('').attr('readonly',true);
+//            }
+//        }
+//    }
+
+    function buscarFornecedor(select){
+            var tecnicos = buscarJson('<?php echo $buscarTecnicoHref; ?>',{perfil:perfil});
+            var select = $(select);
+            for(var i = 0;i<tecnicos.length;i++){
+                var tecnico =  tecnicos[i];
+                $('<option></option>')
+                .html(tecnico.nome)
+                .val(tecnico.idAgente)
+                .appendTo(select);
+            }
+    }
+
+
+
+    function buscarRadioMarcado(este){
+        var marcado = '';
+        $('.'+$(este).attr('classaux')).each(function(){
+            if($(this).attr('checked')){
+                marcado = $(this).val();
+            }
+        });
+        return marcado;
+    }
+    function mascaraCNPJCPF(este){
+        var marcado = 'cpf';//buscarRadioMarcado(este);
+        switch(marcado){
+            case 'cpf':
+                $(este).val($(este).val().slice(0,14));
+                $(este).attr('maxlength',14);
+                mascara(este,format_cpf);
+                break;
+            case 'cnpj':
+                $(este).attr('maxlength',18);
+                mascara(este,format_cnpj);
+                break;
+            default:
+                janelaAlerta('Selecione o Tipo do Fornecedor');
+                $(este).val('');
+        }
+    }
+    function validarFormulario(form,mensagem){
+        var validar = false;
+        if(mensagem== undefined){
+            mensagem = '';
+        }
+
+        $(form).find('[cnpjcpf=true]').each(function(){
+            var este = this;
+            var marcado = 'cpf';//buscarRadioMarcado(este);
+            if(marcado == 'cpf' && $(este).val().length < 14){
+                validar = true;
+                mensagem += '<br />Preencha o CPF.';
+            }
+            if(marcado == 'cnpj' && $(este).val().length < 18){
+                validar = true;
+                mensagem += '<br />Preencha o CNPJ.';
+            }
+        });
+
+
+
+        $(form).find('[data=true]').each(function(){
+            var estadata =   $(this).val().slice(6,10)+''+$(this).val().slice(3,5)+''+$(this).val().slice(0,2);
+            if($(this).attr('menorque')!=undefined){
+                var menorid     =   '#'+$(this).attr('menorque');
+                if($(menorid).val() != ''){
+                    var menordata   =   $(menorid).val().slice(6,10)+''+$(menorid).val().slice(3,5)+''+$(menorid).val().slice(0,2);
+                    if(estadata > menordata){
+                        validar     =   true;
+                        mensagem    +=   '<br />A "'+$(this).attr('title')+'" deve ser menor que a "'+$(menorid).attr('title')+'"';
+                    }
+                }
+            }
+            if($(this).attr('maiorque')!=undefined){
+                var maiorid     =   '#'+$(this).attr('maiorque');
+                if($(maiorid).val() != ''){
+                    var maiordata   =   $(maiorid).val().slice(6,10)+''+$(maiorid).val().slice(3,5)+''+$(maiorid).val().slice(0,2);
+                    if(estadata < maiordata){
+                        validar = true;
+                        mensagem    +=   '<br />A "'+$(this).attr('title')+'" deve ser maior que a "'+$(maiorid).attr('title')+'"';
+                    }
+                }
+            }
+        });
+        $(form).find('[null=false]').each(function(){
+            if($(this).attr('type')=='radio'){
+                var validaRadio = true;
+                $(form+' [name='+$(this).attr('name')+']').each(function(){
+                    if($(this).attr('checked'))
+                        validaRadio = false;
+                });
+                if(validaRadio)
+                    validar = true;
+            }else{
+                if($.trim($(this).val()).length == 0)
+                    validar = true;
+            }
+            //        if(validar)
+            //            alert($(this).attr('name'));
+        });
+
+        if(validar){
+            janelaAlerta(mensagem);
+            return false;
+        }
+        else
+            return true;
+    }
+    function janelaAlerta(mensagem,funcaoAdcional){
+        if(funcaoAdcional==undefined){
+            funcaoAdcional = function(){}
+        }
+        var nomeJanelaAlerta =   janelaObj({
+            parametros : {
+                width:      400,
+                autoOpen:   false,
+                resizable:  false,
+                modal:      true,
+                buttons: {
+                    OK: function() {
+                        funcaoAdcional();
+                        $(this).dialog('close');
+                    }
+                }
+            },
+            removerBtFechar:true,
+            title : 'Alerta'
+        });
+        nomeJanelaAlerta.divConteudo.html(mensagem);
+        nomeJanelaAlerta.abrirJanela();
+
+        return nomeJanelaAlerta;
+    }
+    function janelaObj(dados){
+        var divConteudo = $('<div></div>')
+        .attr('title',dados.title)
+        .appendTo('body');
+        var novaJanela = {
+            divConteudo : divConteudo,
+            removerBtFechar: true,
+            parametros : {autoOpen: false},
+            iniciarJanela : function(dados){
+                this.refineParametrosObj(dados);
+
+                this.divConteudo.dialog(this.parametros);
+            },
+            abrirJanela:function(){
+                this.divConteudo.dialog('open');
+                if(this.removerBtFechar)
+                    $('.ui-dialog-titlebar-close').remove();
+            },
+            fecharJanela:function(){
+                this.divConteudo.dialog('close');
+                this.divConteudo.remove();
+            },
+            refineParametrosObj : function(data){
+                if(data!= undefined)
+                    for(var j in data){
+                        this[j]=data[j];
+                    }
+            
+            novaJanela.iniciarJanela(dados);
+            return novaJanela;
+        }
+       
+    }
+ }
+</script>

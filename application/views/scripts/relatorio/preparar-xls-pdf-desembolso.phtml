@@ -1,0 +1,52 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#conteudoXLS').val($('#conteudoImprimivel').html());
+        $('#formGerarXls').submit();
+    });
+</script>
+<form method="POST" id="formGerarXls" name="formGerarXls" action="<?php echo $this->url(array('controller' => 'relatorio', 'action' => ($this->tipo == 'xls')?'gerar-xls':'html2-pdf' , 'orientacao' => ($this->tipo == 'pdf' && $this->orientacao)?'L':'P' )); ?>" style="display:none">
+    <textarea name="html" id="conteudoXLS"></textarea>
+</form>
+
+<div class="conteudoImprimivel" id="conteudoImprimivel" style="display:none">
+<table class="tabela" width="100%" align="center">
+    <tr>
+            <th align="center" valign="middle">Pronac</th>
+            <th align="center" valign="middle">Nome do Projeto</th>
+            <?php if(@in_array("cmpsOrd_data", $this->parametrosBusca["visaoAgente"])):  ?><th align="center" valign="middle">Data</th><?php endif; ?>
+            <?php if(@in_array("cmpsOrd_valor", $this->parametrosBusca["visaoAgente"])): ?><th align="center" valign="middle">Valor</th><?php endif; ?>
+            <?php if(@in_array("cmpsOrd_vlcapital", $this->parametrosBusca["visaoAgente"])): ?><th align="center" valign="middle">Vl. Capital</th><?php endif; ?>
+            <?php if(@in_array("cmpsOrd_nrobcapital", $this->parametrosBusca["visaoAgente"])): ?><th align="center" valign="middle">Nr. OB Capital</th><?php endif; ?>
+            <?php if(@in_array("cmpsOrd_vlcusteio", $this->parametrosBusca["visaoAgente"])): ?><th align="center" valign="middle">Vl. Custeio</th><?php endif; ?>
+            <?php if(@in_array("cmpsOrd_nrobcusteio", $this->parametrosBusca["visaoAgente"])): ?><th align="center" valign="middle">Nr. OB Custeio</th><?php endif; ?>
+            <?php if(@in_array("cmpsOrd_liquidado", $this->parametrosBusca["visaoAgente"])): ?><th align="center" valign="middle">Liquidado</th><?php endif; ?>
+        </tr>
+        <?php foreach($this->registros as $item): ?>
+        <tr>
+            <td align="center" valign="top"><?php echo $item->AnoProjeto.$item->Sequencial?></td>
+            <td align="left" nowrap="nowrap" valign="top"><?php echo $item->NomeProjeto?></td>
+            <?php if(@in_array("cmpsOrd_data", $this->parametrosBusca["visaoAgente"])): ?><td align="center" nowrap="nowrap" valign="top"><?php echo ConverteData($item->Data, 5)?></td><?php endif; ?>
+            <?php if(@in_array("cmpsOrd_valor", $this->parametrosBusca["visaoAgente"])): ?><td align="center" valign="top"><?php echo $item->VlCapital?></td><?php endif; ?>
+            <?php if(@in_array("cmpsOrd_vlcapital", $this->parametrosBusca["visaoAgente"])): ?><td align="center" valign="top"><?php echo $item->VlCapital?></td><?php endif; ?>
+            <?php if(@in_array("cmpsOrd_nrobcapital", $this->parametrosBusca["visaoAgente"])): ?><td align="center" valign="top"><?php echo $item->NrOrdemBancaria?></td><?php endif; ?>
+            <?php if(@in_array("cmpsOrd_vlcusteio", $this->parametrosBusca["visaoAgente"])): ?><td align="center" valign="top"><?php echo $item->VlCusteio?></td><?php endif; ?>
+            <?php if(@in_array("cmpsOrd_nrobcusteio", $this->parametrosBusca["visaoAgente"])): ?><td align="center" valign="top"><?php echo $item->NrOrdemBancariaCusteio?></td><?php endif; ?>
+            <?php if(@in_array("cmpsOrd_liquidado", $this->parametrosBusca["visaoAgente"])): ?>
+            <td align="left" valign="top">
+                    <?php
+                    switch ($item->Pagou){
+                        case 1:
+                            echo "Sim";
+                            break;
+                        case 0:
+                            echo "N&atilde;o";
+                            break;
+                    }
+                    ?>
+            </td>
+            <?php endif; ?>
+        </tr>
+        <?php endforeach; ?>
+</table>
+</div>
+

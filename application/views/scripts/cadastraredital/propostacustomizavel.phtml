@@ -1,0 +1,256 @@
+<?php 
+$operacoesCustomizavelHref  =   $this->url(array('controller' => 'cadastraredital', 'action' => 'operacoescustomizavel'));
+$listaGuiaHref              =   $this->url(array('controller' => 'cadastraredital', 'action' => 'listaguia'))."?".$_SERVER["QUERY_STRING"];
+$visualizarGuiaHref         =   $this->url(array('controller' => 'cadastraredital', 'action' => 'visualizarguia'));
+?>
+<?php include_once 'inc/funcoes.inc.php';?>
+<div id="dialog-excluir" title="Confirma&ccedil;&atilde;o de Exclus&atilde;o!">
+	<p><span class="" style="float:left; margin:0 7px 20px 0;"></span>Tem certeza que deseja excluir o registro?</p>
+</div>
+
+<div id="dialog_visualizar_questionario" title="Visualizar Guias">
+
+</div>
+
+    <!-- in�cio: conte�do principal #container -->
+    <div id="container">
+        <?php include_once 'inc/menu.inc.php';?>
+        <!-- ========== IN�CIO BREADCRUMB (LINKS TOPO) ========== -->
+		<div id="breadcrumb">
+		    <ul>
+		        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>">In&iacute;cio</a></li>
+		        <?php //if ( isset ($_GET['idEdital'] ) ) : ?>
+		        <!--<li><a href="<?php echo $this->url(array('controller' => 'cadastraredital', 'action' => 'consultaralterareditais')); ?>">Consultar/Alterar Edital</a></li>-->
+		        <?php //endif; ?>
+		        <li><a href="<?php echo $this->url(array('controller' => 'cadastraredital', 'action' => ''), '', true); ?>" title="Ir para Edital">Edital</a></li>
+		        <li class="last">Proposta customiz&aacute;vel</li>
+		    </ul>
+		</div>
+        <!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+        <!-- ========== BUTTON VOLTAR ========== -->
+        <div id="titulo">
+            <div>Proposta customiz&aacute;vel - Edital "<?php echo $this->nmEdital; ?>" <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+        </div>
+        <!-- ========== FIM T�TULO ========== -->
+        <!-- ========== GRID NOME DA PROPOSTA ========== -->
+        <div id="conteudo" align="center">
+            <form name="formInclusaoGuia" id="formInclusaoGuia"  method="POST" action="<?php echo $operacoesCustomizavelHref;?>">
+
+            <input type="hidden" apagar="false" name="idEdital" id="idEdital" value="<?php echo $this->idEdital;?>" />
+            <input type="hidden" apagar="false" name="nrVersaoDocumento" id="nrVersaoDocumento" value="<?php echo $this->nrVersaoDocumento;?>" />
+            <input type="hidden" apagar="false" name="nrFormDocumento" id="nrFormDocumento" value="<?php echo $this->nrFormDocumento;?>" />
+            <input type="hidden" apagar="false" name="operacao" id="operacao" value="inserir" />
+            <div></div>
+            <table id="recebeinformacao" class="tabela">
+                <tr>
+                    <td>
+                        <label>Texto da guia:</label> <br />
+                        <input type="text" name="nmFormDocumento" maxlength="50" null="false" title="Texto da guia" id="nmFormDocumento" class="campoTexto guia input_simples" style="width: 95%;" value=""/>
+                        <div id="mensagemGuia"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <i><label>Texto de ajuda da guia: (opcional)</label></i><br />
+                        <textarea maxlength="255" name="dsFormDocumento" id="dsFormDocumento" style="width: 95%;height: 50px" class="campoTexto textarea_simples" cols="50" rows="5"></textarea>
+                        <br/><span style="font-size: 11px;">Quantidade m&aacute;xima de 255 caracteres.</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">
+                        <input type="submit" value=""  class="btn_salvar" id="btSubmit" /><input type="button" value="" style="display: none;" class="btn_cancelar" id="btCancelar" />
+                    </td>
+                </tr>
+            </table>
+            </form>
+            <div id="QuestoesAdicionadas">
+                <div id="requisicaoAjaxAba" >
+                    <!-- Requisicao AJAX para quest?es adicionadas a um form documento -->
+                </div>
+                <table class="tabela">
+                    <tr>
+                        <td>
+                            
+                            <div align="center">
+                                <a id="visualizar"  title="Pr&eacute;-visualizar question&aacute;rio" href="#">
+                                    <img border="0" src="<?php echo $this->baseUrl(); ?>/public/img/botaoPreVisualizar.png" alt="botaoPreVisualizar"/>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+        </div>
+</div>
+        <!-- ========== FIM CONTE�DO ========== -->
+        <!-- ========== IN�CIO RODAP� DO CONTE�DO ========== -->
+        <div id="rodapeConteudo"><span></span></div>
+        <!-- ========== FIM RODAP� DO CONTE�DO ========== -->
+
+        <br clear="all" />
+
+
+<script type="text/javascript">
+
+window.document.body.onpaste = function() { return false; }; //Ctrl+V
+
+$('.btn_salvar').click(function(){ 
+   
+	   var valida = true;
+
+ if(valida){
+ 	if($(".guia").val()==''){
+ 	 	$("#mensagemGuia").html('<font color="red"><b>Informe o Texto da Guia!</b></font>');
+   		valida = false;
+   	}else{
+   	   	$("#mensagemGuia").html('');
+   	}
+
+     if (!valida)
+     {
+ 		return false;
+     }
+ }
+	 if ( valida ){
+		 $("#mensagemGuia").html('');
+		 //$('#formInclusaoGuia').submit();
+ 	}
+
+});
+
+    $('select[id!=perfilXgrupo]').addClass('select_simples');
+    $(function(){
+    	$("#dialog-excluir").dialog({
+            resizable: false,
+            width:400,
+            height:200,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                    'N\u00e3o': function() {
+                            $(this).dialog('close');
+                    },
+                    'Sim':function() 
+                    {
+                            var dados = {
+                            	operacao:'excluir',
+                                nrFormDocumento:$("#dialog-excluir").attr('nrFormDocumento'),
+                                nrVersaoDocumento:$("#dialog-excluir").attr('nrVersaoDocumento'),
+                                idEdital:$("#dialog-excluir").attr('idEdital'),
+                                idUsuario:$("#dialog-excluir").attr('idUsuario'),
+                                nrFormDocURL:$("#dialog-excluir").attr('nrFormDocURL')
+                            };
+
+                            var parametros = jQuery.param(dados);
+                            window.location.href = '<?php echo $this->url(array('controller' => 'cadastraredital', 'action' => 'operacoescustomizavel')); ?>?'+parametros+''
+                            
+                    }
+            }
+    });
+            $("#dialog-aviso").dialog({
+                    resizable: false,
+                    width:400,
+                    height:240,
+                    modal: true,
+                    autoOpen:false,
+                    buttons: {
+                            'N\u00e3o': function() {
+                                    $(this).dialog('close');
+                            },
+                            'Sim': function() {
+                           	 var dados = {
+                                     operacao:$("#dialog_confirm_pagamento").attr('operacao'),
+                                     nrOpcao:$("#dialog_confirm_pagamento").attr('nrOpcao'),
+                                     nrPergunta:$("#dialog_confirm_pagamento").attr('nrPergunta'),
+                                     nrFormDocumentoPagamento:$("#dialog_confirm_pagamento").attr('nrFormDocumentoPagamento'),
+                                     idEdital:$("#dialog_confirm_pagamento").attr('idEdital'),
+                                     idUsuario:$("#dialog_confirm_pagamento").attr('idUsuario'),
+                                     nrVersaoDocumento:$("#dialog_confirm_pagamento").attr('nrVersaoDocumento')
+                                 };
+	                            	var dados = {operacao:'excluir',nrFormDocumento:$("#dialog_aviso").attr('nrFormDocumento'),nrVersaoDocumento:$("#dialog_aviso").attr('nrVersaoDocumento')};
+	                            	alert(dados); return false;
+	                                formulario.idInform='recebeinformacao';
+	                                $.post('<?php echo $operacoesCustomizavelHref;?>',dados, function(data){
+	                                    formulario.montarEnvio.funcResp(data);
+	                                    carregarListaGuias();
+	                                }
+	                                , 'json'
+	                                );
+	                                $(this).dialog('close');
+                            }
+                    }
+            });
+            $("#dialog_visualizar_questionario").dialog({
+                    resizable: false,
+                    width:800,
+                    height:500,
+                    modal: true,
+                    autoOpen:false,
+                    buttons: {
+                            'Sair': function() {
+                                    $("body,html").css("overflow", "");
+                                    $(this).dialog('close');
+                            }
+                    },
+                    open:function(){
+                        $("body,html").css("overflow", "hidden");
+                        $(".ui-widget.overlay").css("width", "105%");
+                    }
+            });
+            $('.ui-dialog-titlebar-close').remove();
+
+           carregarListaGuias();
+           
+           $('#btCancelar').click(function(){
+                mudancaDeOperacaoInc();
+            });
+            $('#visualizar').click(function (){
+                $.post( '<?php echo $visualizarGuiaHref;?>', { idEdital:'<?php echo $this->idEdital;?>'}, function(data){
+                    $('#dialog_visualizar_questionario').html(data);
+                    $("#dialog_visualizar_questionario").dialog('open');
+                });
+            });
+        });
+        function carregarListaGuias(){
+           $.post( '<?php echo $listaGuiaHref;?>', { idEdital:'<?php echo $this->idEdital;?>',codUsuario:'<?php echo $this->idUsuario;?>' }, function(data){
+                $('#requisicaoAjaxAba').html(data);
+           });
+        }
+        function mudancaDeOperacaoInc(){
+            formulario.apagarValidacao();
+
+            $('#nrFormDocumento').val('');
+            $('#nrVersaoDocumento').val('<?php echo $this->nrVersaoDocumento;?>');
+            $('#dsFormDocumento').val('');
+            $('#nmFormDocumento').val('');
+
+            $('#btCancelar').css('display','none');
+            $('#operacao').val('inserir');
+        }
+        function mudancaDeOperacaoAlt(data){
+            formulario.apagarValidacao();
+
+            $('#nrFormDocumento').val(data.nrFormDocumento);
+            $('#nrVersaoDocumento').val(data.nrVersaoDocumento);
+            $('#dsFormDocumento').val(data.dsFormDocumento);
+            $('#nmFormDocumento').val(data.nmFormDocumento);
+
+            $('#operacao').val('alterar');
+            $('#btCancelar').css('display','');
+        }
+
+$("textarea[maxlength]").keypress(function(event){
+    var key = event.which;
+
+    //todas as teclas incluindo enter
+    if(key >= 33 || key == 13) {
+        var maxLength = $(this).attr("maxlength");
+        var length = this.value.length;
+        if(length >= maxLength) {
+            event.preventDefault();
+        }
+    }
+});
+
+</script>

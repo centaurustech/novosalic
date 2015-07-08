@@ -1,0 +1,50 @@
+<?php 
+$visualizarQuestionarioHref =   $this->url(array('controller' => 'cadastraredital', 'action' => 'visualizarquestionario'));
+
+
+if(is_object($this->listaGuiasEdital) and count($this->listaGuiasEdital)>0){
+?>
+<div id="guiaDigital" style="height: auto;_height: 400px; ">
+    <ul>
+        <?php
+        foreach ($this->listaGuiasEdital as $Guias){
+        ?>
+        <li><a href="<?php echo $visualizarQuestionarioHref;?>?nrFormDocumento=<?php echo $Guias->nrFormDocumento; ?>&nrVersaoDocumento=<?php echo $Guias->nrVersaoDocumento; ?>&idPreProjeto=<?php echo $this->idPreProjeto; ?>"><span><?php echo utf8_encode($Guias->nmFormDocumento);?></span></a></li>
+            <?php
+        }
+        ?>
+    </ul> 
+
+</div>
+<?php
+}
+if(!(is_object($this->listaGuiasEdital) and count($this->listaGuiasEdital)>0)){
+    ?>
+    <div id='divMensagensSistema' style='border: 1px solid #FF0000;color:#FF0000; font-family:Arial;font-size:12px'>
+        <ul>
+            <li>
+                'N&atilde;o existe abas cadastradas.'
+            </li>
+        </ul>
+    </div>
+    <?php
+}
+?>
+<script>
+    <?php
+    if($this->stSomenteLeitura != 'S'){
+        ?>
+        $("#guiaDigital").tabs({
+            select: function(event, ui){
+                salvarMultiplosFormularios.exec();
+            }
+        });
+        <?php
+    }
+    else{
+        ?>
+        $("#guiaDigital").tabs();
+        <?php
+    }
+    ?>
+</script>

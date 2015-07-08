@@ -1,0 +1,185 @@
+<!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="last">Avaliar Pedido de Prorrogação</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<div id="titulo">
+    <div>Avaliar Pedido de Prorrogação</div>
+</div>
+
+
+<div id="conteudo">
+
+    <?php if(count($this->dados)>0){ ?>
+    <!-- ============ PAGINAÇÃO ============ -->
+    <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+        <tbody>
+            <tr>
+                <td align="center">
+                <form name="form1" id="form1" action="<?php echo $this->url(array('controller' => 'avaliarpedidoprorrogacao', 'action' => 'index'));?>" method="get">
+                    <?php if($this->paginacao['pag']>1) { ?>
+                    <input class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'avaliarpedidoprorrogacao', 'action' => 'index')).'?pag=1'."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']; ?>'">
+                    <?php } ?>
+                    <input id="btn_p_anterior" type="button"
+                    <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                    <?php }else { ?>
+                           class="btn_p_anterior"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'avaliarpedidoprorrogacao', 'action' => 'index')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']; ?>'"
+                    <?php } ?>>
+                    <input id="btn_p_proximo" type="button"
+                           <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                           class="btn_p_proximo-off"
+                    <?php }else { ?>
+                           class="btn_p_proximo"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'avaliarpedidoprorrogacao', 'action' => 'index')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']; ?>'"
+                    <?php } ?>>
+                    <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                    <input class="btn_ultimo" id="btn_ultimo" type="button"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'avaliarpedidoprorrogacao', 'action' => 'index')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']; ?>'">
+                    <?php } ?>
+                    Pág.:<select name="pag" id="pag" onchange="$('#form1').submit()" class="input_simples">
+                        <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                        <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                        <?php endfor; ?>
+                    </select>
+                    &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>"><input type="submit" class="btn_recarregar" value="">
+                    <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                    <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                 </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <center>
+        <?php
+            echo $this->paginacao['inicio']." a ";
+            echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+            echo " de ". $this->paginacao['total'];
+        ?>
+    </center>
+    <!-- ========== FIM PAGINAÇÃO ========== -->
+    <?php } ?>
+
+
+    <?php if($this->qtdRelatorios != 0){ ?>
+    <table class="tabela tablesorter">
+        <tr>
+            <th>Pronac</th>
+            <th nowrap>Nome do Projeto</th>
+            <th nowrap>Resumo do Projeto</th>
+            <th>Situação</th>
+            <th>Dt.Início Execução</th>
+            <th>Dt.Fim Execução</th>
+            <th>Dt.Pedido</th>
+            <th>Dt.Início</th>
+            <th>Dt.Final</th>
+            <th nowrap>Meses sem captar</th>
+            <th nowrap>% Captado</th>
+            <th>Diligência</th>
+            <th nowrap>Anexo</th>
+            <th nowrap>Avaliar</th>
+        </tr>
+        <?php foreach($this->dados as $dp){ ?>
+        <tr>
+            <td>
+                <a target="_blank" href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'));?>?idPronac=<?php echo $dp->IdPRONAC; ?>"><?php echo $dp->PRONAC; ?></a>
+            </td>
+            <td><?php echo $dp->NomeProjeto; ?></td>
+            <td><?php echo $dp->ResumoProjeto; ?></td>
+            <td><?php echo $dp->Situacao; ?></td>
+            <td><?php echo Data::tratarDataZend($dp->DtInicioExecucao, 'Brasileiro'); ?></td>
+            <td><?php echo Data::tratarDataZend($dp->DtFimExecucao, 'Brasileiro'); ?></td>
+            <td><?php echo Data::tratarDataZend($dp->DtPedido, 'Brasileiro'); ?></td>
+            <td><?php echo Data::tratarDataZend($dp->DtInicio, 'Brasileiro'); ?></td>
+            <td><?php echo Data::tratarDataZend($dp->DtFinal, 'Brasileiro'); ?></td>
+            <td align="right"><?php echo $dp->Meses; ?></td>
+            <td align="right"><?php echo $dp->Percentual; ?></td>
+            <td align="center">
+                <?php $arrPrazo = $this->prazoRespostaDiligencia($dp->IdPRONAC, 171);
+                $icone = $arrPrazo['iconeDiligencia']['icone'];
+                $title = $arrPrazo['iconeDiligencia']['title']; ?>
+                <a target="_blank" href="<?php echo $this->url(array('controller' => 'diligenciar', 'action' =>'listardiligenciaanalista')).'?idPronac=' . $dp->IdPRONAC . '&situacao=E59&tpDiligencia=171';?>" ><img src="<?php echo $this->baseUrl(); ?>/public/img/<?php echo $icone; ?>" title="<?php echo $title; ?>" width="30px"/></a><br>
+            </td>
+            <td><a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id=<?php echo $dp->idArquivo; ?>"><?php echo $dp->nmArquivo ?></a></td>
+            <td><input type="button" class="btn_avaliar" onclick="window.location = '<?php echo $this->url(array('controller' => 'avaliarpedidoprorrogacao', 'action' => 'detalhar', 'prorrogacao' => $dp->idProrrogacao));?>'"/></td>
+        </tr>
+        <?php } ?>
+    </table>
+
+    <?php if(count($this->dados)>0){ ?>
+
+        <!-- ============ PAGINAÇÃO ============ -->
+        <?php if($this->qtdRelatorios > 10) { //echo $this->dados; ?>
+        <center>
+            <?php
+                echo $this->paginacao['inicio']." a ";
+                echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+                echo " de ". $this->paginacao['total'];
+            ?>
+        </center>
+        <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+            <tbody>
+                <tr>
+                    <td align="center">
+                    <form name="form2" id="form2" action="<?php echo $this->url(array('controller' => 'avaliarpedidoprorrogacao', 'action' => 'index'));?>" method="get">
+                        <?php if($this->paginacao['pag']>1) { ?>
+                        <input class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'avaliarpedidoprorrogacao', 'action' => 'index')).'?pag=1'."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']; ?>'">
+                        <?php } ?>
+                        <input id="btn_p_anterior" type="button"
+                        <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                        <?php }else { ?>
+                               class="btn_p_anterior"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'avaliarpedidoprorrogacao', 'action' => 'index')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']; ?>'"
+                        <?php } ?>>
+                        <input id="btn_p_proximo" type="button"
+                               <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                               class="btn_p_proximo-off"
+                        <?php }else { ?>
+                               class="btn_p_proximo"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'avaliarpedidoprorrogacao', 'action' => 'index')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']; ?>'"
+                        <?php } ?>>
+                        <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                        <input class="btn_ultimo" id="btn_ultimo" type="button"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'avaliarpedidoprorrogacao', 'action' => 'index')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']; ?>'">
+                        <?php } ?>
+                        Pág.:<select name="pag" id="pag" onchange="$('#form2').submit()" class="input_simples">
+                            <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                            <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                            <?php endfor; ?>
+                        </select>
+                        &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>"><input type="submit" class="btn_recarregar" value="">
+                        <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                        <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                     </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- ========== FIM PAGINAÇÃO ========== -->
+
+    <?php } } ?>
+
+
+    <?php } else { ?>
+    <br clear="all" />
+    <table class="tabela">
+        <tr>
+            <td align="center">Nenhum registro encontrado.</td>
+        </tr>
+    </table>
+    <?php } ?>
+    <br clear="all" />
+
+
+</div>
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

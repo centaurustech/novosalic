@@ -1,0 +1,75 @@
+<script>
+    $(document).ready(function(){
+        $(".btn_pesquisar").click(function(){
+            $("#resultadoConsulta").html("");
+            jqAjaxForm(document.getElementById("frmDados"), "resultadoConsulta");
+        });
+
+    });
+</script>
+
+<?php include("scripts/relatorio/inc/menuGerencial.inc.php"); ?>
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Parecer</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="conteudo" align="center">
+
+    <fieldset>
+        <legend> Filtros de pesquisa </legend>
+        <form action="<?php echo $this->url(array('controller' => 'relatorio', 'action' => 'resultado-parecer-projetos')); ?>" method="post" name="frmDados" id="frmDados">
+        <table class="tabela" style="width:90%">
+            <tbody><tr>
+                    <th colspan="2">Selecionar campos para pesquisa</th>
+                </tr>
+                <tr>
+                    <td>Org&atilde;o</td>
+                    <td align="left">
+                        <select name="orgao" id="orgao" style="width: 200px;" class="input_simples">
+                            <option value="">Selecione</option>
+                            <?php foreach ($this->orgaos as $orgao): ?>
+                                <option value="<?php echo $orgao->Codigo; ?>"><?php echo $orgao->Sigla; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                        <td>Situa&ccedil;&atilde;o</td>
+                        <td align="left">
+                            <select name="situacao" id="situacao" style="width: 200px;" class="input_simples">
+                                <option value="">Selecione</option>
+                                <?php foreach($this->situacoes as $situacao):?>
+                                <option value="<?php echo $situacao->Codigo; ?>"><?php echo $situacao->Descricao; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="tabela" style="width: 90%">
+            <tr>
+                <td align="center">
+                    <input type="button" style="width: 88px" class="btn_pesquisar" id="btn_pesquisar"/>
+                    <input type="reset" style="width: 88px" class="btn_limpar" id="btn_limpar" value=""/>
+                    <input type="button" style="width: 88px" class="btn_voltar" id="btn_voltar"/>
+                </td>
+            </tr>
+        </table>
+        </form>
+    </fieldset>
+
+    <div id="resultadoConsulta"></div>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

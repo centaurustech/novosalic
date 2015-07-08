@@ -1,0 +1,202 @@
+
+<?php
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+<script>
+    $(document).ready(function(){
+        $(".orderByOS").click(function(){
+            var campo = $(this).attr("valorOrdenacaoOS");
+
+            if("ASC" == $("#tipoOrdenacaoOS").val()){
+                tipo = "DESC";
+            }else{
+                tipo = "ASC";
+            }
+
+            ordenarOS(campo, tipo);
+        });
+
+        $(".orderByOS").each(function(){
+            if($("#ordenacaoOS").val() == $(this).attr("valorOrdenacaoOS")){
+                if($("#tipoOrdenacaoOS").val() == "ASC"){
+                    $(this).after('<span style="padding-left:4px;"><img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-baixo.PNG" align="absmiddle"></span>');
+                }else{
+                    $(this).after('<span style="padding-left:4px;"><img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-cima.PNG" align="absmiddle"></span>');
+                }
+            }
+        });
+    });
+
+    function ordenarOS(campo, tipo){
+        $("#ordenacaoOS").val(campo);
+        $("#tipoOrdenacaoOS").val(tipo);
+        paginarOutrasSituacoes(1);
+    }
+
+    function paginarOutrasSituacoes(pag){
+        $("#pagOS").val(pag);
+        jqAjaxForm(document.getElementById("frmOutrasSituacoes"), "projetosoutrassituacoes_resultado");
+        $("#projetosoutrassituacoes_resultado").html("");
+        $('#projetosoutrassituacoes_resultado').html('<br><center>Aguarde, carregando dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br>');
+    }
+
+    function JSEncaminharParaAnalise(idPronac,idOrgaoDestino){
+    
+        $("body").append("<div id='divDinamica'></div>");
+        $("#divDinamica").html("");
+        $('#divDinamica').html("<br><br><center>Carregando dados...</center>");
+        $.ajax({
+            url : '<?php echo $this->url ( array ('controller' => 'realizarprestacaodecontas', 'action' => 'encaminharprestacaodecontas' ));?>',
+            data :
+                {
+                idPronac : idPronac,
+                idOrgaoDestino : idOrgaoDestino,
+                idSituacaoPrestContas : 1,
+                pag : <?php echo $this->pagOS;?>
+            },
+            success: function(data){
+                $('#divDinamica').html(data);
+            },
+            type : 'post'
+
+        });
+
+        var title = 'Encaminhar Projeto para Análise';
+        $("#divDinamica").dialog({
+            resizable: true,
+            width:750,
+            height:600,
+            modal: true,
+            autoOpen:true,
+            draggable:false,
+            title: title,
+            buttons: {
+                'Cancelar': function() {
+                    $("#divDinamica").remove();
+                    $(this).dialog('close');
+                }
+            },
+            close: function() {
+                    $("#divDinamica").remove();
+                    $(this).dialog('close');
+                }
+        });
+    }
+</script>
+
+
+<div id="resultadoConsultaOutrasSituacoes">
+<!-- ===================================================================== -->
+<!-- ================= AGUARDANDO ANALISE ================================ -->
+<!-- ===================================================================== -->
+
+    <?php $idPronac = null; if (is_object($this->registrosOS) &&  $this->registrosOS->count() > 0){ ?>
+
+        <!-- MODAL PARA ENCAMINHAMENTO PARA ANALISE -->
+        <div style="display: none;" id="modal_encaminhar" title=""></div>
+        <!-- FIM DO MODAL PARA ENCAMINHAMENTO PARA ANALISE -->
+        
+        <table class="tabela">
+            <thead>
+                <tr class="titulo_tabela">
+                    <th width="60">Número</th>
+                    <th width="60">
+                            <!--<a href="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'coordenadorgeralprestacaocontas')).'?pag=1&campo=1&ordem='.$this->paginacao['novaOrdem'];?>">Pronac<br><?php echo $ordem; ?></a>-->
+                            <a href="#resultadoConsultaOutrasSituacoes" class="orderByOS" valorOrdenacaoOS="1">Pronac</a>
+                    </th>
+                    <th width="200"><a href="#resultadoConsultaOutrasSituacoes" class="orderByOS" valorOrdenacaoOS="5">Nome do Projeto</a></th>
+                    <th width="110"><a href="#resultadoConsultaOutrasSituacoes" class="orderByOS" valorOrdenacaoOS="13">Área / Segmento</a></th>
+                    <th width="60"><a href="#resultadoConsultaOutrasSituacoes" class="orderByOS" valorOrdenacaoOS="4">Cidade</a></th>
+                    <th width="60"><a href="#resultadoConsultaOutrasSituacoes" class="orderByOS" valorOrdenacaoOS="15">Mecanismo</a></th>
+                    <th width="60"><a href="#resultadoConsultaOutrasSituacoes" class="orderByOS" valorOrdenacaoOS="7">Data de Recebimento</a></th>
+                    <!--<th width="130">Analisar Prestação de Contas</th>-->
+                    <?php /*if($this->codGrupo == 125 || $this->codGrupo == 126): //Coord. prestacao de contas?>
+                        <th width="130">Encaminhar para Análise</th>
+                    <?php endif;*/ ?>
+                </tr>
+            </thead>
+           <?php
+                $i = 1;
+                foreach ( $this->registrosOS as $chave => $prescontas ) : if($idPronac!=$prescontas->IdPRONAC) {?>
+                        <tr>
+                            <td align="center"><?php echo $i;?></td>
+                            <td class="centro">
+                                <a target="_blank" href="<?php echo $this->url ( array ('controller' => 'consultardadosprojeto', 'action' => '' ) ) . '?idPronac=' . $prescontas->IdPRONAC; ?>" class="itenspronac" style="text-decoration: underline; cursor: pointer;">
+                                    <?php echo $prescontas->AnoProjeto . '' . $prescontas->Sequencial;?>
+                                </a>
+                            </td>
+                            <td align="left"><?php echo $prescontas->NomeProjeto; ?></td>
+                            <td align="left"><?php echo $prescontas->Area . ' / ' . $prescontas->Segmento; ?></td>
+                            <td class="centro"><?php echo $prescontas->UfProjeto; ?></td>
+                            <td class="centro"><?php $mecanismo = $prescontas->Mecanismo; if ($mecanismo == 'Mecenato'){ echo "Incentivo Fiscal"; }else{ echo $prescontas->Mecanismo;}?></td>
+                            <td class="centro">
+                                <?php echo Data::tratarDataZend($prescontas->DtSituacao, 'Brasileira'); ?>
+                            </td>
+                            <!--<td align="center">-->
+                                <?php /*if($this->codGrupo == 132 || $this->codGrupo == 124): //Tecnico e Chefe de divisao ?>
+                                    <img style="cursor: pointer;" src="../public/img/table_multiple.png" onclick="window.location='<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'planilhaorcamentaria')).'?idPronac='.$prescontas->IdPRONAC; ?>'" alt="Analisar" />
+                                <?php else: // coordenador ?>
+                                    <img style="cursor: pointer;" src="../public/img/table_multiple.png" onclick="window.location='<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'laudofinal') ) . '?idPronac=' . $prescontas->IdPRONAC; ?>'" alt="Analisar" />
+                                <?php endif;*/ ?>
+                            <!--</td>-->
+                            <?php /*if($this->codGrupo == 125 || $this->codGrupo == 126): //Coord. prestacao de contas?>
+                                <td align="center"><img style="cursor: pointer;" src="../public/img/user_gray.png" onclick="return JSEncaminharParaAnalise('<?php echo $prescontas->IdPRONAC; ?>','<?php echo $this->codOrgao ?>')" alt="Encaminhar" /></td>
+                            <?php endif;*/ ?>
+                        </tr>
+            <?php $i ++; $idPronac=$prescontas->IdPRONAC; }//feacha if idpronac
+                  endforeach; ?>
+        </table>
+    <?php } else { ?>
+            <table class="tabela">
+                <tr>
+                    <td align="center"><em>Não foram encontrados projetos de acordo com os parâmetros de pesquisa.</em></td>
+                </tr>
+            </table>
+            <script>$('#paginacaoOS').hide();</script>
+    <?php } ?>
+    <form action="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'projetos-outras-situacoes')); ?>" method="post" name="frmOutrasSituacoes" id="frmOutrasSituacoes">
+        <input type="hidden" class="input_simples" name="idPronac" id="idPronac" value="<?php echo $this->idPronac; ?>"/>
+    <?php if(!empty($this->parametrosBuscaOS)) foreach($this->parametrosBuscaOS as $name=>$value):?>
+        <?php if(!is_array($value)): ?>
+        <input type="hidden" name="<?php echo $name?>" id="<?php echo $name?>" value="<?php echo utf8_decode($value)?>"/>
+        <?php else: ?>
+            <?php foreach($value as $valor):?>
+                <input type="hidden" name="<?php echo $name?>[]" id="<?php echo $name?>" value="<?php echo utf8_decode($valor)?>"/>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    <?php endforeach; ?>
+        <?php if(empty($this->parametrosBuscaOS["pagOS"])):?>
+        <input type="hidden" name="pagOS" id="pagOS" value="<?php echo $this->pagOS; ?>"/>
+        <?php endif; ?>
+        <?php if(empty($this->parametrosBuscaOS["ordenacaoOS"])):?>
+        <input type="hidden" name="ordenacaoOS" id="ordenacaoOS" value="<?php echo (!empty($this->parametrosBuscaOS["ordenacaoOS"]))?$this->parametrosBuscaOS["ordenacaoOS"]:""; ?>"/>
+        <?php endif; ?>
+        <?php if(empty($this->parametrosBuscaOS["tipoOrdenacaoOS"])):?>
+        <input type="hidden" name="tipoOrdenacaoOS" id="tipoOrdenacaoOS" value="<?php echo (!empty($this->parametrosBuscaOS["tipoOrdenacaoOS"]))?$this->parametrosBuscaOS["tipoOrdenacaoOS"]:""; ?>"/>
+        <?php endif; ?>
+    </form>
+    <table class="tabela" id="paginacaoOS">
+        <tr>
+            <td align="center">
+                Exibindo de <b><?php echo $this->inicioOS; ?></b> a <b><?php echo $this->fimOS; ?></b> de um total de <b><?php echo $this->totalOS; ?></b><br>
+                <?php if($this->pagOS<=1): ?>
+                <input type="button" class="btn_p_anterior-off" id="btn_p_anterior">
+                <?php else: ?>
+                <input type="button" class="btn_inicio" id="btn_inicio" onclick="paginarOutrasSituacoes('1')"/>
+                <input type="button" class="btn_p_anterior" id="btn_p_anterior" onclick="paginarOutrasSituacoes('<?php echo ($this->pagOS > 1)?$this->pagOS-1:1; ?>')"/>
+                <?php endif; ?>
+                <select name="pagina" id="pagina" class="input_simples" onchange="paginarOutrasSituacoes(this.value)">
+                    <?php for($i=1; $i<$this->totalPagOS+1; $i++): ?>
+                    <option value="<?php echo $i; ?>" <?php if($i == $this->pagOS){ echo " selected='selected' "; } ?>><?php echo $i; ?></option>
+                    <?php endfor; ?>
+                </select>
+                <?php if($this->pagOS+1 > $this->totalPagOS): ?>
+                <input type="button" class="btn_p_proximo-off" id="btn_p_proximo"/>
+                <?php else: ?>
+                <input type="button" class="btn_p_proximo" id="btn_p_proximo" onclick="paginarOutrasSituacoes('<?php echo ($this->pagOS < $this->totalPagOS)?$this->pagOS+1:$this->totalPagOS; ?>')"/>
+                <input type="button" class="btn_ultimo" id="btn_ultimo" onclick="paginarOutrasSituacoes('<?php echo $this->totalPagOS; ?>')"/>
+                <?php endif; ?>
+            </td>
+        </tr>
+    </table>
+</div>

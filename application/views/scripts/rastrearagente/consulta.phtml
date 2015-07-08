@@ -1,0 +1,232 @@
+<?php
+/**
+ * Alterar Projeto
+ * @author Equipe RUP - Politec
+ * @since 15/01/2011
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.alterarprojeto
+ * @copyright (c) 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+<script>
+$(document).ready( function() {	
+	$("#btn_imprimir").click(function(){		
+		$("#conteudoImprimir").val($("#conteudoImprimivel").html());
+		$("#formGerarPdf").attr('target', '_blank');    
+        $("#formGerarPdf").submit(); 
+    });
+});
+	
+	
+</script>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para p&aacute;gina inicial">Início</a></li>
+		<li><!--a href="<?php echo $this->baseUrl(); ?>" title="Início"-->Manuten&ccedil;&atilde;o<!--/a--></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'Rastrearagente', 'action' => 'index')); ?>" title="Ir para Rastrear agente">Rastrear agente</a></li>
+		<li class="last">Resultado da consulta</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<div id="titulo"><div>Rastrear agente - Resultado da consulta <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div></div>
+
+<div id="conteudo">
+<div id="conteudoImprimivel">
+	<!-- ========== INICIO TABELA DADOS DO AGENTE ========== -->
+	<table class="tabela">
+		<tr>
+			<th colspan="2">Dados do agente</th>
+		</tr>
+		<tr class="destacar centro">
+			<td width="50%"><b>NOME</b></td>
+			<td width="50%"><b>CPF / CNPJ</b></td>
+		</tr>
+		<tr>
+			<td><?php echo $this->agente[0]->Nome; ?></td>
+			<td>
+				<?php
+				if (strlen($this->agente[0]->CNPJCPF) > 11) {
+					echo Mascara::addMaskCNPJ($this->agente[0]->CNPJCPF);
+				} else {
+					echo Mascara::addMaskCPF($this->agente[0]->CNPJCPF);
+				}
+				?>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">&nbsp;</td>
+		</tr>
+		<tr>
+			<th colspan="2">Vis&otilde;es</th>
+		</tr>
+		<tr class="destacar centro">
+			<td><b>DESCRI&Ccedil;&Atilde;O</b></td>
+			<td><b>&Aacute;REA</b></td>
+		</tr>
+		<?php
+		foreach ($this->visoes as $visoes) {
+			echo "<tr><td>".$visoes->Descricao."</td>";
+			echo "<td>".$visoes->area."</td></tr>";
+		}
+		?>
+		<tr>
+			<td colspan="2">&nbsp;</td>
+		</tr>
+		<tr>
+			<th colspan="2"><b>Vincula&ccedil;&otilde;es</b></th>
+		</tr>
+		<?php
+		foreach ($this->vinculos as $vinculos) {
+			echo "<tr><td colspan='2'>".$vinculos."</td></tr>";
+		}
+		?>
+	</table>
+	<!-- ========== FIM TABELA DADOS DO AGENTE ========== -->
+	<!-- ========== INICIO TABELA PROPOSTAS ========== -->
+	<table class="tabela">
+		<tr>
+			<th colspan="2"><b>Propostas</b></th>
+		</tr>
+		<tr class="destacar centro">
+			<td colspan="2"><b>NOME</b></td>
+		</tr>
+		<?php
+		$QTDpreprojetos = 0;
+		foreach ($this->preprojetos as $preprojetos) {
+			echo "<tr><td colspan='2'>".$preprojetos->NomeProjeto."</td></tr>";
+			$QTDpreprojetos++;
+		}
+		?>
+		<tr>
+			<td width="50%" class="destacar"><strong>TOTAL DE PROPOSTAS</strong></td>
+			<td width="50%" class="direita"><b><?php echo $QTDpreprojetos; ?></b></td>
+		</tr>
+	</table>
+	<!-- ========== FIM TABELA PROPOSTAS ========== -->
+	<!-- ========== INICIO TABELA PROPOSTAS/PROJETOS ========== -->
+	<table class="tabela">
+		<tr>
+			<th colspan="2">Propostas transformadas em projeto</th>
+		</tr>
+		<tr class="destacar centro">
+			<td width="50%"><b>NOME</b></td>
+			<td width="50%"><b>DETALHES</b></td>
+		</tr>
+		<?php
+		$QTDpreprojetos = 0;
+		foreach ($this->propostastrasformadas as $preprojetos) {
+			echo "<tr><td>".$preprojetos->NomeProjeto."</td>";
+			echo "<td>Proposta Cultural transformada em projeto com o PRONAC ".$preprojetos->AnoProjeto.$preprojetos->Sequencial."</td></tr>";
+			$QTDpreprojetos++;
+		}
+		?>
+		<tr>
+			<td class="destacar"><strong>TOTAL DE PROPOSTAS TRANSFORMADAS EM PROJETO</strong></td>
+			<td class="direita"><b><?php echo $QTDpreprojetos; ?></b></td>
+		</tr>
+	</table>
+	<!-- ========== FIM TABELA PROPOSTAS/PROJETOS ========== -->
+	<!-- ========== INICIO TABELA PROJETOS ========== -->
+	<table class="tabela">
+		<tr>
+			<th colspan="3"><b>Projetos</b></th>
+		</tr>
+		<tr class="destacar centro">
+			<td width="40%"><b>NOME</b></td>
+			<td width="20%"><b>PRONAC</b></td>
+			<td width="40%"><b>SITUA&Ccedil;&Atilde;O</b></td>
+		</tr>
+		<?php
+		$QTDprojetos = 0;
+		foreach ($this->projetos as $projetos) {
+			echo "<tr><td>".$projetos->NomeProjeto."</td>";
+			echo "<td class='centro'>".$projetos->AnoProjeto.$projetos->Sequencial."</td>";
+			echo "<td>".$projetos->dsSituacao."</td></tr>";
+			$QTDprojetos++;
+		}
+		?>
+		<tr>
+			<td class="destacar"><strong>TOTAL DE PROJETOS</strong></td>
+			<td colspan="2" class="direita"><b><?php echo $QTDprojetos ?></b></td>
+		</tr>
+	</table>
+	<!-- ========== FIM TABELA PROJETOS ========== -->
+	<!-- ========== INICIO TABELA CAPTACAO ========== -->
+	<table class="tabela">
+		<tr>
+			<th colspan="3"><b>Projetos com capta&ccedil;&atilde;o de recursos</b></th>
+		</tr>
+		<tr class="destacar centro">
+			<td><b>NOME</b></td>
+			<td><b>PRONAC</b></td>
+			<td><b>TOTAL CAPTADO</b></td>
+		</tr>
+		<?php
+		$QTDprojetos = 0;
+		foreach ($this->projetos2 as $projetos) {
+			if ($projetos['TotalCaptado'] > 0) {
+				echo "<tr><td>".$projetos['NomeProjeto']."</td>";
+				echo "<td class='centro'>".$projetos['pronac']."</td>";
+				echo "<td class='direita'>".number_format($projetos['TotalCaptado'],2,',','.')."</td></tr>";
+				$QTDprojetos ++;
+			}
+		}
+		?>
+		<tr>
+			<td class="destacar"><strong>TOTAL DE PROJETOS COM CAPTA&Ccedil;&Atilde;O DE RECURSOS</strong></td>
+			<td colspan="2"><b><?php echo $QTDprojetos ?></b></td>
+		</tr>
+	</table>
+	<!-- ========== FIM TABELA CAPTACAO ========== -->
+	<!-- ========== INICIO TABELA INABILITADOS ========== -->
+	<table class="tabela">
+		<tr>
+			<th colspan="3"><b>Projetos inabilitados</b></th>
+		</tr>
+		<tr class="destacar centro">
+			<td><b>NOME</b></td>
+			<td><b>PRONAC</b></td>
+			<td><b>INABILITADO NA UNIDADE</b></td>
+		</tr>
+
+		<?php
+		$QTDprojetos = 0;
+		foreach ($this->inabilitados as $projetos) {
+			echo "<tr><td>".$projetos->NomeProjeto."</td>";
+			echo "<td class='centro'>".$projetos->AnoProjeto.$projetos->Sequencial."</td>";
+			echo "<td class='red'>".$projetos->Sigla."</td></tr>";
+			$QTDprojetos++;
+		}
+		?>		
+		<tr>
+			<td class="destacar"><b>TOTAL DE PROJETOS INABILITADOS</b></td>
+			<td colspan="2" class="direita"><b><?php echo $QTDprojetos ?></b></td>
+		</tr>
+	</table>
+</div>
+	<form method="POST" id="formGerarPdf" name="formGerarPdf" action="<?php echo $this->url(array('controller' => 'rastrearagente', 'action' => 'gerar-pdf')); ?>" style="display:none">
+        	<textarea name="html" id="conteudoImprimir"></textarea>
+		</form>
+	<table class="tabela">
+	    <tr>
+	        <td align="center">
+	            <input type="button" style="width: 88px" class="btn_imprimir" id="btn_imprimir"/>
+	        </td>
+	    </tr>
+	</table>
+	<!-- ========== FIM TABELA INABILITADOS ========== -->
+</div>
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

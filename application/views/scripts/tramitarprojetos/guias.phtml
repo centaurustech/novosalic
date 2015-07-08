@@ -1,0 +1,78 @@
+<script type="text/javascript">
+    function sumiraqui(id){
+        $('img[class='+id+']').toggle();
+        $('tr[class='+id+']').toggle();
+    }
+</script>
+
+<?php require_once "inc/menu.inc.php"; // menu ?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para p&aacute;gina inicial">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'tramitarprojetos', 'action' => 'index')); ?>" title="Ir para Tramitar projetos">Tramitar projetos</a></li>
+        <li class="last">Guias de tramita&ccedil;&atilde;o</li>
+    </ul>
+</div>
+<!-- ========== FIM BRADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Guias de tramita&ccedil;&atilde;o <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+    <?php if(count($this->registros)){ ?>
+        <table class="tabela">
+        <?php $idLote=0; $x=0; ?>
+        <?php foreach ($this->registros as $registro){ //xd($registro); ?>
+
+                <?php if($idLote != $registro->idLote){ ?>
+                <tr class="fundo_linha2">
+                    <td colspan="6" align="left">
+                        <img src="<?php echo $this->baseUrl(); ?>/public/img/icn_menos.gif" class="<?php echo $registro->idLote; ?>" style="cursor:pointer;" onclick="sumiraqui('<?php echo $registro->idLote ?>');" />
+                        <img src="<?php echo $this->baseUrl(); ?>/public/img/icn_mais.gif" class="<?php echo $registro->idLote; ?>" style="cursor:pointer; display:none;" onclick="sumiraqui('<?php echo $registro->idLote; ?>');" />
+                        &nbsp;&nbsp;&nbsp;&nbsp;	<strong>Lote Nr:</strong> <?php echo $registro->idLote; ?> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <strong>Data de Envio:</strong> <?php echo $registro->dtEnvio; ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <strong>Destino:</strong> <?php echo $registro->Destino; ?> &nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="<?php echo $this->url(array('controller' => 'tramitarprojetos', 'action' => 'imprimirguia')); ?>?idLote=<?php echo $registro->idLote ?>" target="_blank">Imprimir Guia</a>
+                    </td>
+                </tr>
+                <tr class="<?php echo $registro->idLote; ?>">
+                    <th width="10">Processo</th>
+                    <th width="10">PRONAC</th>
+                    <th>Nome do Projeto</th>
+                </tr>
+                <?php } ?>
+
+                <tr class="<?php echo $registro->idLote ?>">
+                    <td align="center"><?php echo $registro->Processo; ?></td>
+                    <td align="center"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index')); ?>?idPronac=<?php echo $registro->idPronac; ?>" title="Consultar dados do projeto" target="_blank"><?php echo $registro->Pronac; ?></a></td>
+                    <td><?php echo $registro->NomeProjeto; ?></td>
+                </tr>
+                <?php $idLote = $registro->idLote; ?>
+
+        <?php } ?>
+        </table>
+    <?php } else { ?>
+    <table class="tabela">
+        <tr>
+            <td class="centro">Não há guias de tramitação!</td>
+        </tr>
+    </table>
+    <?php } ?>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

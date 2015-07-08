@@ -1,0 +1,80 @@
+<script>
+
+    $(document).ready(function () {
+
+        $('.numero').keydown(function (event) {
+            if ((event.keyCode >= 96 && event.keyCode <= 105) || (event.keyCode >= 48 && event.keyCode <= 57) || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 67 || event.keyCode == 86) {
+                return true;
+            }
+            else
+                return false;
+        });
+
+        $(".localizar").click(function () {
+            if ($('#pronac').val() == '') {
+                $("#divMsg").html('<b>Dados obrigatórios não informados!</b>');
+            } else {
+                pronac = $('#pronac').val();
+                $.ajax({
+                    url: '<?php echo $this->url(array('controller' => 'captacao', 'action' => 'pesquisarprojeto')); ?>',
+                    data:
+                            {
+                                pronac: pronac
+                            },
+                    success: function (data) {
+                        if (data.resposta) {
+                            $("#frmPronac").submit();
+                        } else {
+                            $("#divMsg").html(data.conteudo);
+                        }
+                    },
+                    type: 'post'
+                    , dataType: 'json'
+                });
+            }
+        });
+    });
+
+
+</script>
+
+<!-- ========== MENU ========== -->
+<!--?php include_once 'scripts/aprovacaoeparecer/inc/menu.inc.php';     ?>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'), '', true); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'liberarcontabancaria', 'action' => 'index'), '', true); ?>" title="Ir para In&iacute;cio">Movimenta&ccedil;&atilde;o banc&aacute;ria</a></li>
+        <li class="last">Registrar Captação</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== BUTTON VOLTAR ========== -->
+<div id="titulo">
+    <div>Capta&ccedil;&atilde;o<span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="conteudo" align="center">
+    <div style="width:100%;" align="center">
+        <form name="frmPronac" id="frmPronac" method="post" action="<?php echo $this->url(array('controller' => 'captacao', 'action' => 'dadosprojeto')); ?>">
+            <table style="width: 97%; margin-top: 2em;" border="0" cellpadding="0" cellspacing="1">
+                <tr>
+                    <td width="100"><label for="name">PRONAC *</label></td>
+                    <td>
+                        <input type="text" class="input_simples valida numero" name="pronac" id="pronac" size="12" maxlength="7" maxlength="7" />
+                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="button" name="localizar" id="localizar" class="btn_localizar localizar">
+                        <div id="divMsg" style="color: red;"></div>
+                    </td>
+                </tr>
+            </table>
+            <div id="divMsg"></div>
+            <br/><br/>
+        </form>
+    </div>
+</div>
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

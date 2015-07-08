@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<?php
+include_once 'scripts/manterorcamento/inc/menu.inc.php';
+?>  
+<?php $CadastrarCustos = $this->url(array('controller' => 'manterorcamento', 'action' => 'cadastrarcustos'));?>
+<div id="breadcrumb">
+    <ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'propostas')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+		<li class="last">Or&ccedil;amento</li>
+		<li class="last">Custos Administrativos</li>
+    </ul>
+</div>                
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Custos Administrativos <span>ID #23A</span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <div id="miolo" style="width:100%; margin: 0 auto;">
+    <?php foreach ($this->dados as $dados): ?>
+	<?php $CadastrarCustos = $this->url(array('controller' => 'manterorcamento', 'action' => 'cadastrarcustos'))."?&proposta=".$dados->idProposta;?>
+		<table class="tabela">
+                <tr class="titulo_tabela">
+                    <th>Etapa/Meta</th>
+                    <th>&Iacute;tem</th>
+                    <th width="10%" colspan="2">A&ccedil;&atilde;o</th>
+                </tr>
+                <?php foreach ($this->EtapaCusto as $custos):?>
+               	<tr class="fundo">
+                    <td class="centro"><?php echo $custos->etapa?></td>
+                    <td class="centro"><?php echo $custos->item?></td>
+                    <td class='centro' width="5%">
+					<a href='<?php echo $this->baseurl();?>/manterorcamento/editarcustos?item=<?php echo $this->escape($custos->idItem); ?>&etapa=<?php echo $this->escape($custos->idEtapa);?>&proposta=<?php echo $this->escape($custos->idProposta);?>&idPlanilhaProposta=<?php echo $custos->idPlanilhaProposta?>'> 
+					<img title="Editar" class="editar" src="<?php echo $this->baseUrl(); ?>/public/img/ico/edit.png" style="width: 40%; height: 45%"></img></a></td>
+					<td class='centro' width="5%">
+					<a href="<?php echo $this->url(array('controller'=>'manterorcamento','action'=>'excluiritensprodutos'))?>?idPlanilhaProposta=<?php echo $custos->idPlanilhaProposta?>&retorno=custosadministrativos" > 
+					<img src="<?php echo $this->baseUrl(); ?>/public/img/btn_excluir.gif" style="width: 30%; height: 35%"></img></a></td>
+                </tr>
+               <?php endforeach; ?>
+         </table>
+         <table class="tabela" width="100%" cellpadding="0" cellspacing="0">
+         	<tr>
+            	<td align="center" colspan="5">
+            	<input type="button" class="btn_novo" onclick="window.location.href='<?php echo $CadastrarCustos?>'"></input></td>
+            </tr>
+</table>
+<?php endforeach; ?>
+	</div>
+</div>
+<!-- ========== IN�CIO RODAP� DO CONTE�DO ========== -->
+	<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAP� DO CONTE�DO ========== -->
+<br clear="all" />

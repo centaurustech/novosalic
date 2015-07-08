@@ -1,0 +1,247 @@
+<?php
+/**
+ * An�lise de Custos
+ * @author Equipe RUP - Politec
+ * @since 07/06/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.controller.realizaranaliseprojeto
+ * @link http://www.cultura.gov.br
+ * @copyright � 2010 - Minist�rio da Cultura - Todos os direitos reservados.
+ */
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+<!-- ========== IN�CIO PRONAC ========== -->
+<!-- ========== SCRIPT MODAL ========== -->
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(".icn_menos").click(function(){
+            var tipo = $(this).attr('tipo');
+            var aberto = $(this).attr('aberto');
+            if(aberto == 'true'){
+                adisplay = 'none';
+                $(this).attr('aberto','false')
+                $(this).removeClass('icn_menos').addClass('icn_mais')
+            }
+            else{
+                adisplay = '';
+                $(this).attr('aberto','true')
+                $(this).removeClass('icn_mais').addClass('icn_menos')
+            }
+            if(tipo == 'fonte'){
+                fonte = $(this).attr('fonte');
+                $(".master[fonte='"+fonte+"']").css('display', adisplay);
+                $(".clickproduto").removeClass('icn_mais').addClass('icn_menos');
+            }
+            if(tipo == 'produto'){
+                fonte = $(this).attr('fonte');
+                produto = $(this).attr('produto');
+                $(".produto[produto='"+produto+"'][fonte='"+fonte+"']").css('display', adisplay);
+            }
+            if(tipo == 'etapa'){
+                fonte = $(this).attr('fonte');
+                produto = $(this).attr('produto');
+                etapa = $(this).attr('etapa');
+                $(".etapa[produto='"+produto+"'][etapa='"+etapa+"'][fonte='"+fonte+"']").css('display', adisplay);
+            }
+            if(tipo == 'cidade'){
+                fonte = $(this).attr('fonte');
+                produto = $(this).attr('produto');
+                etapa = $(this).attr('etapa');
+                cidade = $(this).attr('cidade');
+                $(".cidade[produto='"+produto+"'][etapa='"+etapa+"'][cidade='"+cidade+"'][fonte='"+fonte+"']").css('display', adisplay);
+            }
+        })
+        $(".item").mouseover(function(){
+            $(this).addClass('fundo_linha3');
+        })
+        $(".item").mouseout(function(){
+            $(this).removeClass('fundo_linha3');
+        })
+        $(".item").click(function(){
+            if($(this).hasClass('fundo_linha4')){
+                $(this).removeClass('fundo_linha4');
+            }
+            else{
+                $(this).addClass('fundo_linha4');
+            }
+        })
+    })
+
+</script>
+
+<table class="tabela">
+    <tr>
+        <th>
+            <p>An&aacute;lise de Custos</p>
+            <p><strong>Pronac N&ordm; <?php echo $this->projeto->AnoProjeto . $this->projeto->Sequencial; ?> - <?php echo $this->projeto->NomeProjeto; ?></strong></p>
+        </th>
+    </tr>
+    <tr>
+        <td></td>
+    </tr>
+    <tr>
+        <th colspan="13">Planilha de Or&ccedil;amento Sugerido</th>
+    </tr>
+    <tr>
+        <td></td>
+    </tr>
+    <?php
+    $nrfonte = 0;
+    $item = 1;
+    foreach ($this->planilha as $fonte => $planilha) { //ForeachFonteIncentivo
+        ?>
+        <tr>
+            <td>
+                <div tipo="fonte" fonte="<?php echo $nrfonte; ?>" aberto="true" class="icn_menos" style="width:90%"><span class="red del_link" style="font-size: 20pt; font-weight: 800;"><?php echo $fonte; ?></span></div>
+            </td>
+        </tr>
+        <?php
+        $nrproduto = 0;
+        $valorprodutosolicitado = 0;
+        $valorprodutoparecerista = 0;
+        $valorprodutocomponente = 0;
+        foreach ($this->planilha[$fonte] as $produto => $planilha) {
+            ?>
+            <tr class='master' fonte="<?php echo $nrfonte; ?>">
+                <td class='master'>
+                    <div  tipo="produto" aberto="true" fonte="<?php echo $nrfonte; ?>" produto ="<?php echo $nrproduto; ?>" class="icn_menos clickproduto" style="width:98%; margin-left:2%;"><span class="green del_link" style="font-size: 16pt; font-weight: 800;"><?php echo $produto; ?></span></div>
+                </td>
+            </tr>
+            <?php
+            $nretapa = 0;
+            foreach ($this->planilha[$fonte][$produto] as $etapa => $planilha) {
+                $valoretapasolicitado = 0;
+                $valoretapaparecerista = 0;
+                $valoretapacomponente = 0;
+                ?>
+                <tr class="master produto" produto="<?php echo $nrproduto; ?>"  fonte="<?php echo $nrfonte; ?>" >
+                    <td>
+                        <div><div tipo="etapa" fonte="<?php echo $nrfonte; ?>" produto="<?php echo $nrproduto; ?>" etapa="<?php echo $nretapa; ?>" aberto="true" class="icn_menos" style="width:94%; margin-left:4%;"><span class="orange del_link" style="font-size: 14pt; font-weight: 800;"><?php echo $etapa; ?></span></div></div>
+                    </td>
+                </tr>
+                <?php
+                $nrcidade = 0;
+                foreach ($this->planilha[$fonte][$produto][$etapa] as $cidade => $planilha) {
+                    ?>
+                    <tr class="master produto etapa" produto="<?php echo $nrproduto; ?>" etapa="<?php echo $nretapa; ?>"  fonte="<?php echo $nrfonte; ?>" >
+                        <td>
+                            <div tipo="cidade" fonte="<?php echo $nrfonte; ?>" produto="<?php echo $nrproduto; ?>" etapa="<?php echo $nretapa; ?>" cidade="<?php echo $nrcidade; ?>" aberto="true" class="icn_menos" style="width:94%; margin-left:6%;"><span class="black del_link" style="font-size: 12pt; font-weight: 800;"><?php echo $cidade; ?></span></div>
+                        </td>
+                    </tr>
+                    <tr class="master produto etapa cidade" produto="<?php echo $nrproduto; ?>" etapa="<?php echo $nretapa; ?>" cidade="<?php echo $nrcidade; ?>"  fonte="<?php echo $nrfonte; ?>">
+                        <td>
+                            <table class="tabela">
+                                <tr>
+                                    <th>&nbsp;</th>
+                                    <th>Item</th>
+                                    <th>Vl. total solicitado</th>
+                                    <th>Justif. do proponente</th>
+                                    <th>Vl. total sugerido do parecerista</th>
+                                    <th>Justif.do Parecerista</th>
+                                    <th>Dias (Relator)</th>
+                                    <th>Unidade (Relator)</th>
+                                    <th>Qtde (Relator)</th>
+                                    <th>Ocor. (Relator)</th>
+                                    <th>Vl. Unit&aacute;rio (Relator)</th>
+                                    <th>Vl. total Sugerido do Relator</th>
+                                    <th>Justif. do Relator</th>
+                                </tr>
+                                <?php
+                                $valorufsolicitado = 0;
+                                $valorufparecerista = 0;
+                                $valorufcomponente = 0;
+                                foreach ($this->planilha[$fonte][$produto][$etapa][$cidade] as $planilha) {
+                                    $valorufsolicitado += $planilha['vlproponente'];
+                                    $valorufparecerista += $planilha['vlparecerista'];
+                                    $valorufcomponente += $planilha['vlconselheiro'];
+                                    ?>
+                                    <tr class="item" <?php echo $planilha['reducao'] == 1 ? "style='color : red;'" : 0; ?>>
+                                        <td><?php echo $item; ?></td>
+                                        <td><a idPlanilhaAprovacao ="<?php echo $planilha['idPlanilhaAprovacao']; ?>" ><?php echo $planilha['item']; ?></a></td>
+                                        <td><?php echo $this->formatarReal($planilha['vlproponente']); ?></td>
+                                        <td><?php echo $planilha['justificitivaproponente']; ?></td>
+                                        <td><?php echo $this->formatarReal($planilha['vlparecerista']); ?></td>
+                                        <td><?php echo $planilha['justificativaparecerista']; ?></td>
+                                        <td><?php echo $planilha['qtdiascomp']; ?></td>
+                                        <td><?php echo $planilha['Unidadecomp']; ?></td>
+                                        <td><?php echo $planilha['qtitemcomp']; ?></td>
+                                        <td><?php echo $planilha['nrocorrenciacomp']; ?></td>
+                                        <td><?php echo $this->formatarReal($planilha['vlunitariocomp']); ?></td>
+                                        <td><?php echo $this->formatarReal($planilha['vlconselheiro']); ?></td>
+                                        <td><?php echo $planilha['justificativaconselheiro']; ?></td>
+                                    </tr>
+                                    <?php
+                                    $item++;
+                                } //fechaForeachplanilha
+                                $nrcidade++;
+                                $valoretapasolicitado += $valorufsolicitado;
+                                $valoretapaparecerista += $valorufparecerista;
+                                $valoretapacomponente += $valorufcomponente;
+
+                                $valorprodutosolicitado += $valorufsolicitado;
+                                $valorprodutoparecerista += $valorufparecerista;
+                                $valorprodutocomponente += $valorufcomponente;
+                                ?>
+                                <tr>
+                                    <td colspan="7" class="black" style="font-size: 14pt;">Total de UF</td>
+                                    <td class="black" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($valorufsolicitado); ?></td>
+                                    <td></td>
+                                    <td class="black" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($valorufparecerista); ?></td>
+                                    <td></td>
+                                    <td class="black" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($valorufcomponente); ?></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="7" class="orange" style="font-size: 14pt;">Total da Etapa</td>
+                                    <td class="orange" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($valoretapasolicitado); ?></td>
+                                    <td></td>
+                                    <td class="orange" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($valoretapaparecerista); ?></td>
+                                    <td></td>
+                                    <td class="orange" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($valoretapacomponente); ?></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="7" class="green" style="font-size: 14pt;">Valor para <?php echo $produto; ?></td>
+                                    <td class="green" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($valorprodutosolicitado); ?></td>
+                                    <td></td>
+                                    <td class="green" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($valorprodutoparecerista); ?></td>
+                                    <td></td>
+                                    <td class="green" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($valorprodutocomponente); ?></td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <?php
+                } //fechaForeachcidade
+                $nretapa++;
+            } //fechaForeachetapa
+            $valorprodutosolicitado = 0;
+            $valorprodutoparecerista = 0;
+            $valorprodutoparecerista = 0;
+            $nrproduto++;
+        } //fechaForeachproduto
+        $nrfonte++;
+    }//fechaForeachFonteIncentivo
+    ?>
+    <tr>
+        <td>
+            <table class="tabela">
+                <tr>
+                    <th>Total Solicitado</th>
+                    <th>Total do Parecerista</th>
+                    <th>Total Componente</th>
+                </tr>
+                <tr>
+                    <td class="black" style="font-size: 12pt; font-weight: 600; "><?php echo $this->formatarReal($this->totalproponente); ?></td>
+                    <td class="black" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($this->totalparecerista); ?></td>
+                    <td class="black" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($this->totalcomponente); ?></td>
+                </tr>
+            </table>
+        </td>
+    <tr>
+</table>
+<input id="valorpossivel" value="<?php echo $this->totalproponente - $this->totalcomponente; ?>" type="hidden"/>
+
+

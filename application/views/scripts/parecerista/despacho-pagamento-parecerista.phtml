@@ -1,0 +1,127 @@
+<?php include_once 'scripts/parecerista/inc/menu-coordenador.inc.php'; ?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'),'',true); ?>" title="Ir para Início">Início</a></li>
+        <li class="last">Despacho de Pagamento de Parecerista</li>
+    </ul>
+</div> 
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<div id="modal"></div>
+<div id="confirma"></div>
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Despacho de Pagamento de Parecerista <span class="voltar"><a href="javascript:voltar();" title="Página Anterior">Voltar</a></span></div>
+</div>
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+
+<div id="conteudo">
+
+    <table class="tabela">
+        <tr>
+            <td colspan="4">DESPACHO <?php echo $this->listaDePagamentos[0]['nrDespacho']; ?>/COTEP/DGMF/SSEFIC/MinC</td>
+            <td style="text-align: center;"><a href="<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'imprimir-despacho', 'despacho' => $this->listaDePagamentos[0]['idGerarPagamentoParecerista']),'',true); ?>" target="_blank"><input type="button" class="btn_imprimir" value=" "  /></a></td>
+        </tr>
+        <tr>
+            <td colspan="5">Parecerista: <?php echo $this->listaDePagamentos[0]['nmParecerista']; ?>, CPF: <?php echo $this->listaDePagamentos[0]['cpfParecerista']; ?></td>
+        </tr>
+        <tr class="titulo_tabela">
+            <th width="10">Item</th>
+            <th width="70">PRONAC</th>
+            <th width="">PROJETO</th>
+            <th width="300">Vinculada</th>
+            <th width="130">Valor a ser Pago</th>
+        </tr>
+        <?php $i = 1;?>
+        <?php foreach($this->listaDePagamentos[0]['Projetos'] as $pag):?>
+        <tr>
+            <td style="text-align: center;"><?php echo $i; ?></td>
+            <td style="text-align: center;"><?php echo $pag['pronac']; ?></td>
+            <td><?php echo $pag['NomeProjeto']; ?></td>
+            <td><?php echo $pag['UnidadeAnalise']; ?></td>
+            <td style="text-align: right;"><?php echo $this->formatarReal($pag['vlPagamento']); ?></td>
+        </tr>
+        <?php $i++; ?>
+        <?php endforeach; ?>
+
+        <tr>
+            <td style="text-align: right;" colspan="4">Total:</td>
+            <td style="text-align: right;"><?php echo $this->formatarReal($this->listaDePagamentos[0]['vlTotalPagamento']); ?></td>
+        </tr>
+    </table>
+    
+    
+    
+    <div style="border: solid 0px #ccc; padding: 20px 20px 10px 30px; font-size: 15px; font-weight: 500;" class="sumir">
+        
+        <div id="topo-despacho" style="text-align: center; font-size: 13px; font-weight: 500;">
+            <img src="<?php echo $this->baseUrl();?>/public/img/brasaoArmas.jpg" />
+            <div>Ministério da Cultura</div>
+            <div>Secretaria de Fomento e Incentivo a Cultura</div>
+            <div>Diretoria de Gestão de Mecanismos de Fomento</div>
+            <div>Coordenação Técnica do Pronac</div>
+        </div>
+        <br />
+        <br />
+        <div id="topo-despacho-descricao" style="text-align: left; padding-left: 30px; font-size: 15px; font-weight: 500;">
+            <div>DESPACHO <?php echo $this->listaDePagamentos[0]['nrDespacho']; ?>/COTEP/DGMF/SSEFIC/MinC</div>
+            <div>Assunto: Solicitação de Pagamento</div>
+            <div>Processo: </div>
+        </div>
+        <br />
+        <br />
+        <div id="topo-despacho-data" style="text-align: right; font-size: 15px; font-weight: 500;">
+            <div style="padding-right: 100px;"><?php echo Data::DataporExtenso(date('d/m/Y'));?></div>
+        </div>
+        <br />
+        <br />  
+        <div style="padding-left: 30px;">À Coordenação-Geral de Execusão Orçamentária e Financeira</div>
+        
+        <table class="tabela">
+            <tr class="titulo_tabela">
+                <th width="10">Item</th>
+                <th width="70">PRONAC</th>
+                <th width="">PROJETO</th>
+                <th width="300">Vinculada</th>
+                <th width="130">Valor a ser Pago</th>
+            </tr>
+            <?php $i = 1;?>
+            <?php foreach($this->listaDePagamentos[0]['Projetos'] as $pag):?>
+            <tr>
+                <td style="text-align: center;"><?php echo $i; ?></td>
+                <td style="text-align: center;"><?php echo $pag['pronac']; ?></td>
+                <td><?php echo $pag['NomeProjeto']; ?></td>
+                <td><?php echo $pag['UnidadeAnalise']; ?></td>
+                <td style="text-align: right;"><?php echo $this->formatarReal($pag['vlPagamento']); ?></td>
+            </tr>
+            <?php $i++; ?>
+            <?php endforeach; ?>
+            
+            <tr>
+                <td style="text-align: right;" colspan="4">Total:</td>
+                <td style="text-align: right;"><?php echo $this->formatarReal($this->listaDePagamentos[0]['vlTotalPagamento']); ?></td>
+            </tr>
+        </table>
+        
+        <div style=" padding: 25px 35px 30px 25px; text-align: justify;">
+            Declaro que o(a) Parecerista 
+            <b><?php echo $this->listaDePagamentos[0]['nmParecerista']; ?>, CPF: <?php echo $this->listaDePagamentos[0]['cpfParecerista']; ?>,</b>
+             analisou e emitiu parecer técnico sobre os projetos acima referidos, com os respectivos objetos e valores.
+              Os pareceres técnicos devidamente atestados foram incluídos nos processos correspodentes para sua posterior instrução.
+             <br />
+             <br />
+        </div>
+        
+        
+    </div>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

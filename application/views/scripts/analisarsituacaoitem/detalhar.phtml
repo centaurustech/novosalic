@@ -1,0 +1,109 @@
+<script type="text/javascript">
+    function acaoBtn(acao){
+        var vlrAcao = null,
+            i = 0;
+        if(acao == 'aprovar'){
+            vlrAcao = 0;
+        } else if(acao == 'rejeitar'){
+            vlrAcao = 1;
+        } else if(acao == 'cancelar'){
+            location.href="<?php echo $this->baseUrl()."/analisarsituacaoitem"; ?>";
+            return false;
+        }
+
+        $('.obrigatorio').each(function(){
+            if($.trim($(this).val()) == '')
+                i++;
+        });
+
+        if(i > 0) {
+            $("#camposObrigatorios").dialog("destroy");
+            $("#camposObrigatorios").html("Favor preencher os dados obrig&aacute;torios!");
+            $("#camposObrigatorios").dialog({
+                resizable: false,
+                title: 'Alerta!',
+                width:320,
+                height:160,
+                modal: true,
+                buttons : {
+                    'OK' : function(){
+                        $(this).dialog('close');
+                    }
+                }
+            });
+            $('.ui-dialog-titlebar-close').remove();
+
+        } else {
+            $('#avaliacao').val(vlrAcao);
+            $('#formularioAnalise').submit();
+        }
+    }
+</script>
+
+<div id="camposObrigatorios" class="sumir"></div>
+
+<!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'analisarsituacaoitem', 'action' => 'index')); ?>" title="Lista de Solitações de Item">Lista de Solitações de Item</a></li>
+        <li class="last">Analisar Solicitação de Item</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<div id="titulo">
+    <div>Analisar Solicitação de Item</div>
+</div>
+
+
+<div id="conteudo">
+    <form id="formularioAnalise" action="<?php echo $this->url(array('controller' => 'analisarsituacaoitem', 'action' => 'avaliar-item')); ?>" method="post">
+        <table class="tabela tablesorter">
+            <?php foreach($this->dados as $dp){ ?>
+            <tr>
+                <th colspan="2"><?php echo $dp->ItemSolicitado; ?></th>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right" style="width: 100px;">Produto</td>
+                <td><?php echo $dp->Produto; ?></td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Etapa</td>
+                <td><?php echo $dp->Etapa; ?></td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Item</td>
+                <td><?php echo $dp->ItemSolicitado; ?></td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Justificativa</td>
+                <td><?php echo $dp->Justificativa; ?></td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Resposta <span style="color: red;">*</span></td>
+                <td>
+                    <textarea name="resposta" id="resposta" cols="" rows="3" style="width: 99%;" class="textarea_simples obrigatorio"></textarea>
+                    <input type="hidden" name="idItem" value="<?php echo $dp->idSolicitarItem; ?>">
+                    <input type="hidden" name="avaliacao" id="avaliacao" value="">
+                    <br clear="all" /><span style="color: #FF9999; font-size: 11px;">Limite máximo de 250 caracteres</span>
+                </td>
+            </tr>
+            <?php } ?>
+        </table>
+    </form>
+
+    <p align="center" style="letter-spacing: 10px;">
+        <a href="#" onclick="acaoBtn('aprovar');" class="visualizarObs"><img src="<?php echo $this->baseUrl(); ?>/public/img/buttons/aprovar.gif" /></a>
+        <a href="#" onclick="acaoBtn('rejeitar');" class="visualizarObs"><img src="<?php echo $this->baseUrl(); ?>/public/img/buttons/rejeitar.gif" /></a>
+        <a href="#" onclick="acaoBtn('cancelar');" class="visualizarObs"><img src="<?php echo $this->baseUrl(); ?>/public/img/buttons/cancelar.gif" /></a>
+    </p>
+
+    <br clear="all" />
+
+</div>
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

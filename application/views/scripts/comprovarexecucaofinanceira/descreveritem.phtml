@@ -1,0 +1,278 @@
+<?php
+    $SalvarHref                 = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'cadastrardescricaoitem')) . '?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $ExcluirItensCustoHref      = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'excluiritenscusto')) . '?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $AnexarHref                 = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'anexar')) . '?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $CancelarHref               = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'pagamento')) . '?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $ExcluirDocumentoHref       = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'excluirdocumento')) . '?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $descricaoitemHref          = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'descricaoitem')) . '?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $carregarSelectHref         = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'carregaselectajax')) . '?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+
+    $corpo  = 'incluirDescricaoItemAjax';
+    $inputID = '<input type="hidden" name="idpronac" id="idpronac" value="'.$this->idpronac.'"/>';
+    $idformulario = 'frDescreverItem';
+    $somenteLeitura = '';
+    if($this->vrSituacao) {
+        $somenteLeitura = 'readonly';
+    }
+?>
+<div id="miolo" style="margin: 2px; padding: 2px; background: white; font-size: 12px; color: #555;">
+    <div id="<?php echo $corpo;?>">
+        <form action="<?php echo $SalvarHref;?>" id="<?php echo $idformulario;?>" name="<?php echo $idformulario;?>" method="post">
+            <?php echo $inputID; ?>
+            <table class="tabela">
+                <tr>
+                    <td class="destacar bold w200" align="right">Produto<span style="color: red;">*</span></td>
+                    <td>
+                        <input type="hidden" name="idItemCusto" id="idItemCusto" value=""/>
+                        <input type="hidden" name="idPlanilhaAprovacao" id="idPlanilhaAprovacao" value=""/>
+                        <select name="idProduto" id="produtoComp" null="false">
+                            <option value="">Selecione</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="destacar bold w200" align="right">Etapa<span style="color: red;">*</span></td>
+                    <td>
+                        <select name="idEtapa" id="etapaComp" null="false">
+                            <option value="">Selecione</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="destacar bold w200" align="right">Itens de Custo<span style="color: red;">*</span></td>
+                    <td>
+                        <select name="idPlanilhaItem" id="itemComp" null="false">
+                            <option value="">Selecione</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="destacar bold w200" align="right">Descri&ccedil;&atilde;o do Item<span style="color: red;">*</span></td>
+                    <td><textarea <?php echo $somenteLeitura;?> cols="60" rows="5" name="dsItemDeCusto" id="dsItemDeCusto" null="false"></textarea></td>
+                </tr>
+                <tr>
+                    <td class="destacar bold w200" align="right">Marca</td>
+                    <td><input type="text" <?php echo $somenteLeitura;?> style="width: 60%;" name="dsMarca" id="dsMarca" value=""/></td>
+                </tr>
+                <tr>
+                    <td class="destacar bold w200" align="right">Fabricante</td>
+                    <td><input type="text" <?php echo $somenteLeitura;?> style="width: 60%;" name="dsFabricante" id="dsFabricante" value=""/></td>
+                </tr>
+                <tr>
+                    <td class="destacar bold w200" align="right">Quantidade</td>
+                    <td><span id="qtItem"></span></td>
+                </tr>
+                <tr>
+                    <td class="destacar bold w200" align="right">Pre&ccedil;o Unit&aacute;rio</td>
+                    <td><span id="vlUnitarioItem"></span></td>
+                </tr>
+                <tr>
+                    <td class="destacar bold w200" align="right">Valor Total Aprovado</td>
+                    <td><span id="vlTotalItem"></span></td>
+                </tr>
+                <tr>
+                    <td class="destacar bold w200" align="right">Observa&ccedil;&atilde;o</td>
+                    <td><textarea <?php echo $somenteLeitura;?> cols="60" rows="5" name="dsObservacao" id="dsObservacao" ></textarea></td>
+                </tr>
+            </table>
+        </form>
+        <div style="text-align: center;">
+            <span id="salvarItem" style="cursor: pointer" ><img border="0" title="Salvar" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/salvar.gif" /></span>
+            <span id="cancelar" style="cursor: pointer"><img border="0" title="Cancelar" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/cancelar.gif" /></span>
+        </div>
+    </div>
+</div>
+<div id="result"></div>
+<script type="text/javascript">
+    
+    $(document).ready(function(){
+        mascaras(corpo);
+
+       /*$(corpo+' a').click(function(){
+            if($(this).attr('retorna')==undefined){
+                var info = {
+                    este                :   this,
+                    corpo               :   '<?php //echo $corpo;?>',
+                    parametros          :   {idpronac:'<?php //echo $this->idpronac;?>'}                    
+                };
+                acoesLink(info);
+                return false;
+            }
+        });*/
+        //carregarPgHtml('<?php //echo $carregarSelectHref;?>','#produtoComp',{tpSelect:'produto',idpronac:'<?php //echo $this->idpronac?>',ckItens:<?php //echo json_encode($this->ckItens);?>,ckItensVal:true},'Selecione');
+        
+        var idProduto = carregarSelectHtml('<?php echo $carregarSelectHref;?>','#produtoComp',{tpSelect:'produto',idpronac:'<?php echo $this->idpronac?>',ckItens:<?php echo json_encode($this->ckItens);?>},'Selecione');
+//        if(idProduto != undefined){
+//            var idEtapa = carregarSelectHtml('<?php //echo $carregarSelectHref;?>','#etapaComp',{tpSelect:'etapa',idpronac:'<?php //echo $this->idpronac?>',idProduto:idProduto,ckItens:<?php //echo json_encode($this->ckItens);?>},'Selecione');
+//            if(idEtapa != undefined){
+//                carregarSelectHtml('<?php //echo $carregarSelectHref;?>','#itemComp',{tpSelect:'itens',idpronac:'<?php //echo $this->idpronac?>',idProduto:idProduto,idEtapa:idEtapa,ckItens:<?php //echo json_encode($this->ckItens);?>},'Selecione');
+//                if($('#itemComp').val() != ''){
+//                    buscarDadosItens();
+//                }
+//
+//            }  
+//        }
+
+        $('#produtoComp').change(function (){
+            if($(this).val() == ''){
+                $('#etapaComp.select_simples').html('<option value="">Selecione</option>');
+                $('#itemComp.select_simples').html('<option value="">Selecione</option>');
+            } else {
+                carregarSelectHtml('<?php echo $carregarSelectHref;?>','#etapaComp',{tpSelect:'etapa',idpronac:'<?php echo $this->idpronac?>',idProduto:$('#produtoComp').val(),ckItens:<?php echo json_encode($this->ckItens);?>,ckItensVal:true},'Selecione');
+            }
+            limparDadosDoItem();
+        });
+        $('#etapaComp').change(function (){
+            carregarSelectHtml('<?php echo $carregarSelectHref;?>','#itemComp',{tpSelect:'itens',idpronac:'<?php echo $this->idpronac?>',idProduto:$('#produtoComp').val(),idEtapa:$('#etapaComp').val(),ckItens:<?php echo json_encode($this->ckItens);?>,ckItensVal:true},'Selecione');
+            limparDadosDoItem();
+        });
+        $('#itemComp').change(function (){
+            if($('#itemComp').val() != ''){
+                buscarDadosItens();
+            } else {
+                limparDadosDoItem();
+            }
+        });
+        
+        
+        $(corpo+' #<?php echo $idformulario;?>').submit(function(){
+            $(this).attr('href',$(this).attr('action'));
+            var info = {
+                este                :   this,
+                corpo               :   '<?php echo $corpo;?>',
+                idformulario        :   '<?php echo $idformulario;?>'
+            };
+            salvar(info);
+            return false;
+        });
+        
+        
+        $('#cancelar').click(function(){
+            $('#desc_item').dialog('close');
+            return false;
+        });
+        
+        
+        $('#salvarItem').click(function(){
+            var verifica = true;
+            $('#frDescreverItem').find('[null=false]').each(function(){
+                if ($.trim($(this).val().replace(/(\,|\.)/g,'')).length == 0){
+                    verifica = false;
+                }
+            });
+
+            if (!verifica){
+                $("#msg-error").dialog("destroy");
+                $("#msg-error").html("Favor preencher os dados obrigat&oacute;rios!");
+                $("#msg-error").dialog({
+                    resizable: false,
+                    title: 'Alerta!',
+                    width:320,
+                    height:160,
+                    modal: true,
+                    buttons : {
+                        'Ok' : function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+//                $('.ui-dialog-titlebar-close').remove();
+                return false;
+            }
+            
+            $.post(
+                '<?php echo $SalvarHref ?>', 
+                {
+                    idPlanilhaAprovacao    :   $('#idPlanilhaAprovacao').val(),
+                    dsItemDeCusto          :   $('#dsItemDeCusto').val(),
+                    dsMarca                :   $('#dsMarca').val(),
+                    dsFabricante           :   $('#dsFabricante').val(),
+                    dsObservacao           :   $('#dsObservacao').val(),
+                    idItemCusto            :   $('#idItemCusto').val()
+                },
+                function(data){
+                     $("#result").dialog("destroy");
+                     $("#result").dialog({
+                        width:320,
+                        height:180,
+                        title:'Alerta!',
+                        modal:false,
+                        resizable: false,
+                        buttons : {
+                            'N\u00e3o' : function(){
+//                                location.reload();
+                                $("#result").dialog('close');
+                                $("#desc_item").dialog('close');
+                            },
+                            'Sim' : function(){
+                                $("#produtoComp option:first").attr('selected','selected');
+                                $("#etapaComp option:first").attr('selected','selected');
+                                $("#itemComp option:first").attr('selected','selected');
+                                limparDadosDoItem();
+                                $(this).dialog('close');
+                            }
+                        }
+                    }).html(data.mensagem+'<br/>Deseja descrever outro item?');
+//                    $('.ui-dialog-titlebar-close').remove();
+                }, 'json'
+            );
+        });
+        
+    });
+    
+    
+    function buscarDadosItens(){
+        var resp = buscarJson('<?php echo $descricaoitemHref;?>',{
+                idProduto       :   $('#produtoComp').val(),
+                idEtapa         :   $('#etapaComp').val(),
+                idPlanilhaItem  :   $('#itemComp').val(),
+                idpronac        :   '<?php echo $this->idpronac?>'
+            });
+
+            $('#idItemCusto').val(resp.idItemCusto);
+            $('#idPlanilhaAprovacao').val(resp.idPlanilhaAprovacao);
+            $('#qtItem').html(parseInt(resp.qtItem));
+            $('#vlUnitarioItem').html(resp.vlUnitarioItem);
+            $('#vlTotalItem').html(resp.vlTotalItem);
+            $('#dsFabricante').val(resp.dsFabricante);
+            $('#dsItemDeCusto').val(resp.dsItemDeCusto);
+            $('#dsMarca').val(resp.dsMarca);
+            $('#dsObservacao').val(resp.dsObservacao);
+    }
+
+    function carregarSelectHtml(pagina,idSelect,dados,textoIni){
+        var idRetorno = undefined;
+        if(textoIni == undefined)
+            textoIni = 'Todos';
+
+        var resposta = buscarJson(pagina,dados);
+        var cont = 0;
+        for(var j in resposta){
+            select += '<option value="'+resposta[j].id+'">'+resposta[j].nome+'</option>';
+            cont++;
+            if(cont>1)
+                idRetorno = undefined;
+            else
+                idRetorno = resposta[j].id;
+        }
+//        if(cont>1 || cont==0)
+            var select = '<option value="">'+textoIni+'</option>'+select;
+        $(idSelect).html(select);
+        return idRetorno;
+    }
+
+    function limparDadosDoItem(){
+        $('#idItemCusto').val();
+        $('#idPlanilhaAprovacao').val('');
+        $('#qtItem').html('');
+        $('#vlUnitarioItem').html('');
+        $('#vlTotalItem').html('');
+        $('#dsFabricante').val('');
+        $('#dsItemDeCusto').val('');
+        $('#dsMarca').val('');
+        $('#dsObservacao').val('');
+    }
+    
+</script>
+
+<div id="msg-error" class="sumir"></div>

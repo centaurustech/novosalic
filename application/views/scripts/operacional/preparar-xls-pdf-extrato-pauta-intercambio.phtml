@@ -1,0 +1,50 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#conteudoXLS').val($('#conteudoImprimivel').html());
+        $('#formGerarXls').submit();
+    });
+</script>
+<form method="POST" id="formGerarXls" name="formGerarXls" action="<?php echo $this->url(array('controller' => 'operacional', 'action' => ($this->tipo == 'xls')?'gerar-xls':'html2-pdf')); ?>" style="display:none">
+    <textarea name="html" id="conteudoXLS"></textarea>
+</form>
+<div class="conteudoImprimivel" id="conteudoImprimivel" style="display:none">
+<table class="tabela" width="100%">
+    <tr>
+        <th valign="middle" align="left" bgcolor="#D0D0D0">PRONAC</th>
+        <th valign="middle" align="left" bgcolor="#D0D0D0">Nome do Projeto</th>
+        <?php if(@in_array("cmpsOrd_proponente", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#D0D0D0">Proponente</th><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_uf", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#D0D0D0">Uf</th><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_cidade", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#D0D0D0">Cidade</th><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_evento", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#D0D0D0">Nome do Evento</th><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_paisevento", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#D0D0D0">Pais do Evento</th><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_cidadeevento", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#D0D0D0">Cidade do Evento</th><?php endif; ?>
+    </tr>
+    <?php $auxArea = ""; ?>
+    <?php if(count($this->projetos) > 0):?>
+    <?php foreach($this->projetos as $projeto):?>
+    <?php if($auxArea == "" || $projeto->Area != $auxArea):?>
+    <tr>
+        <th colspan="<?php echo count($this->parametrosBusca["visaoAgente"]) ?>" align="left" bgcolor="#D0D0D0">&Aacute;rea Cultural: <?php echo $projeto->Area?></th>
+    </tr>
+    <?php endif; ?>
+    <tr>
+        <td valign="top" align="left"><?php echo $projeto->AnoProjeto.$projeto->Sequencial?></td>
+        <td valign="top" align="left"><?php echo $projeto->NomeProjeto?></td>
+        <?php if(@in_array("cmpsOrd_proponente", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><?php echo $projeto->Proponente?></td><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_uf", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><?php echo $projeto->Uf?></td><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_cidade", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><?php echo $projeto->Cidade?></td><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_evento", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><?php echo $projeto->Evento?></td><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_paisevento", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><?php echo $projeto->Pais?></td><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_cidadeevento", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><?php echo $projeto->CidadeEvento?></td><?php endif; ?>
+    </tr>
+    <?php $auxArea = $projeto->Area; ?>
+    <?php endforeach; ?>
+    <?php else: ?>
+    <tr>
+        <td colspan="8" valign="top" align="center">Nenhum Registro Encontrado</td>
+    </tr>
+    <?php endif; ?>
+</table>
+</div>
+
+

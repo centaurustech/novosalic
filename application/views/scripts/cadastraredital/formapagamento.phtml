@@ -1,0 +1,589 @@
+<?php 
+
+include_once 'inc/funcoes.inc.php';
+
+if ( !empty ( $this->dadosPerguntaFormDocto ) )
+{
+    foreach ( $this->dadosPerguntaFormDocto as $dadosPerguntas )
+    {
+        $dsLabelPergunta = $dadosPerguntas['dsLabelPergunta'];
+    }
+}
+else
+{
+    $dsLabelPergunta = "";
+}
+
+
+if ( !empty ( $this->dadosPI ) )
+{
+    foreach ( $this->dadosPI as $dadosPI )
+    {
+    	$nomeOrgao = $dadosPI['orgao'];
+    	$pi = $dadosPI['pi'];
+    	$valorPi = $dadosPI['orctotal'];
+    }
+}
+
+
+$nrFormDocumento    = $_GET['nrFormDocumento'];
+$idEdital           = $_GET['idEdital'];
+$idAti = CadastrareditalController::recuperaIdAti($idEdital);
+$saldoPi            = CadastrareditalController::saldoPiMenosValorEdital($nrFormDocumento,$idAti[0]->idAti);
+
+?>
+<div id="alerta" title="Alerta" style="display: none">Os valores inseridos excedem o valor do PI dispon&iacute;vel!</div>
+<!--<div id="dialog_confirm_pagamento"></div>-->
+
+    <!-- início: conteúdo principal #container -->
+
+        <?php include_once 'inc/menu.inc.php';?>
+        <!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+		<div id="breadcrumb">
+		    <ul>
+		        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>">In&iacute;cio</a></li>
+		        <?php //if ( isset ($_GET['idEdital'] ) ) : ?>
+		        <!--<li><a href="<?php echo $this->url(array('controller' => 'cadastraredital', 'action' => 'consultaralterareditais')); ?>">Consultar/Alterar Edital</a></li>-->
+		        <?php //endif; ?>
+		        <li><a href="<?php echo $this->url(array('controller' => 'cadastraredital', 'action' => ''), '', true); ?>" title="Ir para Edital">Edital</a></li>
+		        <li class="last">Forma de pagamento</li>
+		    </ul>
+		</div>
+        <!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+        <!-- ========== BUTTON VOLTAR ========== -->
+        <div id="titulo">
+            <div>Forma de pagamaneto para o edital "<?php echo $this->nmEdital; ?>" <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+        </div>
+        <!-- ========== FIM TÍTULO ========== -->
+
+
+        <!-- ========== GRID NOME DA PROPOSTA ========== -->
+        <div id="conteudo">
+            <div id="dialog_confirm_pagamento" title="Confirma&ccedil;&atilde;o de Exclus&atilde;o!">
+                <p><span class="" style="float:left; margin:0 7px 20px 0;"></span>Tem certeza que deseja excluir o registro?</p>
+            </div>
+                                    <form name="formInclusaoPagamento" id="formInclusaoPagamento"  method="POST" action="<?php if($this->nrPergunta !=''){ echo $this->url(array('controller' => 'cadastraredital', 'action' => 'formapagamentoopcoes'));}?>">
+                                        <input type="hidden" apagar="false" value="<?php echo $this->nrVersaoDocumento?>" id="nrVersaoDocumento" name="nrVersaoDocumento">
+                                        <input type="hidden" apagar="false" value="<?php echo $this->nrFormDocumento?>" id="nrFormDocumento" name="nrFormDocumento" >
+                                        <input type="hidden" apagar="false" value="<?php echo $this->idEdital?>" id="idEdital" name="idEdital" >
+                                        <input type="hidden" apagar="false" name="nrPergunta" id="nrPergunta" value="<?php echo $this->nrPergunta;?>" />
+                                        <input type="hidden" apagar="false" name="nrFormDocumentoPagamento" id="nrFormDocumentoPagamento" value="<?php echo $this->nrFormDocumentoPagamento;?>" />
+                                        <input type="hidden" apagar="false" value="<?php echo $this->idUsuarioLogado?>" id="idUsuario" name="idUsuario" >
+                                        <input type="hidden" apagar="false" name="operacao" id="operacao" value="<?php if($this->nrPergunta ==''){ echo 'inserirPergunta'; }else{ echo 'inserirOpcao';}?>" />
+                                        <input type="hidden" name="nrOpcao" id="nrOpcao" value="" />
+                                        <div id="recebeinformacao"></div>
+                                        <table class="tabela">
+                                        	<tr>
+                                        		<th colspan="4">Dados da forma de pagamento</th>
+                                        	</tr>
+                                        	<tr>
+			                                    <td>
+			                                        Secretaria/Vinculada:
+			                                        <?php
+			                                        echo "<b>".$nomeOrgao."</b>";
+			                                        ?>
+			                                    </td>
+			                                    <td>
+			                                        PI:
+			                                        <?php
+			                                        echo "<b>".$pi."</b>";
+			                                        ?>
+			                                    </td>
+			                                    <td>
+			                                        Valor PI:
+			                                        <?php
+			                                        echo "<b>".$this->formatarReal($valorPi)."</b>";
+			                                        ?>
+			                                    </td>
+			                                    <td id="valorpi">
+			                                        Saldo disponível do PI:
+			                                        <?php
+			                                        echo "<b id='saldoDisponivelTXT'>".$saldoPi."</b>";
+			                                        ?>
+			                                        <input type="hidden" name="saldoDisponivel" id="saldoDisponivel" value="<?php echo $saldoPi; ?>" />
+			                                    </td>
+			                                </tr>
+                                            <tr>
+                                                <td colspan="4">
+                                                	Forma de Pagamento<br />
+                                                    <?php
+                                                    $pergunta = $this->pergunta;
+                                                    ?>
+                                                    <input class="input_simples forma" type="text" maxlength="500" apagar="false" null="false" value="<?php echo $pergunta?>" style="width: 95%;" title="Forma de Pagamento" id="dsPergunta" <?php if($this->nrPergunta !=''){ echo 'readonly';}?> name="dsPergunta"  />
+                                                    <div id="mensagemForma"></div>
+                                                </td>
+                                            </tr>
+                                            <?php if($this->nrPergunta !=''){?>
+                                            <tr>
+                                                <td colspan="4">
+                                                    <table class="tabela">
+                                                        <tr>
+                                                            <th>Descri&ccedil;&atilde;o da Forma de Pagamento</th>
+                                                            <th>Valor do Apoio R$ *</th>
+                                                            <th>Quantidade<br /> de Parcelas *</th>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="width: 40%;">
+                                                                <input type="text" name="dsPagamento" maxlength="100" null="false" title="Descri&ccedil;&atilde;o da Forma de Pagamento" id="dsPagamento" class="campoTexto input_simples" style="width: 95%;" value="" />
+                                                            </td>
+                                                            <td width="30%">
+                                                                <input type="text" name="valorApoio" valida="maiorQzero" maxlength="14" null="false" title="Valor do Apoio R$" id="valorApoio" onblur="subtrairSaldoDisponivel(this.value);" class="input_simples campoTexto required valor" style="width: 95%;" value="" />
+                                                                <div id="mensagemValor"></div>
+                                                            </td>
+                                                            <td width="30%">
+                                                                <select null="false" title="Quantidade de Parcelas" id="qtdParcelas" name="qtdParcelas" class="required qtd select_simples">
+                                                                    <option value="">Selecione</option>
+                                                                    <?php
+                                                                    for($c=1;$c<=12;$c++){
+                                                                        ?>
+                                                                        <option value="<?php echo $c;?>"><?php echo $c;?></option>
+                                                                        <?php
+                                                                    }
+                                                                    ?>
+                                                                </select>
+                                                                <div id="mensagemQtd"></div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td id="tdParcelas" colspan="2"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td id="resto"></td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td align="center" colspan="4">
+                                                    <input type="submit" value=" " class="btn_salvar" />
+                                                    <input type="submit" value=" " class="btn_salvar" id="btAlterar" style="display: none;" />
+                                                    <input type="button" value=" " style="display: none;" class="btn_cancelar" id="btCancelar" />
+                                                </td>
+                                            </tr>
+                                            <?php }else{
+                                               ?>
+                                                <tr>
+                                                    <td align="center" colspan="4">
+                                                        <input type="submit" class="btn_salvar" value=" " />
+                                                        <input type="submit" value=" " class="btn_salvar" id="btAlterar" style="display: none;" />
+                                                        <input type="button" value=" " style="display: none;" class="btn_cancelar" id="btCancelar" />
+                                                    </td>
+                                                </tr>
+                                                <script>
+                                                    $(function(){
+                                                        $('#formInclusaoPagamento').submit(function(){
+                                                            formulario.idFormulario =   '#formInclusaoPagamento';
+                                                            formulario.idInform     =   'recebeinformacao';
+                                                            formulario.apagarValidacao();
+                                                            return formulario.validarForm();
+                                                        });
+                                                    });
+                                                </script>
+                                               <?php
+                                            }?>
+                                        </table>
+                                    </form>
+
+            <div id="requisicaoAjax">
+                <!-- Requisicao AJAX para questoes adicionadas a um form documento -->
+            </div>
+
+<script>
+    $(function(){
+        var nrPergunta = '<?php echo $this->nrPergunta;?>';
+        if(nrPergunta != ''){
+            carregarPropostas();
+        }
+        else{
+            carregarFormaPagamento();
+        }
+
+        //formulario.montarEnvio.funcaoRetorno   =
+       $('.btn_salvar').click(function(){ 
+           
+    	   var valida = true;
+//           $(this).find(".required").each(function(){
+//               if($(this).val()=='' || $(this).val() == 'Selecione' ){ 
+//               	valida = false;
+//               }
+//           });
+
+           if(valida){
+           	if($(".forma").val()==''){
+             	$("#mensagemForma").html('<font color="red"><b>Informe a Forma de Pagamento!</b></font>');
+             	valida = false;
+             }else{
+             	$("#mensagemForma").html('');
+             }
+   	        
+           	if($(".valor").val()==''){
+   	        	$("#mensagemValor").html('<font color="red"><b>Informe o Valor de Apoio!</b></font>');
+   	        	valida = false;
+   	        }else{
+   	        	$("#mensagemValor").html('');
+   	        }
+
+           	if($(".qtd").val()=='' || $(".qtd").val() == 'Selecione'){
+   	        	$("#mensagemQtd").html('<font color="red"><b>Informe a Quantidade de Parcelas!</b></font>');
+   	        	valida = false;
+   	        }else{
+   	        	$("#mensagemQtd").html('');
+   	        }
+   	        if (!valida)
+   	        {
+           		return false;
+   	        }
+           }
+		   if ( valida ){
+			   	$("#mensagemForma").html('');
+	           	$("#mensagemValor").html('');
+	           	$("#mensagemQtd").html('');
+	           	//$('#formInclusaoPagamento').submit();
+           }
+
+//           carregarFormaPagamento();
+//           if($.trim($('#resto').html())!=''){
+//               formulario.montarMensagem.mensagemErro();
+//           }
+//           else{
+//               formulario.iniciar('#formInclusaoPagamento','recebeinformacao',function(data){
+//                   if(nrPergunta != ''){
+//                       carregarPropostas();
+//                       mudancaDeOperacaoInc();
+//                   }
+//                   else{
+//                       carregarFormaPagamento();
+//                       mudancaDeOperacaoIncFP();
+//                   }
+//               });
+//           }
+
+        });
+
+	$('.btn_alterar').click(function(){ 
+           
+    	   var valida = true;
+
+           if(valida){
+           	if($(".forma").val()==''){
+             	$("#mensagemForma").html('<font color="red"><b>Informe a Forma de Pagamento!</b></font>');
+             	valida = false;
+             }else{
+             	$("#mensagemForma").html('');
+             }
+
+   	        if (!valida)
+   	        {
+           		return false;
+   	        }
+           }
+		   if ( valida ){
+			   $("#mensagemForma").html('');
+	           $('#formInclusaoPagamento').submit();
+           }
+
+        });
+        $('#valorApoio').keydown(function(e){ 
+            if($(this).val().length<14){
+                validaDigito(e);
+                formataValorMonetario(this,14,e,2);
+            }
+        }).keyup(function(){
+            recalcularValorTotal(limparFormatacao($(this).val()));
+        });
+        $("#btCancelar").click(function(){
+            if(nrPergunta != ''){
+                mudancaDeOperacaoInc();
+            }
+            else{
+                mudancaDeOperacaoIncFP();
+            }
+        });
+
+        $('#qtdParcelas').change(function(){
+
+            $('#tdParcelas').html('');
+
+            var valorApoio      = limparFormatacao($('#valorApoio').val());
+            var valorDividido   = valorApoio / $(this).val();
+            var conteiner = $('<table></table>')
+            		.attr('class','tabela')
+                    .appendTo('#tdParcelas');
+            var totalSomado = 0;
+            for(var c=0;c<$(this).val();c++){
+
+                totalSomado +=  parseFloat(limparFormatacao(formataNumeroEmMoeda(valorDividido/100)));
+
+                var tr = $('<tr></tr>')
+                    .appendTo(conteiner);
+                var td1 = $('<td></td>')
+                    .appendTo(tr);
+                var td2 = $('<td></td>')
+                    .appendTo(tr);
+                var td3 = $('<td></td>')
+                    .appendTo(tr);
+
+                $(c+1)
+                    .appendTo(td1);
+
+
+                if(c+1 == $(this).val()){
+                    var valInp = valorDividido+(valorApoio-totalSomado);
+                    totalSomado += (valorApoio-totalSomado);
+                }
+                else{
+                    var valInp = valorDividido;
+                }
+
+                var inp = $('<input />')
+                    .attr('name','vlParcela[]')
+                    .attr('type','text')
+                    .attr('null','false')
+                    .attr('title','Valor Parcela ')
+                    .attr('valida','maiorQzero')
+                    .val(formataNumeroEmMoeda(valInp/100))
+                    .attr('maxlength','14')
+                    .keydown(function(e){
+                        if($(this).val().length<14){
+                            validaDigito(e);
+                            formataValorMonetario(this,14,e,2);
+                        }
+                    })
+                    .keyup(function(){
+                        recalcularValorTotal(limparFormatacao($('#valorApoio').val()));
+                    })
+                    .appendTo(td2);
+
+                if(c>0){
+                    var sel = $('<select></select>')
+                        .attr('name','nrParcelaPrestConta[]')
+                        .attr('atual','')
+                        .change(function (){
+
+                            var selec   =   this;
+                            var valorEscolhido = $(selec).val();
+                            var valorAnterior  = '';
+                            if($(selec).attr('atual') != valorEscolhido){
+                                valorAnterior  = $(selec).attr('atual');
+                                $(selec).attr('atual',valorEscolhido);
+                            }
+                            var contador = 0;
+
+                            $('#tdParcelas').find('select').each(function (){
+                                var selec2 = this;
+                                contador++;
+                                var verifica = true;
+                                if(selec != selec2){
+                                    $(selec2).find('option').each(function(){
+                                        if(valorAnterior!='' && contador > valorAnterior &&  $(this).val() > valorAnterior && verifica){
+                                            $('<option></option>')
+                                                .html(valorAnterior)
+                                                .val(valorAnterior)
+                                                .insertBefore($(this));
+                                            verifica = false;
+                                        }
+                                        if(contador == valorAnterior && verifica){
+                                            $('<option></option>')
+                                                .html(valorAnterior)
+                                                .val(valorAnterior)
+                                                .appendTo($(selec2));
+                                            verifica = false;
+                                        }
+                                            if($(this).val() == valorEscolhido && $(this).val()!='' && $(selec).val()!=''){
+                                                $(this).remove();
+                                            }
+                                    });
+                                }
+                            });
+
+                        })
+                        .appendTo(td3);
+
+                    $('<option></option>')
+                        .html('Nenhuma')
+                        .val('')
+                        .appendTo(sel);
+                    for(var c2=1;c2<=c;c2++){
+                        $('<option></option>')
+                            .val(c2)
+                            .html(c2)
+                            .appendTo(sel);
+                    }
+                }
+                else{
+                    if($(this).val()>1)
+                        td3.html('Prestar Contas?');
+                }
+            }
+
+            if((valorApoio-totalSomado)>0){
+                $('#resto')
+                .html('Resto: R$ '+formataNumeroEmMoeda((valorApoio-totalSomado)/100))
+                .css('color','#00D700')
+                .css('fontWeight','bold');
+            }
+            else{
+                if((valorApoio-totalSomado)!=0){
+                    $('#resto')
+                    .html('Ultrapassou: R$ '+formataNumeroEmMoeda(((valorApoio-totalSomado)/100)*(-1)))
+                    .css('color','#D70000')
+                    .css('fontWeight','bold');
+                }
+                else{
+                    $('#resto').html('');
+                }
+            }
+        });
+        
+        $("#dialog_confirm_pagamento").dialog({
+                resizable: false,
+                width:400,
+                height:200,
+                modal: true,
+                autoOpen:false,
+                buttons: {
+                        'N\u00e3o': function() {
+                                $(this).dialog('close');
+                        },
+                        'Sim':function() 
+                        {
+                                var dados = {
+                                    operacao:$("#dialog_confirm_pagamento").attr('operacao'),
+                                    nrOpcao:$("#dialog_confirm_pagamento").attr('nrOpcao'),
+                                    nrPergunta:$("#dialog_confirm_pagamento").attr('nrPergunta'),
+                                    nrFormDocumentoPagamento:$("#dialog_confirm_pagamento").attr('nrFormDocumentoPagamento'),
+                                    idEdital:$("#dialog_confirm_pagamento").attr('idEdital'),
+                                    idUsuario:$("#dialog_confirm_pagamento").attr('idUsuario'),
+                                    nrVersaoDocumento:$("#dialog_confirm_pagamento").attr('nrVersaoDocumento')
+                                };
+
+                                var parametros = jQuery.param(dados);
+                                
+                                
+                                //formulario.idInform='recebeinformacao';
+                                /*$.ajax({
+                                		type : 'post',
+                                		url: '<?php  echo $this->url(array('controller'=>'Cadastraredital','action'=>'formapagamentoopcoes'))?>',
+                                		data : dados,
+                                		//async : false,
+                                		success : function (data){
+                                			window.location.href = '<?php echo $this->url(array('controller'=>'Cadastraredital', 'action'=>'formapagamento')); ?>?nrFormDocumento='+dados.nrFormDocumentoPagamento+'&nrVersaoDocumento='+dados.nrVersaoDocumento+'&idEdital='+dados.idEdital+'&idUsuario='+dados.idUsuario+'';
+                            			}
+                                });*/
+
+                                window.location.href = '<?php echo $this->url(array('controller'=>'Cadastraredital', 'action'=>'formapagamentoopcoes')); ?>?'+parametros+''
+                                
+                        }
+                }
+        });
+    });
+    function carregarPropostas(){
+       $('#requisicaoAjax').html('<center><img src="imagens/loading.gif" />Aguarde ...</center>');
+       $.post( '<?php echo $this->url(array('controller'=>'Cadastraredital','action'=>'listaparcelas'))?>', {
+           nrPergunta:'<?php echo $this->nrPergunta;?>',
+           nrFormDocumentoPagamento:'<?php echo $this->nrFormDocumentoPagamento;?>',
+           nrVersaoDocumento:'<?php echo $this->nrVersaoDocumento;?>',
+           idEdital:'<?php echo $this->idEdital;?>',
+           idUsuario:'<?php echo $this->idUsuario;?>'},
+       function(data){
+            $('#requisicaoAjax').html(data);
+       });
+    }
+    function carregarFormaPagamento(){
+        $('#requisicaoAjax').html('<center><img src="imagens/loading.gif" />Aguarde ...</center>');
+       $.post( '<?php echo $this->url(array('controller'=>'Cadastraredital','action'=>'listaformapagamento'))?>', {
+           nrFormDocumentoPagamento:'<?php echo $this->nrFormDocumentoPagamento;?>',
+           nrVersaoDocumento:'<?php echo $this->nrVersaoDocumento;?>',
+           idEdital:'<?php echo $this->idEdital;?>',
+           idUsuario:'<?php echo $this->idUsuario;?>'},
+       function(data){
+          // alert(data);//
+            $('#requisicaoAjax').html(data);
+       });
+    }
+
+    function laiout(){
+        $('input[class!=btn_salvar]').addClass('input_simples');
+        $('textarea').addClass('textarea_simples');
+        $('select[id!=perfilXgrupo]').addClass('select_simples');
+    }
+    laiout();
+
+    function subtrairSaldoDisponivel(valor)
+    {
+		saldoDisponivel = $('#saldoDisponivel').val();
+		saldoDisponivelReal = $('#saldoDisponivel').val();
+		// pega o valor total do relator
+		saldoDisponivel = saldoDisponivel.replace('R$ ', '');
+
+		// retira os pontos e as virgulas, deixando somente numeros
+		saldoDisponivel = saldoDisponivel.replace(/\D/g, "");
+		saldoDisponivel = saldoDisponivel.replace(/(\d{0})(\d)/, "$1$2");
+		valor = valor.replace(/\D/g, "");
+		valor = valor.replace(/(\d{0})(\d)/, "$1$2");
+
+		// adiciona o ponto na casa decimal
+		saldoDisponivel = saldoDisponivel.replace(/(\d)(\d{2})$/, "$1.$2");
+		valor = valor.replace(/(\d)(\d{2})$/, "$1.$2");
+
+		// converte para float
+		saldoDisponivel = parseFloat(saldoDisponivel);
+		valor = parseFloat(valor);
+
+		subtracao = parseFloat(saldoDisponivel - valor).toFixed(2); // armazena o resultado
+
+		if (subtracao >= 0)
+		{
+			subtracao = subtracao.replace(/(\d)(\d{2})$/, "$1,$2");
+			subtracao = subtracao.replace(/(\d+)(\d{3},\d{2})$/g, "$1.$2");
+	
+			var q = (subtracao.length - 3) / 3; // quantidade caracteres
+			var c = 0; // contador
+			while (q > c)
+			{
+				c++;
+				subtracao = subtracao.replace(/(\d+)(\d{3}.*)/, "$1.$2");
+			}
+			subtracao = subtracao.replace(/^(0+)(\d)/g, "$2");
+	
+			$('#saldoDisponivelTXT').html(subtracao);
+		}
+		else
+		{
+			$('#saldoDisponivelTXT').html(saldoDisponivelReal);
+			$("#alerta").dialog("destroy");
+		    $("#alerta").dialog
+		    ({
+		        width:350,
+		        height:200,
+		        EscClose:false,
+		        modal:true,
+		        buttons:
+		        {
+		            'Ok':function()
+		            {
+		                $(this).dialog('close'); // fecha a modal
+		            }
+		        }
+		    });
+
+		    $("#alerta").dialog('open');
+		}
+		// formata para real
+		subtracao = subtracao.replace(/\D/g, "");
+    }
+</script>
+
+</div>
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

@@ -1,0 +1,225 @@
+<?php
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+<script type="text/javascript">
+    
+    $(document).ready(function(){
+        //ATUALIZA TITULO DA PAGINA
+        window.parent.$("#titulo").html("<div>Dados complementares do projeto</div>");
+        window.parent.$("#caminhoLocalAtual").html("Dados complementares do projeto");
+    });
+    function mostraOcultaElemento(elemento)
+    {
+            $('.' + elemento).toggle();
+
+            if ($('#' + elemento).hasClass('btn_adicionar'))
+            {
+                    $('#' + elemento).addClass('btn_remover');
+                    $('#' + elemento).removeClass('btn_adicionar');
+            }
+            else
+            {
+                    $('#' + elemento).addClass('btn_adicionar');
+                    $('#' + elemento).removeClass('btn_remover');
+            }
+    }
+</script>
+<style>
+    .mensagem {
+        padding: 8px;
+        border: darkgreen;
+        background: #e3e3c7;
+
+    }
+</style>
+
+<table class="tabela">
+    <tr class="destacar">
+        <td align="center"><b>PRONAC</b></td>
+        <td align="center"><b>Nome do Projeto</b></td>
+    </tr>
+    <tr>
+        <td align="center"><?php echo $this->dadosProjeto->AnoProjeto.$this->dadosProjeto->Sequencial; ?></td>
+        <td align="center"><?php echo $this->dadosProjeto->NomeProjeto; ?></td>
+    </tr>
+</table>
+
+<?php if(isset($this->proposta)) :  ?>
+    <table class="tabela">
+        <tr>
+            <td align="left">
+                <input type="button" class="btn_adicionar" id="periodo_realizacao" onclick="mostraOcultaElemento('periodo_realizacao');" />  <b>Per&iacute;odo de realiza&ccedil;&atilde;o</b>
+            </td>
+        </tr>
+        <tr class="periodo_realizacao sumir" align="left" style="padding: 5px">
+            <td>
+                <table class="tabela">
+                <tr class="destacar">
+                    <td align="center"><b>Data de In&iacute;cio</b></td>
+                    <td align="center"><b>Data de T&eacute;rmino</b></td>
+                </tr>
+                <?php  if(isset($this->projeto->DtInicioExecucao) && !empty($this->projeto->DtInicioExecucao)): ?>
+                <tr>
+                    <td align="center"><?php echo date("d/m/Y",strtotime($this->projeto->DtInicioExecucao));?></td>
+                    <td align="center"><?php echo date("d/m/Y",strtotime($this->projeto->DtFimExecucao));?></td>
+                </tr>
+                <?php else: ?>
+                    <tr>
+                        <td align="center"><em>Dados n&atilde;o informados!</em></td>
+                        <td align="center"><em>Dados n&atilde;o informados!</em></td>
+                    </tr>
+                <?php endif; ?>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <table class="tabela">
+        <tr>
+            <td align="left">
+                <input type="button" class="btn_adicionar" id="acessibilidade" onclick="mostraOcultaElemento('acessibilidade');" />  <b>Acessibilidade</b>
+            </td>
+        </tr>
+        <tr class="acessibilidade sumir" align="left" style="padding: 5px">
+            <td>
+                <?php echo (trim(strip_tags($this->proposta->Acessibilidade)) != "")?strip_tags($this->proposta->Acessibilidade,"<b></b><ul></ul><li></li><strong></strong><i></i><p></p><br>"):"N&atilde;o informado.";  ?>
+            </td>
+        </tr>
+    </table>
+    <table class="tabela">
+        <tr>
+            <td align="left">
+                <input type="button" class="btn_adicionar" id="democratizacao" onclick="mostraOcultaElemento('democratizacao');" />  <b>Democratizaç&atilde;o de acesso</b>
+            </td>
+        </tr>
+        <tr class="democratizacao sumir" align="left" style="padding: 5px">
+            <td>
+                <?php echo (trim(strip_tags($this->proposta->DemocratizacaoDeAcesso)) != "")?strip_tags($this->proposta->DemocratizacaoDeAcesso,"<b></b><ul></ul><li></li><strong></strong><i></i><p></p><br>"):"N&atilde;o informado.";  ?>
+            </td>
+        </tr>
+    </table>
+    <table class="tabela">
+        <tr>
+            <td align="left">
+                <input type="button" class="btn_adicionar" id="etapa" onclick="mostraOcultaElemento('etapa');" />  <b>Etapa de trabalho</b>
+            </td>
+        </tr>
+        <tr class="etapa sumir" align="left" style="padding: 5px">
+            <td>
+                <?php echo (trim(strip_tags($this->proposta->EtapaDeTrabalho)) != "")?strip_tags($this->proposta->EtapaDeTrabalho,"<b></b><ul></ul><li></li><strong></strong><i></i><p></p><br>"):"N&atilde;o informado.";  ?>
+            </td>
+        </tr>
+    </table>
+    <table class="tabela">
+        <tr>
+            <td align="left">
+                <input type="button" class="btn_adicionar"  id="fichatecnica" onclick="mostraOcultaElemento('fichatecnica');" />  <b>Ficha técnica</b>
+            </td>
+        </tr>
+        <tr class="fichatecnica sumir" align="left" style="padding: 5px">
+            <td>
+                <?php echo (trim(strip_tags($this->proposta->FichaTecnica)) != "")?strip_tags($this->proposta->FichaTecnica,"<b></b><ul></ul><li></li><strong></strong><i></i><p></p><br>"):"N&atilde;o informado."; ?>
+            </td>
+        </tr>
+    </table>
+    <table class="tabela">
+        <tr>
+            <td align="left">
+                <input type="button" class="btn_adicionar" id="sinopse" onclick="mostraOcultaElemento('sinopse');" />  <b>Sinopse de obra</b>
+            </td>
+        </tr>
+        <tr class="sinopse sumir" align="left" style="padding: 5px">
+            <td>
+                <?php echo (trim(strip_tags($this->proposta->Sinopse)) != "")?strip_tags($this->proposta->Sinopse,"<b></b><ul></ul><li></li><strong></strong><i></i><p></p><br>"):"N&atilde;o informado.";  ?>
+            </td>
+        </tr>
+    </table>
+    <table class="tabela">
+        <tr>
+            <td align="left">
+                <input type="button" class="btn_adicionar" id="impacto" onclick="mostraOcultaElemento('impacto');" />  <b>Impacto ambiental</b>
+            </td>
+        </tr>
+        <tr class="impacto sumir" align="left" style="padding: 5px">
+            <td>
+                <?php echo (trim(strip_tags($this->proposta->ImpactoAmbiental)) != "")?strip_tags($this->proposta->ImpactoAmbiental,"<b></b><ul></ul><li></li><strong></strong><i></i><p></p><br>"):"N&atilde;o informado.";  ?>
+            </td>
+        </tr>
+    </table>
+    <table class="tabela">
+        <tr>
+            <td align="left">
+                <input type="button" class="btn_adicionar" id="especificacao" onclick="mostraOcultaElemento('especificacao');" />  <b>Especificaç&otilde;es técnicas do produto</b>
+            </td>
+        </tr>
+        <tr class="especificacao sumir" align="left" style="padding: 5px">
+            <td>
+               <?php echo (trim(strip_tags($this->proposta->EspecificacaoTecnica)) != "")?strip_tags($this->proposta->EspecificacaoTecnica,"<b></b><ul></ul><li></li><strong></strong><i></i><p></p><br>"):"N&atilde;o informado."; ?>
+            </td>
+        </tr>
+    </table>
+    <table class="tabela">
+        <tr>
+            <td align="left">
+                <input type="button" class="btn_adicionar" id="outras" onclick="mostraOcultaElemento('outras');" />  <b>Outras informaç&otilde;es</b>
+            </td>
+        </tr>
+        <tr class="outras sumir" align="left" style="padding: 5px">
+            <td>
+               <?php echo (trim(strip_tags($this->proposta->EstrategiadeExecucao)) != "")?strip_tags($this->proposta->EstrategiadeExecucao,"<b></b><ul></ul><li></li><strong></strong><i></i><p></p><br>"):"N&atilde;o informado."; ?>
+            </td>
+        </tr>
+    </table>
+<!--<table class="tabela">
+    <tr>
+        <td align="center">
+            <fieldset>
+                <legend>Acessibilidade</legend>
+                <table class="tabela">
+                    <tr align="left">
+                        <td><?php //echo (trim(strip_tags($this->proposta->Acessibilidade)) != "")?strip_tags($this->proposta->Acessibilidade,"<b></b><ul></ul><li></li><strong></strong><i></i><p></p><br>"):"N&atilde;o informado.";  ?></td>
+                    </tr>
+                </table>
+            </fieldset>-->
+            <!--<fieldset>
+                <legend>Democratizaç&atilde;o de Acesso</legend>
+                <table class="tabela">
+                    <tr align="left">
+                        <td>
+                        <?php //echo (trim(strip_tags($this->proposta->DemocratizacaoDeAcesso)) != "")?strip_tags($this->proposta->DemocratizacaoDeAcesso,"<b></b><ul></ul><li></li><strong></strong><i></i><p></p><br>"):"N&atilde;o informado.";  ?></td>
+                    </tr>
+                </table>
+            </fieldset>
+            
+         </td>
+    </tr>
+</table>-->
+<!--
+<table class="tabela">
+    <tr onclick="abrirDinamico('#planodistribuicao', $(this)); carregaDados('<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'plano-de-distribuicao')); ?>?idPronac=<?php echo $this->idPronac ?>','planodistribuicao');" style="cursor:pointer">
+        <th>
+            <img src="<?php //echo $this->baseUrl();?>/public/img/navigation-right.png" id="imgDinamica" align="left" />
+            Plano de Distribuicao
+        </th>
+    </tr>
+    <tr>
+        <td align="center">
+            <div id="planodistribuicao" class="sumir"></div>
+         </td>
+    </tr>
+</table>
+-->
+<!--<table class="tabela">
+    <tr>
+        <td align="center">
+            <input type="button" value=" " class="btn_pdf" style="width: 44px;" onclick="redirecionar('<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'gerarpdf')); ?>?idPronac=<?php echo $this->idpronac?>');">
+        </td>
+    </tr>
+</table>-->
+
+<?php else: ?>
+    <table class="tabela">
+        <tr>
+            <td align="center"><em>Dados n&atilde;o informados!</em></td>
+        </tr>
+    </table>
+<?php endif; ?>

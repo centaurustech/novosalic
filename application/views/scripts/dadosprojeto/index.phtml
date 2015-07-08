@@ -1,0 +1,325 @@
+<script>
+    $(document).ready(function (){
+        $('.btnAbrirDiv').click(function(){
+            var idpronac = '<?php echo $this->idpronac ?>';
+            var tipo     = $(this).attr('tipo');
+            dadosOb = {
+                idpronac : idpronac,
+                tipo : tipo
+            }
+            ajax(dadosOb, tipo);
+        });
+        
+    });
+    function ajax (dadosEnvia, idDiv){
+        var dadosEnvia = dadosEnvia;
+        var idDiv = "#"+idDiv;
+        if($(idDiv).html()==""){
+            $.ajax({
+                type: "POST",
+                url : '<?php echo $this->url(array('controller' => 'dadosprojeto', 'action' => 'ajax')); ?>',
+                data: dadosEnvia,
+                beforeSend: function(){
+                    $("#loader").dialog({
+                        resizable: false,
+                        width:300,
+                        height:160,
+                        modal: true,
+                        autoOpen:false
+                    });
+                    $("#loader").dialog('open');
+                    $('.ui-dialog-titlebar-close').remove();
+                },
+                success: function(valores)
+                {
+                    $("#loader").dialog('close');
+                    $(idDiv).html(valores);
+                    $(idDiv).toggle('slow');
+
+                }
+            });
+        }
+        else{
+        $(idDiv).toggle('slow');
+        }
+    }
+   
+    /**
+     * Funï¿½ï¿½es para abrir e fechar os elementos ([+] e [-])
+     */
+    function openIFF(cont) // abre os incentivos fiscais
+    {
+        $('#icn_mais' + cont).show();
+        $('#icn_menos' +  cont + ', .' + cont).hide();
+    }
+    function closeIFF(cont) // fecha os incentivos fiscais
+    {
+        $('#icn_menos' +  cont + ', .' + cont).show();
+        $('#icn_mais' + cont).hide();
+    }
+</script>
+
+<!-- ========== INï¿½CIO Tï¿½TULO ========== -->
+<div id="titulo">
+    <div>Dados do Projeto</div>
+</div>
+<!-- ========== FIM Tï¿½TULO ========== -->
+
+
+
+<!-- ========== INï¿½CIO CONTEï¿½DO ========== -->
+<div id="conteudo">
+
+    <div id="loader" class="carregando sumir" style="width:100%; height:100%;" title="Carregando..."><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" alt="carregando"><br/><br/>Carregando...<br>Por Favor, aguarde!!</div>
+
+    <table class="tabela">
+        <tr class="titulo_tabela">
+            <td class="titulo_tabela"><div align="center">Projeto Cultural</div></td>
+        </tr>
+    </table>
+    <br>
+    <!----------------------------------Bloco de Informações: Identificaï¿½&atilde;o---------------------------------------------->
+    <table class="tabela" >
+        <tr class="titulo_tabela">
+            <th colspan="6">Identifica&ccedil;&atilde;o</th>
+        </tr>
+        <tr>
+            <td class="destacar bold" align="center">PRONAC</td>
+            <td class="destacar bold" align="center" colspan="2">NOME DO PROJETO</td>
+            <td class="destacar bold" align="center">CNPJ/CPF</td>
+            <td class="destacar bold" align="center" colspan="2">PROPONENTE</td>
+        </tr>
+        <tr>
+            <td align="center" class= "tabelaprincipal"><?php echo $this->escape($this->dadosprojeto['pronac']); ?></td>
+            <td colspan="2" align="center" class= "tabelaprincipal"><?php echo $this->dadosprojeto['NomeProjeto']; ?></td>
+            <td  align="center" class= "tabelaprincipal"><?php echo Validacao::mascaraCPFCNPJ($this->dadosprojeto['CgcCpf']); ?></td>
+            <td colspan="2"  align="center" class= "tabelaprincipal"><?php echo $this->proponente?></td>
+        </tr>
+
+        <!----------------------------------Bloco de Informações: UF / Mecanismo / área / Segmento / Processo---------------------------------------------->
+
+
+        <tr class="titulo_tabela">
+            <th colspan="6">UF / Mecanismo / &Aacute;rea / Segmento / Processo</th>
+        </tr>
+        <tr>
+            <td class="destacar bold" align="center">UF</td>
+            <td class="destacar bold" align="center">MECANISMO</td>
+            <td class="destacar bold" align="center">&Aacute;REA CULTURAL</td>
+            <td class="destacar bold" align="center">SEGMENTO</td>
+            <td class="destacar bold" align="center">PROCESSO</td>
+            <td class="destacar bold" align="center">ENQUADRAMENTO</td>
+        </tr>
+        <tr class= "tabelaprincipal">
+            <td><?php echo $this->dadosprojeto['UfProjeto']; ?></td>
+            <td><?php echo $this->dadosprojeto['dsMecanismo']; ?></td>
+            <td><?php echo $this->dadosprojeto['dsArea']; ?></td>
+            <td><?php echo $this->dadosprojeto['dsSegmento']; ?></td>
+            <td><?php echo $this->dadosprojeto['Processo']; ?></td>
+            <td><?php echo $this->Enquadramento; ?></td>
+        </tr>
+
+        <!----------------------------------Bloco de Informações: Situaï¿½&atilde;o-------------------------------------------------------- -->
+        <tr class="titulo_tabela">
+            <th colspan="6">Situa&ccedil;&atilde;o</th>
+        </tr>
+        <tr>
+            <td class="destacar bold" align="center">DT. SITUA&Ccedil;&Atilde;O</td>
+            <td class="destacar bold" align="center">SITUA&Ccedil;&Atilde;O</td>
+            <td class="destacar bold" align="center" colspan="4">PROVID&Ecirc;NCIA TOMADA</td>
+        </tr>
+        <tr class= "tabelaprincipal">
+            <td> <?php echo $this->escape(Data::tratarDataZend($this->dadosprojeto['dtSituacao'], 'brasileiro')); ?></td>
+            <td><?php echo $this->dadosprojeto['dsSituacao']; ?></td>
+            <td colspan="4"><?php echo $this->dadosprojeto['ProvidenciaTomada']; ?></td>
+        </tr>
+
+        <!----------------------------------Bloco de Informações: Valores-------------------------------------------------------- -->
+        <tr>
+            <th colspan="6" align="center">Valores</th>
+        </tr>
+        <tr >
+            <td class="destacar bold" align="center" colspan="2" >SOLICITADO (A)</td>
+            <td class="destacar bold" align="center">OUTRAS FONTES (B)</td>
+            <td class="destacar bold" align="center" colspan="2" >VL. PROPOSTA (C = A+B)</td>
+            <td class="destacar bold" align="center" colspan="2" >APROVADO (D)</td>
+        </tr>
+        <tr class= "tabelaprincipal">
+            <td colspan="2" ><?php echo $this->formatarReal($this->escape($this->dadosprojeto['SolicitadoReal'])); ?></td>
+            <td><?php echo $this->formatarReal($this->escape($this->outrasfontes)); ?></td>
+            <td colspan="2" ><?php echo $this->formatarReal($this->escape($this->valorproposta)); ?></td>
+            <td colspan="2" ><?php echo $this->formatarReal($this->escape($this->ValorAprovado)); ?></td>
+
+        </tr>
+        <!----------------------------------Bloco de Informações: Sï¿½ntese do Projeto-------------------------------------------------------- -->
+
+        <th colspan="6">S&iacute;ntese do Projeto</th>
+        <tr>
+            <td colspan="6" class= "tabelaprincipal"><?php echo $this->dadosprojeto['ResumoProjeto']; ?></td>
+        </tr>
+    </table>
+
+    <br>
+    <!----------------------------------Bloco de Informações: Objetivos-------------------------------------------------------- -->
+
+    <table class="tabela">
+        <tr>
+            <td>
+                <input id="btnobjetivos" class="btn_adicionar btnAbrirDiv" type="button"  tipo="objetivos"/>Objetivos
+            </td>
+        </tr>
+    </table>
+
+    <div id="objetivos"  class="sumir abrirdiv"></div>
+
+
+    <br>
+    <!----------------------------------Bloco de Informações: Justificativa-------------------------------------------------------- -->
+    <table class="tabela">
+        <tr>
+            <td>
+                <input id="btnjustificativa" class="btn_adicionar btnAbrirDiv" type="button" tipo="justificativa"/> Justificativa
+            </td>
+        </tr>
+    </table>
+    <div id="justificativa"  class="sumir abrirdiv"></div>
+    <br>
+    <!----------------------------------Bloco de Informações: Acessibilidade-------------------------------------------------------- -->
+    <table class="tabela">
+        <tr>
+            <td>
+                <input id="btnAcessibilidade" class="btn_adicionar btnAbrirDiv" type="button" tipo="acessibilidade"/> Acessibilidade
+            </td>
+        </tr>
+    </table>
+    <div id="acessibilidade"  class="sumir abrirdiv"></div>
+    <br>
+    <!----------------------------------Bloco de Informações: Democratizaï¿½&atilde;o de Acesso-------------------------------------------------------- -->
+    <table class="tabela">
+        <tr>
+            <td>
+                <input id="btnDemocratizacao" class="btn_adicionar btnAbrirDiv" type="button" tipo="democratizacao" /> Democratiza&ccedil;&atilde;o de Acesso
+            </td>
+        </tr>
+    </table>
+    <div id="democratizacao" style="display:none"></div>
+    <br>
+    <!----------------------------------Bloco de Informações: Etapa de Trabalho---------------------------------------------------------->
+    <table class="tabela">
+        <tr>
+            <td>
+                <input id="btnEtTrabalho" class="btn_adicionar btnAbrirDiv" type="button" tipo="etapa" /> Etapa de Trabalho
+            </td>
+        </tr>
+    </table>
+    <div id="etapa"  class="sumir abrirdiv"></div>
+    <br>
+    <!----------------------------------Bloco de Informações: Ficha Tï¿½cnica-------------------------------------------------------- -->
+    <table class="tabela">
+        <tr>
+            <td>
+                <input id="btnFichaTecnica" class="btn_adicionar btnAbrirDiv" type="button" tipo="ficha"/> Ficha T&eacute;cnica
+            </td>
+        </tr>
+    </table>
+    <div id="ficha"  class="sumir abrirdiv"></div>
+    <br>
+    <!----------------------------------Bloco de Informações: Sinopse da Obra-------------------------------------------------------- -->
+    <table class="tabela">
+        <tr>
+            <td>
+                <input id="btnSinopse" class="btn_adicionar btnAbrirDiv" type="button" tipo="sinopse" /> Sinopse da Obra
+            </td>
+        </tr>
+    </table>
+    <div id="sinopse"  class="sumir abrirdiv"></div>
+    <br>
+    <!----------------------------------Bloco de Informações: Impacto Ambiental-------------------------------------------------------- -->
+    <table class="tabela">
+        <tr>
+            <td>
+                <input id="btnImpacto" class="btn_adicionar btnAbrirDiv" type="button"  tipo="impacto"/> Impacto Ambiental
+            </td>
+        </tr>
+    </table>
+    <div id="impacto"  class="sumir abrirdiv"></div>
+    <br>
+    <!----------------------------------Bloco de Informações: Estratï¿½gia de Execuï¿½&atilde;o-------------------------------------------------------- -->
+    <table class="tabela">
+        <tr>
+            <td>
+                <input id="btnEstrategia" class="btn_adicionar btnAbrirDiv" type="button"  tipo="estrategia"/> Estrat&eacute;gia de Execu&ccedil;&atilde;o
+            </td>
+        </tr>
+    </table>
+
+    <div id="estrategia"  class="sumir abrirdiv"></div>
+    <br>
+    <table class="tabela">
+        <tr>
+            <td>
+                <input id="btnEspecificao" class="btn_adicionar btnAbrirDiv" type="button" tipo="especificacao"/> Especifica&ccedil;&atilde;o T&eacute;cnica
+            </td>
+        </tr>
+    </table>
+    <div id="especificacao"  class="sumir abrirdiv"></div>
+    <br>
+    <!----------------------------------Bloco de Informações: Local de Realizaï¿½&atilde;o---------------------------------------------->
+    <table class="tabela">
+        <tr>
+            <td>
+                <input id="btnLocaldeRealizacao" class="btn_adicionar btnAbrirDiv" type="button" tipo="localrealizacao" /> Local de Realiza&ccedil;&atilde;o
+            </td>
+        </tr>
+    </table>
+    <div id="localrealizacao"  class="sumir abrirdiv"></div>
+    <br>
+
+    <!----------------------------------Bloco de Informações: Deslocamento---------------------------------------------->
+    <table class="tabela">
+        <tr>
+            <td>
+                <input id="btnDeslocamento" class="btn_adicionar btnAbrirDiv" type="button" tipo="deslocamento"/>Deslocamento
+            </td>
+        </tr>
+    </table>
+    <div id="deslocamento"  class="sumir abrirdiv"></div>
+    <br>
+    <!----------------------------------Bloco de Informações: Divulgaï¿½&atilde;o---------------------------------------------->
+    <table class="tabela">
+        <tr>
+            <td>
+                <input id="btnDivugacao" class="btn_adicionar btnAbrirDiv" type="button" tipo="divulgacao" />Divulga&ccedil;&atilde;o
+            </td>
+        </tr>
+    </table>
+    <div id="divulgacao"  class="sumir abrirdiv"></div>
+    <br>
+    <!----------------------------------Bloco de Informações: Plano de Distribuiï¿½&atilde;o de Produtos de Projeto Cultural---------------------------------------------->
+    <table class="tabela">
+        <tr>
+            <td>
+                <input id="btnPlano" class="btn_adicionar btnAbrirDiv" type="button" tipo="plano"/>Plano de Distribui&ccedil;&atilde;o de Produtos de Projeto Cultural
+            </td>
+        </tr>
+    </table>
+    <div id="plano"  class="sumir abrirdiv"></div>
+    <br>
+
+
+    <!----------------------------------Bloco de Informações: Orï¿½amento Solicitado -------------------------------------------------------- -->
+    <table class="tabela">
+        <tr>
+            <td>
+                <input id="btnorcamento" class="btn_adicionar btnAbrirDiv" type="button" tipo="orcamento" />Or&ccedil;amento Solicitado
+            </td>
+        </tr>
+    </table>
+    <div id="orcamento" class="sumir"></div>
+    <br>
+</div>
+<!-- ========== INï¿½CIO RODAPï¿½ DO CONTEï¿½DO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPï¿½ DO CONTEï¿½DO ========== -->
+
+<br clear="all" />

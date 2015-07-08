@@ -1,0 +1,405 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-br">
+    <head>
+        <title>Salic - Sistema de Apoio às Leis de Incentivo à Cultura</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+        <meta name="title" content="Sistema Salic" />
+        <meta name="description" content="Sistema de Apoio às Leis de Incentivo à Cultura" />
+        <title>Sistema Salic</title>
+        <link type="image/x-icon" rel="shortcut icon" href="../img/favicon.ico" />
+        <link type="text/css" rel="stylesheet" media="all" href="../css/geral.css" />
+        <link type="text/css" rel="stylesheet" media="all" href="../css/chrome.css" />
+        <link type="text/css" rel="stylesheet" media="screen" href="../css/recursos/importar.css" />
+        <link type="text/css" rel="stylesheet" media="all" href="../css/ajustes.css" />
+        <link type="text/css" rel="stylesheet" media="all" href="../css/botoes.css" />
+        <link type="text/css" rel="stylesheet" media="print" href="../css/estilo_print.css" />
+        <link type="text/css" rel="stylesheet" media="all" href="../css/OrderTabela.css" />
+        <script language="javascript" type="text/javascript" src="../js/jquery-1.4.2.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../scripts/script_sem_menu.js"></script>
+        <script language="javascript" type="text/javascript" src="../js/jquery.tablesorter.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../js/jquery.maskedinput.js"></script>
+
+        <noscript>
+            <link type="text/css" rel="stylesheet" media="all" href="../css/noscript.css" />
+        </noscript>
+        <!-- Jquery -->
+        <link type="text/css" href="../css/custom-theme/jquery-ui-1.8.2.custom.css" rel="stylesheet" />
+        <script type="text/javascript" src="../js/jquery-ui-1.8.2.custom.min.js"></script>
+        <style type="text/css">
+            /*demo page css*/
+            .demoHeaders { margin-top: 2em; }
+            #dialog_link {padding: .4em 1em .4em 20px;text-decoration: none;position: relative;}
+            #dialog_link span.ui-icon {margin: 0 5px 0 0;position: absolute;left: .2em;top: 50%;margin-top: -8px;}
+            ul#icons {margin: 0; padding: 0;}
+            ul#icons li {margin: 2px; position: relative; padding: 4px 0; cursor: pointer; float: left;  list-style: none;}
+            ul#icons span.ui-icon {float: left; margin: 0 4px;}
+        </style>
+
+        <!-- Manter Agentes -->
+  		<link href="css/manteragentes.css" rel="stylesheet" type="text/css"/>
+        <link href="css/gerenciarpautareuniao.css" rel="stylesheet" type="text/css"/>
+        <script type="text/javascript" src="../js/ckeditor/ckeditor.js"></script>
+        <script type="text/javascript" src="../js/ckeditor/_samples/sample.js"></script>
+        <script type="text/javascript" src="../js/manteragentes.js"></script>
+        <script type="text/javascript" src="../js/ajax.js"></script>
+        <script type="text/javascript" src="../js/scripts.js"></script>
+        <script type="text/javascript" src="../js/json.js"></script>
+        <script type="text/javascript" src="../js/proponentes.js"></script> 	
+
+        <!-- Realizar Análise Projeto -->
+        <script type="text/javascript" src="../js/realizaranaliseprojeto.js"></script>
+
+        <link type="text/css" rel="stylesheet" media="screen" href="../css/recursos/importar.css" />
+        <script language="javascript" type="text/javascript" src="../scripts/fg.menu.js"></script>
+
+        <script type="text/javascript">
+            $(function(){
+                $('.menuHorizontal').each(function(){
+                    var menu = this;
+                    $(menu).menu({
+                        content: $($(menu).attr('href')).html(),
+                        flyOut: true
+                    });
+                });
+            });
+
+        </script>
+    </head>
+
+    <body>
+
+        <!-- ========== INÍCIO TOPO ========== -->
+        <div id="topo">
+
+            <div id="barraSuperior">
+                <div class="float_left">
+                    <label for="perfilXgrupo"> </label>
+                    <select name="perfilXgrupo" id="perfilXgrupo" class="perfilXgrupo" onchange="alterarPerfil(this.value);">
+                    <option>SEFIC/GEAR/SACAV - Acompanhamento</option>
+                    </select>
+                        </div>
+                        <div>
+        			Usuário conectado:
+                            <strong>
+        				[Tarcisio Angelo da Silva]
+                            </strong>
+                        </div>
+                    </div>
+
+                    <!-- início: menu de atalhos #atalhos -->
+                    <div id="atalhos">
+                        <ul>
+                            <li class="config"><a href="#" title="Configurações">Configurações</a></li>
+                            <li class="ajuda"><a href="#" title="Ajuda">Ajuda</a></li>
+                            <li class="sair"><a href="#" title="Sair do Sistema">Sair</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="dialog-confirm" class="sumir" title="Acesso ao Sistema"><p>Deseja realmente sair do sistema?</p></div>
+
+                    <!-- início: logotipo #logo -->
+                    <div id="logo">
+                        <h1><a href="#">Salic</a></h1>
+                        <span>Sistema de Apoio às Leis de Incentivo à Cultura</span>
+                    </div>
+                    <!-- final: logotipo #logo -->
+
+
+                    <!-- ========== INÍCIO MENU ========== --><div id="navglobal">
+              <ul>
+                            <li class="noOverHere"><a href="../index.html" class="home" title="Início"><span>Início</span></a></li>
+                            <li>
+                                <div id="div">
+                                    <div id="divleft"></div>
+                                    <div id="divmenuprincipalcenter">
+                                        <a href="#menu-projeto" title="Ir para projeto" class="menuHorizontal fg-button fg-button-icon-right ui-widget ui-state-default ui-corner-all hierarchybreadcrumb">Projeto</a>
+                                        <!-- ========== INÍCIO SUB-MENU projeto ========== -->
+                                        <div id="menu-projeto" class="hidden">
+                                            <ul>
+                                                <li><a href="../listarprojetos/index.html" title="Ir para Tramitar Documentos">Listar Projetos</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div id="divrigth"></div>
+                                </div>
+                            </li>
+                            <li>
+                                <div id="div">
+                                    <div id="divleft"></div>
+                                    <div id="divmenuprincipalcenter">
+                                        <a href="#menu-proposta" title="Ir para proposta" class="menuHorizontal fg-button fg-button-icon-right ui-widget ui-state-default ui-corner-all hierarchybreadcrumb">Proposta</a>
+                                        <!-- ========== INÍCIO SUB-MENU proposta ========== -->
+                                        <div id="menu-proposta" class="hidden">
+                                            <ul>
+                                                <li><a href="../manterpropostaincentivofiscal/index.html" title="Ir para Manter Proposta por Incentivo Fiscal">Manter Proposta por Incentivo Fiscal</a></li>
+                                                <li><a href="../manterpropostaedital/edital.html" title="Ir para Manter Proposta por Edital">Manter Proposta por Edital</a></li>
+                                            <li><a href="../diligenciar/index.html" title="Ir para Manter Proposta por Edital">Diligência</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div id="divrigth"></div>
+                                </div>
+                            </li>
+                            <li>
+                                <div id="div">
+                                    <div id="divleft"></div>
+                                    <div id="divmenuprincipalcenter">
+                                        <a href="#menu-protocolo" title="Ir para projeto" class="menuHorizontal fg-button fg-button-icon-right ui-widget ui-state-default ui-corner-all hierarchybreadcrumb">Protocolo</a>
+                                        <!-- ========== INÍCIO SUB-MENU projeto ========== -->
+                                        <div id="menu-protocolo" class="hidden">
+                                            <ul>
+                                                <li><a href="../tramitardocumentos/index.html" title="Ir para Tramitar Documentos">Tramitar Documentos</a></li>
+                                                <li><a href="../tramitarprojetos/index.html" title="Ir para Tramitar Projetos">Tramitar Projetos</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div id="divrigth"></div>
+                                </div>
+                            </li>
+                          <li>
+                                <div id="div">
+                                    <div id="divleft"></div>
+                                    <div id="divmenuprincipalcenter">
+                                        <a href="#menu-manutenção" title="Ir para manutenção" class="menuHorizontal fg-button fg-button-icon-right ui-widget ui-state-default ui-corner-all hierarchybreadcrumb">Manutenção</a>
+                                        <!-- ========== INÍCIO SUB-MENU projeto ========== -->
+                                        <div id="menu-manutenção" class="hidden">
+                                            <ul>
+                                                <li><a href="../alterarprojeto/index.html" title="Ir para Alterar Projeto">Alterar Projeto</a></li>
+                                                <li><a href="../alterarproponente/consultarnomeproponente.html" title="Ir para Alterar Proponente">Alterar Proponente</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div id="divrigth"></div>
+                                </div>
+                            </li>
+                            <li>
+                        <div id="div">
+                            <div id="divleft"></div>
+                            <div id="divmenuprincipalcenter">
+                                <a href="#menu-parecer" title="Ir para parecer" class="menuHorizontal fg-button fg-button-icon-right ui-widget ui-state-default ui-corner-all hierarchybreadcrumb">Parecer</a>
+                                <!-- ========== INÍCIO SUB-MENU projeto ========== -->
+                                <div id="menu-parecer" class="hidden">
+                                    <ul>
+                                        <li><a href="../analisarprojeto/analisedeprojeto.html" title="Ir para Analisar Projeto">Analisar Projeto</a></li>
+                                        <li><a href="../cadastrarparecerista/buscarparecerista.html" title="Ir para Cadastrar Parecerista">Cadastrar Parecerista</a></li>
+                                        <li><a href="../gerenciarparecerista/index.html" title="Ir para Gerenciar Parecista">Gerenciar Parecista</a></li>
+                                        <li><a href="../gerarrelatorioparecerista/index.html" title="Ir para Relatórios Parecista">Relatórios Parecerista</a></li>
+                                        <li><a href="../consultarpareceristas/index.html" title="Ir para Consultar Parecista">Consultar Pareceristas</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div id="divrigth"></div>
+                        </div>
+                    </li>
+                        </ul>
+                    </div>
+        </div>
+                                                                                
+<!-- ========== INÍCIO MENU ========== -->
+<script language="javascript" type="text/javascript" src="../scripts/quickmenu.js"></script>
+<div id="menu">
+
+    <script type="text/javascript">
+        $(function(){
+            $('.menuHorizontal').each(function(){
+                var menu = this;
+                $(menu).menu({
+                    content: $(menu).next().html(),
+                    flyOut: true
+                });
+            });
+        });
+    </script>
+<!-- início: conteúdo principal #container -->
+    <div id="container">
+
+        <!-- início: navegação local #qm0 -->
+        <script type="text/javascript">
+            function layout_fluido()
+            {
+                var janela = $(window).width();
+
+                var fluidNavGlobal = janela - 245;
+                var fluidConteudo = janela - 253;
+                var fluidTitulo = janela - 252;
+                var fluidRodape = janela - 19;
+
+                $("#navglobal").css("width",fluidNavGlobal);
+                $("#conteudo").css("width",fluidConteudo);
+                $("#titulo").css("width",fluidTitulo);
+                $("#rodapeConteudo").css("width",fluidConteudo);
+                $("#rodape").css("width",fluidRodape);
+
+                $("div#rodapeConteudo").attr("id", "rodapeConteudo_com_menu");
+            }
+        </script>
+        
+         <div id="menuContexto">
+            <div class="top"></div>
+            <div id="qm0" class="qmmc sanfona">
+        
+                <a class="seta" href="#" title="Ir para ">COORDENADOR DE PARECERISTA</a>
+                <a class="no_seta" href="consultardadosparecerista.html" title="Ir para ">Consultar dados do Parecerista</a>
+                <a class="no_seta" href="consultardadosparecerista.html" title="Ir para ">&nbsp;</a>
+                
+                <a class="seta" href="#" title="Ir para ">COORDENADOR DE PRONAC</a>
+                <a class="no_seta" href="consultardadospareceristacp.html" title="Ir para ">Consultar dados do Parecerista</a>
+                <a class="no_seta" href="pagamentoporparecerista.html" title="Ir para ">Consultar pagamento</a>
+				<a class="no_seta" href="consultardadosparecerista.html" title="Ir para ">&nbsp;</a>
+				
+                <a class="seta" href="#" title="Ir para ">PARECERISTA</a>
+                <a class="no_seta" href="consultardadospareceristap.html" title="Ir para ">Consultar dados do Parecerista</a>
+                
+                    </div>
+            <div class="bottom">
+            </div>
+            <div id="cronometro" style="background: #f8f8f8; display: none; font-size: 1.8em; padding-top: 2em; text-align: center; color: red; font-weight: 800; padding-left: 0.3em;" >
+                Início da Plenária em <br/><br/> <span id="minu"></span>' : <span id="seg" ></span>"
+            </div>
+            <div id="space_menu">
+            </div>
+        </div>
+<!-- ========== FIM MENU ========== -->
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="index.html" title="Ir para Início">Início</a></li>
+		
+		<li class="last">Principal</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== BUTTON VOLTAR ========== -->
+<div id="titulo">
+	<div>Consultar Parecerista<span>ID #23A</span> <span class="voltar"><a href="#" onclick="location.href ='index.html'">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== GRID NOME DA PROPOSTA ========== -->
+<script>
+function abrir_fechar(id_div){
+
+    $('#'+id_div).toggle();
+
+    $('#maiss'+id_div).toggle().focus();
+
+    $('#menoss'+id_div).toggle().focus();
+
+}
+
+$(function()
+	    {
+	        $.datepicker.regional['pt-BR'] = {
+	            closeText: 'Fechar',
+	            prevText: '&#x3c;Anterior',
+	            nextText: 'Pr&oacute;ximo&#x3e;',
+	            currentText: 'Hoje',
+	            monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+	            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+	            dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+	            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+	            dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+	            weekHeader: 'Sm',
+	            dateFormat: 'dd/mm/yy',
+	            firstDay: 0,
+	            isRTL: false,
+	            showMonthAfterYear: false,
+	            yearSuffix: ''};
+	        $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+	        $("#datainicio").datepicker($.datepicker.regional['pt-BR']);
+	        $("#datafim").datepicker($.datepicker.regional['pt-BR']);
+	        
+	    });
+	    
+	    
+	function datas(valor)
+	{
+		
+		if(valor == 1)
+		{
+			$("#datafim").val('');
+			$("#datafim").hide();
+			$("#ldata").hide();
+		}
+		else
+		{
+			$("#datafim").show();
+			$("#ldata").show();
+		}
+		
+	}
+	
+</script>
+<div id="conteudo" align="center">
+    
+    <table class="tabela">
+       	<tr>
+    		<td>Produtos</td>
+    		<td>
+    			<select name="" class="input_simples" style="width: 250px;">
+					<option value="0">Principal</option>
+					<option value="1">Secundário</option>
+				</select>
+    		</td>
+    	</tr>
+    	<tr>	
+    		<td>Pagamentos</td>
+    		<td>
+    			<select name="" class="input_simples" style="width: 250px;">
+					<option value="0">Efetuados</option>
+					<option value="1">Pendentes</option>
+					<option value="2">Cancelados</option>
+				</select>
+    		</td>
+    	</tr>
+    	<tr>	
+    		<td>Status</td>
+    		<td>
+    			<select name="" class="input_simples" style="width: 250px;">
+					<option value="0">Em Análise</option>
+					<option value="1">Em diligência</option>
+					<option value="2">Diligenciado</option>
+					<option value="3">Finalizado</option>
+					<option value="4">Cancelado</option>
+				</select>
+    		</td>
+    	</tr>
+    	<tr>
+    		<td>Período</td>
+    		<td>
+    			<label>Mês</label>
+    			<input type="text" name="mes" id="mes" class="input_simples" maxlength="2" size="2" />
+	    		<label>Ano</label>
+	    		<input type="text" name="mes" id="mes" class="input_simples" maxlength="4" size="5" />
+    		</td>
+    	</tr>
+    </table>
+    
+    <table class="tabela">
+    	<tr>
+    		<td align="center">
+    			<input type="button" value=" " class="btn_localizar" onclick="redirecionar('resconsultardadospareceristapa.html');"/> 
+    			<input type="reset" value=" " class="btn_limpar" />
+    		</td>
+    	</tr>
+    </table>
+
+ 
+    
+    
+</div>
+
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

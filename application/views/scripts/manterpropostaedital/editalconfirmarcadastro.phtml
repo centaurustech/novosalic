@@ -1,0 +1,144 @@
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'proposta')); ?>" title="Ir para Projetos">Proposta</a></li>
+        <li class="last">Edital </li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INICIO TITULO ========== -->
+<div id="titulo">
+    <div>Dados  do Endere&ccedil;o <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+
+
+<!-- ========== INICIO CONTEUDO ========== -->
+<div id="conteudo">
+
+    <table class="tabela" cellpadding="1" cellspacing="1">
+        <tr class="titulo_tabela">
+            <th colspan="5">Proponente</th>
+        </tr>
+        <tr class="esquerda">
+           <td class="esquerda" colspan="1"><label for="cep" ><b>CNPJCPF * </b></label><input type="text" class="input_simples" name="cep" id="cep" maxlength="10" value="700523847300"/></td>
+            <td class="esquerda" colspan="1"><label for="cep" ><b>Nome * </b></label><input type="text" class="input_simples" name="cep" id="cep" maxlength="10" value="Eliane Pinheiro"/></td>
+
+        </tr>
+        <tr class="titulo_tabela">
+            <th colspan="6">Informe o CEP </th>
+        </tr>
+        <tr class="esquerda" >
+            <td class="esquerda" colspan="1"><label for="cep" ><b>CEP * </b></label><input type="text" class="input_simples" name="cep" id="cep" maxlength="10" value="71.000-000"/></td>
+            <td class="esquerda" colspan="1" ><label for="uf"><b>UF * </b></label><input type="text" class="input_simples" name="uf" id="uf" maxlength="2" /></td>
+            <td class="esquerda" colspan="2" ><label for="cidade"><b>Cidade * </b></label><input type="text" class="input_simples" name="cidade" id="cidade" maxlength="70" /></td>
+        </tr>
+        <tr class="esquerda" >
+            <td class="esquerda" ><label for="tipoendereco" ><b>Tipo de Endere&ccedil;o * </b></label>
+                <select class="select_simples" name="tipoendereco" id="tipoendereco" style="width: 10em">
+                    <option value="residencial" selected="selected">Residencial</option>
+                    <option value="comercial">Comercial</option>
+                </select>
+
+            </td>
+            <td class="esquerda" ><label for="tipologradouro"><b>Tipo de Logradouro *</b></label>
+
+                <select class="select_simples" name="tipologradouro" id="tipologradouro" style="width: 10em">
+                    <option value="tipologradouro" >Selecione</option>
+                    <option value="Aeroporto">Aeroporto </option>
+                    <option value="Alameda" >Alameda </option>
+                    <option value="&Aacute;rea">&Aacute;rea </option>
+                    <option value="Avenida">Avenida </option>
+                    <option value="Campo">Campo </option>
+                    <option value="Ch&aacute;cara">Ch&aacute;cara </option>
+                    <option value="Col&ocirc;nia">Col&ocirc;nia </option>
+                    <option value="Condom&iacute;nio">Condom&iacute;nio </option>
+                    <option value="Conjunto">Conjunto </option>
+                    <option value="Distrito">Distrito </option>
+                    <option value="Esplanada">Esplanada </option>
+                    <option value="Esta&ccedil;&atilde;o">Esta&ccedil;&atilde;o</option>
+                    <option value="Estrada">Estrada </option>
+                    <option value="Favela">Favela </option>
+                    <option value="Fazenda">Fazenda </option>
+                    <option value="Feira">Feira </option>
+                    <option value="Jardim">Jardim </option>
+                    <option value="Ladeira">Ladeira </option>
+                    <option value="Lago">Lago </option>
+                    <option value="Lagoa">Lagoa </option>
+                    <option value="Largo">Largo </option>
+                    <option value="Loteamento">Loteamento </option>
+                    <option value="Morro">Morro </option>
+                    <option value="N&uacute;cleo">N&uacute;cleo </option>
+                    <option value="Outros">Outros </option>
+                    <option value="Parque">Parque </option>
+                    <option value="Passarela">Passarela </option>
+                    <option value="P&aacute;tio">P&aacute;tio </option>
+                    <option value="Pra&ccedil;a">Pra&ccedil;a </option>
+                    <option value="Quadra">Quadra </option>
+                    <option value="Recanto">Recanto </option>
+                    <option value="Resid&ecirc;ncia">Resid&ecirc;ncia </option>
+                    <option value="Rodovia">Rodovia </option>
+                    <option value="Rua">Rua </option>
+                    <option value="Setor">Setor </option>
+                    <option value="S&iacute;tio">S&iacute;tio </option>
+                    <option value="Travessa">Travessa </option>
+                    <option value="Trecho">Trecho </option>
+                    <option value="Vale">Vale </option>
+                    <option value="Vereda">Vereda </option>
+                    <option value="Via">Via </option>
+                    <option value="Viaduto">Viaduto </option>
+                    <option value="Viela">Viela </option>
+                    <option value="Vila">Vila </option>
+                </select>
+            </td>
+            <td class="esquerda" colspan="2"><label for="logradouro" ><b>Logradouro * </b></label><input type="text" class="input_simples" name="logradouro" id="logradouro" maxlength="120" /></td>
+        </tr>
+        <tr class="esquerda" >
+            <td class="esquerda" colspan="2"><label for="complemento" ><b>Complemento * </b></label><input type="text" class="input_simples" name="complemento" id="complemento" maxlength="350" style="width: 20em" /></td>
+            <td class="esquerda"><label for="numero"><b>N&uacute;mero * </b></label><input type="text" class="input_simples" name="numero" id="numero" maxlength="10" /></td>
+            <td class="esquerda" colspan="2" ><label for="bairro"><b>Bairro * </b></label><input type="text" class="input_simples" name="bairro" id="bairro" maxlength="70" /></td>
+        </tr>
+        <tr class="esquerda">
+
+          <td class="esquerda" colspan="2" ><label for="endcorrespondencia"><b>Endere&ccedil;o p/Correspond&ecirc;ncia? *</b></label>
+                <select class="select_simples" name="correspondencia" id="correspondencia" style="width: 5em">
+                    <option value="sim" selected="selected">Sim</option>
+                    <option value="nao">N&atilde;o</option>
+                </select>
+            </td>
+            <td class="esquerda" colspan="2"><label for="autorizacao" ><b>Divulgar o endere&ccedil;o na Internet*</b></label>
+                <select class="select_simples" name="divulgacao" id="divulgacao" style="width: 5em">
+                    <option value="sim" selected="selected">Sim</option>
+                    <option value="nao">N&atilde;o</option>
+                </select>
+            </td>
+
+       </tr>
+       <tr>
+
+       			<td colspan="4" class="centro"><input type="submit" title=" " class="btn_p_anterior" value=" " />
+                    &nbsp;
+             <input type=" " title="  " class="btn_p_proximo" value=" " />
+                     &nbsp;
+	<input type="submit" title=" " class="btn_novo" value=" " />
+                    &nbsp;
+             <input type=" " title="  " class="btn_salvar" value=" " />
+
+                </td>
+
+        </tr>
+    </table>
+    <br/>
+
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+
+
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

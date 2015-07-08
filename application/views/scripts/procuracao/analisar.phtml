@@ -1,0 +1,426 @@
+<?php
+/** 
+ * Busca PRONAC
+ * @author Equipe RUP - Politec
+ * @since 28/04/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.views.scripts.execucaofisicaprojeto
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+<script type="text/javascript">
+    $(document).ready(function(){
+
+        $('.btn_aprovar').click(function(){
+            var btn = $(this);
+            $("#msgAlerta").dialog("destroy");
+            $("#msgAlerta").html("Deseja realmente aprovar a procuração?");
+            $("#msgAlerta").dialog({
+                resizable: false,
+                title: 'Alerta!',
+                width:320,
+                height:160,
+                modal: true,
+                buttons : {
+                    'Não' : function(){
+                        $(this).dialog('close');
+                    },
+                    'Sim' : function(){
+                        $.ajax({
+                            type: 'POST',
+                            url: '<?php echo $this->url(array('controller' => 'procuracao', 'action' => 'avaliar-procuracao')); ?>',
+                            data: {
+                                id: btn.attr('procuracao'),
+                                siProcuracao: 1 //Aprovar
+                            },
+                            success: function(data){
+                                if(data.resposta){
+                                    $('.linha'+btn.attr('procuracao')).remove();
+                                    $('#result-proj-'+btn.attr('procuracao')).parent().parent().remove();
+                                }
+                            },
+                            complete : function(){
+                                $("#msgAlerta").dialog('close');
+                            },
+                            dataType : 'json'
+                        });
+                    }
+                }
+            });
+            $('.ui-dialog-titlebar-close').remove();
+        });
+
+
+        $('.btn_rejeitar').click(function(){
+            var btn = $(this);
+            $("#msgAlerta").dialog("destroy");
+            $("#msgAlerta").html("Deseja realmente rejeitar a procuração?");
+            $("#msgAlerta").dialog({
+                resizable: false,
+                title: 'Alerta!',
+                width:320,
+                height:160,
+                modal: true,
+                buttons : {
+                    'Não' : function(){
+                        $(this).dialog('close');
+                    },
+                    'Sim' : function(){
+                        $(this).dialog('close');
+                        justificativa(btn);
+                    }
+                }
+            });
+            $('.ui-dialog-titlebar-close').remove();
+        });
+
+
+        $('.listarProjetos').click(function(){
+            var btn = $(this);
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo $this->url(array('controller' => 'procuracao', 'action' => 'listar-projetos-procuracao')); ?>',
+                data: {
+                    id: btn.attr('procuracao')
+                },
+                success: function(data){
+                    $('#lista-projetos').html('');
+                    if(data.resposta){
+
+//                        $('tr.linha'+btn.attr('procuracao')).after('<tr><td colspan="7"><table class="tabela" id="result-proj-'+btn.attr('procuracao')+'"></table></td></tr>');
+//                        $('#result-proj-'+btn.attr('procuracao')).append('<tr align="center"><td class="destacar bold" style="width:70px;">Pronac</td><td class="destacar bold">Nome do Projeto</td></tr>');
+//                        for ( i in data.conteudo){
+//                           $('#result-proj-'+btn.attr('procuracao')).append('<tr><td align="center">'+data.conteudo[i].Pronac+'</td><td>'+data.conteudo[i].NomeProjeto+'</td></tr>');
+//                        }
+
+                        $('#lista-projetos').append('<tr align="center"><td class="destacar bold">Pronac</td><td class="destacar bold">Nome do Projeto</td></tr>');
+                        for ( i in data.conteudo){
+                           $('#lista-projetos').append('<tr><td align="center">'+data.conteudo[i].Pronac+'</td><td>'+data.conteudo[i].NomeProjeto+'</td></tr>');
+                        }
+                        $("#projetosListados").dialog("destroy");
+                        $("#projetosListados").dialog({
+                            resizable: false,
+                            title: 'Projetos',
+                            width:600,
+                            height:250,
+                            modal: true,
+                            resizable: true
+                        });
+                    } else {
+                        $('#lista-projetos').append('<tr><td align="center">Nenhum registro encontrado!</td></tr>');
+                    }
+                },
+                complete : function(){
+                    $("#msgAlerta").dialog('close');
+                },
+                dataType : 'json'
+            });
+        });
+
+
+        $('.maisProjetos').click(function(){
+            var btn = $(this);
+            if(btn.attr('ajax') == 0){
+                $.ajax({
+                    type: 'POST',
+                    url: '<?php echo $this->url(array('controller' => 'procuracao', 'action' => 'listar-projetos-procuracao')); ?>',
+                    data: {
+                        id: btn.attr('procuracao')
+                    },
+                    success: function(data){
+                        $('#lista-projetos').html('');
+                        if(data.resposta){
+                            btn.removeClass('icn_mais');
+                            btn.addClass('icn_menos');
+                            btn.attr('ajax','1');
+                            $('tr.linha'+btn.attr('procuracao')).after('<tr><td colspan="7"><table class="tabela" id="result-proj-'+btn.attr('procuracao')+'"></table></td></tr>');
+                            $('#result-proj-'+btn.attr('procuracao')).append('<tr><td class="destacar bold" style="width:70px;" align="center">Pronac</td><td class="destacar bold">Nome do Projeto</td></tr>');
+                            for ( i in data.conteudo){
+                               $('#result-proj-'+btn.attr('procuracao')).append('<tr><td align="center">'+data.conteudo[i].Pronac+'</td><td>'+data.conteudo[i].NomeProjeto+'</td></tr>');
+                            }
+                        } else {
+                            $('#lista-projetos').append('<tr><td align="center">Nenhum registro encontrado!</td></tr>');
+                        }
+                    },
+                    complete : function(){
+                        $("#msgAlerta").dialog('close');
+                    },
+                    dataType : 'json'
+                });
+
+            } else if(btn.attr('ajax') == 1) {
+                btn.removeClass('icn_menos');
+                btn.addClass('icn_mais');
+                btn.attr('ajax','2');
+                $('#result-proj-'+btn.attr('procuracao')).parent().parent().addClass('sumir');
+            } else {
+                btn.removeClass('icn_mais');
+                btn.addClass('icn_menos');
+                btn.attr('ajax','1');
+                $('#result-proj-'+btn.attr('procuracao')).parent().parent().removeClass('sumir');
+            }
+        });
+
+//        $("#formFiltroConsulta").validate({
+//            rules:{
+//                orgao:{
+//                    verificaDados: true
+//                },
+//                nomeprojeto:{
+//                    verificaDados: true
+//                },
+//                cpfresponsavel:{
+//                    verificaDados: true,
+//                    minlength: 14
+//                },
+//                dataenvio:{
+//                    verificaDados: true
+//                },
+//                nprojeto:{
+//                    verificaDados: true
+//                },
+//                cpfcnpjproponente:{
+//                    verificaDados: true,
+//                    minlength: 14
+//                },
+//                nomeresponsavel:{
+//                    verificaDados: true
+//                },
+//                situacao:{
+//                    verificaDados: true
+//                }
+//            },
+//            messages:{
+//                orgao:{
+//                    verificaDados: function(){$("#error").removeClass('sumir')}
+//                },
+//                nomeprojeto:{
+//                    verificaDados: function(){$("#error").removeClass('sumir')}
+//                },
+//                cpfresponsavel:{
+//                    verificaDados: function(){$("#error").removeClass('sumir')}
+//                },
+//                dataenvio:{
+//                    verificaDados: function(){$("#error").removeClass('sumir')}
+//                },
+//                nprojeto:{
+//                    verificaDados: function(){$("#error").removeClass('sumir')}
+//                },
+//                cpfcnpjproponente:{
+//                    verificaDados: function(){$("#error").removeClass('sumir')}
+//                }
+//                ,
+//                nomeresponsavel:{
+//                    verificaDados: function(){$("#error").removeClass('sumir')}
+//                }
+//                ,
+//                situacao:{
+//                    verificaDados: function(){$("#error").removeClass('sumir')}
+//                }
+//            },
+//            submitHandler: function(form) {
+//                $("#error").addClass('sumir')
+//                $(form).submit();
+//            }
+//
+//        });
+//        jQuery.validator.addMethod("verificaDados", function(value, element)
+//        {
+//            if($("#orgao").val() != "")
+//            {
+//                return true;
+//            }else if($("#nomeprojeto").val() != ""){
+//                return true;
+//            }
+//            else if($("#cpfresponsavel").val() != ""){
+//                return true;
+//            }
+//            else if($("#dataenvio").val() != ""){
+//                return true;
+//            }
+//            else if($("#nprojeto").val() != ""){
+//                return true;
+//            }
+//            else if($("#cpfcnpjproponente").val() != ""){
+//                return true;
+//            }
+//            else if($("#nomeresponsavel").val() != ""){
+//                return true;
+//            }
+//            else if($("#situacao").val() != ""){
+//                return true;
+//            }
+//            else{
+//                return false;
+//            }
+//        });
+//        $("#nprojeto").numeric()
+    });
+    
+    function justificativa(btn){
+        $("#justificativaModal").dialog("destroy");
+//        $("#justificativaModal").html("Deseja realmente rejeitar a procuração?");
+        $("#justificativaModal").dialog({
+            resizable: false,
+            title: 'Justificativa!',
+            width:600,
+            height:300,
+            modal: true,
+            buttons : {
+                'Cancelar' : function(){
+                    $(this).dialog('close');
+                    $('#justificativaCampo').css('border-color','#CCCCCC');
+                },
+                'Rejeitar' : function(){
+                    if($('#justificativaCampo').val().length > 0){
+                        $.ajax({
+                            type: 'POST',
+                            url: '<?php echo $this->url(array('controller' => 'procuracao', 'action' => 'avaliar-procuracao')); ?>',
+                            data: {
+                                id: btn.attr('procuracao'),
+                                siProcuracao: 2, //Rejeitar
+                                justificativa: $('#justificativaCampo').val() //Rejeitar
+                            },
+                            success: function(data){
+                                if(data.resposta){
+                                    $('.linha'+btn.attr('procuracao')).remove();
+                                    $('#result-proj-'+btn.attr('procuracao')).parent().parent().remove();
+                                }
+                            },
+                            complete : function(){
+                                $("#justificativaModal").dialog('close');
+                            },
+                            dataType : 'json'
+                        });
+                    } else {
+                        $('#justificativaCampo').css('border-color','red');
+                        $('#justificativaCampo').focus();
+                    }
+                }
+            }
+        });
+        $('.ui-dialog-titlebar-close').remove();
+    }
+
+</script>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para Início">Início</a></li>
+        <li class="last">Analisar Procura&ccedil;&otilde;es</li>
+        <!--<li class="last">Filtro</li>-->
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Analisar Procura&ccedil;&otilde;es <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<div id="msgAlerta" class="sumir"></div>
+<div id="justificativaModal" class="sumir">
+    <table class="tabela">
+        <tr>
+            <td class="destacar bold">Informe a Justificativa<span style="color: red;">*</span></td>
+        </tr>
+        <tr>
+            <td><textarea name="justificativaCampo" id="justificativaCampo" class="textarea_simples" cols="70" rows="4"></textarea></td>
+        </tr>
+        <!--<tr>
+            <td><input type="text" name="justificativaCampo" id="justificativaCampo" class="input_simples" style="width: 96%;" /></td>
+        </tr>-->
+    </table>
+</div>
+<div id="projetosListados" class="sumir">
+    <table class="tabela" id="lista-projetos"></table>
+</div>
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <br clear="all" />
+    <!--
+    <form id="formFiltroConsulta" method="post" action="<?php echo $this->url(array('controller'=>'procuracao', 'action'=>'verificarprocuracao') );?>">
+        <table class="tabela">
+            <tr>
+                <th>PRONAC:</th>
+                <td colspan="3"><input type="text" class="input_simples" name="nprojeto" id="nprojeto"/></td>
+            </tr>
+            <tr>
+                <th>Nome do proponente:</th>
+                <td><input type="text" class="input_simples" name="nomeprojeto" id="nomeprojeto"/></td>
+                <th>CPF/CNPJ do proponente</th>
+                <td><input type="text" class="input_simples" name="cpfcnpjproponente" id="cpfcnpjproponente" onkeyup="mascaraCnpjCpf(this);" maxlength="18"/></td>
+            </tr>
+            <tr>
+                <th>CPF do responsável:</th>
+                <td><input type="text" class="input_simples" name="cpfresponsavel" id="cpfresponsavel" onkeyup="mascaraCnpjCpf(this);" maxlength="14"/></td>
+                <th>Nome do responsável:</th>
+                <td><input type="text" class="input_simples" name="nomeresponsavel" id="nomeresponsavel"/></td>
+            </tr>
+            <tr>
+                <th>Data do envio:</th>
+                <td><input type="text" class="input_simples" name="dataenvio" id="dataenvio"/></td>
+                <th>Status:</th>
+                <td>
+                    <select class="select_simples" name="situacao" id="situacao">
+                        <option value="">--Selecione--</option>
+                        <option value="0">Aguardando análise</option>
+                        <option value="1">Aprovado</option>
+                        <option value="2">Rejeitado</option>
+                    </select>
+                </td>
+            </tr>
+            <tr id="error"  class="sumir">
+                <td colspan="4" style="color: red; text-align: center; font-weight: 600;">Campos obrigat&oacute;rios n&atilde;o preenchidos!</td>
+            </tr>
+        </table>
+        <div style="width: 100%; text-align: center;">
+            <input class="btn_localizar" type="submit" value=" "/>
+        </div>
+        <br clear="all" />
+    </form>-->
+
+
+    <table class="tabela">
+        <?php if(count($this->procuracoes) > 0) { ?>
+        <tr>
+            <th>Procurador</th>
+            <th>Data Procura&ccedil;&atilde;o</th>
+            <th>Justificativa</th>
+            <th>Visualizar</th>
+            <th colspan="2">Avaliar</th>
+            <!--<th>Projetos</th>-->
+        </tr>
+        <?php foreach ($this->procuracoes as $procuracoes) { ?>
+        <tr class="linha<?php echo $procuracoes->idProcuracao; ?>">
+            <td><img style="cursor: pointer; width: 8px; height: 9px; margin: 3px 10px 0px 0px;" alt="" src="" class="maisProjetos icn_mais" ajax="0" procuracao="<?php echo $procuracoes->idProcuracao; ?>" /><?php echo $procuracoes->Procurador; ?></td>
+            <td><?php echo Data::tratarDataZend($procuracoes->dtProcuracao, 'brasileiro', true);?></td>
+            <td><?php echo $procuracoes->dsJustificativa; ?></td>
+            <td align="center" width="1px"><a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id=<?php echo $procuracoes->idArquivo; ?>"><img src="<?php echo $this->baseUrl(); ?>/public/img/btn_busca.jpg"/></a></td>
+            <td align="center" width="1px">
+                <input class="btn_aprovar" type="button" value=" " procuracao="<?php echo $procuracoes->idProcuracao; ?>" />
+            </td>
+            <td align="center" width="1px">
+                <input class="btn_rejeitar" type="button" value=" " procuracao="<?php echo $procuracoes->idProcuracao; ?>" />
+            </td>
+            <!--<td align="center" width="1px"><img src="<?php //echo $this->baseUrl(); ?>/public/img/ajuda.png" style="cursor: pointer;" class="listarProjetos" procuracao="<?php echo $procuracoes->idProcuracao; ?>" /></td>-->
+        </tr>
+        <?php } } else { ?>
+        <tr>
+            <td colspan="6" style="text-align: center; font-weight: 600; font-size: 14pt;">Nenhum registro encontrado.</td>
+        </tr>
+        <?php } ?>
+    </table>
+    <br clear="all" />
+</div>
+
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

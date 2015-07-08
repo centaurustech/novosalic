@@ -1,0 +1,559 @@
+<script type="text/javascript">
+    function encaminharPortaria(idpronac){
+        var idpronac = idpronac;
+        $('html').css('overflow', 'hidden');
+        $("body").append("<div id='divDinamica'></div>");
+        $("#divDinamica").html("");
+        $('#divDinamica').html("Deseja realmente encaminhar o projeto para a publica&ccedil;&atilde;o no DOU?");
+        var title = 'Confirmação';
+        $("#divDinamica").dialog({
+            //resizable: true,
+            width:300,
+            height:180,
+            modal: true,
+            autoOpen:true,
+            title: title,
+            buttons: {
+                'Não': function() {
+                    $("#divDinamica").remove();
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');
+                },
+                'Sim': function() {
+                    window.location = "<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'gravar-encaminhamento-portaria')); ?>?idpronac="+idpronac;
+                    $("#divDinamica").remove();
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');
+                }
+            },
+            close: function() {
+                $("#divDinamica").remove();
+                $(this).dialog('close');
+                $('html').css('overflow', 'auto');
+            }
+        });
+        $('.ui-dialog-titlebar-close').remove();
+    }
+
+    function areadetrabalho(){
+        $('#pinicial').click(function(){
+            $('#analiseinicial').toggle('slow');
+        });
+        $('#preadequacao').click(function(){
+            $('#readequacao').toggle('slow');
+        });
+    }
+
+    function alterarProjeto(idPronac){
+        $('html').css('overflow', 'hidden');
+        $("body").append("<div id='divDinamica'></div>");
+        $("#divDinamica").html("");
+        $('#divDinamica').html("<br><br><center>Carregando dados...</center>");
+        $.ajax({
+            url:'<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'alterar-projeto')); ?>',
+            data: {
+                idpronac : idPronac
+            },
+            success: function(data){
+                $('#divDinamica').html(data);
+            },
+            type : 'post'
+        });
+
+        var title = 'Alterar Projeto';
+        $("#divDinamica").dialog({
+            //resizable: true,
+            width:800,
+            height:600,
+            modal: true,
+            autoOpen:true,
+            draggable:false,
+            title: title,
+            buttons: {
+                'Fechar': function() {
+                    $("#divDinamica").remove();
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');
+                },
+                'Imprimir Checklist': function(){
+                    $("#formImprimirChecklist").append('<input type="hidden" name="idPronac" value="'+idPronac+'">');
+                    $("#formImprimirChecklist").submit();
+                },
+                'Salvar': function() {
+
+                    if(($('#enq').val() == 'Selecione...') || ($('#areacultural').val() == '') || ($('#segmento').val() == '') || ($('#enq').val() == '') || ($('#dtinicioexecucao').val() == '') || ($('#dtfimexecucao').val() == '')){
+                        $('#error').dialog('open');
+                    }else{
+                        if(($('#enqAtual').val() != $('#enq').val()) &&  $.trim($('#dsjustificativa').val()) == ''){
+                            $('#error').dialog('open');
+                        }else{
+                            $("#modalConfirmacao").html('Deseja salvar as altera&ccedil;&otilde;es?');
+                            $("#modalConfirmacao").dialog('open');
+                        }
+                    }
+                },
+                'Finalizar': function() {
+                    var idpronac = $('#idpronac').val(idpronac);
+                    //recupera datas de captacao do formulario de editar projeto
+                    var dataCaptacaoIni  = $("form[name='formularioeditar']").find("input:[name='dataCaptacaoIni']").val();
+                    var dataCaptacaoFim  = $("form[name='formularioeditar']").find("input:[name='dataCaptacaoFim']").val();
+
+                    //atualiza o valor das datas no formulario de finalizar analise do projeto
+                    $("form[name='formulariofinalizar']").find("input:[name='dataCaptacaoIni_finalizar']").val(dataCaptacaoIni);
+                    $("form[name='formulariofinalizar']").find("input:[name='dataCaptacaoFim_finalizar']").val(dataCaptacaoFim);
+
+                    $("form[name='formulariofinalizar']").submit();
+                    $("#divDinamica").remove();
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');
+                }
+            },
+            close: function(){
+                $("#divDinamica").remove();
+                $(this).dialog('close');
+                $('html').css('overflow', 'auto');
+            }
+        });
+    }
+
+    function mostrarModalMensagem(error,msg){
+
+        if(error){
+            msg = "<font color='red'>" + msg + "</font>";
+        }else{
+            msg = "<font color='green'>" + msg + "</font>";
+        }
+        $("body").append("<div id='divDinamicaMsg'></div>");
+        $("#divDinamicaMsg").html("");
+        $('#divDinamicaMsg').html("<br><center><strong>" + msg + "</strong></center>");
+        $("#divDinamicaMsg").dialog({
+            resizable: false,
+            width:360,
+            height:180,
+            modal: true,
+            autoOpen:true,
+            title:"Confirmação",
+            buttons: {
+                'OK': function() {
+                    $("#divDinamicaMsg").remove();
+                    location.reload();
+                }
+            }
+        });
+        $('.ui-dialog-titlebar-close').remove();
+    }
+
+    window.onload = function() {
+        areadetrabalho();
+    };
+
+    $(document).ready(function(){
+
+        $("#modalConfirmacao").dialog({
+            title:"Alerta!",
+            resizable: true,
+            width:300,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'Não': function() {
+                    $(this).dialog('close')
+                },
+                'Sim': function() {
+                    $("#modalConfirmacao").html('Aguarde, salvando dados...');
+                    var areacultural     = $("form[name='formularioeditar']").find("select:[name='areacultural']").val();
+                    var segmento         = $("form[name='formularioeditar']").find("select:[name='segmento']").val();
+                    var enquadramento    = $("form[name='formularioeditar']").find("select:[name='enquadramento']").val();
+                    var justificativa    = $("form[name='formularioeditar']").find("textarea:[name='dsjustificativa']").val();
+                    var dataCaptacaoIni  = $("form[name='formularioeditar']").find("input:[name='dataCaptacaoIni']").val();
+                    var dataCaptacaoFim  = $("form[name='formularioeditar']").find("input:[name='dataCaptacaoFim']").val();
+                    var dtinicioexecucao = $("form[name='formularioeditar']").find("input:[name='dtinicioexecucao']").val();
+                    var dtfimexecucao    = $("form[name='formularioeditar']").find("input:[name='dtfimexecucao']").val();
+                    var idAprovacao      = $("form[name='formularioeditar']").find("input:[name='idAprovacao']").val();
+                    var idpronac         = $("form[name='formularioeditar']").find("input:[name='idpronac']").val();
+                    var nomeProjeto      = $("form[name='formularioeditar']").find("input:[name='nomeProjeto']").val();
+                    var resumoProjeto    = $("form[name='formularioeditar']").find("textarea:[name='resumoProjeto']").val();
+
+                    $.ajax({
+                        async: true,
+                        type: "post",
+                        url:'<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'gravar-alteracao-projeto')); ?>',
+                        data:{
+                            areacultural:areacultural,
+                            segmento:segmento,
+                            enquadramento:enquadramento,
+                            dsjustificativa:justificativa,
+                            dataCaptacaoIni:dataCaptacaoIni,
+                            dataCaptacaoFim:dataCaptacaoFim,
+                            dtinicioexecucao:dtinicioexecucao,
+                            dtfimexecucao:dtfimexecucao,
+                            idAprovacao:idAprovacao,
+                            idpronac:idpronac,
+                            nomeProjeto:nomeProjeto,
+                            resumoProjeto:resumoProjeto
+                        },
+                        beforeSend: function(){ },
+                        success: function(data){
+                            $("#modalConfirmacao").dialog('close');
+                            mostrarModalMensagem(data.error,data.msg);
+                        },
+                        dataType : 'json'
+                    });
+                }
+            }
+        });
+        $('.ui-dialog-titlebar-close').remove();
+
+        $("#redistribuir").click(function(){
+            window.location = "<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'form-redistribuir-projeto')); ?>";
+        });
+
+        $("#btn_pesquisar").click(function(){
+            $('#formPesquisa').submit();
+        });
+
+        $('.btn_imprimir').click(function(){
+            $('#formImpressao').submit();
+        });
+
+        $('.imgRegularidade').click(function(){
+            var cpfcnpj = $(this).attr('cgccpf'),
+                pronac = $(this).attr('pronac');
+            $('#cpfCnpj').val(cpfcnpj);
+            $('#pronacEnviado').val(pronac);
+            $('#formRegularidade').submit();
+        });
+
+    });
+
+    function abrirDinamico(elemento, obj) {
+        if($(elemento).css('display') == 'none') {
+            $(elemento).fadeIn('fast', function() {
+                $('img', $(obj)).attr('src','<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png');
+            });
+        } else {
+            $(elemento).fadeOut('fast', function() {
+                $('img', $(obj)).attr('src','<?php echo $this->baseUrl(); ?>/public/img/navigation-baixo.PNG');
+            });
+        }
+    }
+
+</script>
+
+<div id="modalConfirmacao" class="sumir"></div>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para Inï¿½cio">Início</a></li>
+        <li>CheckList para Publicação</li>
+        <li class="last"><?php echo ($this->nmPagina) ? $this->nmPagina : 'Aguardando Análise Documental'; ?></li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div><?php echo ($this->nmPagina) ? $this->nmPagina : 'Aguardando Análise Documental'; ?></div>
+</div>
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">           
+    <form name="formPesquisa" id="formPesquisa" action="<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'listas'));?>" method="get">
+        <table class="tabela">
+            <tr onclick="abrirDinamico('.divFiltroPesquisa', $(this))" style="cursor:pointer">
+                <th colspan="8">
+                    <img src="<?php echo $this->baseUrl();?>/public/img/navigation-right.png" id="imgDinamica" align="left"/>
+                    Filtro de Pesquisa
+                </th>
+            </tr>
+            <tr class="divFiltroPesquisa">
+                <td class="destacar bold" width="70">PRONAC</td>
+                <td>
+                    <input type="text" class="input_simples" name="pronacPesquisa" maxlength="7" style="width: 70px;" value="<?php echo $this->pronacProjeto;?>">
+                    <input type="hidden" name="qtde" value="<?php echo $this->intTamPag;?>">
+                </td>
+                <td class="destacar bold">N&ordm; Reuni&atilde;o</td>
+                <td>
+                    <input type="text" class="input_simples" name="nrReuniaoPesquisa" maxlength="7" style="width: 70px;" value="<?php echo $this->nrReuniaoPesquisa;?>">
+                </td>
+                <td class="destacar bold">Situa&ccedil;&atilde;o</td>
+                <td>
+                    <select name="tipoFiltro" style="width: 245px;" class="input_simples">
+                        <option value="">Aguardando Análise Documental</option>
+                        <option value="desistencias" <?php echo (isset($_GET['tipoFiltro']) && $_GET['tipoFiltro']=='desistencias')?'selected="selected"':''; ?>>Desist&ecirc;ncias do Recurso</option>
+                        <option value="diligenciados" <?php echo (isset($_GET['tipoFiltro']) && $_GET['tipoFiltro']=='diligenciados')?'selected="selected"':''; ?>>Proponente Diligenciado</option>
+                        <option value="respondidos" <?php echo (isset($_GET['tipoFiltro']) && $_GET['tipoFiltro']=='respondidos')?'selected="selected"':''; ?>>Diligencia Respondida</option>
+                        <?php if($this->coordenador){ ?>
+                        <option value="finalizados" <?php echo (isset($_GET['tipoFiltro']) && $_GET['tipoFiltro']=='finalizados')?'selected="selected"':''; ?>>Projetos Finalizados</option>
+                        <?php } ?>
+                        <option value="irregulares" <?php echo (isset($_GET['tipoFiltro']) && $_GET['tipoFiltro']=='irregulares')?'selected="selected"':''; ?>>Proponente Irregular</option>
+                        <option value="recursos" <?php echo (isset($_GET['tipoFiltro']) && $_GET['tipoFiltro']=='recursos')?'selected="selected"':''; ?>>Recursos Analisados</option>
+                    </select>
+                </td>
+                <td colspan="6" align="center">
+                    <input type="button" name="btn_pesquisar" id="btn_pesquisar" class="btn_pesquisar" value="">
+                    <?php if($this->coordenador){ ?>
+                    <input type="button" name="redistribuir" id="redistribuir" class="btn_devolver_tecnico" value="">
+                    <?php } ?>
+                </td>
+            </tr>
+        </table>
+    </form>
+    
+    <!--<p align="center" colspan="2">
+        <input type="button" name="btn_pesquisar" id="btn_pesquisar" class="btn_pesquisar" value="">
+        <?php if($this->coordenador){ ?>
+        <input type="button" name="redistribuir" id="redistribuir" class="btn_devolver_tecnico" value="">
+        <?php } ?>
+    </p>-->
+
+    <table class="tabela">
+        <tr>
+            <td align="center">
+                <div style="float: left;"><img src="<?php echo $this->baseUrl(); ?>/public/img/notice1.png" width="20px"/></div><div style="margin-top: 2px; margin-right: 15px; margin-left: 3px; float: left;"> A diligenciar</div>
+                <div style="float: left;"><img src="<?php echo $this->baseUrl(); ?>/public/img/notice.png" width="20px"/></div><div style="margin-top: 2px;  margin-right: 15px; margin-left: 3px; float: left"> Diligenciado</div>
+                <div style="float: left;"><img src="<?php echo $this->baseUrl(); ?>/public/img/notice3.png" width="20px"/></div><div style="margin-top: 2px; margin-right: 15px; margin-left: 3px; float: left"> Diligência respondida</div>
+                <div style="float: left;"><img src="<?php echo $this->baseUrl(); ?>/public/img/notice2.png" width="20px"/></div><div style="margin-top: 2px; margin-right: 15px; margin-left: 3px; float: left"> Diligência não respondida</div>
+            </td>
+        </tr>
+    </table>
+
+    <?php if(count($this->dados)>0){ ?>
+    <!-- ============ PAGINAÇÃO ============ -->
+    <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+        <tbody>
+            <tr>
+                <td align="center">
+                <form name="form1" id="form1" action="<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'listas'));?>" method="get">
+                    <?php if($this->paginacao['pag']>1) { ?>
+                    <input class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'listas')).'?pag=1'."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro.'&pronacPesquisa='.$this->pronacProjeto.'&nrReuniaoPesquisa='.$this->nrReuniaoPesquisa; ?>'">
+                    <?php } ?>
+                    <input id="btn_p_anterior" type="button"
+                    <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                    <?php }else { ?>
+                           class="btn_p_anterior" onclick="location.href='<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'listas')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro.'&pronacPesquisa='.$this->pronacProjeto.'&nrReuniaoPesquisa='.$this->nrReuniaoPesquisa; ?>'"
+                    <?php } ?>>
+                    <input id="btn_p_proximo" type="button"
+                           <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                           class="btn_p_proximo-off"
+                    <?php }else { ?>
+                           class="btn_p_proximo" onclick="location.href='<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'listas')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro.'&pronacPesquisa='.$this->pronacProjeto.'&nrReuniaoPesquisa='.$this->nrReuniaoPesquisa; ?>'"
+                    <?php } ?>>
+                    <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                    <input class="btn_ultimo" id="btn_ultimo" type="button"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'listas')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro.'&pronacPesquisa='.$this->pronacProjeto.'&nrReuniaoPesquisa='.$this->nrReuniaoPesquisa; ?>'">
+                    <?php } ?>
+                    Pág.:<select name="pag" id="pag" onchange="$('#form1').submit()" class="input_simples">
+                        <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                        <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                        <?php endfor; ?>
+                    </select>
+                    &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>"><input type="submit" class="btn_recarregar" value="">
+                    <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                    <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                    <input type="hidden" name="tipoFiltro" value="<?php echo $this->filtro;?>">
+                    <input type="hidden" name="pronacPesquisa" value="<?php echo $this->pronacProjeto;?>">
+                    <input type="hidden" name="nrReuniaoPesquisa" value="<?php echo $this->nrReuniaoPesquisa;?>">
+                    <input type="button" class="btn_imprimir">
+                 </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <center>
+        <?php
+            echo $this->paginacao['inicio']." a ";
+            echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+            echo " de ". $this->paginacao['total']. " Projetos listados";
+        ?>
+    </center>
+    <!-- ========== FIM PAGINAÇÃO ========== -->
+    <?php } ?>
+
+
+    <?php if($this->qtdDocumentos != 0){ ?>
+    <table class="tabela tablesorter">
+        <thead>
+            <tr class="titulo_tabela">
+                <th><a href="<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'listas')).'?pag=1&qtde='.$this->paginacao['qtde'].'&tipoFiltro='.$this->filtro.'&pronacPesquisa='.$this->pronacProjeto.'&nrReuniaoPesquisa='.$this->nrReuniaoPesquisa.'&campo=6&ordem='.$this->paginacao['novaOrdem'];?>">PRONAC</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'listas')).'?pag=1&qtde='.$this->paginacao['qtde'].'&tipoFiltro='.$this->filtro.'&pronacPesquisa='.$this->pronacProjeto.'&nrReuniaoPesquisa='.$this->nrReuniaoPesquisa.'&campo=1&ordem='.$this->paginacao['novaOrdem'];?>">Nome do Projeto</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'listas')).'?pag=1&qtde='.$this->paginacao['qtde'].'&tipoFiltro='.$this->filtro.'&pronacPesquisa='.$this->pronacProjeto.'&nrReuniaoPesquisa='.$this->nrReuniaoPesquisa.'&campo=16&ordem='.$this->paginacao['novaOrdem'];?>">Área / Segmento Cultural</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'listas')).'?pag=1&qtde='.$this->paginacao['qtde'].'&tipoFiltro='.$this->filtro.'&pronacPesquisa='.$this->pronacProjeto.'&nrReuniaoPesquisa='.$this->nrReuniaoPesquisa.'&campo=7&ordem='.$this->paginacao['novaOrdem'];?>">Enquadramento</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'listas')).'?pag=1&qtde='.$this->paginacao['qtde'].'&tipoFiltro='.$this->filtro.'&pronacPesquisa='.$this->pronacProjeto.'&nrReuniaoPesquisa='.$this->nrReuniaoPesquisa.'&campo=4&ordem='.$this->paginacao['novaOrdem'];?>">Período de Execu&ccedil;&atilde;o</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'listas')).'?pag=1&qtde='.$this->paginacao['qtde'].'&tipoFiltro='.$this->filtro.'&pronacPesquisa='.$this->pronacProjeto.'&nrReuniaoPesquisa='.$this->nrReuniaoPesquisa.'&campo=9&ordem='.$this->paginacao['novaOrdem'];?>">Vl. Aprovado&nbsp;(R$)</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'listas')).'?pag=1&qtde='.$this->paginacao['qtde'].'&tipoFiltro='.$this->filtro.'&pronacPesquisa='.$this->pronacProjeto.'&nrReuniaoPesquisa='.$this->nrReuniaoPesquisa.'&campo=11&ordem='.$this->paginacao['novaOrdem'];?>">N&ordm; Reuni&atilde;o</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'listas')).'?pag=1&qtde='.$this->paginacao['qtde'].'&tipoFiltro='.$this->filtro.'&pronacPesquisa='.$this->pronacProjeto.'&nrReuniaoPesquisa='.$this->nrReuniaoPesquisa.'&campo=14&ordem='.$this->paginacao['novaOrdem'];?>">T&eacute;cnico</a></th>
+                <th>Tempo de An&aacute;lise</th>
+                <th>Regularidade</th>
+
+                <?php if($this->filtro != 'finalizados'){ ?>
+                <th>Diligência</th>
+                <?php } ?>
+
+                <th>Alterar</th>
+                
+                <?php if($this->coordenador && ($this->filtro == 'finalizados' || $this->filtro == 'recursos')){ ?>
+                <th>Encaminhar Para Portaria</th>
+                <?php } ?>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach($this->dados as $d){ ?>
+            <?php if(!empty($d->DtFimExecucao)){
+                    $d->DtFimExecucao = Data::tratarDataZend($d->DtFimExecucao, 'americano');
+                    $dtFim = strtotime($d->DtFimExecucao);
+                    $dtAtual = strtotime(date('Y-m-d'));
+                    $classRed = null;
+                    if($dtAtual > $dtFim){
+                        $classRed = 'style="color:red;"';
+                    }
+                }
+            ?>
+            <tr>
+                <td>
+                    <a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'));?>?idPronac=<?php echo ($d->IdPRONAC); ?>" target="_blank">
+                        <?php echo $d->pronac; ?>
+                    </a>
+                </td>
+                <td><?php echo $d->NomeProjeto; ?></td>
+                <td><?php echo $d->dsArea.' / '.$d->dsSegmento; ?></td>
+                <td align="center"><?php echo 'Art. '.$d->enquadramento; ?></td>
+                <td align="center" <?php echo $classRed; ?>><?php echo Data::tratarDataZend($d->DtInicioExecucao, 'Brasileira'); ?> à <?php echo Data::tratarDataZend($d->DtFimExecucao, 'Brasileira'); ?></td>
+                <td align="right" nowrap><?php echo @number_format(($d->ValorAprovado), 2, ",", "."); ?></td>
+                <td align="center"><?php echo $d->nrreuniao; ?></td>
+                <td><?php echo $d->Tecnico; ?></td>
+                <td align="center"><?php echo ($d->tempoAnalise > 0) ? ($d->tempoAnalise < 2) ? $d->tempoAnalise.' dia' : $d->tempoAnalise.' dias' : '0 dia'; ?></td>
+                <td align="center">
+                    <img class="imgRegularidade" style="cursor: pointer" cgccpf="<?php echo $d->cgccpf; ?>" pronac="<?php echo $d->pronac; ?>" src="<?php echo $this->baseUrl(); ?>/public/img/ico/archive.png" />
+                </td>
+                <?php if($this->filtro != 'finalizados'){ ?>
+                <td align="center">
+                    <?php if($this->filtro == ''){ ?>
+                    <a href="<?php echo $this->url(array('controller' => 'diligenciar', 'action' => 'listardiligenciaanalista'));?>/tipoAnalise/inicial?idPronac=<?php echo ($d->IdPRONAC); ?>&situacao=D25&tpDiligencia=181" target="_blank">
+                        <img width="30px" title="A Diligenciar" src="<?php echo $this->baseUrl(); ?>/public/img/notice1.png">
+                    </a>
+                    <?php } elseif($this->filtro == 'diligenciados') { ?>
+                    <a href="<?php echo $this->url(array('controller' => 'diligenciar', 'action' => 'listardiligenciaanalista'));?>/tipoAnalise/inicial?idPronac=<?php echo ($d->IdPRONAC); ?>&situacao=D25&tpDiligencia=181" target="_blank">
+                        <img width="30px" title="Diligenciado" src="<?php echo $this->baseUrl(); ?>/public/img/notice.png">
+                    </a>
+                    <?php } elseif($this->filtro == 'respondidos') { ?>
+                    <a href="<?php echo $this->url(array('controller' => 'diligenciar', 'action' => 'listardiligenciaanalista'));?>/tipoAnalise/inicial?idPronac=<?php echo ($d->IdPRONAC); ?>&situacao=D25&tpDiligencia=181" target="_blank">
+                        <img width="30px" title="Diligência respondida" src="<?php echo $this->baseUrl(); ?>/public/img/notice3.png">
+                    </a>
+                    <?php } elseif($this->filtro == 'irregulares') { ?>
+                    <a href="<?php echo $this->url(array('controller' => 'diligenciar', 'action' => 'listardiligenciaanalista'));?>/tipoAnalise/inicial?idPronac=<?php echo ($d->IdPRONAC); ?>&situacao=D25&tpDiligencia=181" target="_blank">
+                        <img width="30px" title="A Diligenciar" src="<?php echo $this->baseUrl(); ?>/public/img/notice1.png">
+                    </a>
+                    <?php } elseif($this->filtro == 'inabilitados') { ?>
+                    -
+                    <?php } ?>
+                </td>
+                <?php } ?>
+                <td>
+                    <?php if(!$this->coordenador && $this->filtro == 'finalizados'){ echo ''; } else { ?>
+                    <input type="button" name="alterar" id="alterar" class="btn_alterar" onclick="alterarProjeto('<?php echo ($d->IdPRONAC); ?>')" title="Alterar projeto">
+                    <?php } ?>
+                </td>
+                <?php if($this->coordenador && ($this->filtro == 'finalizados' || $this->filtro == 'recursos')){ ?>
+                <td id="colunafinalizar<?php echo ($d->IdPRONAC); ?>" align="center">
+                    <img id="encaminhar" alt="" src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png" style="cursor: pointer" onclick="encaminharPortaria('<?php echo $d->IdPRONAC; ?>')"/>
+                </td>
+                <?php } ?>
+            </tr>
+            <?php } ?>
+        </tbody>
+    </table>
+
+    <?php if(count($this->dados)>0){ ?>
+
+        <!-- ============ PAGINAÇÃO ============ -->
+        <?php if($this->qtdDocumentos > 10) { //echo $this->dados; ?>
+        <center>
+            <?php
+                echo $this->paginacao['inicio']." a ";
+                echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+                echo " de ". $this->paginacao['total'];
+            ?>
+        </center>
+        <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+            <tbody>
+                <tr>
+                    <td align="center">
+                    <form name="form2" id="form2" action="<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'listas'));?>" method="get">
+                        <?php if($this->paginacao['pag']>1) { ?>
+                        <input class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'listas')).'?pag=1'."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro.'&pronacPesquisa='.$this->pronacProjeto.'&nrReuniaoPesquisa='.$this->nrReuniaoPesquisa; ?>'">
+                        <?php } ?>
+                        <input id="btn_p_anterior" type="button"
+                        <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                        <?php }else { ?>
+                               class="btn_p_anterior" onclick="location.href='<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'listas')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro.'&pronacPesquisa='.$this->pronacProjeto.'&nrReuniaoPesquisa='.$this->nrReuniaoPesquisa; ?>'"
+                        <?php } ?>>
+                        <input id="btn_p_proximo" type="button"
+                               <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                               class="btn_p_proximo-off"
+                        <?php }else { ?>
+                               class="btn_p_proximo" onclick="location.href='<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'listas')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro.'&pronacPesquisa='.$this->pronacProjeto.'&nrReuniaoPesquisa='.$this->nrReuniaoPesquisa; ?>'"
+                        <?php } ?>>
+                        <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                        <input class="btn_ultimo" id="btn_ultimo" type="button"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'listas')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro.'&pronacPesquisa='.$this->pronacProjeto.'&nrReuniaoPesquisa='.$this->nrReuniaoPesquisa; ?>'">
+                        <?php } ?>
+                        Pág.:<select name="pag" id="pag" onchange="$('#form2').submit()" class="input_simples">
+                            <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                            <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                            <?php endfor; ?>
+                        </select>
+                        &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>"><input type="submit" class="btn_recarregar" value="">
+                        <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                        <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                        <input type="hidden" name="tipoFiltro" value="<?php echo $this->filtro;?>">
+                        <input type="hidden" name="pronacPesquisa" value="<?php echo $this->pronacProjeto;?>">
+                        <input type="hidden" name="nrReuniaoPesquisa" value="<?php echo $this->nrReuniaoPesquisa;?>">
+                        <input type="button" class="btn_imprimir">
+                     </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- ========== FIM PAGINAÇÃO ========== -->
+
+    <?php } } ?>
+
+
+    <?php } else { ?>
+    <table class="tabela">
+        <tr>
+            <td align="center">Nenhum registro encontrado.</td>
+        </tr>
+    </table>
+    <?php } ?>
+    <br clear="all" />
+
+
+    <form target="_blank" class="form" name="formRegularidade" id="formRegularidade" method="post" action='<?php echo $this->url(array('controller' => 'manterregularidadeproponente', 'action' => 'manterregularidadeproponente')); ?>'>
+        <input type="hidden" name="cpfCnpj" id="cpfCnpj" value="" />
+        <input type="hidden" name="pronacEnviado" id="pronacEnviado" value="" />
+    </form>
+
+    <form target="_blank" class="form" name="formImpressao" id="formImpressao" method="post" action='<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'imprimir-checklist-publicacao')); ?>'>
+        <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+        <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+        <input type="hidden" name="tipoFiltro" value="<?php echo $this->filtro;?>">
+        <input type="hidden" name="pronacPesquisa" value="<?php echo $this->pronacProjeto;?>">
+        <input type="hidden" name="nrReuniaoPesquisa" value="<?php echo $this->nrReuniaoPesquisa;?>">
+    </form>
+    
+    <form target="_blank" class="form" name="formImprimirChecklist" id="formImprimirChecklist" method="post" action='<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'assinaturas-imprimir-checklist')); ?>'></form>
+
+
+</div>
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

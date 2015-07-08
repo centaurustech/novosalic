@@ -1,0 +1,110 @@
+<?php 
+	if ($this->gerar['gerar'] == 'xls') { 
+		echo '<div id="div_g1_1" class="miolo_grid_01 sumir">';		
+	}
+?>
+<div class="conteudoImprimivel" id="conteudoImprimivel" style="display:none">
+<table class="tabela" width="100%">
+    <tbody>
+    <tr>
+        <th valign="middle" align="center" bgcolor="#abda5d">Proponente</th>
+        <th valign="middle" align="center" bgcolor="#abda5d">PRONAC</th>
+        <th valign="middle" align="center" bgcolor="#abda5d">Nome do Projeto</th>
+        <th valign="middle" align="center" bgcolor="#abda5d">UF</th>
+        <th valign="middle" align="center" bgcolor="#abda5d">Munic&iacute;pio</th>
+        <th valign="middle" align="center" bgcolor="#abda5d">Enquadramento</th>
+        <th valign="middle" align="center" bgcolor="#abda5d">Resumo do Projeto</th>
+        <th valign="middle" align="center" bgcolor="#abda5d">Situa&ccedil;&atilde;o</th>
+        <th valign="middle" align="center" bgcolor="#abda5d">Dt. In&iacute;cio Execu&ccedil;&atilde;o</th>
+        <th valign="middle" align="center" bgcolor="#abda5d">Dt. Fim Execu&ccedil;&atilde;o</th>
+        <th valign="middle" align="center" bgcolor="#abda5d">Dt. Distribui&ccedil;&atilde;o</th>
+        <th valign="middle" align="center" bgcolor="#abda5d">&Aacute;rea Cultural</th>
+        <th valign="middle" align="center" bgcolor="#abda5d">Segmento Cultural</th>
+        <th valign="middle" align="center" bgcolor="#abda5d">Avalia&ccedil;&atilde;o</th>
+        <th valign="middle" align="center" bgcolor="#abda5d">Vl. Solicitado</th>
+        <th valign="middle" align="center" bgcolor="#abda5d">Vl. Sugerido</th>
+        <th valign="middle" align="center" bgcolor="#abda5d">Componente</th>
+        <th valign="middle" align="center" bgcolor="#abda5d">Status</th>
+    </tr>
+    <?php $auxAnalise = ""; $auxComponente = ""; ?>
+    <?php $ct = 0; ?>
+    <?php if($this->excel > 0){ ?>
+        <?php foreach($this->excel as $projeto){ ?>
+        <tr>
+            <td valign="top" align="left"><?php echo $projeto->Proponente; ?></td>
+            <td valign="top" align="center"><?php echo $projeto->Pronac; ?></td>
+            <td valign="top" align="left"><?php echo $projeto->NomeProjeto; ?></td>
+            <td valign="top" align="left"><?php echo $projeto->UF?></td>
+            <td valign="top" align="left"><?php echo $projeto->Cidade?></td>
+            <td valign="top" align="left"><?php echo ($projeto->Enquadramento == 1) ? 'Artigo 26' : 'Artigo 18'; ?></td>
+            <td valign="top" align="left"><?php echo $projeto->ResumoProjeto; ?></td>
+            <td valign="top" align="left"><?php echo $projeto->Situacao; ?></td>
+            <td valign="top" align="center"><?php echo !empty($projeto->DtInicioExecucao) ? Data::tratarDataZend($projeto->DtInicioExecucao, 'Brasileira') : ''; ?></td>
+            <td valign="top" align="center"><?php echo !empty($projeto->DtInicioExecucao) ? Data::tratarDataZend($projeto->DtFimExecucao, 'Brasileira') : ''; ?></td>
+            <td valign="top" align="center"><?php echo !empty($projeto->DtInicioExecucao) ? Data::tratarDataZend($projeto->DtDistribuicao, 'Brasileira') : ''; ?></td>
+            <td valign="top" align="left" ><?php echo $projeto->DescArea; ?></td>
+            <td valign="top" align="left" ><?php echo $projeto->DescSegmento; ?></td>
+            <td valign="top" align="left"><?php echo $projeto->Avaliacao; ?></td>
+            <td valign="top" align="right"><?php echo number_format($projeto->SolicitadoReal, 2, ",", ".")?></td>
+            <td valign="top" align="right"><?php echo number_format($projeto->SugeridoReal, 2, ",", ".")?></td>
+            <td valign="top" align="left"><?php echo $projeto->Componente; ?></td>
+            <td valign="top" align="left"><?php echo $projeto->Analise; ?></td>
+        </tr>
+        <?php } ?>
+    <?php } else { ?>
+        <?php if(count($this->projetos['valores']) > 0){ ?>
+        <?php foreach($this->projetos['valores'] as $chave => $projeto){ ?>
+        <tr>
+            <td valign="top" align="left"><?php echo $projeto['Proponente']?></td>
+            <td valign="top" align="center"><?php echo $projeto['Pronac']?></td>
+            <td valign="top" align="left"><?php echo $projeto['NomeProjeto']?></td>
+            <td valign="top" align="left"><?php echo $projeto['ResumoProjeto']?></td>
+            <td valign="top" align="left"><?php echo $projeto['Situacao']?></td>
+            <td valign="top" align="center"><?php echo Data::tratarDataZend($projeto['DtInicioExecucao'], 'Brasileira')?></td>
+            <td valign="top" align="center"><?php echo Data::tratarDataZend($projeto['DtFimExecucao'], 'Brasileira')?></td>
+            <td valign="top" align="center"><?php echo Data::tratarDataZend($projeto['DtDistribuicao'], 'Brasileira')?></td>
+            <td valign="top" align="left" ><?php echo $projeto['DescArea']?></td>
+            <td valign="top" align="left" ><?php echo $projeto['DescSegmento']?></td>
+            <td valign="top" align="left"><?php echo $projeto['Avaliacao']?></td>
+            <td valign="top" align="right"><?php echo number_format($projeto['SolicitadoReal'], 2, ",", ".")?></td>
+            <td valign="top" align="right"><?php echo number_format($projeto['SugeridoReal'], 2, ",", ".")?></td>
+            <td valign="top" align="left"><?php echo $projeto['Componente']?></td>
+            <td valign="top" align="left"><?php echo $projeto['Analise']?></td>
+        </tr>
+        <?php } ?>
+        <?php } else { ?>
+        <tr>
+            <td colspan="16" valign="top" align="center">Nenhum Registro Encontrado</td>
+        </tr>
+        <?php } ?>
+    <?php } ?>
+</tbody>
+</table>
+</div>
+<?php 
+	if ($this->gerar['gerar'] == 'xls' || $this->gerar['gerar'] == 'pdf') { 
+		echo '</div>';
+	}
+?>
+
+<?php if ($this->gerar['gerar'] == 'xls') { ?>
+	<form method="POST" id="formGerarXls" name="formGerarXls" action="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'gerar-xls')); ?>" style="display:none">
+	    <textarea name="html" id="conteudoXLS"></textarea>
+	</form>
+	<script>
+		$("#conteudoXLS").val($(".conteudoImprimivel").html());
+		$("#formGerarXls").submit();
+	</script>
+<?php } elseif ($this->gerar['gerar'] == 'html') { ?>
+	<script>
+		imprimir();
+	</script>
+<?php } elseif($this->gerar['gerar'] == 'pdf') { ?>
+        <form method="POST" id="formGerarXls" name="formGerarXls" action="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'gerar-pdf-total')); ?>" style="display:none">
+	    <textarea name="html" id="conteudoXLS"></textarea>
+	</form>
+	<script>
+		$("#conteudoXLS").val($(".conteudoImprimivel").html());
+		$("#formGerarXls").submit();
+	</script>
+<?php } ?>

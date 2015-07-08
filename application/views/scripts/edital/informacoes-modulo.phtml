@@ -1,0 +1,188 @@
+<?php include_once 'inc/menu-modulo.php'; ?>
+<div id="alerta" class="sumir"></div>
+<div id="breadcrumb">
+    <ul>
+        <li class="first">Início</li>
+        <li class=""><a href="edital/index">Criar Edital - Passo 1</a></li>
+        <li class="">Criar Edital - Passo 2</li>
+    </ul>
+</div>
+
+<div id="titulo">
+    <div>Informações da Categoria</div>
+</div> 
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    
+    <!-- FOMULARIO PARA CADASTRO DOS CRITERIOS DE PARTICIPACAO -->
+    <br />
+    <div id="msg" class="msgALERT sumir" style="margin: 0px 20px 0px 20px">
+        <div class="float_right"><input type="button" class="btn_close" title="Fechar mensagem" id="msgALERT" onclick="$('.msgALERT').hide();" onkeypress="$('.msgALERT').hide();"/></div>
+        <div id="txtmsg" style="line-height: 25px;"></div>
+    </div>
+
+    <form id="formularioInformacaoGeralModulo" action="<?php echo $this->url(array('controller' => 'edital', 'action' => 'atualiza-info-geral-modulo')); ?>" method="post">
+        <input type="hidden" id="idEdital" name="idEdital" value="<?php echo $this->idEdital;?>" />
+        <input type="hidden" id="idModulo" name="idModulo" value="<?php echo $this->idModulo;?>" />
+        <table class="tabela">
+            <tbody>
+                <tr>
+                    <th colspan="2" style="font-size: 14px">Informações do Módulo</th>
+                </tr>
+                <tr>
+                    <td class="destacar bold w300 esquerdo">Nome do Módulo <span style="color: red;">*</span></td>
+                    <td><input maxlength="200" type="text" name="nomeModulo" id="nomeModulo" value="<?php echo $this->dsModulo; ?>" class="input_simples w400 required"></td>
+                </tr>
+                <tr>
+                    <td class="destacar bold esquerdo">Tipo de Participação do Edital<span style="color: red;">*</span></td>
+                    <td colspan="3">
+                        <?php foreach ($this->participacoes as $tpart): ?>
+                            <input type="checkbox" id="tipoParticipacao_<?php echo $tpart['idTpParticipacao']; ?>" name="tipoParticipacaoEdital[]" value="<?php echo $tpart['idTpParticipacao']; ?>" style="vertical-align: middle"/>
+                            &nbsp;<span style="font-size: 11px;"><?php echo $tpart['dsTpParticipacao']; ?>&nbsp;&nbsp;&nbsp;
+                                <select class="input_simples" name="qtdTipoParticipacaoEdital" id="qtdTipoParticipacaoEdital_<?php echo $tpart['idTpParticipacao']; ?>" style="display: none;">
+                                    <?php if($tpart['qtParticipacao'] == 1):?>
+                                    <option value="1">uma vez</option>
+                                    <?php elseif($tpart['qtParticipacao'] == 2):?>
+                                    <option value="1">uma vez</option>
+                                    <option value="2">uma ou mais vezes</option>
+                                    <?php endif;?>
+                                </select>
+                            </span><br />
+                        <?php endforeach; ?> 
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+        <br clear="all">
+        <div style="width: 100%; text-align: center;">
+            <button type="submit" class="btn_salvar" name="salvar" id="salvar" style="vertical-align: bottom"></button>
+        </div>
+    </form>
+    <br clear="all">
+    <!-- FIM FOMULARIO PARA CADASTRO DOS CRITERIOS DE PARTICIPACAO -->
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+
+        $("#formularioInformacaoGeralModulo").submit(function() {
+//
+            $('#msg').hide();
+            $('#txtmsg').html('');
+
+            var check = 0;
+            var enviar = 0;
+
+            $('.required').each(function() {
+
+                var obj = $(this).val();
+
+                if (obj === '') {
+                    check = 1;
+                }
+
+            });
+
+            if ((check === 1)) {
+                $('#txtmsg').html('Verifique os campos obrigatórios!<br />');
+                $('#msg').show();
+                enviar = 1;
+            } else {
+                $('#txtmsg').html('');
+                $('#msg').hide();
+            }
+
+            // Enviar o Form
+            if ((enviar === 1)) {
+                return false;
+            }
+
+            $('#txtmsg').html('');
+            $('#msg').hide();
+            $(this).submit();
+
+
+        });
+
+
+        $('#tipoParticipacao_1').click(function(){
+            if ($('#tipoParticipacao_1').is(':checked')) {
+                   $('#qtdTipoParticipacaoEdital_1').show();
+            } else {
+                 $('#qtdTipoParticipacaoEdital_1').hide();
+            }
+        });
+
+        $('#tipoParticipacao_2').click(function(){
+             if ($('#tipoParticipacao_2').is(':checked')) {
+                    $('#qtdTipoParticipacaoEdital_2').show();
+             } else {
+                  $('#qtdTipoParticipacaoEdital_2').hide();
+             }
+        });
+
+        $('#tipoParticipacao_3').click(function(){
+             if ($('#tipoParticipacao_3').is(':checked')) {
+                    $('#qtdTipoParticipacaoEdital_3').show();
+             } else {
+                  $('#qtdTipoParticipacaoEdital_3').hide();
+             }
+        });
+
+        $('#tipoParticipacao_4').click(function(){
+            if ($('#tipoParticipacao_4').is(':checked')) {
+                    $('#qtdTipoParticipacaoEdital_4').show();
+             } else {
+                  $('#qtdTipoParticipacaoEdital_4').hide();
+             }
+        });
+
+        $("#btnProximo").click(function() {
+            window.location = "<?php echo $this->url(array('controller' => 'edital', 'action' => 'modulosedital', 'idEdital' => $this->idEdital), '', true); ?>";
+        });
+
+        $("#btnVoltar").click(function() {
+            window.location = "form-criterios-de-participacao.htm";
+        });
+
+        //CALENDARIO - CAMPOS DATA
+        $.datepicker.regional['pt-BR'] =
+                {
+                    closeText: 'Fechar',
+                    prevText: '&#x3c;Anterior',
+                    nextText: 'Pr&oacute;ximo&#x3e;',
+                    currentText: 'Hoje',
+                    monthNames: ['Janeiro', 'Fevereiro', 'Mar&ccedil;o', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                    monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                    dayNames: ['Domingo', 'Segunda-feira', 'Ter&ccedil;a-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'S&aacute;bado'],
+                    dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
+                    dayNamesMin: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
+                    weekHeader: 'Sm',
+                    dateFormat: 'dd-mm-yy',
+                    firstDay: 0,
+                    isRTL: false,
+                    showMonthAfterYear: false,
+                    yearSuffix: ''
+                };
+
+        $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+
+        // classe dos campos que utilizarao o calendario
+        $(".cmpData").datepicker($.datepicker.regional['pt-BR']);
+
+    });
+
+    function num(dom) {
+        dom.value = dom.value.replace(/\D/g, '');
+    }
+
+</script>

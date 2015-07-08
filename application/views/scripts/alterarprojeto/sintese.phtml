@@ -1,0 +1,166 @@
+<?php
+/**
+ * Alterar Projeto
+ * @author Equipe RUP - Politec
+ * @since 24/05/2013
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.alterarprojeto
+ * @copyright (c) 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+
+include_once 'scripts/alterarprojeto/inc/menu.inc.php';
+?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para p&aacute;gina inicial">Início</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'alterarprojeto', 'action' => 'consultarprojeto')); ?>" title="Ir para alterar projeto">Alterar projeto</a></li>
+        <li class="last">Alterar síntese do projeto</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== BUTTON VOLTAR ========== -->
+<div id="titulo">
+    <div>Alterar síntese do projeto <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== GRID NOME DA PROPOSTA ========== -->
+<script type="text/javascript">
+    $(document).ready( function() {
+        $("#formularioAtualiza").validate({
+            // Define as regras
+            rules:{
+                sinteseProjeto:{
+                    // campoNome será obrigatório (required) e terá tamanho mínimo (minLength)
+                    required: true
+                },
+                justificativa:{
+                    // campoEmail será obrigatório (required) e precisará ser um e-mail válido (email)
+                    required: true
+                }
+            },
+            // Define as mensagens de erro para cada regra
+            messages:{
+                sinteseProjeto:{
+                    required: "<br>Dados obrigatórios n&atilde;o informados"
+                },
+                justificativa:{
+                    required: "<br>Dados obrigatórios n&atilde;o informados"
+                }
+            }
+        });
+    });
+
+    function abrir_fechar(id_div){
+        $('#'+id_div).slideToggle(400);
+        $('#maiss'+id_div).toggle().focus();
+        $('#menoss'+id_div).toggle().focus();
+    }
+</script>
+
+<div id="conteudo">
+    <form name="formularioAtualiza" id="formularioAtualiza" method="post" action="<?php echo $this->url(array('controller' => 'alterarprojeto', 'action' => 'salvaalterarprojeto')); ?>" >
+        <input type="hidden" name="pronac" value="<?php echo $this->parecer->pronac ?>" />
+        <input type="hidden" name="pagina" value="sintese" />
+        <table class="tabela">
+            <tr>
+                <th colspan="2" class="centro">Identifica&ccedil;&atilde;o</th>
+            </tr>
+            <tr class="destacar centro bold">
+                <td width="200">PRONAC</td>
+                <td>Nome do Projeto</td>
+            </tr>
+            <tr>
+                <td align="center"><?php echo $this->parecer->pronac; ?></td>
+                <td align="center"><?php echo $this->parecer->NomeProjeto; ?></td>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <th>Síntese do Projeto<span style="color: red;">*</span></th>
+            </tr>
+            <tr>
+                <td align="center">
+                    <textarea class="textarea_simples h100" style="width:99%" id="sinteseProjeto" obrigatorio="1" name="sinteseProjeto"><?php echo $this->sintese; ?></textarea>
+                </td>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <th>Justificativa<span style="color: red;">*</span></th>
+            </tr>
+            <tr>
+                <td align="center">
+                    <textarea class="textarea_simples h100" style="width:99%" id="justificativa" obrigatorio="1" name="justificativa"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td class="centro">
+
+                    <table class="tabela">
+                        <tr>
+                            <td class="esquerda"><input type="button" class="btn_adicionar" title="Expandir" value=" " onclick="return abrir_fechar('lista')" onkeypress="return abrir_fechar('lista')" /> Anexar Documentos</td>
+                        </tr>
+                    </table>
+
+                    <div id="lista">
+                        <input type="hidden" name="excuir[]" id="excuir" value="" />
+                        <table class="tabela">
+                            <tbody id="tabelaArquivos">
+                                <tr class="titulo_tabela" >
+                                    <th>Tipo Documento</th>
+                                    <th>Data</th>
+                                    <th>Classifica&ccedil;&atilde;o</th>
+                                    <th>Documento</th>
+                                    <th>A&ccedil;&atilde;o</th>
+                                </tr>
+                                <?php foreach($this->documentos as $doc) { ?>
+                                <tr>
+                                    <td><?php echo !empty($doc->AgenteDoc) ? 'Proponente' : 'Projeto' ?></td>
+                                    <td><?php echo date("d/m/Y H:i:s",strtotime($doc->dtHistoricoAlteracaoProjeto)) ?></td>
+                                    <td><?php echo $doc->Descricao ?></td>
+                                    <td><a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id=<?php echo $doc->idArquivo; ?>"><?php echo $doc->nmArquivo ?></a></td>
+                                    <td>&nbsp;</td>
+                                </tr>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+
+                        <table class="tabela" >
+                            <tr>
+                                <td class="direita">
+                                    <input class="btn_incluir" id="btn_incluir" value=" " type="button" onclick="EnviarArquivo()" title="Incluir" />
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <td class="centro">
+                    <input class="btn_salvar" id="btn_salvar" value=" " type="submit" title="Salvar" />
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />
+<iframe name="enviar_arquivo" id="enviar_arquivo" style="height: 20px; display: none;"></iframe>

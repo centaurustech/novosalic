@@ -1,0 +1,14 @@
+<script language="javascript" type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" language="javascript">
+
+    //executa script enviado
+    <?php echo $this->script; ?>
+
+    //imprime mensagem enviada para a view na div mensagem que esta fora do iframe
+    //window.parent.document.getElementById('divMensagem').innerHTML = "<?php echo $this->mensagem; ?>";
+    
+    //$("#divMensagem").parent().append("<div class='msgCONFIRM'><div class='float_right'><input type='button' class='btn_close' title='Fechar mensagem' id='msgCONFIRM' onclick='$('.msgCONFIRM').hide();' onkeypress='$('.msgCONFIRM').hide();'/></div><div><?php echo $this->mensagem; ?></div></div>");
+    $("#novas_mensagens", parent.document.body).html("<div class='msg<?php echo $this->tipoMensagem; ?>'><div class='float_right'><input type='button' class='btn_close' title='Fechar mensagem' id='msg<?php echo $this->tipoMensagem; ?>' onclick='$(\".msg<?php echo $this->tipoMensagem; ?>\").hide();' onkeypress='$(\".msg<?php echo $this->tipoMensagem; ?>\").hide();'/></div><div><?php echo $this->mensagem; ?></div></div>");
+    
+</script>
+<?php //echo $this->mensagem; ?>

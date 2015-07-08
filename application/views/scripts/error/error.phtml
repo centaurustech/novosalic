@@ -1,0 +1,27 @@
+<?php
+/**
+ * Mostra os erros
+ * @author Equipe RUP - Politec
+ * @since 29/03/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.error
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+
+<?php if ($this->ambiente == 'DES') : ?>
+<div style="overflow:auto; width:90%; margin:auto; border:0.1em solid #ccc; background:#ffc;">
+	<h1>EXCEÇÃO:</h1>
+	<pre><?php echo $this->exception->getMessage();?></pre>
+	<br />
+
+	<h1>TRACE:</h1>
+	<pre><?php echo $this->exception->getTraceAsString();?></pre>
+	<br />
+
+	<h1>PARÂMETROS DA REQUISIÇÃO:</h1>
+	<pre><?php echo print_r($this->request->getParams(), true);?></pre>
+</div>
+<?php endif; ?>

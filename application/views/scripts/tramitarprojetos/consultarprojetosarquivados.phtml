@@ -1,0 +1,170 @@
+<?php require_once "inc/menu.inc.php"; // menu ?>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.dataPicker').datepicker({
+            dateFormat: 'dd/mm/yy',
+            dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'],
+            dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
+            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb','Dom' ],
+            monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+            nextText: 'Próximo',
+            prevText: 'Anterior'
+        });
+
+        $("#error").dialog({
+            title:'Erro',
+            resizable: true,
+            width:450,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'OK': function() {
+                    $(this).dialog('close');
+                }
+            }
+        });
+
+        $(".btn_localizar").click(function(){
+            var valida = true;
+            $(".dataPicker").each(function(){
+                if($.trim($(this).val()).length > 0){
+                    if($(this).val().length != 10){
+                        valida = false;
+                    }
+                }
+            });
+            if(!valida){
+                $("#error").html('Data no formato incorreto!');
+                $("#error").dialog('open');
+            }
+            else{
+                $("#form").submit();
+            }
+        });
+
+        $('.numero').keydown(function(event){
+            if((event.keyCode >= 96 && event.keyCode <= 105) || (event.keyCode >= 48 && event.keyCode <= 57) || event.keyCode == 8 || event.keyCode ==9 ){
+                return true;
+            } else {
+                return false;
+            }
+        });
+    });
+
+    function modoconsulta(campo,valor){
+        // exatamente igual
+        if(campo == 'tipo_dtArquivo' && valor == 1){
+            $('#dtArquivI').show();
+            $('#dtArquivF').hide();
+            $('#dtArquivF').val('');
+        }
+        // Entre dois valores
+        if(campo == 'tipo_dtArquivo' && valor == 2){
+            $('#dtArquivF').show();
+        }
+    }
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para p&aacute;gina inicial">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'tramitarprojetos', 'action' => 'index')); ?>" title="Ir para Tramitar projetos">Tramitar projetos</a></li>
+        <li class="last">Consultar projetos arquivados</li>
+    </ul>
+</div>
+<!-- ========== FIM BRADCRUMB (LINKS TOPO) ========== -->
+
+<div id="titulo">
+    <div>Consultar projetos arquivados <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="conteudo" align="center">
+    <div id="error"></div>
+
+    <form action="<?php echo $this->url(array('controller' => 'tramitarprojetos', 'action' => 'projetosarquivados')); ?>" method="post" id="form" name="form">
+        <table class="tabela">
+            <tr>
+                <td class="destacar bold" align="right">PRONAC</td>
+                <td>Exatamente igual</td>
+                <td align="left"><input type="text" name="pronac" value="" maxlength="7" size="12" class="input_simples numero"/></td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Nome do Projeto</td>
+                <td>
+                    <select class="select_simples w200" name="tipo_nome">
+                        <option value="1" selected="selected">Início igual</option>
+                        <option value="2">Que contenha</option>
+                        <option value="3">Exatamente igual</option>
+                    </select>
+                </td>
+                <td align="left"><input type="text" name="nome" id="nome" value="" class="input_simples w400"/></td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Processo</td>
+                <td>
+                    <select class="input_simples w200" name="tipo_processo">
+                        <option value="1">Que contenha</option>
+                        <option value="2">Exatamente igual</option>
+                    </select>
+                </td>
+                <td align="left"><input type="text" name="processo" value="" maxlength="15" class="input_simples numero"/></td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Dt. Arquivamento</td>
+                <td>
+                    <select class="input_simples w200" name="tipo_dtArquivo" onchange="modoconsulta('tipo_dtArquivo',this.value);">
+                        <option value="1" selected="selected">Exatamente igual</option>
+                        <option value="2">Entre dois valores</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" class="input_simples dataPicker" name="dtArquivI" id="dtArquivI" maxlength="10" onkeyup="mascara(this, format_data);"  />
+                    <input type="text" class="input_simples dataPicker" name="dtArquivF" id="dtArquivF" maxlength="10" onkeyup="mascara(this, format_data);" style="display:none;" />
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Cx. Inicio</td>
+                <td>
+                    <select class="input_simples w200" name="tipo_cxInicio">
+                        <option value="1" selected="selected">Início igual</option>
+                        <option value="2">Que contenha</option>
+                        <option value="3">Exatamente igual</option>
+                    </select>
+                </td>
+                <td align="left"><input type="text" name="cxInicio" value="" maxlength="6" class="input_simples w100 numero"/></td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Cx. Final</td>
+                <td>
+                    <select class="input_simples w200" name="tipo_cxFinal">
+                        <option value="1" selected="selected">Início igual</option>
+                        <option value="2">Que contenha</option>
+                        <option value="3">Exatamente igual</option>
+                    </select>
+                </td>
+                <td align="left"><input type="text" name="cxFinal" maxlength="6" value="" class="input_simples w100 numero"/></td>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <td align="center">
+                    <input type="button" style="width: 88px" class="btn_localizar" id="btn_localizar" title="Localizar" />
+                </td>
+            </tr>
+        </table>
+
+    </form>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

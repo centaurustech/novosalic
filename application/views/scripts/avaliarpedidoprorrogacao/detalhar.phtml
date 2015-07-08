@@ -1,0 +1,149 @@
+<style>
+    #divDeferimento label {
+        font-weight: normal;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        // máscaras dos campos
+        $("#dtInicio, #dtFinal").keyup(function () {
+            mascara(this, format_data); // data
+        });
+
+        // id dos campos que utilizarão o calendário
+        $("#dtInicio, #dtFinal").datepicker();
+
+<?php
+if ($this->camposObrigatoriosException) :
+    ?>
+            $("#camposObrigatorios").dialog({
+                resizable: false,
+                title: 'Alerta!',
+                width: 320,
+                height: 160,
+                modal: true,
+                buttons: {
+                    'OK': function () {
+                        $(this).dialog('close');
+                    }
+                }
+            });
+<?php endif; ?>
+
+<?php if (PerfilModel::TECNICO_DE_ACOMPANHAMENTO == $this->grupoAtivo) : ?>
+            $('#statusAnalise').change(function () {
+                if ('N' === $(this).val()) { // DEFERIDO
+                    $('#divDeferimento').show();
+                } else {
+                    $('#divDeferimento').hide();
+                }
+            }).change();
+<?php endif; ?>
+
+    });
+</script>
+
+<div id="camposObrigatorios" class="sumir">
+    Favor preencher os dados obrig&aacute;torios!
+</div>
+
+<!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'avaliarpedidoprorrogacao', 'action' => 'index')); ?>" title="Lista de Solitações de Item">Lista de Pedidos de Prorrogação</a></li>
+        <li class="last">Analisar Pedido de Prorrogação</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<div id="titulo">
+    <div>Analisar Pedido de Prorrogação</div>
+</div>
+
+
+<div id="conteudo">
+    <form id="formulario" action="<?php echo $this->url(array('controller' => 'avaliarpedidoprorrogacao', 'action' => 'avaliar-prorrogacao')); ?>" method="post">
+        <table class="tabela">
+            <?php foreach ($this->dados as $dp) { ?>
+                <tr>
+                    <th colspan="2">Identificação</th>
+                </tr>
+                <tr>
+                    <td class="destacar bold" width="20%">Pronac</td>
+                    <td class="destacar bold">Nome do Projeto</td>
+                </tr>
+                <tr>
+                    <td><?php echo $dp->PRONAC; ?></td>
+                    <td><?php echo $dp->NomeProjeto; ?></td>
+                </tr>
+            </table>
+
+            <table class="tabela">
+                <tr>
+                    <th colspan="4">Período de Captação Solicitado</th>
+                </tr>
+                <tr>
+                    <td class="destacar bold" align="center" width="25%">Dt.Pedido</td>
+                    <td class="destacar bold" align="center" width="25%">Dt.Início <span style="color: red;">*</span></td>
+                    <td class="destacar bold" align="center" width="25%">Dt.Final <span style="color: red;">*</span></td>
+                    <td class="destacar bold" align="center" width="25%">Análise <span style="color: red;">*</span></td>
+                </tr>
+                <tr>
+                    <td align="center"><?php echo Data::tratarDataZend($dp->DtPedido, 'Brasileira'); ?></td>
+                    <td align="center">
+                        <input type="text" class="input_simples obrigatorio" name="dtInicio" id="dtInicio" value="<?php echo Data::tratarDataZend($dp->DtInicio, 'Brasileira'); ?>" />
+                    </td>
+                    <td align="center">
+                        <input type="text" class="input_simples obrigatorio" name="dtFinal" id="dtFinal" value="<?php echo Data::tratarDataZend($dp->DtFinal, 'Brasileira'); ?>" />
+                    </td>
+                    <td align="center">
+                        <div style="margin: auto;">
+                            <select id="statusAnalise" class="select_simples obrigatorio" name="analise">
+                                <?php if (PerfilModel::TECNICO_DE_ACOMPANHAMENTO == $this->grupoAtivo) : ?>
+                                <option value="<?php echo ProrrogacaoModel::EM_ANALISE; ?>" <?php echo (ProrrogacaoModel::EM_ANALISE == $this->analise) ? 'selected="selected"' : ''; ?>>Em análise</option>
+                                <?php endif; ?>
+                                <option value="<?php echo ProrrogacaoModel::DEFERIDO; ?>" <?php echo (ProrrogacaoModel::DEFERIDO == $this->analise) ? 'selected="selected"' : ''; ?>>Deferido</option>
+                                <option value="<?php echo ProrrogacaoModel::INDEFERIDO; ?>" <?php echo (ProrrogacaoModel::INDEFERIDO == $this->analise) ? 'selected="selected"' : ''; ?>>Indeferido</option>
+                                <!--<option value="<?php echo ProrrogacaoModel::PROCESSADO; ?>" <?php echo (ProrrogacaoModel::PROCESSADO == $this->analise) ? 'selected="selected"' : ''; ?>>Processado</option>-->
+                            </select>
+                        </div>
+                        <div id="divDeferimento" style="margin-top: 10px; text-align: left;" class="sumir">
+                            <input id="enviarCoordenador" type="radio" name="opcaoDeferimento" value="<?php echo ProrrogacaoModel::ENCAMINHAR_COORDENADOR; ?>">
+                            <label for="enviarCoordenador">Deseja enviar para o coordenador</label><br/>
+                            <input id="aprovarSemCoordenador" type="radio" name="opcaoDeferimento" value="<?php echo ProrrogacaoModel::PUBLICAR_DOU; ?>">
+                            <label for="aprovarSemCoordenador">Deseja Aprovar sem a supervisão do coordenador</label>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <table class="tabela">
+                <tr>
+                    <th>Justificativa</th>
+                </tr>
+                <tr>
+                    <td align="center">
+                        <textarea name="justificativa" id="justificativa" cols="" rows="3" style="width: 99%;" class="textarea_simples"><?php echo $this->justificativa; ?></textarea>
+                        <input type="hidden" name="idProrrogacao" value="<?php echo $dp->idProrrogacao; ?>">
+                        <input type="hidden" name="tpAcao" id="tpAcao" value="">
+                        <br clear="all" /><span style="color: #FF9999; font-size: 11px; float: left;">Limite máximo de 250 caracteres</span>
+                    </td>
+                </tr>
+            <?php } ?>
+        </table>
+        <p align="center" style="letter-spacing: 10px;">
+            <input id="btn_salvar" type="submit" class="btn_salvar" value=" "/>
+            <input id="btn_exclusao" type="button" class="btn_exclusao" />
+        </p>
+    </form>
+
+
+    <br clear="all" />
+
+</div>
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

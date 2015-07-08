@@ -1,0 +1,76 @@
+<?php include_once 'scripts/admissibilidade/inc/menu.inc.php'; ?>
+
+<!-- ========== INCIO TTULO ========== -->
+<div id="titulo">
+    <div>Imprimir etiqueta <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TTULO ========== -->
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#btn_confirmar').click(function(){
+            var i = 0;
+            $('.obrigatorio').each(function(){
+                if($.trim($(this).val()) == '')
+                    i++;
+            });
+
+            if(i > 0) {
+                $("#camposObrigatorios").dialog("destroy");
+                $("#camposObrigatorios").html("Favor preencher o Pronac!");
+                $("#camposObrigatorios").dialog({
+                    resizable: false,
+                    title: 'Alerta!',
+                    width:300,
+                    height:160,
+                    modal: true,
+                    buttons : {
+                        'OK' : function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+                $('.ui-dialog-titlebar-close').remove();
+            } else {
+                $('#imprimeEtiqueta').submit();
+            }
+        })
+    });
+</script>
+
+<!-- ========== INICIO CONTEUDO ========== -->
+<div id="camposObrigatorios" class="sumir"></div>
+<div id="conteudo" align="center">
+    <form action="<?php echo $this->url(array("controller" => "gerenciarparecertecnico", "action" => "imprimiretiqueta")) ?>" target="_blank"  name="imprimeEtiqueta" id="imprimeEtiqueta" METHOD="POST">
+        <table class="tabela w300">
+            <tr>
+                <th colspan="2">Imprimir Etiqueta de Processo de PRONAC</th>
+            </tr>
+            <tr>
+                <td class="destacar bold" width="70px" align="right">PRONAC:</td>
+                <td align="center"><input type="text" name="vpronac" id="vpronac" class="input_simples obrigatorio" size="10px" onblur="preencher_pronac(this.value);" maxlength="7"/></td>
+            </tr>
+            <tr align="center">
+                <td class="destacar bold" width="1" align="right" rowspan="2">IMPRIMIR:</td>
+                <td><input type="radio" name="etiqueta" value="nao" checked="checked" style="margin-right: 4px;" />Projeto e etiqueta</td>
+            </tr>
+            <tr align="center">
+                <td><input type="radio" name="etiqueta" value="sim" style="margin-right: 4px;" />Somente etiqueta</td>
+            </tr>
+        </table>
+    </form>
+    <table class="tabela w300">
+        <tr>
+            <td colspan="1" align="center">
+                <input type="button" name="btn_confirmar" id="btn_confirmar" class="btn_confirmar" style="width: 88px" onClick="buscaHtml()"/>
+            </td>
+        </tr>
+    </table>
+    <br clear="all" />
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

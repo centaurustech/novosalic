@@ -1,0 +1,145 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+    	 $("#pronac").keyup(function(){
+             if($(this).val() != ""){
+                 $(".cmpDesabilitar").attr("disabled", "disabled").val("");
+             }else{
+                 $(".cmpDesabilitar").attr("disabled", "");
+             }
+         });
+    });
+</script>    
+
+<?php 
+$resaguardandoparecerHref = $this->url(array('controller' => 'gerarrelatorioparecerista', 'action' => 'resaguardandoparecer'));
+include_once 'inc/funcoes.inc.php';
+?>
+
+<?php include_once 'inc/menu.inc.php';?>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para p&aacute;gina inicial">Início</a></li>
+        <li class="last">Principal</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== BUTTON VOLTAR ========== -->
+<div id="titulo">
+    <div>Projeto aguardando distribuição <span class="voltar"><a href="javascript:voltar();" title="Página Anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== GRID NOME DA PROPOSTA ========== -->
+<div id="conteudo" align="center">
+    <form id="formAguardandoParecer" action="<?php echo $resaguardandoparecerHref;?>" method="post">
+        <table class="tabela">
+            <tr>
+                <td class="destacar bold" align="right" style="width: 230px;">PRONAC</td>
+                <td colspan="2"><input type="text" sonumero="true" maxlength="7" name="pronac" id="pronac"/></td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Nome do projeto</td>
+                <td colspan="2"><input type="text" maxlength="300" name="nmprojeto" size="56" class="cmpDesabilitar"/></td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Produto</td>
+                <td colspan="2">
+                    <select name="produto" style="width: 250px;" class="cmpDesabilitar">
+                        <option value="">Selecione</option>
+                        <?php foreach ($this->Produtos as $val) { ?>
+                        <option value="<?php echo $val->Codigo;?>"><?php echo $val->Descricao;?></option>
+                        <?php } ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Data de envio</td>
+                <td width="200">
+                    <select name="tp_dt_envio" label="envio" style="width: 150px;" class="cmpDesabilitar">
+                        <option value="1">exatamente igual</option>
+                        <option value="2">entre dois valores</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" name="dt_i_envio" id="dt_i_envio" data="true" value="" type="text" menorque="dt_f_envio" title="Data inicial de envio" class="cmpDesabilitar">
+                    <label id="l_dt_envio" class="sumir"> &agrave;</label>
+                    <input type="text" name="dt_f_envio" id="dt_f_envio" class="sumir" data="true" value=""  type="text" maiorque="dt_i_envio" title="Data final de envio" class="cmpDesabilitar">
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Data Distribui&ccedil;&atilde;o</td>
+                <td width="200">
+                    <select name="tp_dt_distribuicao"  label="distribuicao"  style="width: 150px;" class="cmpDesabilitar">
+                        <option value="1">exatamente igual</option>
+                        <option value="2">entre dois valores</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" name="dt_i_distribuicao" id="dt_i_distribuicao" value="" data="true" type="text" menorque="dt_f_distribuicao" title="Data inicial de Distribui&ccedil;&atilde;o" class="cmpDesabilitar">
+                    <label id="l_dt_distribuicao" class="sumir"> &agrave;</label>
+                    <input type="text" name="dt_f_distribuicao" id="dt_f_distribuicao" class="sumir" data="true" value="" maiorque="dt_i_distribuicao" type="text" title="Data final de Distribui&ccedil;&atilde;o" class="cmpDesabilitar">
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Qtd. de dias aguardando distribui&ccedil;&atilde;o</td>
+                <td>
+                    <select name="tpnrdias" style="width: 150px;" class="cmpDesabilitar">
+                        <option value="1">exatamente igual</option>
+                        <option value="3">maior que</option>
+                        <option value="4">maior ou igual a</option>
+                        <option value="5">menor que</option>
+                        <option value="6">menor ou igual a</option>
+                    </select>
+                </td>
+                <td><input type="text" sonumero="true" name="nrdias" class="cmpDesabilitar"/></td>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <td align="center">
+                    <input type="submit" value=" " class="btn_localizar"/>
+                    <input type="reset" value=" " class="btn_limpar" />
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />
+
+<script type="text/javascript">
+    $(function(){
+        var form = '#formAguardandoParecer';
+        mascaras(form);
+        $(form).find('select').each(function(){
+            if($(this).attr('label')!=undefined){
+                var label = $(this).attr('label');
+                $(this).change(function(){
+                    switch($(this).val()){
+                        case '1':
+                            $('#l_dt_'+label).addClass('sumir');
+                            $('#dt_f_'+label).addClass('sumir').val('');
+                            break;
+                        case '2':
+                            $('#l_dt_'+label).removeClass('sumir');
+                            $('#dt_f_'+label).removeClass('sumir').val('');
+                            break;
+                    }
+
+                });
+            }
+        });
+        $(form).submit(function(){
+            return validarFormulario(this);
+        });
+    });
+</script>

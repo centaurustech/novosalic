@@ -1,0 +1,199 @@
+<!-- ========== MENU ========== -->
+<?php require_once 'scripts/controlarmovimentacaobancaria/inc/menu.inc.php'; ?>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.dataPicker').datepicker({
+            dateFormat: 'dd/mm/yy',
+            dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'],
+            dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
+            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb','Dom' ],
+            monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+            nextText: 'Próximo',
+            prevText: 'Anterior'
+        });
+
+        $('.numero').keydown(function(event){
+            if((event.keyCode >= 96 && event.keyCode <= 105) || (event.keyCode >= 48 && event.keyCode <= 57) || event.keyCode == 8 || event.keyCode ==9 ){
+                return true;
+            } else {
+                return false;
+            }
+        });
+
+        $("#error").dialog({
+            title:'Alerta!',
+            resizable: false,
+            width:300,
+            height:160,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'OK': function() {
+                    $(this).dialog('close');
+                }
+            }
+        });
+        $('.ui-dialog-titlebar-close').remove();
+
+        $('form#formulario').find('input:not(.btn_limpar,.btn_localizar)').live("keypress", function(e){
+            if(e.keyCode == 13){
+                $(".btn_localizar").click();
+            }
+        });
+
+        $(".btn_localizar").click(function(){
+            var valida = true;
+            var texto = '';
+            $(".dataPicker").each(function(){
+                if($.trim($(this).val()).length > 0){
+                    if($(this).val().length != 10){
+                        valida = false;
+                        texto = 'Data no formato incorreto!';
+                    }
+                }
+            });
+
+            var qntd = 0;
+            $('#formulario input:not(.btn_localizar,.btn_limpar), #formulario select').each(function(){
+                if($.trim($(this).val()) == ''){
+                    qntd++;
+                }
+                if(qntd == 5){
+                    valida = false;
+                    texto = 'Nenhum filtro foi preenchido!';
+                }
+            });
+
+            if(!valida){
+                $("#error").html(texto);
+                $("#error").dialog('open');
+            } else{
+                $("#formulario").submit();
+            }
+        });
+
+        //********************
+        //SE O USUÁRIO OPTAR POR FILTRAR PELO CAMPO DE PRONAC, O MESMO DESABILITA A OBRIGATORIEDADE DO CAMPO ESTADO.
+        $('#pronac').keyup(function(){
+            var campo = $(this);
+            if(campo.val().length > 0){
+                $('#formulario input:not(.btn_localizar,.btn_limpar), #formulario select').attr('disabled','disabled');
+                campo.removeAttr('disabled');
+            } else {
+                $('#formulario input:not(.btn_localizar,.btn_limpar), #formulario select').removeAttr('disabled');
+            }
+        });
+        $('#pronac').focusout(function(){
+            var campo = $(this);
+            if(campo.val().length > 0){
+                $('#formulario input:not(.btn_localizar,.btn_limpar), #formulario select').attr('disabled','disabled');
+                $('#pronac').removeAttr('disabled');
+            } else {
+                $('#formulario input:not(.btn_localizar,.btn_limpar), #formulario select').removeAttr('disabled');
+            }
+        });
+        //FIM ****************
+    });
+
+    function modoconsulta(campo,valor){
+        // atamente igual
+        if(campo == 'tipo_dt' && valor == 1){
+            $('#dtI').show();
+            $('#dtF').hide();
+            $('#dtF').val('');
+        }
+
+        // Entre dois valores
+        if(campo == 'tipo_dt' && valor == 2){
+            $('#dtF').show();
+        }
+    }
+</script>
+
+<!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'), '', true); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second">Movimenta&ccedil;&atilde;o banc&aacute;ria</li>
+        <li class="last">Consultar Contas Liberadas</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== BUTTON VOLTAR ========== -->
+<div id="titulo">
+    <div>Consultar Contas Liberadas<span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+
+<div id="error" class="sumir"></div>
+
+<div id="conteudo">
+    <form action="<?php echo $this->url(array('controller' => 'liberarcontabancaria', 'action' => 'localizarprojetos')); ?>" method="get" id="formulario">
+
+        <table class="tabela">
+            <tr>
+                <td class="destacar bold" align="right" width="150px">PRONAC</td>
+                <td width="150px">Exatamente igual</td>
+                <td>
+                    <input type="text" class="input_simples numero" name="pronac" id="pronac" maxlength="10" />
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">CNPJ / CPF</td>
+                <td>Exatamente igual</td>
+                <td>
+                    <input maxlength="18" onkeydown="mascaraCnpjCpf(this);" onkeypress="mascaraCnpjCpf(this);" onkeyup="mascaraCnpjCpf(this);" class="input_simples" type="text" name="cnpjcpf" id="cnpjcpf" />
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Per&iacute;odo da Libera&ccedil;&atilde;o</td>
+                <td>
+                    <select name="tipo_dt" style="width: 160px;" class="input_simples" onchange="modoconsulta('tipo_dt',this.value);">
+                        <option value="1">Exatamente igual</option>
+                        <option value="2">Entre dois valores</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" class="input_simples dataPicker" name="dtI" id="dtI" maxlength="10" onkeyup="mascara(this, format_data);"  />
+                    <input type="text" class="input_simples dataPicker" name="dtF" id="dtF" maxlength="10" onkeyup="mascara(this, format_data);" style="display:none;" />
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Secretaria</td>
+                <!--<td>
+                    <select name="tipo_orgaoSuperior" style="width: 160px;" class="input_simples">
+                        <option value="1">Exatamente igual</option>
+                        <option value="2">Diferente</option>
+                    </select>
+                </td>-->
+                <td width="150px">Exatamente igual</td>
+                <td>
+                    <select name="secretaria" id="secretaria" style="width: 160px;" class="input_simples">
+                        <option value=""> - Selecione - </option>
+                        <option value="1">SEFIC</option>
+                        <option value="2">SAV</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <td align="center">
+                    <input type="button" value=" " class="btn_localizar" title="Localizar" /> &nbsp;&nbsp;
+                    <input type="reset" value=" " class="btn_limpar" title="Limpar" />
+                </td>
+            </tr>
+        </table>
+
+    </form>
+</div>
+
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

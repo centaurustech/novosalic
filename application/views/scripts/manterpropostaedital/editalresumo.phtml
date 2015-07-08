@@ -1,0 +1,75 @@
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#btnPdf").click(function() {
+            $("#conteudoImprimir").val($(".conteudoPdf").html());
+            $("#formGerarPdf").submit();
+        });
+    });
+</script>
+<?php
+    $idAgente = "";
+    if(isset($this->idAgente)){
+        $idAgente = $this->idAgente;
+    }elseif(isset($_GET['idAgente']) && !empty($_GET['idAgente'])){
+        $idAgente = $_GET['idAgente'];
+    }
+?>
+<div id="titulo">
+                <form id="voltar" action="<?php echo $this->url(array("controller"=>"manterpropostaedital", "action"=>"editalconfirmar")); ?>">
+                <input type="hidden" name="idEdital" value="<?php echo $this->idEdital ?>" >
+                <input type="hidden" name="idAgente" value="<?php echo $idAgente ?>" >
+            </form>
+    <div>Edital Novo - Resultado Consulta de Edital<span class="voltar"><a href="#" onclick="$('#voltar').submit()">Voltar</a></span></div>
+</div>
+<div id="conteudo">
+    <table  class="tabela">
+        <tr class="fundo">
+            <td align="center" colspan="5">
+                
+                <form method="POST" id="formGerarPdf" action="<?php echo $this->url(array('controller' => 'manterpropostaedital', 'action' => 'gerarpdf')); ?>" style="display:none">
+                    <textarea name="html" id="conteudoImprimir"></textarea>
+                </form>
+                <img src="<?php echo $this->baseUrl(); ?>/public/img/buttons/btn_pdf.gif" style="cursor:pointer" id="btnPdf" />
+                
+            </td>
+        </tr>
+    </table>
+    <div class="conteudoPdf">
+        <table class="tabela">
+            <tr class="centro">
+                <th>
+                    Resumo
+                </th>
+                <th>
+                    Registro
+                </th>
+            </tr>
+            <?php
+            $i = 0;
+            foreach($this->dados as $dado) {
+                ?>
+            <tr>
+                <td align="center">
+                        <?php echo $dado->nmFormDocumento; ?>
+                </td>
+                <td align="center">
+                        <?php echo $dado->qtd; ?>
+                </td>
+            </tr>
+                <?php
+                $i++;
+            }
+            ?>
+            <tr class="centro">
+                <th>
+                    Total Geral
+                </th>
+                <th>
+                    <?php echo $i; ?>
+                </th>
+            </tr>
+        </table>
+    </div>
+</div>
+<div id="rodapeConteudo"><span></span></div>
+<br clear="all" />

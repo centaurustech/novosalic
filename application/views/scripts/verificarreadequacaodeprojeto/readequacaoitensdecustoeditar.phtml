@@ -1,0 +1,1142 @@
+<?php include_once 'inc/menu-item-custo.inc.php'; ?>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li>Acompanhamento</li>
+        <li class="last">Verificar readequa&ccedil;&atilde;o de projeto</li>
+    </ul>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#vUnitario').maskMoney({symbol:"R$", decimal:",", thousands:""});
+    });
+
+    function stReadequacao(idAvaliacao, idPronac, obj){
+
+        $("#modal-item-pedido").dialog("destroy");
+        $("#modal-item-pedido").dialog({
+            height: 180,
+            width: 280,
+            modal: true,
+            title: 'Alerta!',
+            draggable: false,
+            resizable: false,
+            closeOnEscape: false,
+            buttons: {
+                'Não': function() {
+                    document.getElementById('status').options[0].selected = true;
+                    $(this).dialog('close');
+                },
+                'Sim': function() {
+                    redirecionar('<?php echo $this->url(array('controller' => 'verificarreadequacaodeprojeto', 'action' => 'streadequacaoprodutos')); ?>?id='+idAvaliacao+'&IdPronac='+idPronac+'&itemDeCusto=1&opcao='+obj.value);
+                }
+            }
+        });
+        $('.ui-dialog-titlebar-close').remove();
+
+    }
+</script>
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>READEQUAÇÃO: ITENS DE CUSTO
+        <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span>
+        <span style="vertical-align: middle;">
+            <?php
+                $todosAvaliados = true;
+                foreach ($this->dados as $valores):
+                    foreach ($valores as $lista):
+                        if (!isset($lista->stAvaliacao) && $lista->tpAcao != "N" && $lista->tpPlanoDistribuicao == "AT") :
+                            $todosAvaliados = false;
+                        endif;
+                    endforeach;
+                endforeach;
+            ?>
+
+            <?php foreach ($this->stResult as $stResult): ?>
+            <?php $prodFinalizados = false;
+                if ($stResult->stAvaliacaoItemPedidoAlteracao == "AG") {
+                    echo '<select name="status" id="status" style="float: right; width: 12em;" class="select_simples" onchange="stReadequacao('.$stResult->idAvaliacaoItemPedidoAlteracao . ','. $this->idPronac . ',this )">';
+                    echo "<option value='0' selected='selected'>Aguardando Análise</option>
+                          <option value='1'>Em Análise</option>";
+                    echo '</select>';
+                } else if ($stResult->stAvaliacaoItemPedidoAlteracao == "EA") {
+                    $emAnalise = true;
+                    $disabledEA = ($todosAvaliados) ? "" : "disabled=\"disabled\"";
+                    echo '<select name="status" '.$disabledEA.' id="status" style="float: right; width: 12em;" class="select_simples" onchange="finalizar_avaliacao(this.value)">';
+                    echo "<option value='1' selected='selected'>Em Análise</option>";
+                    if ($todosAvaliados)
+                    {
+                        echo "<option value='2'>Finalizar</option>";
+                    }
+                    echo '</select>';
+                } else if ($stResult->stAvaliacaoItemPedidoAlteracao == "AP" || $stResult->stAvaliacaoItemPedidoAlteracao == "IN") {
+                    $prodFinalizados = true;
+                    echo '<select disabled=\"disabled\" style="float: right; width: 12em;" class="select_simples"><option value="">Finalizado</option></select>';
+                }
+            ?>
+            <?php endforeach; ?>
+        </span>
+    </div>
+</div>
+
+<div id="modal-item-pedido" class="sumir">
+    <p>Deseja alterar o status da análise de Produtos?</p>
+</div>
+
+<style type="text/css">
+    .pvermelho { color: red; font-weight: bold; }
+    .pverde { color: green; font-weight: bold; }
+    .pazul { color: blue; font-weight: bold; }
+    .ppreto { color: black; font-weight: bold; }
+</style>
+
+<script type="text/javascript">
+    function mostraOcultaElemento(elemento)
+    {
+        $('.' + elemento).toggle();
+
+        if ($('#' + elemento).hasClass('btn_adicionar'))
+        {
+            $('#' + elemento).addClass('btn_remover');
+            $('#' + elemento).removeClass('btn_adicionar');
+        }
+        else
+        {
+            $('#' + elemento).addClass('btn_adicionar');
+            $('#' + elemento).removeClass('btn_remover');
+        }
+    }
+</script>
+
+<div id="conteudo">
+    <table class="tabela">
+        <thead>
+            <tr>
+                <th align="center">Nº PRONAC:</th>
+                <th align="center">Nome do Projeto:</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="linha">
+                <td align="center"><?php echo $this->dadosTopo['Pronac']; ?></td>
+                <td align="center"><?php echo $this->dadosTopo['NomeProjeto']; ?></td>
+            </tr>
+        </tbody>
+        <tr>
+            <th align="center">CNPJ/CPF:</th>
+            <th align="center">Proponente:</th>
+        </tr>
+        <tbody>
+            <tr class="linha">
+
+                <td align="center"><?php echo $this->dadosTopo['CNPJCPF']; ?></td>
+                <td align="center"><?php echo $this->dadosTopo['NomeProponente']; ?></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <?php if(is_array($this->dados) && count($this->dados)>0):
+        $i = 0;
+        foreach ($this->dados as $key => $value) {
+        ?>
+        <table class="tabela">
+            <tr>
+                <td align="left">
+                    <input type="button" class="btn_adicionar" style="display: inline;" id="<?php echo $value[$i]->idProduto; ?>" onclick="mostraOcultaElemento('<?php echo $value[$i]->idProduto; ?>');" />
+                    <b style="font-size: 12px;" class="
+                        <?php
+                        foreach ($this->produtosTpAcao as $tipo => $valor) {
+                            if($tipo == $value[$i]->idProduto){
+                                if ($valor == "A") {
+                                    echo "pazul";
+                                } elseif ($valor == "I") {
+                                    echo "pverde";
+                                } elseif ($valor == "E") {
+                                    echo "pvermelho";
+                                } elseif ($valor == "N") {
+                                    echo "ppreto";
+                                }
+                            }
+                        }
+                        ?>">
+                        <?php echo $key; ?>
+                    </b>
+                </td>
+            </tr>
+            <tr class="<?php echo $value[$i]->idProduto; ?> sumir" align="left">
+                <td>
+                    <?php foreach ($value as $dados) { ?>
+                    <table class="tabela">
+                        <tr>
+                            <td align="left">
+                                <input type="button" class="btn_adicionar" style="display: inline;" id="planoNum<?php echo $dados->idPlano;?>" onclick="mostraOcultaElemento('planoNum<?php echo $dados->idPlano;?>');" />
+                                <b>
+                                    <?php
+                                        if($dados->tpPlanoDistribuicao == 'AP'){
+                                            echo "APROVADO";
+                                        } elseif($dados->tpPlanoDistribuicao == 'SR'){
+                                            echo "SOLICITAÇÃO DE READEQUAÇÃO";
+                                        } elseif($dados->tpPlanoDistribuicao == 'AT'){ ?>
+
+                                        <?php if ($dados->tpAcao != "N") { ?>
+                                            <?php if ($stResult->stAvaliacaoItemPedidoAlteracao == "AG") { ?>
+                                                <span style="float: right;">
+                                                    <select disabled="disabled" class="select_simples">
+                                                        <option value="0">Selecione...</option>
+                                                    </select>
+                                                </span>
+                                            <?php } else { ?>
+                                                <span style="float: right;">
+                                                    <select <?php if($prodFinalizados){ echo 'disabled="disabled"'; } ?> name="avaliacaoProduto" class="select_simples deferimentos" id="avaliacaoProduto<?php echo $dados->idPlano; ?>" onchange="avaliacaodoitem(<?php echo $dados->idPlano; ?>, this.value)">
+                                                         <?php if (!isset($dados->stAvaliacao) || (trim($dados->stAvaliacao) != "D" && trim($dados->stAvaliacao) != "I")) : ?>
+                                                        <option value="0">Selecione...</option>
+                                                        <?php endif; ?>
+                                                        <option value="D" <?php if (isset($dados->stAvaliacao) && trim($dados->stAvaliacao) == "D") echo "selected=\"selected\""; ?>>Deferir</option>
+                                                        <option value="I" <?php if (isset($dados->stAvaliacao) && trim($dados->stAvaliacao) == "I") echo "selected=\"selected\""; ?>>Indeferir</option>
+                                                    </select>
+                                                </span>
+                                            <?php } ?>
+                                        <?php } ?>
+
+                                    <?php
+                                            echo "ANÁLISE TÉCNICA";
+                                        } elseif($dados->tpPlanoDistribuicao == 'CO'){
+                                            echo "COMPONENTE DA COMISSÃO";
+                                        }
+                                    ?>
+
+                                </b>
+                            </td>
+                        </tr>
+                        <?php if($dados->tpPlanoDistribuicao != 'AT') { ?>
+                        <tr class="planoNum<?php echo $dados->idPlano;?> sumir" align="left">
+                            <td>
+                                <table class="tabela">
+                                    <tr>
+                                        <td align='center' width="20%" class="destacar"><b>Nome do Evento / Produto</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <table class='tabela'>
+                                                <tr>
+                                                    <td>
+                                                        <b>Produto</b><br>
+                                                        <?php echo $dados->Produto;?>
+                                                    </td>
+                                                    <td>
+                                                        <b>Produto Principal?</b><br>
+                                                        <?php if ($dados->PrdotudoPrincpal == 0) {
+                                                                  echo "Não";
+                                                              } else {
+                                                                  echo "Sim";
+                                                              }
+                                                          ?>
+                                                    </td>
+                                                    <td>
+                                                        <b>Área</b><br>
+                                                        <?php echo $dados->Area; ?>
+                                                    </td>
+                                                    <td>
+                                                        <b>Segmento</b><br>
+                                                        <?php echo $dados->Segmento; ?>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align='center' width="20%" class="destacar"><b>Logomarca</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td align='center' width="80%"><?php echo $dados->Posicao;?></td>
+                                    </tr>
+                                    <tr>
+                                        <td align= 'center' style='padding:0;'>
+                                            <table class='tabela'>
+                                                <tr class="destacar">
+                                                    <td align="center"><b>Distribui&ccedil;&atilde;o Gratuita (Qtde)</b></td>
+                                                    <td align="center"><b>Total para Venda (Qtde)</b></td>
+                                                    <td align="center"><b>Quantidade</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <table class='tabela'>
+                                                            <tr>
+                                                                <td>
+                                                                    <b>Patrocinador</b><br>
+                                                                    <?php echo $dados->Patrocinador;?>
+                                                                </td>
+                                                                <td>
+                                                                    <b>Divulga&ccedil;&atilde;o</b><br>
+                                                                    <?php echo $dados->Divulgacao;?>
+                                                                </td>
+                                                                <td>
+                                                                    <b>Benefici&aacute;rios</b><br>
+                                                                    <?php echo $dados->Beneficiarios;?>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                    <td>
+                                                        <table class='tabela'>
+                                                            <tr>
+                                                                <td>
+                                                                    <b>Normal</b><br>
+                                                                    <?php echo $dados->NormalTV;?>
+                                                                </td>
+                                                                <td>
+                                                                    <b>Promocional</b><br>
+                                                                    <?php echo $dados->PromocionalTV;?>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                    <td>
+                                                        <table class='tabela'>
+                                                            <tr>
+                                                                <td>
+                                                                    <b>N de Exemplares/Ingressos</b><br>
+                                                                   <?php echo ($dados->Patrocinador + $dados->Divulgacao + $dados->Beneficiarios + $dados->NormalTV + $dados->PromocionalTV);?>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                <tr class="destacar">
+                                                    <td align="center"><b>Pre&ccedil;o Unit&aacute;rio (R$)</b></td>
+                                                    <td align="center"><b>Receita Prevista (R$)</b></td>
+                                                    <td align="center"><b>Total Receita Prevista (R$)</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <table class='tabela'>
+                                                            <tr>
+                                                                <td>
+                                                                    <b>Normal</b><br>
+                                                                   <?php echo number_format($dados->NormalPU, 2, ',', '.');?>
+                                                                </td>
+                                                                <td>
+                                                                    <b>Promocional</b><br>
+                                                                    <?php echo number_format($dados->PromocionalPU, 2, ',', '.');?>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                    <td>
+                                                        <table class='tabela'>
+                                                            <tr>
+                                                                <td>
+                                                                    <b>Normal</b><br>
+                                                                    <?php echo number_format(($dados->NormalPU * $dados->NormalTV), 2, ',', '.');?>
+                                                                </td>
+                                                                <td>
+                                                                    <b>Promocional</b><br>
+                                                                    <?php echo number_format(($dados->PromocionalPU * $dados->PromocionalTV), 2, ',', '.');?>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                    <td>
+                                                        <table class='tabela' >
+                                                            <tr>
+                                                                <td>
+                                                                    <b>Total Receita Prevista (R$)</b><br>
+                                                                    <?php echo number_format(($dados->NormalPU * $dados->NormalTV) + ($dados->PromocionalPU * $dados->PromocionalTV), 2, ',', '.');?>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <?php if(!empty($dados->JustificativaProponente)){ ?>
+                                    <tr>
+                                        <td align='center' width="20%" class="destacar"><b>Justificativa</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td width="80%"><?php echo $dados->JustificativaProponente;?></td>
+                                    </tr>
+                                    <?php } ?>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- CAMPOS PARA EDIÇAO DO TÉCNICO DE ACOMPANHAMENTO -->
+                        <?php } else { ?>
+                        <tr class="planoNum<?php echo $dados->idPlano;?> sumir" align="left">
+                            <td>
+                                <form name="form<?php echo $dados->idPlano; ?>" id="form<?php echo $dados->idPlano; ?>" action="<?php echo $this->url(array('controller' => 'verificarreadequacaodeprojeto', 'action' => 'avaliarproduto')); ?>?idPRONAC=<?php echo $dados->IdPRONAC; ?>&itemDeCusto=1" method="post" >
+                                    <table class="tabela">
+                                        <input type="hidden" name="idAvaliacaoItemPedidoAlteracao" value="<?php echo $dados->idAvaliacaoItemPedidoAlteracao; ?>">
+                                        <input type="hidden" name="idAvaliacaoSubItem" value="<?php echo $dados->idAvaliacaoSubItem; ?>">
+                                        <input type="hidden" name="idPlano" value="<?php echo $dados->idPlano; ?>">
+                                        <input type="hidden" name="idPRONAC" value="<?php echo $dados->IdPRONAC; ?>">
+                                        <input type="hidden" name="idProduto" value="<?php echo $dados->idProduto; ?>">
+
+                                        <tr>
+                                            <td align='center' width="20%" class="destacar"><b>Nome do Evento / Produto</b></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <table class='tabela'>
+                                                    <tr>
+                                                        <td>
+                                                            <b>Produto</b><br>
+                                                            <?php echo $dados->Produto;?>
+                                                        </td>
+                                                        <td>
+                                                            <b>Produto Principal?</b><br>
+                                                            <?php if ($dados->PrdotudoPrincpal == 0) {
+                                                                      echo "Não";
+                                                                  } else {
+                                                                      echo "Sim";
+                                                                  }
+                                                              ?>
+                                                        </td>
+                                                        <td>
+                                                            <b>Área</b><br>
+                                                            <?php echo $dados->Area; ?>
+                                                        </td>
+                                                        <td>
+                                                            <b>Segmento</b><br>
+                                                            <?php echo $dados->Segmento; ?>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align='center' width="20%" class="destacar"><b>Logomarca</b></td>
+                                        </tr>
+                                        <tr>
+                                            <td align='center' width="80%"><?php echo $dados->Posicao;?></td>
+                                        </tr>
+                                        <tr>
+                                            <td align= 'center' style='padding:0;'>
+                                                <table class='tabela'>
+                                                    <tr class="destacar">
+                                                        <td align="center"><b>Distribui&ccedil;&atilde;o Gratuita (Qtde)</b></td>
+                                                        <td align="center"><b>Total para Venda (Qtde)</b></td>
+                                                        <td align="center"><b>Quantidade</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <table class='tabela'>
+                                                                <tr>
+                                                                    <td>
+                                                                        <b>Patrocinador</b><br>
+                                                                        <input name="Patrocinador" id="Patrocinador<?php echo $dados->idPlano; ?>" type="text" class="input_simples w100" value="<?php echo $this->formatarMilhar($dados->Patrocinador); ?>" onkeyup="somar<?php echo $dados->idPlano; ?>(); totalReceitaPrevista<?php echo $dados->idPlano; ?>();" onkeydown="mascara(this,format_num);" />
+                                                                    </td>
+                                                                    <td>
+                                                                        <b>Divulga&ccedil;&atilde;o</b><br>
+                                                                        <input name="Divulgacao" id="Divulgacao<?php echo $dados->idPlano; ?>" type="text" class="input_simples w100" value="<?php echo $this->formatarMilhar($dados->Divulgacao); ?>" onkeyup="somar<?php echo $dados->idPlano; ?>(); totalReceitaPrevista<?php echo $dados->idPlano; ?>();" onkeydown="mascara(this,format_num);" />
+                                                                    </td>
+                                                                    <td>
+                                                                        <b>Benefici&aacute;rios</b><br>
+                                                                        <input name="Beneficiarios" id="Beneficiarios<?php echo $dados->idPlano; ?>" type="text" class="input_simples w100" value="<?php echo $this->formatarMilhar($dados->Beneficiarios); ?>" onkeyup="somar<?php echo $dados->idPlano; ?>(); totalReceitaPrevista<?php echo $dados->idPlano; ?>();" onkeydown="mascara(this,format_num);" />
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                        <td>
+                                                            <table class='tabela'>
+                                                                <tr>
+                                                                    <td>
+                                                                        <b>Normal</b><br>
+                                                                        <input name="NormalTV" id="NormalTV<?php echo $dados->idPlano; ?>" type="text" class="input_simples w100" value="<?php echo $this->formatarMilhar($dados->NormalTV); ?>" onkeyup="somar<?php echo $dados->idPlano; ?>(); multiplicarNormal<?php echo $dados->idPlano; ?>(); totalReceitaPrevista<?php echo $dados->idPlano; ?>();" onkeydown="mascara(this,format_num);" />
+                                                                    </td>
+                                                                    <td>
+                                                                        <b>Promocional</b><br>
+                                                                        <input name="PromocionalTV" id="PromocionalTV<?php echo $dados->idPlano; ?>" type="text" class="input_simples w100" value="<?php echo $this->formatarMilhar($dados->PromocionalTV); ?>" onkeyup="somar<?php echo $dados->idPlano; ?>(); multiplicarPromocional<?php echo $dados->idPlano; ?>(); totalReceitaPrevista<?php echo $dados->idPlano; ?>();" onkeydown="mascara(this,format_num);" />
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                            <script type="text/javascript">
+                                                                function somar<?php echo $dados->idPlano; ?>(){
+                                                                    var patrocidador  	= Number($('#Patrocinador<?php echo $dados->idPlano; ?>').val());
+                                                                    var divulgacao    	= Number($('#Divulgacao<?php echo $dados->idPlano; ?>').val());
+                                                                    var beneficiarios 	= Number($('#Beneficiarios<?php echo $dados->idPlano; ?>').val());
+                                                                    var normaltv      	= Number($('#NormalTV<?php echo $dados->idPlano; ?>').val());
+                                                                    var promocionaltv   = Number($('#PromocionalTV<?php echo $dados->idPlano; ?>').val());
+                                                                    var total = Number(patrocidador+divulgacao+beneficiarios+normaltv+promocionaltv);
+                                                                    $('#TotalExemplares<?php echo $dados->idPlano; ?>').val(total);
+                                                                }
+                                                            </script>
+                                                        </td>
+                                                        <td>
+                                                            <table class='tabela'>
+                                                                <tr>
+                                                                    <td>
+                                                                        <b>N&ordm; de Exemplares/Ingressos</b><br>
+                                                                        <input name="PromocionalTV" id="TotalExemplares<?php echo $dados->idPlano; ?>" type="text" class="input_simples w100" disabled="disabled" value="<?php echo $this->formatarMilhar($dados->Patrocinador + $dados->Divulgacao + $dados->Beneficiarios + $dados->NormalTV + $dados->PromocionalTV); ?>">
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="destacar">
+                                                        <td align="center"><b>Pre&ccedil;o Unit&aacute;rio (R$)</b></td>
+                                                        <td align="center"><b>Receita Prevista (R$)</b></td>
+                                                        <td align="center"><b>Total Receita Prevista (R$)</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <table class='tabela'>
+                                                                <tr>
+                                                                    <td>
+                                                                        <b>Normal</b><br>
+                                                                        <input name="NormalPU" id="NormalPU<?php echo $dados->idPlano; ?>" type="text" class="input_simples w100" value="<?php echo $this->formatarReal($dados->NormalPU); ?>" onkeyup="multiplicarNormal<?php echo $dados->idPlano; ?>(); totalReceitaPrevista<?php echo $dados->idPlano; ?>(); totalReceitaPrevista<?php echo $dados->idPlano; ?>();" onkeydown="mascara(this,format_num);">
+                                                                    </td>
+                                                                    <td>
+                                                                        <b>Promocional</b><br>
+                                                                        <input name="PromocionalPU" id="PromocionalPU<?php echo $dados->idPlano; ?>" type="text" class="input_simples w100" value="<?php echo $this->formatarReal($dados->PromocionalPU); ?>" onkeyup="multiplicarPromocional<?php echo $dados->idPlano; ?>(); totalReceitaPrevista<?php echo $dados->idPlano; ?>();" onkeydown="mascara(this,format_num);">
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+
+                                                            <script type="text/javascript">
+                                                                function multiplicarNormal<?php echo $dados->idPlano; ?>(){
+                                                                    var NormalTV = Number($('#NormalTV<?php echo $dados->idPlano; ?>').val());
+                                                                    var NormalPU = Number($('#NormalPU<?php echo $dados->idPlano; ?>').val());
+                                                                    var total = Number(NormalTV*NormalPU);
+                                                                    $('#TotalNormal<?php echo $dados->idPlano; ?>').val(total);
+                                                                }
+
+                                                                function multiplicarPromocional<?php echo $dados->idPlano; ?>(){
+                                                                    var PromocionalTV = Number($('#PromocionalTV<?php echo $dados->idPlano; ?>').val());
+                                                                    var PromocionalPU = Number($('#PromocionalPU<?php echo $dados->idPlano; ?>').val());
+                                                                    var total = Number(PromocionalTV*PromocionalPU);
+                                                                    $('#TotalPromocional<?php echo $dados->idPlano; ?>').val(total);
+                                                                }
+                                                            </script>
+
+                                                        </td>
+                                                        <td>
+                                                            <table class='tabela'>
+                                                                <tr>
+                                                                    <td>
+                                                                        <b>Normal</b><br>
+                                                                        <input name="TotalNormal<?php echo $dados->idPlano; ?>" id="TotalNormal<?php echo $dados->idPlano; ?>" type="text" class="input_simples w100" disabled="disabled" value="<?php echo $this->formatarReal($dados->NormalPU * $dados->NormalTV); ?>">
+                                                                    </td>
+                                                                    <td>
+                                                                        <b>Promocional</b><br>
+                                                                        <input name="TotalPromocional<?php echo $dados->idPlano; ?>" id="TotalPromocional<?php echo $dados->idPlano; ?>" type="text" class="input_simples w100" disabled="disabled" value="<?php echo $this->formatarReal($dados->PromocionalPU * $dados->PromocionalTV); ?>">
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                        <td>
+                                                            <table class='tabela' >
+                                                                <tr>
+                                                                    <td>
+                                                                        <b>Total Receita Prevista (R$)</b><br>
+                                                                        <input name="Prevista<?php echo $dados->idPlano; ?>" id="Prevista<?php echo $dados->idPlano; ?>" type="text" class="input_simples" disabled="disabled" value="<?php echo $this->formatarReal(($dados->NormalPU * $dados->NormalTV) + ($dados->PromocionalPU * $dados->PromocionalTV)); ?>">
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+
+                                                            <script type="text/javascript">
+                                                                function totalReceitaPrevista<?php echo $dados->idPlano; ?>(){
+                                                                    var TotalNormal = Number($('#TotalNormal<?php echo $dados->idPlano; ?>').val());
+                                                                    var TotalPromocional = Number($('#TotalPromocional<?php echo $dados->idPlano; ?>').val());
+                                                                    var total = Number(TotalNormal+TotalPromocional);
+                                                                    $('#Prevista<?php echo $dados->idPlano; ?>').val(total);
+                                                                }
+                                                            </script>
+                                                        </td>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align='center' width="20%" class="destacar"><b>Justificativa</b></td>
+                                        </tr>
+                                        <tr>
+                                            <td width="80%">
+                                                <textarea rows="5" class="textarea_simples" style="width: 99%" name="justificativaPropRead" id="justificativaPropRead<?php echo $dados->idPlano; ?>"><?php echo (isset($dados->dsAvaliacao) && !empty($dados->dsAvaliacao)) ? strip_tags($dados->dsAvaliacao) : '' ; ?></textarea>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </form>
+                            </td>
+                        </tr>
+                        <?php } ?>
+                    </table>
+                    <?php } ?>
+                </td>
+            </tr>
+        </table>
+
+    <?php } ?>
+
+<?php endif; ?>
+
+<?php if(($todosAvaliados && isset($emAnalise) && $emAnalise) || count($this->dados) == 0 ){ ?>
+<form method="post" id="formularioFinalizar" name="formularioFinalizar" action="<?php echo $this->url(array('controller' => 'verificarreadequacaodeprojeto', 'action' => 'finalizarprodutositens')); ?>">
+    <table class="tabela">
+        <tr align="center">
+            <td class="destacar bold">ANÁLISE TÉCNICA DA SOLICITAÇÃO</td>
+        </tr>
+        <tr>
+            <td>
+                <input type="hidden" name="idPronac" id="idPronac" value="<?php echo $this->idPronac; ?>" />
+                <input type="hidden" name="idPedidoAlteracao" id="idPedidoAlteracao" value="<?php echo $this->idPedidoAlteracao; ?>" />
+                <input type="hidden" name="deferimentoSolic" id="deferimentoSolic" value="" />
+                <center>
+                    <textarea name="analisetecnica" id="analisetecnica" style="width: 99%" cols="70" rows="7" class="textarea_simples w1100"></textarea>
+                </center>
+            </td>
+        </tr>
+    </table>
+</form>
+<?php } ?>
+
+    <script type="text/javascript">
+        /**
+         * Ações que serão executadas após o carregamento da página
+         */
+        $(document).ready(function(){
+
+            $('#planilhaSolicitada').click(function(){
+                $('.planilhaSolicitada').removeClass('sumir');
+                $('.planilhaAprovada').addClass('sumir');
+                $(this).addClass('fundo_linha4');
+                $(this).removeClass('fundo_linha2');
+                $('#planilhaAprovada').removeClass('fundo_linha4');
+                $('#planilhaAprovada').addClass('fundo_linha2');
+            });
+            $('#planilhaAprovada').click(function(){
+                $('.planilhaAprovada').removeClass('sumir');
+                $('.planilhaSolicitada').addClass('sumir');
+                $(this).removeClass('fundo_linha2');
+                $(this).addClass('fundo_linha4');
+                $('#planilhaSolicitada').removeClass('fundo_linha4');
+                $('#planilhaSolicitada').addClass('fundo_linha2');
+            });
+
+
+            // controle de exibição da planilha aprovada
+            $(".icn_menos_AP").click(function()
+            {
+                abrir_planilha(this, '');
+            });
+            $(".icn_menos_AP").click();
+
+            // controle de exibição da planilha solicitada
+            $(".icn_menos_SR").click(function()
+            {
+                abrir_planilha(this, 'SR');
+            });
+            $(".icn_menos_SR").click();
+
+            // efeitos ao passar o mouse sobre o item
+            $(".item").mouseover(function()
+            {
+                $(this).addClass('fundo_linha3');
+            });
+            $(".item").mouseout(function()
+            {
+                $(this).removeClass('fundo_linha3');
+            });
+
+            $(".item").click(function()
+            {
+                if ($(this).hasClass('fundo_linha4'))
+                {
+                    $(this).removeClass('fundo_linha4');
+                }
+                else
+                {
+                    $(this).addClass('fundo_linha4');
+                }
+            });
+        });
+
+        /**
+         * Função para expandir/recolher a planilha
+         */
+        function abrir_planilha(item, planilha){
+            var tipo    = $(item).attr('tipo' + planilha);
+            var aberto  = $(item).attr('aberto' + planilha);
+            var fonte   = 'fonte' + planilha;
+            var produto = 'produto' + planilha;
+            var etapa   = 'etapa' + planilha;
+            var cidade  = 'cidade' + planilha;
+
+            if (aberto == 'true')
+            {
+                adisplay = 'none';
+                $(item).attr('aberto' + planilha, 'false');
+                $(item).removeClass('icn_menos').addClass('icn_mais');
+            }
+            else
+            {
+                adisplay = '';
+                $(item).attr('aberto' + planilha, 'true');
+                $(item).removeClass('icn_mais').addClass('icn_menos');
+            }
+
+            if (tipo == fonte)
+            {
+                fonte = $(item).attr('fonte' + planilha);
+                $(".master" + planilha + "[fonte" + planilha + "='" + fonte + "']").css('display', adisplay);
+                $(".clickproduto" + planilha + ", .clicketapa" + planilha + ", .clickcidade" + planilha).removeClass('icn_mais').addClass('icn_menos');
+            }
+            if (tipo == produto)
+            {
+                fonte   = $(item).attr('fonte' + planilha);
+                produto = $(item).attr('produto' + planilha);
+                $(".produto" + planilha + "[produto" + planilha + "='" + produto + "'][fonte" + planilha + "='" + fonte + "']").css('display', adisplay);
+                $(".clicketapa" + planilha + ", .clickcidade" + planilha).removeClass('icn_mais').addClass('icn_menos');
+            }
+            if (tipo == etapa)
+            {
+                fonte   = $(item).attr('fonte' + planilha);
+                produto = $(item).attr('produto' + planilha);
+                etapa   = $(item).attr('etapa' + planilha);
+                $(".etapa" + planilha + "[produto" + planilha + "='" + produto + "'][etapa" + planilha + "='" + etapa + "'][fonte" + planilha + "='" + fonte + "']").css('display', adisplay);
+                $(".clickcidade" + planilha).removeClass('icn_mais').addClass('icn_menos');
+            }
+            if (tipo == cidade)
+            {
+                fonte   = $(item).attr('fonte' + planilha);
+                produto = $(item).attr('produto' + planilha);
+                etapa   = $(item).attr('etapa' + planilha);
+                cidade  = $(item).attr('cidade' + planilha);
+                $(".cidade" + planilha + "[produto" + planilha + "='" + produto + "'][etapa" + planilha + "='" + etapa + "'][cidade" + planilha + "='" + cidade + "'][fonte" + planilha + "='" + fonte + "']").css('display', adisplay);
+            }
+        } // fecha função abrir_planilha()
+    </script>
+
+
+    <?php
+        $resultado = $this->buscaprojeto;
+        $idPronac = $this->escape($resultado[0]->IdPRONAC);
+    ?>
+    <table class="tabela">
+        <tr>
+            <th class="fundo_linha2" id="planilhaAprovada" style="cursor: pointer;"><a>Planilha Aprovada</a></th>
+            <th class="fundo_linha4" id="planilhaSolicitada" style="cursor: pointer;"><a>Planilha Readequada</a></th>
+        </tr>
+    </table>
+
+    <table class="tabela sumir planilhaAprovada">
+        <tr>
+            <th colspan="2">Planilha Orçamentária Aprovada</th>
+        </tr>
+
+        <?php if (count($this->planAP) <= 0) : ?>
+        <tr>
+            <td align="center" colspan="2">N&atilde;o existe(m) item(ns) aprovado(s) para esse produto.</td>
+        </tr>
+        <?php endif; ?>
+
+        <?php $nrFonte = 0; $item    = 1; foreach ($this->planAP as $fonte => $planilha) : //ForeachFonteIncentivo ?>
+        <tr>
+            <td>
+                <div tipo="fonte" fonte="<?php echo $nrFonte; ?>" aberto="true" class="icn_menos icn_menos_AP" style="width:90%"><span class="red" style="font-size: 20pt; font-weight: 800;"><?php echo $fonte; ?></span></div>
+            </td>
+        </tr>
+        <?php $nrProduto    = 0; $totalProduto = 0;
+            if (is_array($this->planAP[$fonte]))
+                foreach ($this->planAP[$fonte] as $produto => $planilha) : //ForeachProduto
+                ?>
+                <tr class="master" fonte="<?php echo $nrFonte; ?>">
+                    <td class="master">
+                        <div tipo="produto" aberto="true" fonte="<?php echo $nrFonte; ?>" produto="<?php echo $nrProduto; ?>" class="icn_menos icn_menos_AP clickproduto" style="width:98%; margin-left:2%;"><span class="green" style="font-size: 16pt; font-weight: 800;"><?php echo $produto; ?></span></div>
+                    </td>
+                </tr>
+                <?php $nrEtapa = 0;
+                    if (is_array($this->planAP[$fonte][$produto]))
+                        foreach ($this->planAP[$fonte][$produto] as $etapa => $planilha) : //ForeachEtapa
+                            $totalEtapa = 0;
+                        ?>
+                <tr class="master produto" produto="<?php echo $nrProduto; ?>" fonte="<?php echo $nrFonte;?>">
+                    <td>
+                        <div>
+                            <div tipo="etapa" fonte="<?php echo $nrFonte; ?>" produto="<?php echo $nrProduto; ?>" etapa="<?php echo $nrEtapa; ?>" aberto="true" class="icn_menos icn_menos_AP clicketapa" style="width:80%; margin-left:4%; "><span class="orange" style="font-size: 14pt; font-weight: 800;"><?php echo $etapa; ?></span></div>
+                        </div>
+                    </td>
+                </tr>
+                <?php $nrCidade = 0;
+                    if (is_array($this->planAP[$fonte][$produto][$etapa]))
+                        foreach ($this->planAP[$fonte][$produto][$etapa] as $cidade => $planilha) : //ForeachCidade ?>
+                <tr class="master produto etapa" produto="<?php echo $nrProduto; ?>" etapa="<?php echo $nrEtapa; ?>" fonte="<?php echo $nrFonte; ?>">
+                    <td>
+                        <div tipo="cidade" fonte="<?php echo $nrFonte; ?>" produto="<?php echo $nrProduto; ?>" etapa="<?php echo $nrEtapa; ?>" cidade="<?php echo $nrCidade; ?>" aberto="true" class="icn_menos icn_menos_AP clickcidade" style="width:94%; margin-left:6%;"><span class="black" style="font-size: 12pt; font-weight: 800;"><?php echo $cidade; ?></span></div>
+                    </td>
+                </tr>
+                <tr class="master produto etapa cidade" produto="<?php echo $nrProduto; ?>" etapa="<?php echo $nrEtapa; ?>" cidade="<?php echo $nrCidade; ?>"  fonte="<?php echo $nrFonte; ?>">
+                    <td>
+                        <table class="tabela">
+                            <tr class="master produto etapa cidade" produto="<?php echo $nrProduto; ?>" etapa="<?php echo $nrEtapa; ?>" cidade="<?php echo $nrCidade; ?>" fonte="<?php echo $nrFonte;?>">
+                                <th>Item</th>
+                                <th>Dias</th>
+                                <th>Unidade</th>
+                                <th>Qtde.</th>
+                                <th>Ocor.</th>
+                                <th>Vl. Unit&aacute;rio</th>
+                                <th>Vl. Solicitado</th>
+                                <th>Justificativa</th>
+                            </tr>
+                            <?php $totalUF = 0;
+                                if (is_array($this->planAP[$fonte][$produto][$etapa][$cidade]))
+                                    foreach ($this->planAP[$fonte][$produto][$etapa][$cidade] as $planilha) : //ForeachItem
+                                        $totalUF += $planilha['vlTotal'];
+                                        ?>
+                            <tr class="item">
+                                <td><?php echo $planilha['Item']; ?></td>
+                                <td><?php echo $planilha['qtDias']; ?></td>
+                                <td><?php echo $planilha['Unidade']; ?></td>
+                                <td><?php echo $planilha['qtItem']; ?></td>
+                                <td><?php echo $planilha['nrOcorrencia']; ?></td>
+                                <td><?php echo $this->formatarReal($planilha['vlUnitario']); ?></td>
+                                <td><?php echo $this->formatarReal($planilha['vlTotal']); ?></td>
+                                <td><?php echo $planilha['dsJustificativa']; ?></td>
+                            </tr>
+                            <?php $item++;
+                                    endforeach; //fechaForeachplanilha
+                                    $nrCidade++;
+                                    $totalEtapa   += $totalUF;
+                                    $totalProduto += $totalUF;
+                            ?>
+                            <tr>
+                                <td colspan="5" class="black" style="font-size: 14pt;">Total de UF</td>
+                                <td class="black" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($totalUF); ?></td>
+                                <td colspan="2">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td colspan="5" class="orange" style="font-size: 14pt;">Total da Etapa</td>
+                                <td class="orange" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($totalEtapa); ?></td>
+                                <td colspan="2">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td colspan="5" class="green" style="font-size: 14pt;">Valor para <?php echo $produto; ?></td>
+                                <td class="green" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($totalProduto); ?></td>
+                                <td colspan="2">&nbsp;</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <?php
+                                endforeach; //fechaForeachcidade
+                                $nrEtapa++;
+                        endforeach; //fechaForeachetapa
+                        $totalProduto = 0;
+                        $nrProduto++;
+                endforeach; //fechaForeachproduto
+                $nrFonte++;
+        endforeach; //fechaForeachFonteIncentivo
+        ?>
+    </table>
+
+
+
+    <table class="tabela planilhaSolicitada">
+        <tr>
+            <th>Planilha Orçamentária Readequada</th>
+        </tr>
+
+        <?php $nrFonte = 0; $item = 1; foreach ($this->planSR as $fonte => $planilha) : //ForeachFonteIncentivo ?>
+        <tr>
+            <td>
+                <div tipo="fonte" fonte="<?php echo $nrFonte; ?>" aberto="false" class="icn_menos icn_menos_AP" style="width:90%"><span class="red" style="font-size: 20pt; font-weight: 800;"><?php echo $fonte; ?></span></div>
+            </td>
+        </tr>
+        <?php $nrProduto = 0; $totalProduto = 0;
+            if (is_array($this->planSR[$fonte]))
+                foreach ($this->planSR[$fonte] as $produto => $planilha) : //ForeachProduto
+                ?>
+                <tr class="master" fonte="<?php echo $nrFonte; ?>">
+                    <td class="master">
+                        <div tipo="produto" aberto="false" fonte="<?php echo $nrFonte; ?>" produto="<?php echo $nrProduto; ?>" class="icn_menos icn_menos_AP clickproduto" style="width:98%; margin-left:2%;"><span class="green" style="font-size: 16pt; font-weight: 800;"><?php echo $produto; ?></span></div>
+                    </td>
+                </tr>
+                <?php $nrEtapa = 0;
+                    if (is_array($this->planSR[$fonte][$produto]))
+                        foreach ($this->planSR[$fonte][$produto] as $etapa => $planilha) : //ForeachEtapa
+                            $totalEtapa = 0;
+                        ?>
+                <tr class="master produto" produto="<?php echo $nrProduto; ?>" fonte="<?php echo $nrFonte;?>">
+                    <td>
+                        <div>
+                            <div tipo="etapa" fonte="<?php echo $nrFonte; ?>" produto="<?php echo $nrProduto; ?>" etapa="<?php echo $nrEtapa; ?>" aberto="false" class="icn_menos icn_menos_AP clicketapa" style="width:80%; margin-left:4%; "><span class="orange" style="font-size: 14pt; font-weight: 800;"><?php echo $etapa; ?></span></div>
+                        </div>
+                    </td>
+                </tr>
+                <?php $nrCidade = 0;
+                    if (is_array($this->planSR[$fonte][$produto][$etapa]))
+                        foreach ($this->planSR[$fonte][$produto][$etapa] as $cidade => $planilha) : //ForeachCidade ?>
+                <tr class="master produto etapa" produto="<?php echo $nrProduto; ?>" etapa="<?php echo $nrEtapa; ?>" fonte="<?php echo $nrFonte; ?>">
+                    <td>
+                        <div tipo="cidade" fonte="<?php echo $nrFonte; ?>" produto="<?php echo $nrProduto; ?>" etapa="<?php echo $nrEtapa; ?>" cidade="<?php echo $nrCidade; ?>" aberto="false" class="icn_menos icn_menos_AP clickcidade" style="width:94%; margin-left:6%;"><span class="black" style="font-size: 12pt; font-weight: 800;"><?php echo $cidade; ?></span></div>
+                    </td>
+                </tr>
+                <tr class="master produto etapa cidade" produto="<?php echo $nrProduto; ?>" etapa="<?php echo $nrEtapa; ?>" cidade="<?php echo $nrCidade; ?>"  fonte="<?php echo $nrFonte; ?>">
+                    <td>
+                        <table class="tabela">
+                            <tr class="master produto etapa cidade" produto="<?php echo $nrProduto; ?>" etapa="<?php echo $nrEtapa; ?>" cidade="<?php echo $nrCidade; ?>" fonte="<?php echo $nrFonte;?>">
+                                <th>Item</th>
+                                <th>Dias</th>
+                                <th>Unidade</th>
+                                <th>Qtde.</th>
+                                <th>Ocor.</th>
+                                <th>Vl. Unit&aacute;rio</th>
+                                <th>Vl. Solicitado</th>
+                                <th>Justificativa</th>
+                                <th>Status</th>
+                            </tr>
+                            <?php $totalUF = 0;
+                                if (is_array($this->planSR[$fonte][$produto][$etapa][$cidade]))
+                                    foreach ($this->planSR[$fonte][$produto][$etapa][$cidade] as $planilha) : //ForeachItem
+                                        $totalUF += $planilha['vlTotal'];
+                                        ?>
+
+                            <?php
+                                switch ($planilha['tpAcao']) {
+                                case 'I':
+                                    $corLinha = 'style="color: blue; font-weight: bold;"';
+                                    break;
+                                case 'E':
+                                    $corLinha =  'style="color: red; font-weight: bold;"';
+                                    break;
+                                case 'A':
+                                    $corLinha =  'style="color: green; font-weight: bold;"';
+                                    break;
+                                default:
+                                    $corLinha =  '';
+                                    break;
+                            }; ?>
+                            <tr <?php echo $corLinha; ?>>
+                                <td>
+                                    <?php if($this->stResult[0]->stAvaliacaoItemPedidoAlteracao == 'EA'){ ?>
+                                    <a href="<?php echo $this->url(array('controller' => 'verificarsolicitacaodereadequacoes', 'action' => 'formulario')); ?>?idPronac=<?php echo $this->idPronac; ?>&idAprovacao=<?php echo $planilha['idPlanilhaAprovacao']; ?>&idItem=<?php echo $planilha['idPlanilhaItem']; ?>&idProduto=<?php echo $planilha['idProduto']; ?>&tpAcao=">
+                                    <?php echo $planilha['Item']; ?>
+                                    </a>
+                                    <?php } else { echo $planilha['Item']; } ?>
+                                </td>
+                                <td><?php echo $planilha['qtDias']; ?></td>
+                                <td><?php echo $planilha['Unidade']; ?></td>
+                                <td><?php echo $planilha['qtItem']; ?></td>
+                                <td><?php echo $planilha['nrOcorrencia']; ?></td>
+                                <td><?php echo $this->formatarReal($planilha['vlUnitario']); ?></td>
+                                <td><?php echo $this->formatarReal($planilha['vlTotal']); ?></td>
+                                <td><?php echo $planilha['dsJustificativa']; ?></td>
+                                <td>
+                                    <?php $verificaAnalise = VerificarSolicitacaodeReadequacoesDAO::verificaAnalise($planilha['idPlanilhaAprovacao'], $this->stResult[0]->idAvaliacaoItemPedidoAlteracao);
+                                        $aval = '';
+                                        if ($verificaAnalise) {
+                                            echo (trim($verificaAnalise[0]->stAvaliacao) == 'D') ? 'Deferido' : 'Indeferido';
+                                            $aval = trim($verificaAnalise[0]->stAvaliacao);
+                                        } else {
+                                            if ($this->stResult[0]->stAvaliacaoItemPedidoAlteracao == 'EA') {
+                                                echo "Em análise";
+                                            } else {
+                                                echo "Aguardando análise";
+                                            }
+                                        }
+                                        echo "<input value='$aval' class='itensVerificacao sumir' />";
+                                    ?>
+                                </td>
+                            </tr>
+                            <?php $item++;
+                                    endforeach; //fechaForeachplanilha
+                                    $nrCidade++;
+                                    $totalEtapa   += $totalUF;
+                                    $totalProduto += $totalUF;
+                            ?>
+                            <tr>
+                                <td colspan="5" class="black" style="font-size: 14pt;">Total de UF</td>
+                                <td class="black" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($totalUF); ?></td>
+                                <td colspan="3">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td colspan="5" class="orange" style="font-size: 14pt;">Total da Etapa</td>
+                                <td class="orange" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($totalEtapa); ?></td>
+                                <td colspan="3">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td colspan="5" class="green" style="font-size: 14pt;">Valor para <?php echo $produto; ?></td>
+                                <td class="green" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($totalProduto); ?></td>
+                                <td colspan="3">&nbsp;</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <?php
+                                endforeach; //fechaForeachcidade
+                                $nrEtapa++;
+                        endforeach; //fechaForeachetapa
+                        $totalProduto = 0;
+                        $nrProduto++;
+                endforeach; //fechaForeachproduto
+                $nrFonte++;
+        endforeach; //fechaForeachFonteIncentivo
+        ?>
+    </table>
+
+
+</div>
+
+<!--<div class="sumir" id="observacaoDeEncaminhamento" title="Observaç&otilde;es de Encaminhamento" >
+    <textarea name="descricaoDaObservacao" id="descricaoDaObservacao" rows="6" cols="50" style="width:99%;" onclick="limpar_campo(this, 'Digite a observação...');" onkeypress=" " onblur="restaurar_campo(this, 'Digite a observação...');">Digite a observação...</textarea>
+</div>-->
+
+<script type="text/javascript">
+    function uc30(idPronac) {
+        location.href = '<?php echo $this->baseUrl() ?>/verificarsolicitacaodereadequacoes/planilhasolicitada?idPronac='+idPronac;
+    }
+
+    function finalizar_avaliacao(valor)
+    {
+        if (valor == "2"){
+
+            var preenchimento = true;
+            $('.itensVerificacao').each(function(){
+                if($.trim($(this).val()) == '')
+                    preenchimento = false;
+            });
+
+            if(!preenchimento) {
+                $("#mostra").dialog("destroy");
+                $("#mostra").html("É necessário avaliar os itens do(s) produto(s) antes de finalizar a solicitação!");
+                $("#mostra").dialog({
+                    resizable: false,
+                    title: 'Alerta!',
+                    width:340,
+                    height:180,
+                    modal: true,
+                    buttons : {
+                        'OK' : function(){
+                            $(this).dialog('close');
+                            $("#status").find("option[value='1']").attr('selected','selected');
+                        }
+                    }
+                });
+                $('.ui-dialog-titlebar-close').remove();
+            } else {
+
+                if($('#analisetecnica').val() == ''){
+                    $("#mostra").dialog("destroy");
+                    $('#mostra').html('Favor preencher o campo da análise técnica para finalizar a sua análise de Produtos.');
+                    $("#mostra").dialog({
+                        height: 180,
+                        width: 340,
+                        modal: true,
+                        title: 'Alerta!',
+                        draggable: false,
+                        resizable: false,
+                        closeOnEscape: false,
+                        buttons: {
+                            'OK': function() {
+                                document.getElementById('status').options[0].selected = true;
+                                $(this).dialog('close');
+                            }
+                        }
+                    });
+                } else {
+                    $("#mostra").dialog("destroy");
+                    $('#mostra').html('Deseja finalizar a análise dos Produtos?');
+                    $("#mostra").dialog({
+                        height: 180,
+                        width: 320,
+                        modal: true,
+                        title: 'Confirma',
+                        draggable: false,
+                        resizable: false,
+                        closeOnEscape: false,
+                        buttons: {
+                            'Não': function() {
+                                document.getElementById('status').options[0].selected = true;
+                                $(this).dialog('close');
+                            },
+                            'Sim': function() {
+                                $('#deferimentoSolic').val('AP'); //Deferido a solicitação
+                                $(".deferimentos").each(function(){
+                                    if($(this).val() == 'I'){
+                                        $('#deferimentoSolic').val('IN'); //Indeferir a solicitação caso haja algum item indeferido
+                                    }
+                                });
+                                $('#formularioFinalizar').submit();
+                            }
+                        }
+                    });
+                    $('.ui-dialog-titlebar-close').remove();
+                }
+            }
+        }
+    } // fecha função finalizar_avaliacao()
+
+
+    function avaliacaodoitem(idPlano, avaliacao)
+    {
+        // ========== INÍCIO MODAL VALIDAÇÃO JUSTIFICATIVA ==========
+        dsJustificativa = document.getElementById('justificativaPropRead' + idPlano).value;
+        if (dsJustificativa == "")
+        {
+            $("#modal-validacao").dialog("destroy");
+            $("#modal-validacao").html("Favor preencher a justificativa da avaliação do produto.");
+            $("#modal-validacao").dialog
+            ({
+                height: 180,
+                width: 280,
+                modal: true,
+                title: 'Alerta!',
+                draggable: false,
+                resizable: false,
+                closeOnEscape: false,
+                buttons:
+                    {
+                    'Ok': function()
+                    {
+                        document.getElementById('avaliacaoProduto' + idPlano).options[0].selected = true;
+                        $(this).dialog('close');
+                    }
+                }
+            });
+            $('.ui-dialog-titlebar-close').remove();
+        } // fecha if
+        else
+        {
+            // ========== INÍCIO MODAL DE CONFIRMAÇÃO DE ENVIO DO FORMULÁRIO ==========
+            $("#modal-item-pedido").dialog("destroy");
+            $("#modal-item-pedido").html("Deseja alterar o status do Produto?");
+            $("#modal-item-pedido").dialog
+            ({
+                height: 170,
+                width: 280,
+                title: 'Confirma',
+                modal: true,
+                draggable: false,
+                resizable: false,
+                closeOnEscape: false,
+                buttons:
+                {
+                    'Não': function()
+                    {
+                        document.getElementById('avaliacaoProduto' + idPlano).options[0].selected = true;
+                        $(this).dialog('close');
+                    },
+                    'Sim': function()
+                    {
+                        $('#form'+idPlano).append('<input type="hidden" id="avaliacaoDoItem" name="avaliacaoDoItem" value="'+avaliacao+'" />')
+                        $('#form'+idPlano).submit();
+                    }
+                }
+            });
+            $('.ui-dialog-titlebar-close').remove();
+                // ========== FIM MODAL DE CONFIRMAÇÃO DE ENVIO DO FORMULÁRIO ==========
+            } // fecha else
+            // ========== FIM MODAL VALIDAÇÃO JUSTIFICATIVA ==========
+        } // fecha função avaliacaodoitem()
+</script>
+
+
+<div id="mostra"></div>
+<div id="modal-validacao"></div>
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

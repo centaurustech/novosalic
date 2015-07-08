@@ -1,0 +1,79 @@
+<?php
+    header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+
+<table class="tabela">
+    <tr>
+        <th><?php echo $this->nmCodigo;?></th>
+        <th>NOME <?php echo $this->nmTipo;?></th>
+        <!--<th>NOME PARECERISTA</th>-->
+        <?php if($this->idDiligencia){ ?>
+            <th>Produto</th>
+        <?php } ?>
+    </tr>
+    <tr>
+        <td><?php echo $this->pronac;?></td>
+        <td><?php echo $this->nomeProjeto;?></td>
+        <!--<td><?php echo $this->Descricao;?></td>-->
+        <?php if($this->idDiligencia){?>
+            <td><?php if($this->produto)echo $this->produto;else echo '-'?></td>
+        <?php } ?>
+    </tr>
+    <tr>
+        <?php if($this->idDiligencia){ ?>
+            <th>TIPO DILIG&Ecirc;NCIA</th>
+        <?php } ?>
+        <th>DATA DA SOLICITA&Ccedil;&Atilde;O</th>
+        <th>DATA DA RESPOSTA</th>
+        <!--<th></th>-->
+    </tr>
+    <tr>
+        <?php if($this->idDiligencia){ ?>
+            <td><?php echo $this->tipoDiligencia;?></td>
+        <?php } ?>
+        <td><?php echo $this->dataSolicitacao;?></td>
+        <td><?php if($this->stEnviado == 'S')echo $this->dataResposta;?></td>
+        <!--<td></td>-->
+    </tr>
+</table>
+<table class="tabela">
+    <tr>
+        <th>SOLICITAÇÃO</th>
+    </tr>
+    <tr>
+        <td style="padding-left: 20px">
+            <?php echo strip_tags($this->solicitacao,"<b></b><ul></ul><li></li><strong></strong><i></i><p></p><br>");?>
+        </td>
+    </tr>
+</table>
+<table class="tabela">
+    <tr>
+        <th>Resposta:</th>
+    </tr>
+    <tr>
+        <td style="padding-left: 20px">
+            <?php
+            if($this->stEnviado == 'S'){
+                echo strip_tags($this->resposta,"<b></b><ul></ul><li></li><strong></strong><i></i><p></p><br>");
+            } ?>
+        </td>
+    </tr>
+</table>
+
+<?php if(count($this->arquivos)>0) { ?>
+<table class="tabela">
+    <tr>
+        <th colspan="3">Arquivos Anexados</th>
+    </tr>
+    <tr>
+        <td class="destacar bold" align="center">Arquivo</td>
+        <td class="destacar bold" align="center">Dt.Envio</td>
+    </tr>
+    <?php foreach ($this->arquivos as $arquivos) { ?>
+    <tr id="linha<?php echo $arquivos->idArquivo; ?>">
+        <td><a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id=<?php echo $arquivos->idArquivo; ?>"><?php echo $arquivos->nmArquivo; ?></a></td>
+        <td align="center"><?php echo Data::tratarDataZend($arquivos->dtEnvio, 'Brasileira', true); ?></td>
+    </tr>
+    <?php } ?>
+</table>
+<?php } ?>

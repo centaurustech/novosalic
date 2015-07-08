@@ -1,0 +1,22 @@
+<select class="input_simples updateTmpCaptacao" data-tmpCaptacao="<?php echo $this->captacao->idTmpCaptacao; ?>">
+	<option value="0">- Selecione a correção -</option>
+    <option value="2" <?php echo $this->captacao->cdPatrocinio == 2 ? 'selected="selected"' : ''; ?>>Patrocínio</option>
+	<option value="1" <?php echo $this->captacao->cdPatrocinio == 1 ? 'selected="selected"' : ''; ?>>Doação</option>
+	<option value="3" <?php echo $this->captacao->cdPatrocinio == 3 ? 'selected="selected"' : ''; ?>>Devolução Judicial</option>
+	<option value="5" <?php echo $this->captacao->cdPatrocinio == 5 ? 'selected="selected"' : ''; ?>>Devolução FNC</option>
+</select>
+
+<script>
+	$('.updateTmpCaptacao').unbind('change').change(function(){
+	    var idTmpCaptacao = $(this).attr('idTmpCaptacao');
+	    var cdPatrocinio = $(this).val();
+	    var idCaptacao = $(this).attr('data-tmpCaptacao');
+	    $.ajax({
+	        type: 'POST',
+	        url: '<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'update-tmp-captacao')); ?>',
+	        data: {idTmpCaptacao: idCaptacao, cdPatrocinio: cdPatrocinio },
+	        success: function(data){;},
+	        dataType : 'json'
+	    });
+	});
+</script>

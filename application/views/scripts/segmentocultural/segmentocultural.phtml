@@ -1,0 +1,35 @@
+<?php
+/**
+ * Monta o XML dos segmentos culturais
+ * @author Equipe RUP - Politec
+ * @since 29/03/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.views.scripts.segmentocultural
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+
+$gmtDate = gmdate("D, d M Y H:i:s");
+header("Expires: {$gmtDate} GMT");
+header("Last-Modified: {$gmtDate} GMT");
+header("Cache-Control: no-cache, must-revalidate");
+header("Pragma: no-cache");
+header("Content-Type: text/html; charset=ISO-8859-1", true);
+
+$xml = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";
+$xml.= "<segmentosculturais>\n";
+
+foreach ($this->segmentosculturais as $segmentocultural)
+{
+	$xml.= "<segmentocultural>\n";
+	$xml.= "<codigo>".$segmentocultural->id."</codigo>\n";
+	$xml.= "<descricao>".$segmentocultural->descricao."</descricao>\n";
+	$xml.= "</segmentocultural>\n";
+}
+
+$xml.= "</segmentosculturais>\n";
+Header("Content-type: application/xml; charset=iso-8859-1");
+
+echo $xml;
+?>

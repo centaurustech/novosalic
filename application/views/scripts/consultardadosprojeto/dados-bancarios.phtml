@@ -1,0 +1,97 @@
+<?php require_once "inc/menu.dados.bancarios.php"; // menu de consultar dados do projeto - dados bancarios ?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'), '', true); ?>?idPronac=<?php echo $this->idPronac; ?>" title="Consultar dados projeto">Consultar dados projeto</a></li>
+        <li>Dados banc&aacute;rios</li>
+        <li class="last">Contas Banc&aacute;rias</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Contas Banc&aacute;rias</div>
+</div>
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <table class="tabela">
+        <tr class="destacar">
+            <td align="center"><b>PRONAC</b></td>
+            <td align="center"><b>Nome do Projeto</b></td>
+        </tr>
+        <tr>
+            <td align="center"><?php echo $this->projeto->AnoProjeto.$this->projeto->Sequencial; ?></td>
+            <td align="center"><?php echo $this->projeto->NomeProjeto; ?></td>
+        </tr>
+    </table>
+
+    <?php if(is_object($this->dadosContaBancaria) && count($this->dadosContaBancaria)>0): ?>
+        <table class="tabela">
+            <tr class="destacar">
+                <td align="center" colspan="3"><b>Dados da Conta</b></td>
+            </tr>
+            <tr>
+                <td valign="top">
+                    <b>Banco</b><br>
+                    <?php echo $this->dadosContaBancaria->Banco;?>
+                </td>
+                <td valign="top" colspan="2">
+                    <b>Ag&ecirc;ncia</b><br>
+                    <?php echo $this->dadosContaBancaria->Agencia;?>
+                </td>
+            </tr>
+            <tr class="destacar">
+                <td align="center" colspan="3"><b>Conta Capta&ccedil;&atilde;o</b></td>
+            </tr>
+            <tr>
+                 <td valign="top">
+                    <b>N&uacute;mero</b><br>
+                    <?php echo ($this->dadosContaBancaria->ContaBloqueada == '000000000000') ? " - " : $this->dadosContaBancaria->ContaBloqueada;?>
+                </td>
+                <td valign="top">
+                    <b>Dt. Abertura</b><br>
+                    <?php echo (isset($this->dadosContaBancaria->DtLoteRemessaCB) && !empty($this->dadosContaBancaria->DtLoteRemessaCB)) ? date("d/m/Y",strtotime($this->dadosContaBancaria->DtLoteRemessaCB)) : '-'; ?>
+                </td>
+                <td valign="top">
+                    <b>Ocorr&ecirc;ncia</b><br>
+                    <?php echo ($this->dadosContaBancaria->OcorrenciaCB == '000') ? " - " : $this->dadosContaBancaria->OcorrenciaCB;?>
+                </td>
+            </tr>
+            <tr class="destacar">
+                <td align="center" colspan="3"><b>Conta Movimento</b></td>
+            </tr>
+            <tr>
+                 <td valign="top">
+                    <b>N&uacute;mero</b><br>
+                    <?php echo ($this->dadosContaBancaria->ContaLivre == '000000000000') ? " - " : $this->dadosContaBancaria->ContaLivre;?>
+                </td>
+                <td valign="top">
+                    <b>Dt. Abertura</b><br>
+                    <?php echo (isset($this->dadosContaBancaria->DtLoteRemessaCL) && !empty($this->dadosContaBancaria->DtLoteRemessaCL)) ? date("d/m/Y",strtotime($this->dadosContaBancaria->DtLoteRemessaCL)) : '-';?>
+                </td>
+                <td valign="top">
+                    <b>Ocorr&ecirc;ncia</b><br>
+                    <?php echo ($this->dadosContaBancaria->OcorrenciaCL == '000') ? " - " : $this->dadosContaBancaria->OcorrenciaCL;?>
+                </td>
+            </tr>
+        </table>
+    <?php else: ?>
+        <table class="tabela">
+            <tr>
+                <td align="center"><em>Dados n&atilde;o informados!</em></td>
+            </tr>
+        </table>
+    <?php endif; ?>
+
+</div>
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

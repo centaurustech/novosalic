@@ -1,0 +1,101 @@
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+
+<script type="text/javascript">
+$(document).ready(function(){
+
+	$('.numero').keydown(function(event){
+        //		var texto = '';
+        //		 for(j in event){
+        //			 texto += j+' = '+event[j]+' | ';
+        //				}
+        //
+        //		alert(texto);return false;
+        if((event.keyCode >= 96 && event.keyCode <= 105) || (event.keyCode >= 48 && event.keyCode <= 57) || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 67 || event.keyCode == 86){
+            return true;
+        }
+        else
+            return false;
+        //$(this).val($(this).val().replace(/\D/g,''));
+    });
+});
+
+$(function()
+	    {
+	        $.datepicker.regional['pt-BR'] = {
+	            closeText: 'Fechar',
+	            prevText: '&#x3c;Anterior',
+	            nextText: 'Pr&oacute;ximo&#x3e;',
+	            currentText: 'Hoje',
+	            monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+	            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+	            dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+	            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+	            dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+	            weekHeader: 'Sm',
+	            dateFormat: 'dd/mm/yy',
+	            firstDay: 0,
+	            isRTL: false,
+	            showMonthAfterYear: false,
+	            yearSuffix: ''};
+	        $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+	        $("#data").datepicker($.datepicker.regional['pt-BR']);
+	    });
+</script>
+
+<?php
+$nomeGuia = $this->nmFormDocumento;
+$nomeGuia = strtolower(preg_replace("[^a-zA-Z0-9 .]", "",strtr($nomeGuia, "á??âé?ëíóô?úüçÁ??ÂÉ?ÍÓÔ?ÚÜÇ ","aaaaeeeiooouucAAAAEEIOOOUUC ")));
+$arrCaracteresEspeciais1 = array("-","_","'","\"", "/", ".", ",", ";", ":", " ", "(", ")", "[", "]", "{", "}", "+","*","?","!","&","#","@","$","%","?","?");
+$arrCaracteresEspeciais2 = array("","","","", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "");
+$nomeGuia = str_replace($arrCaracteresEspeciais1, $arrCaracteresEspeciais2, $nomeGuia);
+?>
+<div id='desabilitaQuestionario_<?php echo $nomeGuia;?>' align="center" style=" height: 75%; width: 100%; overflow: auto; ">
+    <table width="100%">
+        <tr>
+            <th>
+                Voc&ecirc; est&aacute; respondendo o question&aacute;rio "<?php echo utf8_encode($this->nmFormDocumento);?>".
+            </th>
+        </tr>
+    </table>
+    <br/>
+    <?php
+    echo $this->questionario;
+    ?>
+</div>
+<?php
+if($this->stSomenteLeitura != 'S'){
+?>
+<div id='desabilitaQuestionario_<?php echo $nomeGuia;?>' style="width: 95%; float:left;">
+    <br>
+    <table width="100%" align="left" class="tabelaSemLateral">
+        <tr>
+            <td width="100%" align="center">
+                <div style="float: left;">
+                    <center>
+                        <input type="button" class="btn_salvar" id="btSalvar_<?php echo $nomeGuia;?>">
+                    </center>
+                </div>
+                <div class="avisos" style="float: left; height: 20px; line-height: 30px; width: 400px; text-align: center;"></div>
+            </td>
+        </tr>
+    </table>
+    <br><br><br>
+</div>
+<?php
+}
+?>
+<script type="text/javascript">
+    $(function(){
+        $('input[id!=btSubmit]').addClass('input_simples');
+        $('textarea').addClass('textarea_simples');
+        $('select[id!=perfilXgrupo]').addClass('select_simples');
+
+        $('#btSalvar_<?php echo $nomeGuia;?>').removeClass('input_simples');
+
+        
+        $('#btSalvar_<?php echo $nomeGuia;?>').click(function(){
+           salvarMultiplosFormularios.idexecucao = '#desabilitaQuestionario_<?php echo $nomeGuia;?> ';
+           salvarMultiplosFormularios.exec();
+        });
+    });
+</script>

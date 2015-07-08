@@ -1,0 +1,76 @@
+<?php
+include_once 'scripts/manterpropostaedital/inc/menu.inc.php';
+?>
+
+<!-- ==========  BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'projetos')); ?>" title="Projetos">Projetos</a></li>
+        <li class="last">Local e Per&iacute;odo de Realiza&ccedil;&atilde;o</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INULO ========== -->
+<div id="titulo">
+    <div>Local de Realiza&ccedil;&atilde;o<span>Teste</span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+
+
+
+<!-- ========== IDO ========== -->
+<div id="conteudo">
+
+    <table class="tabela">
+
+        <tr class="titulo_tabela" >
+            <th colspan="4" ><?php echo "Abrangência geográfica da proposta cultural" ?></th>
+           
+        </tr>
+
+        <tr class="titulo_tabela">
+            <th></th>
+            <th>Pa&iacute;s</th>
+            <th>UF</th>
+            <th>Cidade</th>
+            
+        </tr>
+
+        <tr class="fundo">
+            <td class="centro"><input type="button" style="width: 3.3em;" class="btn_editar" name="pdf" value=" " id="btn_editar"/></td>
+            <td class="centro"><?php echo "Brasil" ?></td>
+            <td class="centro"><?php echo "Distrito federal" ?></td>
+            <td class="centro"><?php echo "Brasilia" ?></td>
+            
+        </tr>
+
+        <tr class="titulo_tabela" >
+            <th colspan="4" ></th>
+
+        </tr>
+        
+
+    </table>
+
+    <div id="miolo"> <!-- ==========  MIOLO IDENTIFICACAO ========== -->
+        <table class="tabela" style="width: 100%;" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td align="right">
+                    <input type="button" style="width: 3.3em;" class="btn_p_anterior" name="pdf" value=" " id="btn_p_anterior"/>
+                    <input type="button" id="btn_p_proximo" name="inicio" style="width: 88px" class="btn_p_proximo">
+                    <input type="button" id="btn_novo" name="sair" style="width: 88px" class="btn_novo">
+                </td>
+            </tr>
+        </table>
+    </div>
+
+</div><!-- ========== FIM CONTEUDO ========== -->
+
+<!-- ========== I ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RO ========== -->
+<br clear="all" />

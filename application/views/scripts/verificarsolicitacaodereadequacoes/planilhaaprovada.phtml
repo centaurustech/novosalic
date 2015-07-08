@@ -1,0 +1,377 @@
+<?php include_once 'inc/menuitemcusto.inc.php'; ?>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li>Acompanhamento</li>
+        <li class="last">Readequaç&atilde;o: itens de custo</li>
+    </ul>
+</div>
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Readequa&ccedil;&atilde;o: itens de custo <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<script type="text/javascript">
+<!--
+/**
+ * Ações que serão executadas após o carregamento da página
+ */
+$(document).ready(function()
+{
+	// controle de exibição da planilha aprovada
+	$(".icn_menos_AP").click(function()
+	{
+		abrir_planilha(this, '');
+	});
+	$(".icn_menos_AP").click();
+
+	// controle de exibição da planilha solicitada
+	$(".icn_menos_SR").click(function()
+	{
+		abrir_planilha(this, 'SR');
+	});
+	$(".icn_menos_SR").click();
+
+	// efeitos ao passar o mouse sobre o item
+	$(".item").mouseover(function()
+	{
+		$(this).addClass('fundo_linha3');
+	});
+	$(".item").mouseout(function()
+	{
+		$(this).removeClass('fundo_linha3');
+	});
+
+	$(".item").click(function()
+	{
+		if ($(this).hasClass('fundo_linha4'))
+		{
+			$(this).removeClass('fundo_linha4');
+		}
+		else
+		{
+			$(this).addClass('fundo_linha4');
+		}
+	});
+});
+
+
+
+/**
+ * Função para expandir/recolher a planilha
+ */
+function abrir_planilha(item, planilha)
+{
+	var tipo    = $(item).attr('tipo' + planilha);
+	var aberto  = $(item).attr('aberto' + planilha);
+	var fonte   = 'fonte' + planilha;
+	var produto = 'produto' + planilha;
+	var etapa   = 'etapa' + planilha;
+	var cidade  = 'cidade' + planilha;
+
+	if (aberto == 'true')
+	{
+		adisplay = 'none';
+		$(item).attr('aberto' + planilha, 'false');
+		$(item).removeClass('icn_menos').addClass('icn_mais');
+	}
+	else
+	{
+		adisplay = '';
+		$(item).attr('aberto' + planilha, 'true');
+		$(item).removeClass('icn_mais').addClass('icn_menos');
+	}
+
+	if (tipo == fonte)
+	{
+		fonte = $(item).attr('fonte' + planilha);
+		$(".master" + planilha + "[fonte" + planilha + "='" + fonte + "']").css('display', adisplay);
+		$(".clickproduto" + planilha + ", .clicketapa" + planilha + ", .clickcidade" + planilha).removeClass('icn_mais').addClass('icn_menos');
+	}
+	if (tipo == produto)
+	{
+		fonte   = $(item).attr('fonte' + planilha);
+		produto = $(item).attr('produto' + planilha);
+		$(".produto" + planilha + "[produto" + planilha + "='" + produto + "'][fonte" + planilha + "='" + fonte + "']").css('display', adisplay);
+		$(".clicketapa" + planilha + ", .clickcidade" + planilha).removeClass('icn_mais').addClass('icn_menos');
+	}
+	if (tipo == etapa)
+	{
+		fonte   = $(item).attr('fonte' + planilha);
+		produto = $(item).attr('produto' + planilha);
+		etapa   = $(item).attr('etapa' + planilha);
+		$(".etapa" + planilha + "[produto" + planilha + "='" + produto + "'][etapa" + planilha + "='" + etapa + "'][fonte" + planilha + "='" + fonte + "']").css('display', adisplay);
+		$(".clickcidade" + planilha).removeClass('icn_mais').addClass('icn_menos');
+	}
+	if (tipo == cidade)
+	{
+		fonte   = $(item).attr('fonte' + planilha);
+		produto = $(item).attr('produto' + planilha);
+		etapa   = $(item).attr('etapa' + planilha);
+		cidade  = $(item).attr('cidade' + planilha);
+		$(".cidade" + planilha + "[produto" + planilha + "='" + produto + "'][etapa" + planilha + "='" + etapa + "'][cidade" + planilha + "='" + cidade + "'][fonte" + planilha + "='" + fonte + "']").css('display', adisplay);
+	}
+} // fecha função abrir_planilha()
+//-->
+</script>
+
+
+
+<!-- início: área principal #conteudo -->
+<div id="conteudo">
+    <div id="miolo">
+        <?php $resultado = $this->buscaprojeto;
+        $idPronac = $this->escape($resultado[0]->IdPRONAC);
+        ?>
+
+        <table class="tabela">
+            <thead>
+                <tr>
+                    <th align="center">Nº PRONAC</th>
+                    <th align="center">Nome do Projeto</th>
+                </tr>
+            </thead>
+            <tbody>
+            	<tr class="linha">
+                    <td align="center"><?php echo $this->escape($resultado[0]->pronac); ?></td>
+                    <td align="center"><?php echo $this->escape($resultado[0]->NomeProjeto); ?></td>
+                </tr>
+            </tbody>
+            <tr>
+                <th align="center">CPNJ/CPF</th>
+                <th align="center">Proponente</th>
+            </tr>
+            <tbody>
+            	<tr class="linha">
+                    <td align="center">
+                    	<?php
+                    	$valor = $this->escape($resultado[0]->CgcCpf);
+                        echo Validacao::mascaraCPFCNPJ($valor);
+                        ?>
+                    </td>
+                    <td align="center"><?php echo $this->escape($resultado[0]->Descricao);?></td>
+                </tr>
+            </tbody>
+        </table>
+
+
+
+        <?php require_once 'inc/menuabas.inc'; ?>
+
+            <table class="tabela">
+            	<tr>
+            		<th>Planilha Orçamentária</th>
+            	<tr>
+                <?php
+                $classPai='tr_f_AP';
+                ?>
+
+                <tr>
+                    <div  id="orcamento">
+
+                            	   <td style='color:red; font-size:1.4em; text-align:center;'>
+                            	   <!--<div id='abrir_fechar' class='icn_mais' style='width:175px; float:right; text-align:right;'><a href='#' onclick='abrirFecharFilhos();' style='font-size:0.8em;'>Expandir/Recolher Planilha</a></div>-->
+                                   Planilha Aprovada
+                                   </td>
+
+                        </div>
+
+                </tr>
+
+	<!-- ========== INÍCIO PLANILHA APROVADA ========== -->
+		<!--<tr>
+			<th>Planilha Aprovada</th>
+		</tr>-->
+
+		<?php if (count($this->planAP) <= 0) : ?>
+		<tr>
+			<td align="center">N&atilde;o existe(m) item(ns) aprovado(s) para esse produto.</td>
+		</tr>
+		<?php endif; ?>
+
+		<?php
+		$nrFonte = 0;
+		$item    = 1;
+		foreach ($this->planAP as $fonte => $planilha) : //ForeachFonteIncentivo
+		?>
+			<tr>
+				<td>
+					<div tipo="fonte" fonte="<?php echo $nrFonte; ?>" aberto="true" class="icn_menos icn_menos_AP" style="width:90%"><span class="red" style="font-size: 20pt; font-weight: 800;"><?php echo $fonte; ?></span></div>
+				</td>
+			</tr>
+			<?php
+			$nrProduto    = 0;
+			$totalProduto = 0;
+			if (is_array($this->planAP[$fonte]))
+				foreach ($this->planAP[$fonte] as $produto => $planilha) : //ForeachProduto
+			?>
+				<tr class="master" fonte="<?php echo $nrFonte; ?>">
+					<td class="master">
+						<div tipo="produto" aberto="true" fonte="<?php echo $nrFonte; ?>" produto="<?php echo $nrProduto; ?>" class="icn_menos icn_menos_AP clickproduto" style="width:98%; margin-left:2%;"><span class="green" style="font-size: 16pt; font-weight: 800;"><?php echo $produto; ?></span></div>
+					</td>
+				</tr>
+				<?php
+				$nrEtapa = 0;
+				if (is_array($this->planAP[$fonte][$produto]))
+					foreach ($this->planAP[$fonte][$produto] as $etapa => $planilha) : //ForeachEtapa
+						$totalEtapa = 0;
+				?>
+					<tr class="master produto" produto="<?php echo $nrProduto; ?>" fonte="<?php echo $nrFonte;?>">
+						<td>
+							<div>
+								<div tipo="etapa" fonte="<?php echo $nrFonte; ?>" produto="<?php echo $nrProduto; ?>" etapa="<?php echo $nrEtapa; ?>" aberto="true" class="icn_menos icn_menos_AP clicketapa" style="width:80%; margin-left:4%; "><span class="orange" style="font-size: 14pt; font-weight: 800;"><?php echo $etapa; ?></span></div>
+							</div>
+						</td>
+					</tr>
+					<?php
+					$nrCidade = 0;
+						if (is_array($this->planAP[$fonte][$produto][$etapa]))
+							foreach ($this->planAP[$fonte][$produto][$etapa] as $cidade => $planilha) : //ForeachCidade
+					?>
+						<tr class="master produto etapa" produto="<?php echo $nrProduto; ?>" etapa="<?php echo $nrEtapa; ?>" fonte="<?php echo $nrFonte; ?>">
+							<td>
+								<div tipo="cidade" fonte="<?php echo $nrFonte; ?>" produto="<?php echo $nrProduto; ?>" etapa="<?php echo $nrEtapa; ?>" cidade="<?php echo $nrCidade; ?>" aberto="true" class="icn_menos icn_menos_AP clickcidade" style="width:94%; margin-left:6%;"><span class="black" style="font-size: 12pt; font-weight: 800;"><?php echo $cidade; ?></span></div>
+							</td>
+						</tr>
+						<tr class="master produto etapa cidade" produto="<?php echo $nrProduto; ?>" etapa="<?php echo $nrEtapa; ?>" cidade="<?php echo $nrCidade; ?>"  fonte="<?php echo $nrFonte; ?>">
+							<td>
+								<table class="tabela">
+									<tr class="master produto etapa cidade" produto="<?php echo $nrProduto; ?>" etapa="<?php echo $nrEtapa; ?>" cidade="<?php echo $nrCidade; ?>" fonte="<?php echo $nrFonte;?>">
+										<th>Item</th>
+										<th>Dias</th>
+										<th>Unidade</th>
+										<th>Qtde.</th>
+										<th>Ocor.</th>
+										<th>Vl. Unit&aacute;rio</th>
+										<th>Vl. Solicitado</th>
+										<th>Justificativa</th>
+									</tr>
+									<?php
+									$totalUF = 0;
+									if (is_array($this->planAP[$fonte][$produto][$etapa][$cidade]))
+										foreach ($this->planAP[$fonte][$produto][$etapa][$cidade] as $planilha) : //ForeachItem
+											$totalUF += $planilha['vlTotal'];
+									?>
+										<tr class="item">
+											<td><?php echo $planilha['Item']; ?></td>
+											<td><?php echo $planilha['qtDias']; ?></td>
+											<td><?php echo $planilha['Unidade']; ?></td>
+											<td><?php echo $planilha['qtItem']; ?></td>
+											<td><?php echo $planilha['nrOcorrencia']; ?></td>
+											<td><?php echo $this->formatarReal($planilha['vlUnitario']); ?></td>
+											<td><?php echo $this->formatarReal($planilha['vlTotal']); ?></td>
+											<td><?php echo $planilha['dsJustificativa']; ?></td>
+										</tr>
+									<?php
+											$item++;
+										endforeach; //fechaForeachplanilha
+									$nrCidade++;
+									$totalEtapa   += $totalUF;
+									$totalProduto += $totalUF;
+									?>
+									<tr>
+										<td colspan="5" class="black" style="font-size: 14pt;">Total de UF</td>
+										<td class="black" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($totalUF); ?></td>
+										<td colspan="2">&nbsp;</td>
+									</tr>
+									<tr>
+										<td colspan="5" class="orange" style="font-size: 14pt;">Total da Etapa</td>
+										<td class="orange" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($totalEtapa); ?></td>
+										<td colspan="2">&nbsp;</td>
+									</tr>
+									<tr>
+										<td colspan="5" class="green" style="font-size: 14pt;">Valor para <?php echo $produto; ?></td>
+										<td class="green" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($totalProduto); ?></td>
+										<td colspan="2">&nbsp;</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+		<?php
+					endforeach; //fechaForeachcidade
+					$nrEtapa++;
+				endforeach; //fechaForeachetapa
+				$totalProduto = 0;
+				$nrProduto++;
+			endforeach; //fechaForeachproduto
+			$nrFonte++;
+		endforeach; //fechaForeachFonteIncentivo
+		?>
+    
+	<!-- ========== FIM PLANILHA APROVADA ========== -->
+
+            </table>
+
+
+
+    </div>
+
+
+
+</div>
+
+<script type="text/javascript">
+<!--
+$('.trpai').click(function()
+{
+	filhos(this);
+});
+
+function filhos(pai)
+{
+	var idtr = '.'+$(pai).attr('idFilho');
+	$(idtr).toggle();
+	if ($(pai).hasClass('icn_mais'))
+	{
+		$(pai).addClass('icn_menos');
+		$(pai).removeClass('icn_mais');
+	}
+	else
+	{
+		$(pai).addClass('icn_mais');
+		$(pai).removeClass('icn_menos');
+	}
+
+	if ($(idtr).attr('idFilho')!= undefined)
+	{
+		filhos($(idtr).attr('idFilho'));
+	}
+}
+
+function abrirFecharFilhos()
+{
+	$('.trFilho, .idFilhoTitulo').toggle();
+
+	$('.trpai').each(function()
+	{
+		if ($(this).hasClass('icn_mais'))
+		{
+			$(this).addClass('icn_menos');
+			$(this).removeClass('icn_mais');
+			$('#abrir_fechar').addClass('icn_menos');
+			$('#abrir_fechar').removeClass('icn_mais');
+		}
+		else
+		{
+			$(this).addClass('icn_mais');
+			$(this).removeClass('icn_menos');
+			$('#abrir_fechar').addClass('icn_mais');
+			$('#abrir_fechar').removeClass('icn_menos');
+		}
+	});
+}
+//-->
+</script>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

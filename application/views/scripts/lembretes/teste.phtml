@@ -1,0 +1,77 @@
+<table class="tabela">
+     <?php foreach($this->lembretesprojeto as $tblembretesprojeto): ?>
+		<tr>
+			<td class="titulo_tabela"> <a href='analiseprojeto?idPRONAC=<?php echo $this->escape($tblembretesprojeto->IdPRONAC); ?>'>Análise Técnica</a></td>
+			<td class="titulo_tabela"> <a href='proponente?idPRONAC=<?php echo $this->escape($tblembretesprojeto->IdPRONAC); ?>'>Proponente</a></td>
+			<td class="titulo_tabela"> <a href='anexardocumentos?pronac=<?php echo $this->escape($tblembretesprojeto->IdPRONAC); ?>'>Documentos Anexados</a></td>
+			<td class="titulo_tabela"> <a href='lembretes?idPRONAC=<?php echo $this->escape($tblembretesprojeto->IdPRONAC); ?>'>Lembretes</a></td>
+			<td class="titulo_tabela"> <a href='visualizarhistorico?idPRONAC=<?php echo $this->escape($tblembretesprojeto->IdPRONAC); ?>'>Histórico</a></td>	
+			<td class="titulo_tabela"> <a href='dadosprojeto?idPRONAC=<?php echo $this->escape($tblembretesprojeto->IdPRONAC);?>'>Consultar Dados do Projeto</a></td>	
+		</tr>
+	<?php endforeach;?>	
+</table>
+<table class="tabela" >
+	<tr>
+	    <th><div align="center" class="titulo_tabela">PRONAC</div></th>
+	    <th><div align="center" class="titulo_tabela">Nome do Projeto</div></th>
+	</tr>
+	<?php foreach($this->lembretesprojeto as $tblembretesprojeto): ?>
+		<tr>
+		    <td><?php echo $this->escape($tblembretesprojeto->IdPRONAC);?></td>
+		    <td><?php echo $this->escape($tblembretesprojeto->NomeProjeto);?></td>
+		</tr>
+	<?php endforeach;?>
+</table>
+<table>
+	<tr>
+		<td class="right">
+			<input type="button" title=" Novo Lembrete " class="btn_novo" value=" " onclick="redirecionar('lembretes/novolembrete?pronac=<?php echo $this->escape($tblembretesprojeto->IdPRONAC); ?>');" />
+		</td>
+	</tr>
+</table>
+<table class="tabela">
+	<caption class="titulo_tabela">Lembretes</caption>
+	<tr>
+	    <th><div align="center" class="titulo_tabela">Data</div></th>
+	    <th><div align="center" class="titulo_tabela">Lembrete</div></th>
+	    <th><div align="center" class="titulo_tabela">Alterar</div></th>
+        <th><div align="center" class="titulo_tabela">Excluir</div></th>
+	</tr>
+	<?php foreach($this->lembretesprojeto as $tblembretesprojeto): ?>
+		<tr class="fundo_linha2" <?php echo $this->corLinhaOnMouseOver(); ?>>
+			<td>
+				<form action="<?php echo $this->url(array('controller' => 'alterarlembretes','action' => 'index')); ?>" method="post" enctype="multipart/form-data">
+					<table class="tabela"  >
+						<caption class="titulo_tabela">Editar Lembretes</caption>
+						<tr>
+							<td>Data*:<div class="demo"><input type="text" name="dtlembrete" id="datepicker" value="<?php echo $this->escape($tblembretes->DtLembrete);?>"></div></td>
+							<td>Lembrete*:<input type="text" name="descricao" id="descricao" value="<?php echo $this->escape($tblembretes->Lembrete);?>"> </td>
+						</tr>
+						<tr>
+							<td>
+								<textarea name="lembretes" id="lembretes" cols="70"  rows="10" maxlength="600"><?php echo $this->escape($tblembretes->Lembrete);?></textarea>
+								<input type=hidden name="idPlanilha" value="<?php echo $this->escape($tblembretes->Contador);?>" /> 
+								<input type="submit" value=" " title=" Salvar " class="btn_salvar" />
+								<input type="submit" class="Close" src="<?php echo $this->baseUrl(); ?>/img/btn_cancelar.gif" name="name" value="Cancelar" />
+							</td>
+						</tr>
+						<?php foreach($this->lembretes as $tblembretes): ?>
+							<tr>
+								<td><?php echo $this->escape($tblembretes->dtlembrete);?></td>
+								<td><?php echo $this->escape($tblembretes->lembrete);?></td>
+								<td class="center"><input type="button" class="btn_alterar" title=" Alterar " value="" onclick="redirecionar('lembretes/alterarlembretes?pronac=<?php echo $lembretes->pronac; ?>');" /></td>
+      							<td class="center"><input type="button" class="btn_excluir" title=" Excluir " value="" onclick="redirecionar(lembretes/excluirlembretes?pronac=<?php echo $lembretes->pronac; ?>);" /></td>
+      						</tr>
+						<?php endforeach;?>
+					</table>
+					<table class="tabela">
+						<tr>
+					    	<td class="right"><a href="javascript:window.print()"><img src="<?php echo $this->baseUrl(); ?>/public/img/imprimir.gif" /></a></td>
+							<td class="left"><input type="button" class="btn_localizar" title=" Excluir " value=" " onclick="redirecionar(lembretes/localizarlembretes?pronac=<?php echo $lembretes->pronac; ?>');" /></td>
+						</tr>
+					</table>
+				</form>
+			</td>
+		</tr>
+	<?php endforeach; ?>
+</table>

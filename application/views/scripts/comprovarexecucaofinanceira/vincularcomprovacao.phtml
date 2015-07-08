@@ -1,0 +1,23 @@
+<?php
+$licitacaoHref          =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'licitacao')).'?idusuario='.$this->idusuario;
+$cotacaoHref            =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'cotacao')).'?idusuario='.$this->idusuario;
+$dispensaHref           =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'dispensa')).'?idusuario='.$this->idusuario;
+$contratoHref           =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'contrato')).'?idusuario='.$this->idusuario;
+?>
+<div id="miolo">
+    <fieldset>
+        <div>
+            Aten&ccedil;&atilde;o: Deseja incluir algum tipo de comprova&ccedil;&atilde; financeira para vincular ao Pagamento?
+        </div>
+        <br />
+        <div style="font-weight: bold; float: left;width: 300px;">
+            Comprovar Execu&ccedil;&atilde; Financeira:
+        </div>
+        <div style="float: left;width: 200px;">
+            <input type="radio" name="escolha" value="<?php echo $licitacaoHref;?>" /> Licita&ccedil;&atilde;o<br/>
+            <input type="radio" name="escolha" value="<?php echo $contratoHref;?>" />  Contrato<br/>
+            <input type="radio" name="escolha" value="<?php echo $cotacaoHref;?>" />   Cota&ccedil;&atilde;o<br/>
+            <input type="radio" name="escolha" value="<?php echo $dispensaHref;?>" />  Dispensa<br/>
+        </div>
+    </fieldset>
+</div>

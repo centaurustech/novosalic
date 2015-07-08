@@ -1,0 +1,149 @@
+<script>
+    function alerta(functionsim, functionnao){
+        $("#alerta").dialog({
+            resizable: false,
+            width:470,
+            height:160,
+            modal: true,
+            autoOpen:false,
+            buttons : {
+                'Não' : functionnao,
+                'Sim' : functionsim
+            }
+        });
+    }
+    var votacao =  setInterval(function(){verificainiciocnic()}, '2000');
+    
+        function verificainiciocnic(){
+        $.ajax({
+            async: true,
+            type: "post",
+            url: "<?php echo $this->url(array('controller' => 'gerenciarpautareuniao', 'action' => 'verificarcnic')); ?>",
+            data:{
+                verificacnic : true,
+                stPlenaria : '<?php echo $this->Plenaria['stPlenaria'] ?>'
+            },
+            success: function(data)
+            {
+                
+                if(data){
+                    if(!data.error){
+                        if(data.acao == 'reload'){
+                            $(".btn_salvar").addClass('sumir');
+                            window.location = '<?php echo $this->url(array('controller'=>'gerenciarpautareuniao','action'=>'gerenciaradministrativo'))?>';
+                        }
+                    }
+                }
+            }
+            ,dataType : 'json'
+        });
+    }
+    
+    $(document).ready(function(){
+        $("#erro").dialog({
+            resizable: false,
+            width:475,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            buttons : {
+                'ok' : function(){
+                    $(this).dialog('close');
+                }
+            }
+        });
+        $(".btn_salvar").click(function(){
+            var alterar = <?php echo $this->alterarvotante == true ? 1 : 0; ?>;
+            var cont = 0;
+            for(a=0; a<7; a++){
+                valida = 0;
+                $("input[name='votantes"+a+"']").each(function(){
+                    if($(this).attr('checked') == true){
+                        valida ++;
+                    }
+                });
+                if(valida == 0){
+                    $("#erro").html('Por favor selecione no m&iacute;nimo 7 conselheiros!');
+                    $("#erro").dialog('open');
+                    return false;
+                }
+            }
+            $(".votantes").each(function(){
+                if($(this).attr('checked') == true){
+                    $("#inputs").append("<input name='votantes[]' type='hidden' value='"+$(this).val()+"'/>");
+                    cont++;
+                }
+            });
+            if(alterar == true){
+                $("#alerta").html('J&aacute; existe votantes cadastrados, tem certeza que deseja alter&aacute;-los?')
+            }
+            else{
+                $("#alerta").html('Tem certeza que deseja inserir os votantes selecionado?')
+            }
+            alerta(function(){$("#salvarVotantes").submit();}, function(){$("#alerta").dialog('close')})
+            $("#alerta").dialog('open');
+        });
+    });
+</script>
+<?php
+include_once 'inc/menu.inc.php';
+?>
+<input id="idpronac" type="hidden"/>
+<div id="alerta"></div>
+<div id="tela"></div>
+<div id="telavotacao" title="Vota&ccedil;o"></div>
+<div id="erro"></div>
+
+<div id="conteudo">
+    <form id="salvarVotantes" action="<?php echo $this->url(array('controller' => 'gerenciarpautareuniao', 'action' => 'exibirvotantes')) ?>" method="post">
+        <table class="tabela">
+            <tr>
+                <th colspan="3">Selecione os votantes</th>
+            </tr>
+            <?php
+            $count = 0;
+            foreach ($this->votantes as $key => $votantes) {
+            ?>
+                <tr>
+                    <td colspan="3" style="font-weight: 600; font-size: 12pt;">&Aacute;rea Cultural: <?php echo $key; ?></td>
+                </tr>
+            <?php foreach ($votantes as $nomevotantes) {
+            ?>
+                    <tr>
+                        <td colspan="3" style="padding-left: 4em;"><label style="font-weight: normal;"><input type="radio" name="votantes<?php echo $count; ?>" class="votantes" value="<?php echo $nomevotantes['idagente'] ?>" <?php echo $nomevotantes['selecionado'] == 1 ? 'checked="checked"' : ''; ?>/> <?php echo $nomevotantes['conselheiro'] ?></label></td>
+                    </tr>
+            <?php } ?>
+            <?php $count++;
+            } ?>
+            <tr>
+                <th colspan="3">Membros Natos</th>
+            </tr>
+            <?php
+            if (count($this->membrosnatos) > 0) {
+                foreach ($this->membrosnatos as $membrosnatos) {
+ ?>
+                    <tr>
+                        <td colspan="3" style="padding-left: 4em;">
+                            <input type="checkbox" name="votantes[]" value="<?php echo $membrosnatos['idAgente'] ?>" <?php echo $membrosnatos['selecionado'] == 1 ? 'checked="checked"' : ''; ?>/> <?php echo $membrosnatos['nome'] ?>
+                        </td>
+                    </tr>
+            <?php
+                }
+            } else {
+            ?>
+                <tr>
+                    <td colspan="3" style="text-align: center; font-size: 14pt;">
+                        N&atilde;o existe MEMBROS NATOS cadastrados
+                    </td>
+                </tr>
+            <?php } ?>
+        </table>
+        <div id="inputs"></div>
+        <p class="centro">
+            <input type="button" class="btn_salvar" name="salvar"/>
+        </p>
+    </form>
+</div>
+<div id="rodapeConteudo"><span></span></div>
+
+<br clear="all" />

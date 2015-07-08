@@ -1,0 +1,588 @@
+<?php
+/**
+ * Busca Agentes
+ * @author Equipe RUP - Politec
+ * @since 28/04/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.manteragentes
+ * @copyright ? 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+
+
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->baseUrl(); ?>" title="Início">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'mantercalendariocnic', 'action' => 'index')); ?>">Calendário CNIC</a></li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<script>
+$(function()
+    {
+        $.datepicker.regional['pt-BR'] = {
+            closeText: 'Fechar',
+            prevText: '&#x3c;Anterior',
+            nextText: 'Pr&oacute;ximo&#x3e;',
+            currentText: 'Hoje',
+            monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+            dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            weekHeader: 'Sm',
+            dateFormat: 'dd/mm/yy',
+            firstDay: 0,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: ''};
+        $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+        $("#DtInicio").datepicker($.datepicker.regional['pt-BR']);
+        $("#DtFinal").datepicker($.datepicker.regional['pt-BR']);
+        $("#DtFechamento").datepicker($.datepicker.regional['pt-BR']);
+    });
+
+
+
+
+function addTodos() // adiciona todos os options da esquerda para direita
+	{
+		visao       = document.getElementById("visao"); // select de origem
+		visaoAgente = document.getElementById("visaoAgente"); // select de destino
+		for (i = 0; i < visao.length; i++) // varre todo o option de origem
+		{
+			var novoOption = document.createElement("option"); // cria um novo option
+			novoOption.text  = visao.options[i].text; // texto do option
+			novoOption.value = visao.options[i].value; // valor do option
+			visaoAgente.options.add(novoOption); // adiciona o novo option no select de destino
+			visao.remove(i); // remove o option do select de origem
+			i--;
+		}
+	} // fecha funç?o addTodos()
+
+
+	function delTodos() // deleta todos os options da direita
+	{
+		visao       = document.getElementById("visao"); // select de origem
+		visaoAgente = document.getElementById("visaoAgente"); // select de destino
+		for (i = 0; i < visaoAgente.length; i++) // varre todo o option de origem
+		{
+			if (visaoAgente.options[i].value != "144")
+			{
+				var novoOption = document.createElement("option"); // cria um novo option
+				novoOption.text  = visaoAgente.options[i].text; // texto do option
+				novoOption.value = visaoAgente.options[i].value; // valor do option
+				visao.options.add(novoOption); // adiciona o novo option no select de destino
+				visaoAgente.remove(i); // remove o option do select de origem
+				i--;
+			}
+		}
+	} // fecha funç?o delTodos()
+
+
+	function addSelecionado() // adiciona o option selecionado da esquerda para direita
+	{
+		visao       = document.getElementById("visao"); // select de origem
+		visaoAgente = document.getElementById("visaoAgente"); // select de destino
+		for (i = 0; i < visao.length; i++) // varre todo o option de origem
+		{
+			if (visao.options[i].selected == true) // caso o option esteja selecionado
+			{
+				var novoOption = document.createElement("option"); // cria um novo option
+				novoOption.text  = visao.options[i].text; // texto do option
+				novoOption.value = visao.options[i].value; // valor do option
+				visaoAgente.options.add(novoOption); // adiciona o novo option no select de destino
+				visao.remove(i); // remove o option do select de origem
+				i--;
+			}
+		}
+	} // fecha funç?o addSelecionado()
+
+
+	function delSelecionado() // deleta o option selecionado da direita
+	{
+		visao       = document.getElementById("visao"); // select de origem
+		visaoAgente = document.getElementById("visaoAgente"); // select de destino
+		for (i = 0; i < visaoAgente.length; i++) // varre todo o option de origem
+		{
+			if (visaoAgente.options[i].selected == true && visaoAgente.options[i].value != "144") // caso o option esteja selecionado
+			{
+				var novoOption = document.createElement("option"); // cria um novo option
+				novoOption.text  = visaoAgente.options[i].text; // texto do option
+				novoOption.value = visaoAgente.options[i].value; // valor do option
+				visao.options.add(novoOption); // adiciona o novo option no select de destino
+				visaoAgente.remove(i); // remove o option do select de origem
+				i--;
+			}
+		}
+	} // fecha funç?o delSelecionado()
+
+
+	function selecionarOptions() // funç?o para selecionar todos os options antes do envio do formulário
+	{
+		visaoAgente = document.getElementById("visaoAgente"); // select de destino
+		for (i = 0; i < visaoAgente.length; i++) // varre todo o option de origem
+		{
+			visaoAgente.options[i].selected = true; // adiciona o novo option no select de destino
+		}
+		document.getElementById('form').submit();
+	} // fecha funç?o selecionarOptions()
+
+
+
+
+
+
+
+
+
+
+function adicionar_nova_reuniao()
+{
+
+		// modal com os dados do dirigente
+		$("#modalNovaReuniao").dialog("destroy");
+		$("#modalNovaReuniao").dialog
+		({
+			width:500,
+			height:420,
+			EscClose:false,
+			modal:true
+			,buttons:
+			{
+				'Fechar':function()
+				{
+					$(this).dialog('close'); // fecha a modal
+					 buscarDirigentes();
+				}
+			}
+		});
+		$('.ui-dialog-titlebar-close').remove();
+
+} // fecha funç?o adicionar_dirigente_agente()
+
+
+
+
+function Alterar_reuniao(idNrReuniao,NrReuniao,DtInicio,DtFinal,DtFechamento,Mecanismo)
+{
+    
+    if(idNrReuniao > 1){
+        document.getElementById("modalAlterarReuniao").title = "ALTERAR REUNI&Atilde;O";
+        document.getElementById("idNrReuniao").value = idNrReuniao;
+        document.getElementById("NrReuniao").value = NrReuniao;
+        document.getElementById("DtInicio").value = DtInicio;
+        document.getElementById("DtFinal").value = DtFinal;
+        document.getElementById("DtFechamento").value = DtFechamento;
+        if(Mecanismo == "Mecenato"){
+            document.getElementById("Mecanismo"). checked = "checked";
+        }else{
+            document.getElementById("FNC"). checked = "checked";
+        }
+    }else{
+        //alert(document.getElementById("modalAlterarReuniao").title);
+        document.getElementById("modalAlterarReuniao").title = "NOVA REUNI&Atilde;O";
+        document.getElementById("idNrReuniao").value = 0;
+        document.getElementById("idNrReuniao").value = "";
+        document.getElementById("NrReuniao").value = "";
+        document.getElementById("DtInicio").value = "";
+        document.getElementById("DtFinal").value = "";
+        document.getElementById("DtFechamento").value = "";
+    }
+
+
+		// modal com os dados do dirigente
+		$("#modalAlterarReuniao").dialog("destroy");
+		$("#modalAlterarReuniao").dialog
+		({
+			width:500,
+			height:420,
+			EscClose:false,
+			modal:true
+			,buttons:
+			{
+				'Fechar':function()
+				{
+					$(this).dialog('close'); // fecha a modal
+					 buscarDirigentes();
+				}
+			}
+		});
+		$('.ui-dialog-titlebar-close').remove();
+
+} // fecha funç?o adicionar_dirigente_agente()
+
+
+
+
+
+function Montar_Consulta()
+{
+
+		// modal com os dados do dirigente
+		$("#modalMontarConsulta").dialog("destroy");
+		$("#modalMontarConsulta").dialog
+		({
+			width:500,
+			height:420,
+			EscClose:false,
+			modal:true
+			,buttons:
+			{
+				'Fechar':function()
+				{
+					$(this).dialog('close'); // fecha a modal
+					 buscarDirigentes();
+				}
+			}
+		});
+		$('.ui-dialog-titlebar-close').remove();
+
+} // fecha funç?o adicionar_dirigente_agente()
+
+
+function gerar_pdf(formato){
+document.getElementById("html").value = "<html><style>table {width:798px;} table td { background-color:#EEE; padding:3px; text-align:center}table th { background-color:#CCC; padding:3px; text-align:center}</style><center><h2>Calendário CNIC</h2></center>"
+document.getElementById("html").value = document.getElementById("html").value + document.getElementById("miolo").innerHTML+"</html>";
+document.getElementById("formato").value = formato;
+document.formulario1.submit();
+
+}
+
+function validarForm(){
+
+     if(document.getElementById("NrReuniao").value == ""){
+         alert("Numero da Reuni?o é um campo de preenchimento obrigatório");
+     }else if(document.getElementById("DtInicio").value == "" || document.getElementById("DtInicio").value == "00/00/0000"){
+         alert("Data Início é um campo de preenchimento obrigatório");
+     }else if(document.getElementById("DtFinal").value == "" || document.getElementById("DtFinal").value == "00/00/0000"){
+        alert("Data Final é um campo de preenchimento obrigatório");
+     }else if(document.getElementById("DtFechamento").value == "" || document.getElementById("DtFechamento").value == "00/00/0000"){
+        alert("Data Fechamento é um campo de preenchimento obrigatório");
+     }else if(document.getElementById("Mecanismo"). checked == "checked" && document.getElementById("FNC"). checked == "checked"){
+        alert("Mecanismo é um campo de preenchimento obrigatório");
+     }else{
+     document.ALTERAR_REUNIAO.submit();
+     }
+}
+
+
+</script>
+<form name="formulario1"  class="sumir" method="post" action="<?php echo $this->url(array('controller' => 'mantercalendariocnic', 'action' => 'gerarpdf')); ?>" >
+    <input type="hiddem" id="html" name="html" value="">
+    <input type="hiddem" id="formato" name="formato" value="">
+
+</form>
+
+
+<div id="modalAlterarReuniao" title="ALTERAR REUNI&Atilde;O" class="sumir">
+                    <div id="consolidacao" style="width: 100%;">
+                    <form method="post" name="ALTERAR_REUNIAO" action="<?php echo $this->url(array('controller' => 'mantercalendariocnic', 'action' => 'reuniao')); ?>">
+                        <input type="hidden" name="idNrReuniao" id="idNrReuniao" value="">
+                <table  class="tabela">
+                    <tr>
+                        <td width="35%" >Numero da Reuni&atilde;o</td>
+                        <td>
+                            <div class="left"></div>
+                            <input type="text" name="NrReuniao" id="NrReuniao" class="input_simples w200" >
+                            <div class="right"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Data Início</td>
+                        <td><input type="text" name="DtInicio" id="DtInicio" class="input_simples w200" maxlength="10" value="" onkeyup="mascara(this, format_data);" onclick="limpar_campo(this, '00/00/0000');" onblur="restaurar_campo(this, '00/00/0000');" type="text"></td>
+                    </tr>
+                    <tr>
+                        <td>Data Final</td>
+                        <td><input type="text" name="DtFinal" id="DtFinal" class="input_simples w200" maxlength="10" value="" onkeyup="mascara(this, format_data);" onclick="limpar_campo(this, '00/00/0000');" onblur="restaurar_campo(this, '00/00/0000');" type="text"></td>
+                    </tr>
+                    <tr>
+                        <td>Data Fechamento</td>
+                        <td><input type="text" name="DtFechamento" id="DtFechamento" class="input_simples w200" maxlength="10" value="" onkeyup="mascara(this, format_data);" onclick="limpar_campo(this, '00/00/0000');" onblur="restaurar_campo(this, '00/00/0000');" type="text"></td>
+                    </tr>
+                    <tr>
+                        <td>Mecanísmo</td>
+                        <td><input type="radio" name="Mecanismo" id="Mecanismo" value="1">&ensp;Mecenato&ensp;&ensp;&ensp;<input type="radio" name="Mecanismo" id="FNC" value="2">&ensp;FNC</td>
+                    </tr>
+                </table>
+                <table class="tabela">
+                    <tr>
+                        <td colspan="2">
+                            <div class="botao_texto">
+                                <a class="salvar" href="#" title="Salvar" onclick="validarForm()">Confirmar</a>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                </form>
+                </div>
+</div>
+
+<div id="modalMontarConsulta" title="MONTAR CONSULTA" class="sumir">
+            <form class="form" id="form" method="post" action="<?php echo $this->url(array('controller' => 'mantercalendariocnic', 'action' => 'index')); ?>">
+
+
+
+                            <table class="tabela">
+                                    <tr>
+                                            <th colspan="3">Colunas</th>
+                                    </tr>
+                                    <tr>
+                                            <td class="centro" valign="top">
+                                                    <label for="visao"> </label>
+                                                    <select class="select w150" name="colunas[]" id="visao" multiple="multiple" size="7">
+
+                                                            <option value="N.Reuniao">N. Reuni?o</option>
+                                                            <option value="Dt.Inicio">Dt. Início </option>
+                                                            <option value="Dt.Final">Dt. Final</option>
+                                                            <option value="Dt.Fechamento">Dt. Fechamento</option>
+                                                            <option value="Mecanismo">Mecanismo </option>
+                                                            <option value="Status">Status</option>
+                                                    </select>
+                                            </td>
+                                            <td class="centro" valign="middle">
+                                                    <p><input class="btn" value=" &gt;&gt;  " onkeypress=" " onclick="addTodos();" title="Adicionar todas as vis?es para o Agente" type="button"></p>
+                                                    <p><input class="btn" value="  &gt;  " onkeypress=" " onclick="addSelecionado();" title="Adicionar a vis?o selecionada para o Agente" type="button"></p>
+                                                    <p><input class="btn" value="  &lt;  " onkeypress=" " onclick="delSelecionado();" title="Remover a vis?o selecionada do Agente" type="button"></p>
+                                                    <p><input class="btn" value=" &lt;&lt;  " onkeypress=" " onclick="delTodos();" title="Remover todas as vis?es do Agente" type="button"></p>
+                                            </td>
+                                            <td class="centro" valign="top">
+                                                    <label for="visaoAgente"> </label>
+                                                    <select class="select w150" name="colunasFim[]" id="visaoAgente" multiple="multiple" size="7">
+                                                    </select>
+                                            </td>
+                                    </tr>
+
+                            </table>
+
+                            <table class="tabela">
+                                    <tbody><tr>
+                                            <td class="centro">
+                                                    <input class="btn_montarconsulta" title=" Salvar " onclick="selecionarOptions(); return false;" onkeypress=" " value=" " type="submit">
+                                            </td>
+                                    </tr>
+                            </tbody></table>
+
+                            <br>
+
+                    </form>
+</div>
+
+
+<div id="tela"></div>
+
+<div id="titulo"><div>Reuni&atilde;o da CNIC<span class="voltar"><a href="#">Voltar</a></span></div></div></form><div id="conteudo">
+    <div id="cronometro" style="display: none; font-size: 2em; margin-top: 0.5em; text-align: center; color: red;" >
+        Tempo restante para início da Plenária = <span id="minu" ></span>' : <span id="seg" ></span>"
+    </div>
+
+    <div id="miolo">
+
+<?php $ordemlista = $this->ordemlista;?>
+        <div id="pautaplenaria">
+            <table class="tabela">
+                <tr class="titulo_tabela">
+                <?php for($i=0;$i<count($this->ordem);$i++){
+                    if(strcmp ("N.Reuniao", $this->ordem[$i]) == 0){ ?>
+                    <th>
+                        <?php if($ordemlista == "DESC"){
+                            echo '<a href="'.$this->url(array('controller' => 'mantercalendariocnic', 'action' => 'index')).'?campo=NrReuniao&ordem=ASC">';
+                        }else{
+                            echo '<a href="'.$this->url(array('controller' => 'mantercalendariocnic', 'action' => 'index')).'?campo=NrReuniao&ordem=DESC">';
+                        }?>
+                                N. Reuni&atilde;o
+                                
+                            </a>
+                    </th>
+                <?php }elseif(strcmp ("Dt.Inicio", $this->ordem[$i]) == 0){ ?>
+                    <th>
+                        <?php if(strcmp($ordemlista, "DESC")==0){ 
+                            echo '<a href="'.$this->url(array('controller' => 'mantercalendariocnic', 'action' => 'index')).'?campo=DtInicio&ordem=ASC">';
+                        }else{
+                            echo '<a href="'.$this->url(array('controller' => 'mantercalendariocnic', 'action' => 'index')).'?campo=DtInicio&ordem=DESC">';
+                         } ?>
+                                Dt. In&iacute;cio
+                            </a>
+                    </th>
+                <?php }elseif(strcmp ("Dt.Final", $this->ordem[$i]) == 0){ ?>
+                    <th>
+                        <?php if(strcmp($ordemlista, "DESC") == 0){ 
+                            echo '<a href="'.$this->url(array('controller' => 'mantercalendariocnic', 'action' => 'index')).'?campo=DtFinal&ordem=ASC">';
+                         }else{ 
+                            echo '<a href="'.$this->url(array('controller' => 'mantercalendariocnic', 'action' => 'index')).'?campo=DtFinal&ordem=DESC">';
+                         } ?>
+                                Dt. Final
+                            </a>
+                    </th>
+                <?php }elseif(strcmp ("Dt.Fechamento",$this->ordem[$i]) == 0){ ?>
+                    <th>
+                        <?php if(strcmp($ordemlista, "DESC")==0){ 
+                            echo '<a href="'.$this->url(array('controller' => 'mantercalendariocnic', 'action' => 'index')).'?campo=DtFechamento&ordem=ASC">';
+                        }else{ 
+                            echo '<a href="'.$this->url(array('controller' => 'mantercalendariocnic', 'action' => 'index')).'?campo=DtFechamento&ordem=DESC">';
+                        } ?>
+                                Dt. Fechamento
+                            </a>
+                    </th>
+                <?php }elseif(strcmp ("Mecanismo", $this->ordem[$i]) == 0){ ?>
+                    <th>
+                        <?php if(strcmp($ordemlista, "DESC") == 0){
+                            echo '<a href="'.$this->url(array('controller' => 'mantercalendariocnic', 'action' => 'index')).'?campo=Mecanismo&ordem=ASC">';
+                        }else{
+                            echo '<a href="'.$this->url(array('controller' => 'mantercalendariocnic', 'action' => 'index')).'?campo=Mecanismo&ordem=DESC">';
+                        } ?>
+                                Mecanismo
+                            </a>
+                    </th>
+               <?php }elseif(strcmp ("Status", $this->ordem[$i]) == 0){ ?>
+                    <th>
+                        <?php if(strcmp($ordemlista, "DESC") == 0){ 
+                            echo '<a href="'.$this->url(array('controller' => 'mantercalendariocnic', 'action' => 'index')).'?campo=Status&ordem=ASC">';
+                         }else{ 
+                            echo '<a href="'.$this->url(array('controller' => 'mantercalendariocnic', 'action' => 'index')).'?campo=Status&ordem=DESC">';
+                         } ?>
+                                Status
+                            </a>
+                    </th>
+                <?php } else { ?>
+                    <th>
+                        ??? <?php echo $this->ordem[$i] ?>
+                    </th>
+                <?php }
+                }
+                ?>
+                    <th>
+                        A&ccedil;&atilde;o
+                    </th>
+                 </tr>
+
+                 <?php foreach ($this->reunioies as $rs){ ?>
+
+                 <tr>
+                 <?php for($i=0;$i<count($this->ordem);$i++){
+                     if(strcmp ("N.Reuniao", $this->ordem[$i]) == 0){ ?>
+                    <td align="center"><?php echo $rs->NrReuniao ?></td>
+                    <?php }else if(strcmp ("Dt.Inicio", $this->ordem[$i]) == 0){ ?>
+                    <td class="centro"><?php echo ConverteData(strtotime($rs->DtInicio),5); ?></td>
+                    <?php }else if(strcmp ("Dt.Final", $this->ordem[$i]) == 0){ ?>
+                    <td class="centro"><?php echo ConverteData(strtotime($rs->DtFinal),5); ?></td>
+                    <?php }else if(strcmp ("Dt.Fechamento",$this->ordem[$i]) == 0){ ?>
+                    <td class="centro"><?php echo ConverteData(strtotime($rs->DtFechamento),5); ?></td>
+                    <?php }else if(strcmp ("Mecanismo", $this->ordem[$i]) == 0){ ?>
+                    <td class="centro"><?php echo $rs->str_Mecanismo ?></td>
+                    <?php }else if(strcmp ("Status", $this->ordem[$i]) == 0){ ?>
+                    <td class="centro"><?php if($rs->stEstado == 1){echo "Fechado";} else {echo "Aberto";} ?></td>
+                    <?php } else { ?>
+                    <td>
+                        ??? <?php echo $this->ordem[$i] ?>
+                    </td>
+                <?php }
+                }
+                ?>
+                    <td class="centro"><input class="btn_editar" type="button" onclick="Alterar_reuniao(
+                    '<?php echo $rs->idNrReuniao; ?>',
+                    '<?php echo $rs->NrReuniao; ?>',
+                    '<?php echo ConverteData(strtotime($rs->DtInicio),5); ?>',
+                    '<?php echo ConverteData(strtotime($rs->DtFinal),5); ?>',
+                    '<?php echo ConverteData(strtotime($rs->DtFechamento),5); ?>',
+                    '<?php echo $rs->str_Mecanismo; ?>'
+                    )" ></td>
+                </tr>
+                <?php } ?>
+
+               
+
+                </table>
+
+<center>
+<?php
+        echo $this->paginacao['inicio']." a ";
+        echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+        echo " de ". $this->paginacao['total'];
+?>
+</center>
+
+        <div id="miolo"> <!-- ========== INICIO MIOLO IDENTIFICACAO ========== -->
+        <table class="tabela" style="width: 100%;" border="0" cellpadding="0" cellspacing="0">
+            <tbody><tr>
+                <td align="center">
+                    <?php if($this->paginacao['pag']>1){ ?>
+
+                          
+                    <input style="width: 88px;" lass="btn_inicio" id="btn_inicio" type="button"
+                               class="btn_inicio"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'mantercalendariocnic', 'action' => 'index')).'?pag=1'; ?>'"
+                                >
+                         <?php
+                           }
+                          ?>
+
+                    <input style="width: 88px;" id="btn_p_anterior" type="button"
+                          <?php if($this->paginacao['pag']<=1){ ?>
+                           class="btn_p_anterior-off"
+                          <?php
+                           }else{
+                          ?>
+                               class="btn_p_anterior"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'mantercalendariocnic', 'action' => 'index')).'?pag='.($this->paginacao['pag'] - 1); ?>'"
+                          <?php
+                           }
+                          ?>
+                          >
+                    <input style="width: 88px;"  id="btn_p_proximo" type="button"
+                            <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']){ ?>
+                           class="btn_p_proximo-off"
+                          <?php
+                           }else{
+                          ?>
+                               class="btn_p_proximo"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'mantercalendariocnic', 'action' => 'index')).'?pag='.($this->paginacao['pag'] + 1); ?>'"
+                          <?php
+                           }
+                          ?>
+                            >
+                    <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']){ ?>
+                    <input style="width: 88px;" class="btn_ultimo" id="btn_ultimo" type="button"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'mantercalendariocnic', 'action' => 'index')).'?pag='.($this->paginacao['totalPag']); ?>'"
+                           >
+                    <?php } ?>
+                    <input style="width: 45px;" class="btn_pdf" id="btn_pdf" type="button" onclick="gerar_pdf('pdf');">
+                    <input style="width: 45px;" class="btn_xls" id="btn_xml" type="button" onclick="gerar_pdf('excel');">
+                    <input style="width: 88px;" class="btn_montarconsulta" id="btn_montarconsulta" onclick="Montar_Consulta();" type="button">
+                    <input style="width: 88px;" class="btn_novo" id="btn_novo" onclick="Alterar_reuniao(-1);" type="button">
+                </td>
+            </tr>
+        </tbody>
+        </table>
+    </div>
+
+            </div>
+            
+        
+    </div>
+
+</div><!-- final: conte??do principal #conteudo -->
+
+<!-- in?­cio: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+
+<br clear="all" />
+
+
+
+
+</body>
+</html>

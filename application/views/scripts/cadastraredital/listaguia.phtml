@@ -1,0 +1,78 @@
+<?php 
+$operacoesCustomizavelHref  =   $this->url(array('controller' => 'cadastraredital', 'action' => 'operacoescustomizavel'));
+$cadastrarquestionarioHref  =   $this->url(array('controller' => 'cadastraredital', 'action' => 'cadastrarquestionario'));
+
+if(is_object($this->listaGuiasEdital) and count($this->listaGuiasEdital)>0){
+?>
+
+<table class="msgInfo tabela">
+    <tr>
+        <th style="width: 100%;">
+            &nbsp;H&aacute; <?php echo count($this->listaGuiasEdital);?> guia(as) adicionada(s)!
+        </th>
+    </tr>
+</table>
+<div id="dialogQuestionario" title="Cadastro Question&aacute;rio"></div>
+<table class="tabelaSemLateralQuestionario tabela">
+    <tr>
+        <th colspan="3"> Guias adicionadas </th>
+    </tr>
+    <?php 
+        foreach ($this->listaGuiasEdital as $Guias){ 
+        ?>
+        <tr>
+            <td style="width: 90%;">
+                <a class="cadQuestionario" href="<?php echo $cadastrarquestionarioHref;?>" nrFormDocumento="<?php echo $Guias->nrFormDocumento;  ?>" nrVersaoDocumento="<?php echo $Guias->nrVersaoDocumento;?>" idEdital="<?php echo $Guias->idEdital;?>" idUsuario="<?php echo $this->idUsuario;?>"><?php echo utf8_encode($Guias->nmFormDocumento);?></a>
+            </td>
+            <td class="centro">
+                <img class="alterar" nrFormDocumento="<?php echo $Guias->nrFormDocumento;?>"  nrVersaoDocumento="<?php echo $Guias->nrVersaoDocumento;?>" src="<?php echo $this->baseUrl(); ?>/public/img/botaoEditarNovo.gif" style="cursor: pointer;" alt="Alterar"/>
+            </td>
+            <td class="centro">
+                <img class="excluir" nrFormDocumento="<?php echo $Guias->nrFormDocumento;?>"  nrFormDocURL="<?php echo $_GET['nrFormDocumento'];?>" nrVersaoDocumento="<?php echo $Guias->nrVersaoDocumento;?>" idEdital="<?php echo $Guias->idEdital;?>" idUsuario="<?php echo $this->idUsuario;?>" src="<?php echo $this->baseUrl(); ?>/public/img/botaoExcluir.png" style="cursor: pointer;" alt="Excluir"/>
+            </td>
+        </tr>
+        <?php
+
+    }
+    ?>
+</table>
+<?php
+}
+?>
+<script type="text/javascript">
+    $(function(){
+        $("#dialogQuestionario").dialog({
+                    resizable: false,
+                    width:800,
+                    height:500,
+                    modal: true,
+                    autoOpen:false
+            });
+    });
+
+    $('.alterar').click(function(){
+        var dados={nrFormDocumento:$(this).attr('nrFormDocumento'),nrVersaoDocumento:$(this).attr('nrVersaoDocumento'),operacao:'pesquisa'};
+        $.post('<?php echo $operacoesCustomizavelHref;?>',dados, function(data){
+            //alert(data);
+            mudancaDeOperacaoAlt(data);
+            //
+        }, 'json');
+    });
+    $('.excluir').click(function(){
+        mudancaDeOperacaoInc();
+        $("#dialog-excluir").dialog('open');
+        $("#dialog-excluir").attr('nrFormDocumento',$(this).attr('nrFormDocumento'));
+        $("#dialog-excluir").attr('nrFormDocURL',$(this).attr('nrFormDocURL'));
+        $("#dialog-excluir").attr('nrVersaoDocumento',$(this).attr('nrVersaoDocumento'));
+        $("#dialog-excluir").attr('idEdital',$(this).attr('idEdital'));
+        $("#dialog-excluir").attr('idUsuario',$(this).attr('idUsuario'));
+    });
+    $('.cadQuestionario').click(function(){
+        var dados={nrFormDocumento:$(this).attr('nrFormDocumento'),nrVersaoDocumento:$(this).attr('nrVersaoDocumento'),idEdital:$(this).attr('idEdital'),idUsuario:$(this).attr('idUsuario')};
+        $.post($(this).attr('href'),dados, function(data){
+            $("#dialogQuestionario").dialog('open');
+            $("#dialogQuestionario").html(data);
+        });
+        return false;
+    });
+</script>

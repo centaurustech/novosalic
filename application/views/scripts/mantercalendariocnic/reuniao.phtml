@@ -1,0 +1,116 @@
+<link type="text/css" rel="stylesheet" media="all" href="../css/geral.css" />
+        <link type="text/css" rel="stylesheet" media="all" href="../css/chrome.css" />
+        <link type="text/css" rel="stylesheet" media="screen" href="../css/recursos/importar.css" />
+        <link type="text/css" rel="stylesheet" media="all" href="../css/ajustes.css" />
+        <link type="text/css" rel="stylesheet" media="all" href="../css/botoes.css" />
+        <link type="text/css" rel="stylesheet" media="print" href="../css/estilo_print.css" />
+        <link type="text/css" rel="stylesheet" media="all" href="../css/OrderTabela.css" />
+
+        <script language="javascript" type="text/javascript" src="../js/jquery-1.4.2.min.js"></script>
+<script language="javascript" type="text/javascript" src="../scripts/script_sem_menu.js"></script>
+
+<noscript>
+<link type="text/css" rel="stylesheet" media="all" href="../css/noscript.css" />
+</noscript>
+<!-- Jquery -->
+<link type="text/css" href="../css/custom-theme/jquery-ui-1.8.2.custom.css" rel="stylesheet" />
+<script type="text/javascript" src="../js/jquery-ui-1.8.2.custom.min.js"></script>
+
+<style type="text/css">
+/*demo page css*/
+.demoHeaders { margin-top: 2em; }
+#dialog_link {padding: .4em 1em .4em 20px;text-decoration: none;position: relative;}
+#dialog_link span.ui-icon {margin: 0 5px 0 0;position: absolute;left: .2em;top: 50%;margin-top: -8px;}
+ul#icons {margin: 0; padding: 0;}
+ul#icons li {margin: 2px; position: relative; padding: 4px 0; cursor: pointer; float: left;  list-style: none;}
+ul#icons span.ui-icon {float: left; margin: 0 4px;}
+</style>
+
+<!-- Manter Agentes -->
+<link href="../css/manteragentes.css" rel="stylesheet" type="text/css"/>
+<link href="../css/gerenciarpautareuniao.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="../js/manteragentes.js"></script>
+<script type="text/javascript" src="../js/ajax.js"></script>
+<script type="text/javascript" src="../js/scripts.js"></script>
+<script type="text/javascript" src="../js/json.js"></script>
+<script type="text/javascript" src="../js/proponentes.js"></script>
+
+<!-- Editor de Html -->
+<script type="text/javascript" src="../js/jquery.wysiwyg.min.js"></script>
+<link rel="stylesheet" type="text/css" href="../css/jquery.wysiwyg.css"/>
+
+<!-- Realizar Análise Projeto -->
+<script type="text/javascript" src="../js/realizaranaliseprojeto.js"></script>
+<script type="text/javascript" src="../js/openwysiwyg/wysiwyg.js"></script>
+
+<link type="text/css" rel="stylesheet" media="screen" href="../css/recursos/importar.css" />
+<script language="javascript" type="text/javascript" src="../scripts/fg.menu.js"></script>
+<script src='../js/jquery.MultiFile.js' type="text/javascript" language="javascript"></script>
+
+<script>
+        $(function()
+    {
+        $.datepicker.regional['pt-BR'] = {
+            closeText: 'Fechar',
+            prevText: '&#x3c;Anterior',
+            nextText: 'Pr&oacute;ximo&#x3e;',
+            currentText: 'Hoje',
+            monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+            dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            weekHeader: 'Sm',
+            dateFormat: 'dd/mm/yy',
+            firstDay: 0,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: ''};
+        $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+        $("#data_inicio").datepicker($.datepicker.regional['pt-BR']);
+        $("#data_final").datepicker($.datepicker.regional['pt-BR']);
+        $("#data_Fechamento").datepicker($.datepicker.regional['pt-BR']);
+    });
+
+</script>
+
+
+<div id="consolidacao" style="width: 100%;">
+    <form>
+<table  class="tabela">
+    <tr>
+        <td width="35%" >Numero da Reunião</td>
+        <td>
+            <div class="left"></div>
+            <input type="text" name="numero" class="input_simples w200" >
+            <div class="right"></div>
+        </td>
+    </tr>
+    <tr>
+        <td>Data Início</td>
+        <td><input type="text" name="data_inicio" id="data_inicio" class="input_simples w200" maxlength="10" value="" onkeyup="mascara(this, format_data);" onclick="limpar_campo(this, '00/00/0000');" onblur="restaurar_campo(this, '00/00/0000');" type="text"></td>
+    </tr>
+    <tr>
+        <td>Data Final</td>
+        <td><input type="text" name="data_final" id="data_final" class="input_simples w200" maxlength="10" value="" onkeyup="mascara(this, format_data);" onclick="limpar_campo(this, '00/00/0000');" onblur="restaurar_campo(this, '00/00/0000');" type="text"></td>
+    </tr>
+    <tr>
+        <td>Data Fechamento</td>
+        <td><input type="text" name="data_Fechamento" id="data_Fechamento" class="input_simples w200" maxlength="10" value="" onkeyup="mascara(this, format_data);" onclick="limpar_campo(this, '00/00/0000');" onblur="restaurar_campo(this, '00/00/0000');" type="text"></td>
+    </tr>
+    <tr>
+        <td>Mecanísmo</td>
+        <td><input type="radio" name="mecanismo" value="Mecenato">&ensp;Mecenato&ensp;&ensp;&ensp;<input type="radio" name="mecanismo" value="FNC">&ensp;FNC</td>
+    </tr>
+</table>
+<table class="tabela">
+    <tr>
+        <td colspan="2">
+            <div class="botao_texto">
+		<a class="salvar" href="#" title="Salvar" onclick="#">Confirmar</a>
+            </div>
+        </td>
+    </tr>
+</table>
+</form>
+</div>

@@ -1,0 +1,35 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#conteudoXLS').val($('#conteudoImprimivel').html());
+        $('#formGerarXls').submit();
+    });
+</script>
+<form method="POST" id="formGerarXls" name="formGerarXls" action="<?php echo $this->url(array('controller' => 'relatorio', 'action' => ($this->tipo == 'xls')?'gerar-xls':'html2-pdf' )); ?>" style="display:none">
+    <textarea name="html" id="conteudoXLS"></textarea>
+</form>
+
+<div class="conteudoImprimivel" id="conteudoImprimivel" style="display:none">
+<table class="tabela" width="100%" align="center">
+    <thead>    	
+	        <tr>
+	            <th align="center" valign="middle">Regi&atilde;o</th>
+	            <th align="center" valign="middle">UF</th>
+	            <th align="center" valign="middle">Cidade</th>
+	            <th align="center" valign="middle">Qtde</th>
+	            <th align="center" valign="middle">Vl. Convenio</th>
+	        </tr>
+        </thead>
+        <tbody class="registros">
+			<?php foreach($this->registros as $item): ?>        
+		        <tr>
+		            <td align="center" valign="top"><?php echo $item->Regiao?></td>
+		            <td align="center" nowrap="nowrap" valign="top"><?php echo $item->UF?></td>
+		            <td align="center" nowrap="nowrap" valign="top"><?php echo $item->Cidade?></td>
+		            <td align="center" valign="top"><?php echo $item->Qtde?></td>
+		            <td align="center" valign="top"><?php echo number_format($item->Custo, 2, ",", ".")?></td>
+		        </tr>        
+	        <?php endforeach; ?>
+        </tbody>
+</table>
+</div>
+

@@ -1,0 +1,358 @@
+<?php
+/**
+ * Alterar Projeto
+ * @author Equipe RUP - Politec
+ * @since 15/01/2011
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.alterarprojeto
+ * @copyright ? 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+<style type="text/css">
+    #lista{
+        display: none;
+    }
+    .error{
+        color: red;
+    }
+    #load{
+        width:100%;
+        height: 220px;
+        margin-bottom: -220px;
+        z-index: 1;
+        position: relative;
+        background-color: #d7ecc1;
+        opacity:0.85;
+        -moz-opacity: 0.85;
+        filter: alpha(opacity=85);
+        display: none;
+    }
+    .loading{
+        width: 100%;
+        text-align: center;
+
+    }
+</style>
+
+<?php
+//if(isset($this->idPreProjeto)){
+include_once 'scripts/distribuirprojetos/inc/menu.inc.php';
+//}
+?>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''), '', true); ?>" title="Ir para Página Inicial">Início</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'distribuirprojeto', 'action' => ''), '', true); ?>" title="Ir para Distribuir Projeto">Distribuir Projeto</a></li>
+        <li class="last">Redistribuir Projeto</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== BUTTON VOLTAR ========== -->
+<div id="titulo">
+    <div>Redistribuir projetos <span class="voltar"><a href="javascript:voltar();" title="Página inicial">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== GRID NOME DA PROPOSTA ========== -->
+<script type="text/javascript">
+    function addavaliador(){
+        $('#ProjetosEmDistribuicao').html("");
+        $('#addAvaliadorForm').attr('action','<?php echo $this->url(array('controller' => 'distribuirprojetos', 'action' => 'redistribuirprojeto'))."?acao=add"; ?>');
+        jqAjaxForm(document.getElementById("addAvaliadorForm"), "ProjetosEmDistribuicao");
+    }
+
+    function listaprojetos(){
+        jqAjaxForm(document.getElementById("addAvaliadorForm"), "ProjetosEmDistribuicao");
+    }
+
+    function removedistribuicao(idDistribuicao){
+        $('#ProjetosEmDistribuicao').html("");
+        $('#addAvaliadorForm').attr('action','<?php echo $this->url(array('controller' => 'distribuirprojetos', 'action' => 'removedistribuicao'))."?idDistribuicao="; ?>'+idDistribuicao);
+        jqAjaxForm(document.getElementById("addAvaliadorForm"), "ProjetosEmDistribuicao");
+    }
+
+    function reavaliar(){
+        $('#distribuir').html('<center><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" alt="carregando"></center>');
+        $('#projetos').attr('action','<?php echo $this->url(array('controller' => 'distribuirprojetos', 'action' => 'reavaliarprojeto')); ?>');
+        jqAjaxForm(document.getElementById("projetos"), "distribuir");
+    }
+
+    $(document).ready( function() {
+
+<?php if(!empty($this->idEdital)) { ?>
+               jqAjaxLinkSemLoading("<?php echo $this->url(array('controller'=>'distribuirprojetos', 'action'=>'listaavaliadores')); ?>?idEdital="+$("#idEdital").val()+"&idAvaliador=<?php echo $this->idAvaliador ?>", "", "idAvaliador");
+    <?php } ?>
+                $("#idEdital").change(function(){
+                    jqAjaxLinkSemLoading("<?php echo $this->url(array('controller'=>'distribuirprojetos', 'action'=>'listaavaliadores')); ?>?idEdital="+$(this).val(), "", "idAvaliador");
+                });
+
+                $('#ckTodos').click(function(){
+                    if($(this).attr('checked')){
+                        $('.camposchek').attr('checked','on');
+                    }else{
+                        $('.camposchek').removeAttr('checked');
+                    }
+                });
+
+
+                $("#FiltroDistribui").validate({
+                    // Define as regras
+                    rules:{
+                        idEdital:{
+                            // idEdital será obrigatório (required) e terá tamanho mínimo (minLength)
+                            required: true
+                        },
+                        idAvaliador:{
+                            // Avaliadores será obrigatório (required) e precisará ser um e-mail válido (email)
+                            required: true
+                        }
+
+                    },
+                    // Define as mensagens de erro para cada regra
+                    messages:{
+                        idEdital:{
+                            required: "<br>Dados obrigatórios n&atilde;o informados"
+
+                        },
+                        idAvaliador:{
+                            required: "<br>Dados obrigatórios n&atilde;o informados"
+
+                        }
+                    }
+                });
+
+                $(".enviarAvaliadores").click(function(){
+                    $("#distribuir").dialog("destroy");
+                    $("#distribuir").html('Deseja reenviar o(s) projeto(s) ao avaliador?');
+                    $("#distribuir").dialog({
+                        resizable: false,
+                        title: 'Confirma&ccedil;&atilde;o',
+                        width:350,
+                        height:220,
+                        modal: true,
+                        buttons : {
+                            'Não' : function(){
+                                $(this).dialog('close');
+                            },
+                            'Sim' : function(){
+                                reavaliar();
+                                $(this).dialog({
+                                    buttons : {
+                                        'Ok' : function(){
+                                            $(this).dialog('close');
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
+                    $("#distribuir").dialog('open');
+                    $('.ui-dialog-titlebar-close').remove();
+
+                });
+
+                $(".linkAvaliadores").click( function() {
+                    $('#distribuir').html('<center><br/><br/><br/><br/><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" alt="carregando"><br>');
+                    $("#distribuir").dialog("destroy");
+                    $('#projetos').attr('action','<?php echo $this->url(array('controller' => 'distribuirprojetos', 'action' => 'redistribuirprojetosparaavaliadores')); ?>');
+                    jqAjaxForm(document.getElementById("projetos"), "distribuir");
+                    $("#distribuir").dialog
+
+                    ({
+                        width:700,
+                        height:532,
+                        EscClose:false,
+                        modal:true
+                        ,
+                        buttons:
+                            {
+                            'Voltar':function()
+                            {
+                                $('#FiltroDistribui').submit();
+                                //location.href="distribuir";
+                            }
+                        }
+                    });
+
+                    $("#distribuir").dialog('open');
+
+
+                })
+
+            });
+
+
+</script>
+<div id="distribuir" class="sumir" title="Redistribuir Projetos Para Avaliadores"></div>
+<div id="conteudo" align="center">
+    <form name="FiltroDistribui" id="FiltroDistribui" method="post" action="<?php echo $this->url(array('controller' => 'distribuirprojetos', 'action' => 'redistribuir')); ?>" >
+        <table class="tabela">
+            <tr>
+                <th colspan="2">Filtros</th>
+            </tr>
+            <tr>
+                <td width="20%">Edital</td>
+                <td>
+                    <?php
+                    if(count($this->listaEdital)>0) {
+                        ?>
+                    <select name="idEdital" id="idEdital" class="input_simples w200">
+                        <option value="">Todos</option>
+                            <?php
+                            foreach ($this->listaEdital as $value) {
+                                ?>
+                        <option <?php if ($this->idEdital == $value['idEdital']) { ?> selected <?php } ?> value="<?php echo $value['idEdital'];?>"><?php echo $value['NrEdital'].' - '.$value['nmFormDocumento'];?></option>
+                                <?php
+                            }
+                            ?>
+                    </select>
+                        <?php
+                    }else {
+                        ?>
+                    <b style="color:#f00">N&atilde;o existe projetos para serem redistribuidos neste org&atilde;o</b>
+                        <?php } ?>
+                </td>
+            </tr>
+            <tr>
+                <td>UF</td>
+                <td>
+                    <?php // xd($this->UF) ?>
+                    <select class="input_simples w200" name="UF" id="UF">
+                        <option value="">Todos</option>
+                        <?php
+                        foreach ($this->UFs as $value) {
+                            ?>
+                        <option <?php if ($this->UF == $value['Sigla']) { ?> selected <?php } ?> value="<?php echo $value['Sigla'];?>"><?php echo $value['Sigla'];?></option>
+                            <?php
+                        }
+                        ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Avaliador</td>
+                <td>
+                    <?php // xd($this->UF) ?>
+                    <select class="input_simples w200" name="idAvaliador" id="idAvaliador">
+                        <option value=""> Selecione um edital </option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center">
+                    <input type="submit" value="" class="btn_localizar" />
+                </td>
+            </tr>
+        </table>
+    </form>
+    <table class="tabela">
+        <tr>
+            <th colspan="8">Redistribuir Projetos para Avaliadores</th>
+        </tr>
+
+        <?php
+        $listaProjetos = $this->projos;
+        $idEdital = "";
+        if(count($listaProjetos)>0) {
+            ?>
+        <tr style="font-weight: bold;">
+                <?php if($this->idEdital != '') {?><td>
+                <form action="<?php echo $this->url ( array ('controller' => 'distribuirprojetos', 'action' => 'redistribuirprojetosparaavaliadores' ));?>" id="projetos" nome="projetos">
+                    <input type="hidden" name="Avaliador" value="<?php echo $this->idAvaliador ?>" />
+                    <input type="checkbox" name="" id="ckTodos" />
+            </td><?php }?>
+            <td width="60px;">
+                PRONAC
+            </td>
+            <td>
+                Projeto
+            </td>
+            <td>
+                UF
+            </td>
+            <td width="60px;" style="text-align: center;" >
+                N&ordm;&nbsp;Edital
+            </td>
+            <td>
+                Edital
+            </td>
+            <td style="text-align: center;" width="120px;">
+                Nota
+            </td>
+        </tr>
+            <?php
+            foreach ($listaProjetos as $Projeto) {
+                ?>
+        <tr class="lista" id="projeto_<?php echo $Projeto['idPreProjeto']; ?>">
+                    <?php if($this->idEdital != '') {?><td>
+
+                <input class="camposchek" type="checkbox" name="idPreProjeto[]" id="idPreProjeto" value="<?php echo $Projeto['idPreProjeto'];?>" />
+
+            </td><?php }?>
+            <td class="pronac">
+                <a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index')).'?idPronac='.$Projeto['idPronac'] ?>" >
+                            <?php echo $Projeto['AnoProjeto'].$Projeto['Sequencial'];?>
+                </a>
+            </td>
+            <td class="nomeProjeto">
+                        <?php echo $Projeto['NomeProjeto'];?>
+            </td>
+            <td>
+                        <?php echo $Projeto['UFProjeto'];?>
+            </td>
+            <td style="text-align: center;" >
+                        <?php echo $Projeto['NrEdital'];?>
+            </td>
+            <td>
+                        <?php echo $Projeto['nmFormDocumento'];?>
+            </td>
+            <td id="nrAvaliadores" style="text-align: center;"><?php echo !empty($Projeto['nrNotaFinal']) ? $Projeto['nrNotaFinal'] : "-";?></td>
+            <!--<td>
+                <a href="distribuiAvaliadores.php" idUsuario="<?php echo $idUsuario;?>" idPreProjeto="" class="linkAvaliadores"><img border="0" src="../../CorporativoMinC/view/imagens/botoes/botaoDistribuir.gif" /></a>
+            </td>-->
+        </tr>
+                <?php
+            }
+            if($this->idEdital != '') {?>
+        <tr style="font-weight: bold;">
+            <td>
+                &nbsp;<!-- <img src="../../CorporativoMinC/view/imagens/botoes/seta.gif" width="30" height="18"/> -->
+            </td>
+            <td colspan="7">
+                <input class="linkAvaliadores ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" type="button" value="Redistribuir / Reavaliar"/>
+                <input class="enviarAvaliadores ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" type="button" value="Reavaliar (Mesmo Avaliador)"/>
+            </td>
+        </tr>
+        </form>
+                <?php
+            }
+        }
+        else {
+            echo "<tr>
+                            <td collspam='7' align='center'><b style='color:#F00'>N&atilde;o existe projetos cadastrados</b></td>
+                         </tr>";
+        }
+        ?>
+        </tr>
+    </table>
+
+</div>
+
+
+
+<!-- in?­cio: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+<br clear="all" />
+
+<iframe name="enviar_arquivo" id="enviar_arquivo" style="height: 20px; display: none;"></iframe>
+</body>
+</html>

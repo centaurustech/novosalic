@@ -1,0 +1,76 @@
+<script type="text/javascript">
+ function areadetrabalho()
+    {
+        $('#pinicial').click(function(){
+            $('#analiseinicial').toggle('slow');
+        });
+        $('#preadequacao').click(function(){
+            $('#readequacao').toggle('slow');
+        });
+         $('#pparecer').click(function(){
+            $('#parecer').toggle('slow');
+        });
+
+    }
+    window.onload = function() {areadetrabalho();};
+</script>
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'index'),'',true); ?>" title="Ir para Início">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'index'),'',true); ?>" title="Gerenciar Pareceres">Gerenciar Pareceres</a></li>
+		<li class="last">Parecerista</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+        <div>Parecerista<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <table class="tabela">
+            <tr>
+                    <th>Area/Segmento</th>
+                    <th>Nome do parecerista</th>
+                    <th>Quantidade de parecer que estão sobre sua responsabilidade</th>
+                    <th>Status</th>
+                    <th>Enviar Pareceres para Pagamento</th>
+            </tr>
+                <?php $produto = ''; $tipoanalise = ''; $unidade = ''; ?>
+                <?php foreach($this->dados as $d):?>
+            <tbody>
+             <tr>
+                    <td><?php if($unidade != $d->Unidade)echo $d->Unidade ; ?></td>
+                    <td><?php echo $d->nomeParecerista; ?></td>
+                    <td align="center">2</td>
+                    <td>Ativo</td>
+                    <td align="center"><input type="checkbox"/></td>
+            </tr>
+                <?php $produto = $d->Produto; $tipoanalise = $d->TipoAnalise; $unidade = $d->Unidade; ?>
+                <?php endforeach; ?>
+            <tbody>
+        </table>
+
+    <table class="tabela">
+        <tr>
+            <td align="center"><input type="button" class="btn_salvar"></td>
+        </tr>
+    </table>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />
+<script type="text/javascript">
+    $('.btn_salvar').click(function(){
+       window.location.href = 'enviarparecerespagamento.html';
+    });
+</script>

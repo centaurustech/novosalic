@@ -1,0 +1,606 @@
+<html>
+    <head>
+        <style type="text/css" media="All">
+            html{margin:0;height:100%} 
+            .titulo{
+                text-align: center;
+                padding-bottom: 1cm;
+                font-family: Times New Roman;
+                font-size: 9pt;
+            }
+            .conteudo{
+                text-align: justify;
+                font-size: 9pt;
+                font-family: Times New Roman;
+            }
+            .contexto{
+                font-size: 9pt;
+                font-family: Times New Roman;
+                padding-top: 0.5cm;
+            }
+            .sugestao{
+                font-size: 9pt;
+                font-family: Times New Roman;
+                padding-top: 0.5cm;
+            }
+            #brasao{
+                width : 273.5px;
+                height: 136px;
+            }
+            #assinatura{
+                page-break-before: avoid;
+                padding-top : 2cm;
+                text-align: center;
+                font-family: Times New Roman;
+                font-size: 9pt;
+            }
+            .paginaa4{
+                width:auto;
+                margin: 1cm 1cm 1cm 2cm;
+                page-break-after: always;
+                font-family: Times New Roman;
+                font-size: 9pt;
+            }
+            .dadossugestao{
+                text-align: justify;
+                font-size: 9pt;
+                font-family: Times New Roman;
+            }
+            body{
+                page-break-before: avoid;
+                font-family: Times New Roman;
+                font-size: 9pt;
+            }
+        </style>
+    </head>
+    <body>
+        
+            <!--===================================================================-->
+            <!--======================== PROJETOS DA SEFIC ========================-->
+            <!--===================================================================-->
+            
+            <!--========= PROJETOS APROVADOS SEFIC - APROVACAO INICIAL ============-->
+            <?php
+            foreach ($this->pautaSEFICAprovados as $pauta) {
+            ?>
+                <div class="paginaa4">
+                    <div class="titulo"><img id="brasao" src="<?php echo $this->baseUrl() . "/public/img/minc_brasao.PNG" ?>"/></div>
+                    <div class="titulo">TERMO DE DECIS&Atilde;O</div>
+                    <div class="conteudo">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        O Secretário de Fomento e Incentivo à Cultura, no uso das atribuições legais que lhe confere a Portaria n° 17, de 12 de janeiro de 2010,
+                        e em conformidade com a sua competência legal prevista no Artigo 39 da Instrução Normativa Nº 1, de 9 de fevereiro de 2012, publicada no
+                        Diário Oficial da União, Seção 1, de 10 de fevereiro de 2012, e considerando, por seus fundamentos técnicos, as sugestões e providências
+                        propostas na Análise Técnica e pela Comissão Nacional de Incentivo à Cultura - CNIC, 
+                        em sua <?php echo $pauta['NrReuniao']; ?>&ordf; Reuni&atilde;o Ordin&aacute;ria, 
+                        ocorrida de <?php echo $pauta['DtInicio']; ?> a <?php echo $pauta['DtFinal']; ?>, referente ao PRONAC:
+                    <b><?php echo $pauta['PRONAC']; ?></b> - <b><?php echo $pauta['NomeProjeto']; ?></b>, decide o que se segue:
+                </div>
+                <div class="contexto"><b>Solicita&ccedil;&atilde;o apresentada: <?php echo $pauta['TipoParecer']; ?></b></div>
+                <div class="contexto"><b>Resolve:</b></div>
+                <div class="sugestao"><b>a) Sugest&atilde;o do Parecer T&eacute;cnico inicial</b></div>
+                <div class="dadossugestao"><?php echo strip_tags($pauta['parecerista']); ?> </div>
+                <div class="sugestao"><b>b) Sugest&atilde;o do Membro Relator da CNIC</b></div>
+                <div class="dadossugestao"><?php echo strip_tags($pauta['componente']); ?></div>
+                <br/>
+                <?php if ($pauta['analise'] == 'AS' or $pauta['analise'] == 'IS') {?>
+                <div class="sugestao"><b>c) Sugest&atilde;o da Plen&aacute;ria da CNIC </b></div>
+                <div class="dadossugestao"><?php echo strip_tags($pauta['Consolidacao']); ?></div>
+                <br/>
+                <?php } ?>
+                    <div class="conteudo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        Pelo(a): Aprovação do pleito, conforme sugestão de encaminhamento da CNIC.</div>
+                    <div class="conteudo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        A publicação desta decisão observará o disposto nos Artigos 39 a 42 da Instrução Normativa Nº 1, de 9 de fevereiro de 2012, 
+                        publicada no Diário Oficial da União, Seção 1, de 10 de fevereiro de 2012, além do total atendimento às recomendações e correções
+                        sugeridas ao pleito, se houver.
+                    </div>
+                    <div id="assinatura">
+                        <b>
+                            <?php
+                            $dia    = (int) date("d");
+                            //$mes    = (int) date("m");
+                            $mes    = (int) $pauta['mesReuniao'];
+                            $ano    = date("Y");
+
+                            // mês por extenso
+                            $mes_extenso[1] = "janeiro";
+                            $mes_extenso[2] = "fevereiro";
+                            $mes_extenso[3] = "mar&ccedil;o";
+                            $mes_extenso[4] = "abril";
+                            $mes_extenso[5] = "maio";
+                            $mes_extenso[6] = "junho";
+                            $mes_extenso[7] = "julho";
+                            $mes_extenso[8] = "agosto";
+                            $mes_extenso[9] = "setembro";
+                            $mes_extenso[10] = "outubro";
+                            $mes_extenso[11] = "novembro";
+                            $mes_extenso[12] = "dezembro";
+                            ?>
+                            <div style="float: right">Bras&iacute;lia, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; de <?php echo $mes_extenso[$mes]; ?> de <?php echo $ano; ?>.</div><br /><br /><br /><br />
+                            HENILTON PARENTE DE MENEZES<br />
+                            Secret&aacute;rio de Fomento e Incentivo &agrave; Cultura
+                        </b>
+                    </div>
+                </div>
+                <br>
+            <?php } ?>
+            <!--========= FIM PROJETOS APROVADOS SEFIC - APROVACAO INICIAL ======-->
+            
+            <!--========= PROJETOS INDEFERIDOS SEFIC - APROVACAO INICIAL ========-->
+            <?php
+            foreach ($this->pautaSEFICIndeferidos as $pauta) {
+            ?>
+                <div class="paginaa4">
+                    <div class="titulo"><img id="brasao" src="<?php echo $this->baseUrl() . "/public/img/minc_brasao.PNG" ?>"/></div>
+                    <div class="titulo">TERMO DE DECIS&Atilde;O</div>
+                    <div class="conteudo">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        O Secretário de Fomento e Incentivo à Cultura, no uso das atribuições legais que lhe confere a Portaria n° 17, de 12 de janeiro de 2010, 
+                        e em conformidade com a sua competência legal prevista no Artigo 39 da Instrução Normativa Nº 1, de 9 de fevereiro de 2012, publicada no
+                        Diário Oficial da União, Seção 1, de 10 de fevereiro de 2012, e considerando, por seus fundamentos técnicos, as sugestões e providências
+                        propostas na Análise Técnica e pela Comissão Nacional de Incentivo à Cultura - CNIC, 
+                        em sua <?php echo $pauta['NrReuniao']; ?>&ordf; Reuni&atilde;o Ordin&aacute;ria, 
+                        ocorrida de <?php echo $pauta['DtInicio']; ?> a <?php echo $pauta['DtFinal']; ?>, referente ao PRONAC:
+                    <b><?php echo $pauta['PRONAC']; ?></b> - <b><?php echo $pauta['NomeProjeto']; ?></b>, decide o que se segue:
+                </div>
+                <div class="contexto"><b>Solicita&ccedil;&atilde;o apresentada: <?php echo $pauta['TipoParecer']; ?></b></div>
+                <div class="contexto"><b>Resolve:</b></div>
+                <div class="sugestao"><b>a) Sugest&atilde;o do Parecer T&eacute;cnico inicial</b></div>
+                <div class="dadossugestao"><?php echo strip_tags($pauta['parecerista']); ?> </div>
+                <div class="sugestao"><b>b) Sugest&atilde;o do Membro Relator da CNIC</b></div>
+                <div class="dadossugestao"><?php echo strip_tags($pauta['componente']); ?></div>
+                <br/>
+                <?php if ($pauta['analise'] == 'AS' or $pauta['analise'] == 'IS') {?>
+                <div class="sugestao"><b>c) Sugest&atilde;o da Plen&aacute;ria da CNIC </b></div>
+                <div class="dadossugestao"><?php echo strip_tags($pauta['Consolidacao']); ?></div>
+                <br/>
+                <?php } ?>
+                    <div class="conteudo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        Pelo(a): Indeferimento do pleito, conforme sugestão de encaminhamento da CNIC.</div>
+                    <div class="conteudo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        Nos termos dos Artigos 40 e 41 da Instrução Normativa Nº 1, de 9 de fevereiro de 2012, publicada no Diário Oficial da União, 
+                        Seção 1, de 10 de fevereiro de 2012 é facultado ao proponente o encaminhamento de recurso à presente Decisão.
+                    </div>
+                    <div id="assinatura">
+                        <b>
+                            <?php
+                            $dia    = (int) date("d");
+                            //$mes    = (int) date("m");
+                            $mes    = (int) $pauta['mesReuniao'];
+                            $ano    = date("Y");
+
+                            // mês por extenso
+                            $mes_extenso[1] = "janeiro";
+                            $mes_extenso[2] = "fevereiro";
+                            $mes_extenso[3] = "mar&ccedil;o";
+                            $mes_extenso[4] = "abril";
+                            $mes_extenso[5] = "maio";
+                            $mes_extenso[6] = "junho";
+                            $mes_extenso[7] = "julho";
+                            $mes_extenso[8] = "agosto";
+                            $mes_extenso[9] = "setembro";
+                            $mes_extenso[10] = "outubro";
+                            $mes_extenso[11] = "novembro";
+                            $mes_extenso[12] = "dezembro";
+                            ?>
+                            <div style="float: right">Bras&iacute;lia, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; de <?php echo $mes_extenso[$mes]; ?> de <?php echo $ano; ?>.</div><br /><br /><br /><br />
+                            HENILTON PARENTE DE MENEZES<br />
+                            Secret&aacute;rio de Fomento e Incentivo &agrave; Cultura
+                        </b>
+                    </div>
+                </div>
+                <br>
+            <?php } ?>
+            <!--========= FIM PROJETOS INDEFERIDOS SEFIC - APROVACAO INICIAL ==========-->
+            
+            <!--========= PROJETOS APROVADOS SEFIC - RECURSO ============-->
+            <?php
+            foreach ($this->pautaSEFICAprovadosRecurso as $pauta) {
+            ?>
+                <div class="paginaa4">
+                    <div class="titulo"><img id="brasao" src="<?php echo $this->baseUrl() . "/public/img/minc_brasao.PNG" ?>"/></div>
+                    <div class="titulo">TERMO DE DECIS&Atilde;O</div>
+                    <div class="conteudo">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        O Secretário de Fomento e Incentivo à Cultura, no uso das atribuições legais que lhe confere a Portaria n° 17, de 12 de janeiro de 2010, 
+                        e em conformidade com a sua competência legal prevista no Artigo 39 da Instrução Normativa Nº 1, de 9 de fevereiro de 2012, publicada no 
+                        Diário Oficial da União, Seção 1, de 10 de fevereiro de 2012, e considerando, por seus fundamentos técnicos, as sugestões e providências 
+                        propostas na Análise Técnica e pela Comissão Nacional de Incentivo à Cultura - CNIC, 
+                        em sua <?php echo $pauta['NrReuniao']; ?>&ordf; Reuni&atilde;o Ordin&aacute;ria, 
+                        ocorrida de <?php echo $pauta['DtInicio']; ?> a <?php echo $pauta['DtFinal']; ?>, referente ao PRONAC:
+                    <b><?php echo $pauta['PRONAC']; ?></b> - <b><?php echo $pauta['NomeProjeto']; ?></b>, decide o que se segue:
+                </div>
+                <div class="contexto"><b>Solicita&ccedil;&atilde;o apresentada: <?php echo $pauta['TipoParecer']; ?></b></div>
+                <div class="contexto"><b>Resolve:</b></div>
+                <div class="sugestao"><b>a) Sugest&atilde;o do Parecer T&eacute;cnico inicial</b></div>
+                <div class="dadossugestao"><?php echo strip_tags($pauta['parecerista']); ?> </div>
+                <div class="sugestao"><b>b) Sugest&atilde;o do Membro Relator da CNIC</b></div>
+                <div class="dadossugestao"><?php echo strip_tags($pauta['componente']); ?></div>
+                <br/>
+                <?php if ($pauta['analise'] == 'AS' or $pauta['analise'] == 'IS') {?>
+                <div class="sugestao"><b>c) Sugest&atilde;o da Plen&aacute;ria da CNIC </b></div>
+                <div class="dadossugestao"><?php echo strip_tags($pauta['Consolidacao']); ?></div>
+                <br/>
+                <?php } ?>
+                    <div class="conteudo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        Pelo(a): Aprovação do pleito, conforme sugestão de encaminhamento da CNIC.</div>
+                    <div class="conteudo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        A publicação desta decisão observará o disposto no Artigo 39 e 42 da Instrução Normativa Nº 1, de 9 de fevereiro de 2012, 
+                        publicada no Diário Oficial da União, Seção 1, de 10 de fevereiro de 2012, além do total atendimento às recomendações e correções 
+                        sugeridas ao pleito, se houver.
+                    </div>
+                    <div id="assinatura">
+                        <b>
+                            <?php
+                            $dia    = (int) date("d");
+                            //$mes    = (int) date("m");
+                            $mes    = (int) $pauta['mesReuniao'];
+                            $ano    = date("Y");
+
+                            // mês por extenso
+                            $mes_extenso[1] = "janeiro";
+                            $mes_extenso[2] = "fevereiro";
+                            $mes_extenso[3] = "mar&ccedil;o";
+                            $mes_extenso[4] = "abril";
+                            $mes_extenso[5] = "maio";
+                            $mes_extenso[6] = "junho";
+                            $mes_extenso[7] = "julho";
+                            $mes_extenso[8] = "agosto";
+                            $mes_extenso[9] = "setembro";
+                            $mes_extenso[10] = "outubro";
+                            $mes_extenso[11] = "novembro";
+                            $mes_extenso[12] = "dezembro";
+                            ?>
+                            <div style="float: right">Bras&iacute;lia, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; de <?php echo $mes_extenso[$mes]; ?> de <?php echo $ano; ?>.</div><br /><br /><br /><br />
+                            HENILTON PARENTE DE MENEZES<br />
+                            Secret&aacute;rio de Fomento e Incentivo &agrave; Cultura
+                        </b>
+                    </div>
+                </div>
+                <br>
+            <?php } ?>
+            <!--========= FIM PROJETOS APROVADOS SEFIC - RECURSO ======-->
+            
+            <!--========= PROJETOS INDEFERIDOS SEFIC - RECURSO ========-->
+            <?php
+            foreach ($this->pautaSEFICIndeferidosRecurso as $pauta) {
+            ?>
+                <div class="paginaa4">
+                    <div class="titulo"><img id="brasao" src="<?php echo $this->baseUrl() . "/public/img/minc_brasao.PNG" ?>"/></div>
+                    <div class="titulo">TERMO DE DECIS&Atilde;O</div>
+                    <div class="conteudo">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        O Secretário de Fomento e Incentivo à Cultura, no uso das atribuições legais que lhe confere a Portaria n° 17, de 12 de janeiro de 2010, 
+                        e em conformidade com a sua competência legal prevista no Artigo 39 da Instrução Normativa Nº 1, de 9 de fevereiro de 2012, publicada no 
+                        Diário Oficial da União, Seção 1, de 10 de fevereiro de 2012, e considerando, por seus fundamentos técnicos, as sugestões e providências 
+                        propostas na Análise Técnica e pela Comissão Nacional de Incentivo à Cultura - CNIC, 
+                        em sua <?php echo $pauta['NrReuniao']; ?>&ordf; Reuni&atilde;o Ordin&aacute;ria, 
+                        ocorrida de <?php echo $pauta['DtInicio']; ?> a <?php echo $pauta['DtFinal']; ?>, referente ao PRONAC:
+                    <b><?php echo $pauta['PRONAC']; ?></b> - <b><?php echo $pauta['NomeProjeto']; ?></b>, decide o que se segue:
+                </div>
+                <div class="contexto"><b>Solicita&ccedil;&atilde;o apresentada: <?php echo $pauta['TipoParecer']; ?></b></div>
+                <div class="contexto"><b>Resolve:</b></div>
+                <div class="sugestao"><b>a) Sugest&atilde;o do Parecer T&eacute;cnico inicial</b></div>
+                <div class="dadossugestao"><?php echo strip_tags($pauta['parecerista']); ?> </div>
+                <div class="sugestao"><b>b) Sugest&atilde;o do Membro Relator da CNIC</b></div>
+                <div class="dadossugestao"><?php echo strip_tags($pauta['componente']); ?></div>
+                <br/>
+                <?php if ($pauta['analise'] == 'AS' or $pauta['analise'] == 'IS') {?>
+                <div class="sugestao"><b>c) Sugest&atilde;o da Plen&aacute;ria da CNIC </b></div>
+                <div class="dadossugestao"><?php echo strip_tags($pauta['Consolidacao']); ?></div>
+                <br/>
+                <?php } ?>
+                    <div class="conteudo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        Pelo(a): Indeferimento do pleito, conforme sugestão de encaminhamento da CNIC.</div>
+                    <div class="conteudo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        De acordo com o disposto no Artigo 41 da Instrução Normativa Nº 1, de 9 de fevereiro de 2012, publicada no Diário Oficial da União, 
+                        Seção 1, de 10 de fevereiro de 2012 é ?(...) irrecorrível a decisão proferida em grau de recurso.?
+                    </div>
+                    <div id="assinatura">
+                        <b>
+                            <?php
+                            $dia    = (int) date("d");
+                            //$mes    = (int) date("m");
+                            $mes    = (int) $pauta['mesReuniao'];
+                            $ano    = date("Y");
+
+                            // mês por extenso
+                            $mes_extenso[1] = "janeiro";
+                            $mes_extenso[2] = "fevereiro";
+                            $mes_extenso[3] = "mar&ccedil;o";
+                            $mes_extenso[4] = "abril";
+                            $mes_extenso[5] = "maio";
+                            $mes_extenso[6] = "junho";
+                            $mes_extenso[7] = "julho";
+                            $mes_extenso[8] = "agosto";
+                            $mes_extenso[9] = "setembro";
+                            $mes_extenso[10] = "outubro";
+                            $mes_extenso[11] = "novembro";
+                            $mes_extenso[12] = "dezembro";
+                            ?>
+                            <div style="float: right">Bras&iacute;lia, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; de <?php echo $mes_extenso[$mes]; ?> de <?php echo $ano; ?>.</div><br /><br /><br /><br />
+                            HENILTON PARENTE DE MENEZES<br />
+                            Secret&aacute;rio de Fomento e Incentivo &agrave; Cultura
+                        </b>
+                    </div>
+                </div>
+                <br>
+            <?php } ?>
+            <!--========= FIM PROJETOS INDEFERIDOS SEFIC - RECURSO ==========-->
+                
+            
+            <!--=======================================================================-->
+            <!--====================== PROJETOS DE AUDIO VISUAL =======================-->
+            <!--=======================================================================-->
+            
+            <!--========= PROJETOS APROVADOS SAV - APROVACAO INICIAL ==================-->
+            <?php
+            foreach ($this->pautaSAVAprovados as $pauta) {
+            ?>
+                <div class="paginaa4">
+                    <div class="titulo"><img id="brasao" src="<?php echo $this->baseUrl() . "/public/img/minc_brasao_audiovisual.PNG" ?>"/></div>
+                    <div class="titulo">TERMO DE DECIS&Atilde;O</div>
+                    <div class="conteudo">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        A Secretária do Audiovisual, no uso das atribuições legais que lhe confere a Portaria n° 446, de 02 de fevereiro de 2011, e em 
+                        conformidade com a sua competência legal prevista nos Artigos 39 e 108 da Instrução Normativa Nº 1, de 9 de fevereiro de 2012, 
+                        publicada no Diário Oficial da União, Seção 1, de 10 de fevereiro de 2012, e considerando, por seus fundamentos técnicos, as 
+                        sugestões e providências propostas na Análise Técnica e pela Comissão Nacional de Incentivo à Cultura - CNIC, 
+                        em sua <?php echo $pauta['NrReuniao']; ?>&ordf; Reuni&atilde;o Ordin&aacute;ria, 
+                        ocorrida de <?php echo $pauta['DtInicio']; ?> a <?php echo $pauta['DtFinal']; ?>, referente ao PRONAC:
+                    <b><?php echo $pauta['PRONAC']; ?></b> - <b><?php echo $pauta['NomeProjeto']; ?></b>, decide o que se segue:
+                </div>
+                <div class="contexto"><b>Solicita&ccedil;&atilde;o apresentada: <?php echo $pauta['TipoParecer']; ?></b></div>
+                <div class="contexto"><b>Resolve:</b></div>
+                <div class="sugestao"><b>a) Sugest&atilde;o do Parecer T&eacute;cnico inicial</b></div>
+                <div class="dadossugestao"><?php echo strip_tags($pauta['parecerista']); ?> </div>
+                <div class="sugestao"><b>b) Sugest&atilde;o do Membro Relator da CNIC</b></div>
+                <div class="dadossugestao"><?php echo strip_tags($pauta['componente']); ?></div>
+                <br/>
+                <?php if ($pauta['analise'] == 'AS' or $pauta['analise'] == 'IS') {?>
+                <div class="sugestao"><b>c) Sugest&atilde;o da Plen&aacute;ria da CNIC </b></div>
+                <div class="dadossugestao"><?php echo strip_tags($pauta['Consolidacao']); ?></div>
+                <br/>
+                <?php } ?>
+                    <div class="conteudo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        Pelo(a): Aprovação do pleito, conforme sugestão de encaminhamento da CNIC.</div>
+                    <div class="conteudo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        A publicação desta decisão observará o disposto nos Artigos 39, 40, 41 e 42 da Instrução Normativa  Nº 1, de 9 de fevereiro de 2012,
+                        publicada no Diário Oficial da União, Seção 1, de 10 de fevereiro de 2012, além  do total atendimento às recomendações e correções 
+                        sugeridas ao pleito, se houver.
+                    </div>
+                    <div id="assinatura">
+                        <b>
+                            <?php
+                            $dia    = (int) date("d");
+                            $mes    = (int) $pauta['mesReuniao'];
+                            $ano    = date("Y");
+
+                            // mês por extenso
+                            $mes_extenso[1] = "janeiro";
+                            $mes_extenso[2] = "fevereiro";
+                            $mes_extenso[3] = "mar&ccedil;o";
+                            $mes_extenso[4] = "abril";
+                            $mes_extenso[5] = "maio";
+                            $mes_extenso[6] = "junho";
+                            $mes_extenso[7] = "julho";
+                            $mes_extenso[8] = "agosto";
+                            $mes_extenso[9] = "setembro";
+                            $mes_extenso[10] = "outubro";
+                            $mes_extenso[11] = "novembro";
+                            $mes_extenso[12] = "dezembro";
+                            ?>
+                            <div style="float: right">Bras&iacute;lia, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; de <?php echo $mes_extenso[$mes]; ?> de <?php echo $ano; ?>.</div><br /><br /><br /><br />
+                            ANA PAULA DOURADO SANTANA<br />
+                            Secret&aacute;ria de Audiovisual
+                        </b>
+                    </div>
+                </div>
+                <br>
+            <?php } ?>
+            <!--========= FIM PROJETOS APROVADOS SAV - APROVACAO INICIAL ==============-->
+            
+            <!--========= PROJETOS INDEFERIDOS SAV  - APROVACAO INICIAL ===============-->
+            <?php
+            foreach ($this->pautaSAVIndeferidos as $pauta) {
+            ?>
+                <div class="paginaa4">
+                    <div class="titulo"><img id="brasao" src="<?php echo $this->baseUrl() . "/public/img/minc_brasao_audiovisual.PNG" ?>"/></div>
+                    <div class="titulo">TERMO DE DECIS&Atilde;O</div>
+                    <div class="conteudo">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        A Secretária do Audiovisual, no uso das atribuições legais que lhe confere a Portaria n° 446, de 02 de fevereiro de 2011, e em 
+                        conformidade com a sua competência legal prevista nos Artigos 39 e 108 da Instrução Normativa Nº 1, de 9 de fevereiro de 2012, 
+                        publicada no Diário Oficial da União, Seção 1, de 10 de fevereiro de 2012, e considerando, por seus fundamentos técnicos, as 
+                        sugestões e providências propostas na Análise Técnica e pela Comissão Nacional de Incentivo à Cultura - CNIC, 
+                        em sua <?php echo $pauta['NrReuniao']; ?>&ordf; Reuni&atilde;o Ordin&aacute;ria, 
+                        ocorrida de <?php echo $pauta['DtInicio']; ?> a <?php echo $pauta['DtFinal']; ?>, referente ao PRONAC:
+                    <b><?php echo $pauta['PRONAC']; ?></b> - <b><?php echo $pauta['NomeProjeto']; ?></b>, decide o que se segue:
+                </div>
+                <div class="contexto"><b>Solicita&ccedil;&atilde;o apresentada: <?php echo $pauta['TipoParecer']; ?></b></div>
+                <div class="contexto"><b>Resolve:</b></div>
+                <div class="sugestao"><b>a) Sugest&atilde;o do Parecer T&eacute;cnico inicial</b></div>
+                <div class="dadossugestao"><?php echo strip_tags($pauta['parecerista']); ?> </div>
+                <div class="sugestao"><b>b) Sugest&atilde;o do Membro Relator da CNIC</b></div>
+                <div class="dadossugestao"><?php echo strip_tags($pauta['componente']); ?></div>
+                <br/>
+                <?php if ($pauta['analise'] == 'AS' or $pauta['analise'] == 'IS') {?>
+                <div class="sugestao"><b>c) Sugest&atilde;o da Plen&aacute;ria da CNIC </b></div>
+                <div class="dadossugestao"><?php echo strip_tags($pauta['Consolidacao']); ?></div>
+                <br/>
+                <?php } ?>
+                    <div class="conteudo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        Pelo(a): Indeferimento do pleito, conforme sugestão de encaminhamento da CNIC.</div>
+                    <div class="conteudo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        Nos termos dos Artigos 40 e 41 da Instrução Normativa Nº 1, de 9 de fevereiro de 2012, publicada no Diário Oficial da União, Seção 1, 
+                        de 10 de fevereiro de 2012 é facultado ao proponente o encaminhamento de recurso à presente Decisão.
+                    </div>
+                    <div id="assinatura">
+                        <b>
+                            <?php
+                            $dia    = (int) date("d");
+                            $mes    = (int) $pauta['mesReuniao'];
+                            $ano    = date("Y");
+
+                            // mês por extenso
+                            $mes_extenso[1] = "janeiro";
+                            $mes_extenso[2] = "fevereiro";
+                            $mes_extenso[3] = "mar&ccedil;o";
+                            $mes_extenso[4] = "abril";
+                            $mes_extenso[5] = "maio";
+                            $mes_extenso[6] = "junho";
+                            $mes_extenso[7] = "julho";
+                            $mes_extenso[8] = "agosto";
+                            $mes_extenso[9] = "setembro";
+                            $mes_extenso[10] = "outubro";
+                            $mes_extenso[11] = "novembro";
+                            $mes_extenso[12] = "dezembro";
+                            ?>
+                            <div style="float: right">Bras&iacute;lia, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; de <?php echo $mes_extenso[$mes]; ?> de <?php echo $ano; ?>.</div><br /><br /><br /><br />
+                            ANA PAULA DOURADO SANTANA<br />
+                            Secret&aacute;ria de Audiovisual
+                        </b>
+                    </div>
+                </div>
+                <br>
+            <?php } ?>
+            <!--========= FIM PROJETOS INDEFERIDOS SAV  - APROVACAO INICIAL ===========-->
+            
+            <!--========= PROJETOS APROVADOS SAV - RECURSO ==================-->
+            <?php
+            foreach ($this->pautaSAVAprovadosRecurso as $pauta) {
+            ?>
+                <div class="paginaa4">
+                    <div class="titulo"><img id="brasao" src="<?php echo $this->baseUrl() . "/public/img/minc_brasao_audiovisual.PNG" ?>"/></div>
+                    <div class="titulo">TERMO DE DECIS&Atilde;O</div>
+                    <div class="conteudo">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        A Secretária do Audiovisual, no uso das atribuições legais que lhe confere a Portaria n° 446, de 02 de fevereiro de 2011, e em conformidade
+                        com a sua competência legal prevista nos Artigos 39 e 108 da Instrução Normativa Nº 1, de 9 de fevereiro de 2012, publicada no Diário Oficial
+                        da União, Seção 1, de 10 de fevereiro de 2012, e considerando, por seus fundamentos técnicos, as sugestões e providências propostas na 
+                        Análise Técnica e pela Comissão Nacional de Incentivo à Cultura - CNIC, 
+                        em sua <?php echo $pauta['NrReuniao']; ?>&ordf; Reuni&atilde;o Ordin&aacute;ria, 
+                        ocorrida de <?php echo $pauta['DtInicio']; ?> a <?php echo $pauta['DtFinal']; ?>, referente ao PRONAC:
+                    <b><?php echo $pauta['PRONAC']; ?></b> - <b><?php echo $pauta['NomeProjeto']; ?></b>, decide o que se segue:
+                </div>
+                <div class="contexto"><b>Solicita&ccedil;&atilde;o apresentada: <?php echo $pauta['TipoParecer']; ?></b></div>
+                <div class="contexto"><b>Resolve:</b></div>
+                <div class="sugestao"><b>a) Sugest&atilde;o do Parecer T&eacute;cnico inicial</b></div>
+                <div class="dadossugestao"><?php echo strip_tags($pauta['parecerista']); ?> </div>
+                <div class="sugestao"><b>b) Sugest&atilde;o do Membro Relator da CNIC</b></div>
+                <div class="dadossugestao"><?php echo strip_tags($pauta['componente']); ?></div>
+                <br/>
+                <?php if ($pauta['analise'] == 'AS' or $pauta['analise'] == 'IS') {?>
+                <div class="sugestao"><b>c) Sugest&atilde;o da Plen&aacute;ria da CNIC </b></div>
+                <div class="dadossugestao"><?php echo strip_tags($pauta['Consolidacao']); ?></div>
+                <br/>
+                <?php } ?>
+                    <div class="conteudo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        Pelo(a): Aprovação do pleito, conforme sugestão de encaminhamento da CNIC.</div>
+                    <div class="conteudo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        A publicação desta decisão observará o disposto no Artigo 39 e 42 da Instrução Normativa Nº 1, de 9 de fevereiro de 2012, 
+                        publicada no Diário Oficial da União, Seção 1, de 10 de fevereiro de 2012, além do total atendimento às recomendações e 
+                        correções sugeridas ao pleito, se houver.
+                    </div>
+                    <div id="assinatura">
+                        <b>
+                            <?php
+                            $dia    = (int) date("d");
+                            $mes    = (int) $pauta['mesReuniao'];
+                            $ano    = date("Y");
+
+                            // mês por extenso
+                            $mes_extenso[1] = "janeiro";
+                            $mes_extenso[2] = "fevereiro";
+                            $mes_extenso[3] = "mar&ccedil;o";
+                            $mes_extenso[4] = "abril";
+                            $mes_extenso[5] = "maio";
+                            $mes_extenso[6] = "junho";
+                            $mes_extenso[7] = "julho";
+                            $mes_extenso[8] = "agosto";
+                            $mes_extenso[9] = "setembro";
+                            $mes_extenso[10] = "outubro";
+                            $mes_extenso[11] = "novembro";
+                            $mes_extenso[12] = "dezembro";
+                            ?>
+                            <div style="float: right">Bras&iacute;lia, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; de <?php echo $mes_extenso[$mes]; ?> de <?php echo $ano; ?>.</div><br /><br /><br /><br />
+                            ANA PAULA DOURADO SANTANA<br />
+                            Secret&aacute;ria de Audiovisual
+                        </b>
+                    </div>
+                </div>
+                <br>
+            <?php } ?>
+            <!--========= FIM PROJETOS APROVADOS SAV - RECURSO ==============-->
+            
+            <!--========= PROJETOS INDEFERIDOS SAV  - RECURSO ===============-->
+            <?php
+            foreach ($this->pautaSAVIndeferidosRecurso as $pauta) {
+            ?>
+                <div class="paginaa4">
+                    <div class="titulo"><img id="brasao" src="<?php echo $this->baseUrl() . "/public/img/minc_brasao_audiovisual.PNG" ?>"/></div>
+                    <div class="titulo">TERMO DE DECIS&Atilde;O</div>
+                    <div class="conteudo">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        A Secretária do Audiovisual, no uso das atribuições legais que lhe confere a Portaria n° 446, de 02 de fevereiro de 2011, e em conformidade
+                        com a sua competência legal prevista nos Artigos 39 e 108 da Instrução Normativa Nº 1, de 9 de fevereiro de 2012, publicada no Diário 
+                        Oficial da União, Seção 1, de 10 de fevereiro de 2012, e considerando, por seus fundamentos técnicos, as sugestões e providências propostas
+                        na Análise Técnica e pela Comissão Nacional de Incentivo à Cultura - CNIC, 
+                        em sua <?php echo $pauta['NrReuniao']; ?>&ordf; Reuni&atilde;o Ordin&aacute;ria, 
+                        ocorrida de <?php echo $pauta['DtInicio']; ?> a <?php echo $pauta['DtFinal']; ?>, referente ao PRONAC:
+                    <b><?php echo $pauta['PRONAC']; ?></b> - <b><?php echo $pauta['NomeProjeto']; ?></b>, decide o que se segue:
+                </div>
+                <div class="contexto"><b>Solicita&ccedil;&atilde;o apresentada: <?php echo $pauta['TipoParecer']; ?></b></div>
+                <div class="contexto"><b>Resolve:</b></div>
+                <div class="sugestao"><b>a) Sugest&atilde;o do Parecer T&eacute;cnico inicial</b></div>
+                <div class="dadossugestao"><?php echo strip_tags($pauta['parecerista']); ?> </div>
+                <div class="sugestao"><b>b) Sugest&atilde;o do Membro Relator da CNIC</b></div>
+                <div class="dadossugestao"><?php echo strip_tags($pauta['componente']); ?></div>
+                <br/>
+                <?php if ($pauta['analise'] == 'AS' or $pauta['analise'] == 'IS') {?>
+                <div class="sugestao"><b>c) Sugest&atilde;o da Plen&aacute;ria da CNIC </b></div>
+                <div class="dadossugestao"><?php echo strip_tags($pauta['Consolidacao']); ?></div>
+                <br/>
+                <?php } ?>
+                    <div class="conteudo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        Pelo(a): Indeferimento do pleito, conforme sugestão de encaminhamento da CNIC.</div>
+                    <div class="conteudo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        De acordo com o disposto no Artigo 41 da Instrução Normativa Nº 1, de 9 de fevereiro de 2012, publicada no Diário Oficial da União,
+                        Seção 1, de 10 de fevereiro de 2012 é ?(...) irrecorrível a decisão proferida em grau de recurso.?.
+                    </div>
+                    <div id="assinatura">
+                        <b>
+                            <?php
+                            $dia    = (int) date("d");
+                            $mes    = (int) $pauta['mesReuniao'];
+                            $ano    = date("Y");
+
+                            // mês por extenso
+                            $mes_extenso[1] = "janeiro";
+                            $mes_extenso[2] = "fevereiro";
+                            $mes_extenso[3] = "mar&ccedil;o";
+                            $mes_extenso[4] = "abril";
+                            $mes_extenso[5] = "maio";
+                            $mes_extenso[6] = "junho";
+                            $mes_extenso[7] = "julho";
+                            $mes_extenso[8] = "agosto";
+                            $mes_extenso[9] = "setembro";
+                            $mes_extenso[10] = "outubro";
+                            $mes_extenso[11] = "novembro";
+                            $mes_extenso[12] = "dezembro";
+                            ?>
+                            <div style="float: right">Bras&iacute;lia, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; de <?php echo $mes_extenso[$mes]; ?> de <?php echo $ano; ?>.</div><br /><br /><br /><br />
+                            ANA PAULA DOURADO SANTANA<br />
+                            Secret&aacute;ria de Audiovisual
+                        </b>
+                    </div>
+                </div>
+                <br>
+            <?php } ?>
+            <!--========= FIM PROJETOS INDEFERIDOS SAV  - RECURSO ===========-->
+    </body>
+</html>
+<SCRIPT LANGUAGE="JavaScript">
+    window.print()
+</SCRIPT>

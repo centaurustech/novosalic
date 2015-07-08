@@ -1,0 +1,14 @@
+<?php
+$retorno = array();
+if(is_object($this->retorno)){
+    foreach ($this->retorno as $value) {
+
+        if($this->idCotacao)
+            $retorno[] = array('id'=>$value->id,'nome'=>utf8_encode($value->nome),'idAgente'=>$value->idAgente,'Fornecedor'=>$value->Fornecedor);
+        else
+            $retorno[] = array('id'=>$value->id,'nome'=>utf8_encode($value->nome));
+    }
+	echo json_encode($retorno);
+} else {
+	echo json_encode($this->retorno);
+}

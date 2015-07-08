@@ -1,0 +1,204 @@
+<?php 
+	foreach($this->ParecerTecnico as $parecer):
+	$html = '<table class="tabela" align="center" style="background-color: #D3D3D3; width: 100%;">';
+	$html .= '<tr>';
+	$html .= '<th><b>PRONAC: </b>' .$parecer->Pronac. '';
+	$html .= '</th>';
+	$html .= '</tr>';
+	$html .= '<tr>';
+	$html .= '<th><b>Parecerista: </b>Parecerista';
+	$html .= '</th>';
+	$html .= '</tr>';
+	$html .= '<tr>';
+	$html .= '<th><b>CPF: </b>' .$parecer->CgcCPf. '';
+	$html .= '</th>';
+	$html .= '</tr>';
+	$html .= '<tr>';
+	$html .= '<th><b>Data de Validação: </b>' .$parecer->DtSituacao. '';
+	$html .= '</th>';
+	$html .= '</tr>';
+	$html .= '</table>';
+
+$html .= '<table width="100%"> 
+	
+	<tr>
+		<td colspan="2"><b>Nome do Projeto: </b>' .$parecer->NomeProjeto. '</td>
+	</tr>
+   <tr>
+		<td><b>UF do Projeto: </b>' .$parecer->UfProjeto. '</td>
+		<td><b>Area: </b>' .$parecer->Area. '</td>
+	</tr>
+	<tr>
+		<td><b>Segmento: </b>' .$parecer->Segmento. '</td> 
+		<td><b>Mecanismo: </b>' .$parecer->Mecanismo. '</td>
+	</tr>
+	<tr>
+		<td><b>Proponente: </b>' .$parecer->Proponente. '</td> 
+		<td><b>Processo: </b>' .$parecer->Processo. '</td>
+	</tr>
+	<tr>
+		<td colspan="2"><b>Resumo do Projeto </b>
+		<br>' .$parecer->ResumoProjeto. '</td>
+	</tr>
+	<tr>
+	<td colspan="2">
+	<br><br><br><br>
+	<hr width="40%" style="background-color: black;" align="left"><br>
+	<b>Parecerista: </b>Rafaela Mainart Arlotta <br>
+	<b>CPF: </b> 07911088000142 <br>
+	<b>Data de Validação: </b> 16/02/2009
+	<br><br><br>
+	<hr width="40%" style="background-color: black;" align="left"><br>
+	<b>Coordenador: </b>Rafaela Mainart Arlotta <br>
+	<b>CPF: </b> 07911088000142 <br>
+	</td>
+	</tr>
+
+</table>';
+endforeach;
+	
+$html .= '<table width="100%" border="2px">
+	<tr class="titulo_tabela">
+		<th colspan="4" style="background-color: #D3D3D3;">Análise de Conteúdo do Projeto</th>
+	</tr>
+</table>
+<table width="100%" border="2px">';
+	foreach($this->AnaliseConteudo as $analise):
+	$html .= '<tr>
+		<td rowspan="4" width="40%"><b>Lei 8.313/91 alterada pela Lei 9.874/1999*</b><br>' .$analise->Lei8313. '</td>
+	</tr>
+	<tr>
+		<td><b>Artigo 3º </b><br>' .$analise->Artigo3. '</td>
+		<td><b>Inciso</b> <br>' .$analise->IncisoArtigo3. '</td>
+		<td><b>Alínea</b><br>' .$analise->AlineaArtigo3. '</td>
+	</tr>
+	<tr>
+		<td><b>Artigo 18 </b><br>' .$analise->Artigo18. '</td>
+		<td colspan="2"><b>Alinea</b><br>' .$analise->AlineaArtigo18. '</td>
+	</tr>
+	<tr>
+		<td colspan="3"><b>Atigo 26 </b><br>' .$analise->Artigo26. '</td>
+	</tr>
+	<tr>
+		<td><b>Decreto 5761/2006* </b><br>' .$analise->Lei5761. '</td>
+		<td><b>Artigo 27</b> <br>' .$analise->Artigo27. '</td>
+		<td colspan="2"><b>Inciso(s)</b><br>( ' .$analise->IncisoArtigo27_I. ' )I &nbsp; ( ' .$analise->IncisoArtigo27_II. ' )II &nbsp; ( ' .$analise->IncisoArtigo27_III. ' )III &nbsp; ( ' .$analise->IncisoArtigo27_IV. ' )IV</td>
+	</tr>
+	<tr>
+		<td colspan="4"><b>Parecer Favorável </b><br>' .$analise->ParecerFavoravel. '</td>
+	</tr>
+	<tr>
+		<td colspan="4"><b>Parecer</b><br>' .$analise->ParecerDeConteudo. '</td>
+	</tr>
+	<tr>
+	<td colspan="4" align="center">
+	<br><br><br><br>
+	<hr width="40%" style="background-color: black;" align="left"><br>
+	</td>
+	</tr>';
+	endforeach;
+$html .= '</table>';
+//echo $html; die();
+foreach($this->FonteRecurso as $fonte):
+$html .= '<table width="100%">
+	<tr class="titulo_tabela">
+		<th colspan="8" style="background-color: #D3D3D3;">Orçamento Solicitado</th>
+	</tr>
+	<tr class="fundo_linha2 left">
+		<td colspan="8"><h1 style="color: red;"><b>Fonte de Recurso : ' .$fonte->FonteRecurso. '</b></h1></td>
+	</tr>';
+	$TotalRecurso = 0;
+	foreach($this->Produto as $produto):
+	if ($produto->idTipo == $fonte->idTipo){
+	$html .= '<tr class="fundo_linha2 left">
+		<td colspan="8"><h2 style="color: green;"><b>Produto: ' .$produto->Produto. '</b></h2></td>
+	</tr>';
+	$TotalProduto = 0;
+	foreach($this->Etapa as $etapa):
+	if($etapa->idProduto == $produto->idProduto){
+	$html .= '<tr class="fundo_linha2 left">
+		<td colspan="8"><h3 style="color: #EEAD0E;"><b>Etapa : ' .$etapa->Etapa. '</b></h3></td>
+	</tr>';
+	$TotalEtapa = 0;
+	foreach($this->Uf as $uf):
+	if($uf->idProduto == $etapa->idProduto && $uf->idEtapa == $etapa->idEtapa){
+	$html .= '<tr class="fundo_linha2 left">
+		<td colspan="8"><h4 style="color: black;"><b>' .$uf->UF. ' - ' .$uf->Municipio. '</b></h4></td>
+	</tr>
+	
+	<tr class="titulo_tabela">
+		<td align="center" style="background-color: #D3D3D3;"></td>
+		<td align="center" width="30%" style="background-color: #D3D3D3;">&Iacute;tem</td>
+		<td align="center" style="background-color: #D3D3D3;">Qtd Dias</td>
+		<td align="center" style="background-color: #D3D3D3;">Unidade</td>
+		<td align="center" style="background-color: #D3D3D3;">Quantidade</td>
+		<td align="center" style="background-color: #D3D3D3;">Ocorr&ecirc;ncia</td>
+		<td align="center" style="background-color: #D3D3D3;">Vl. Unit&aacute;rio</td>
+		<td align="center"  width="10%" style="background-color: #D3D3D3;">Vl. Solicitado</td>
+	</tr>';
+	$x = 1;
+	$TotalUf = 0;
+	foreach($this->Item as $item){
+		if($item->idProduto == $uf->idProduto && $item->idEtapa == $uf->idEtapa && $item->UfDespesa == $uf->idUF){
+		    foreach($this->Unidade as $unidade){
+				if($unidade->idProduto == $item->idProduto && $unidade->idEtapa == $item->idEtapa && $unidade->UfDespesa == $item->UfDespesa && $unidade->idPlanilhaItem == $item->idPlanilhaItens){
+				    $html .= '<tr class="fundo">
+				    	<td align="center">' .$x++. '</td>
+				    	<td align="center" width="30%">' .strip_tags($item->Item). '</td>
+				    	<td align="center">' .$unidade->QtdeDias. '</td>
+				    	<td align="center">' .strip_tags($unidade->Unidade). '</td>
+				    	<td align="center">' .$unidade->Quantidade. '</td>
+				    	<td align="center">' .$unidade->Ocorrencia. '</td>
+				    	<td align="center">' .$unidade->ValorUnitario. '</td>
+				    	<td align="center" width="10%">' .$unidade->VlTotal. '</td>
+				    </tr>';
+				    $TotalUf = $TotalUf + $unidade->VlTotal;
+			    }
+		    }
+	    }
+	}
+    
+    $html .= '<tr class="fundo_linha2 left">
+		<td colspan="7"><h4 style="color: black;"><b>Total da UF </b> </h4></td>
+		<td align="center"><h4 style="color: black;"><b>' .$TotalUf. '</b></h4></td>
+	</tr>';
+    $TotalEtapa = $TotalEtapa + $TotalUf;
+	}
+	endforeach;
+	$html .= '<tr class="fundo_linha2 left">
+		<td colspan="7"><h3 style="color:#EEAD0E;"><b>Total da Etapa</b></h3></td>
+		<td align="center"><h3 style="color:#EEAD0E;"><b>' .$TotalEtapa. '</b></h3></td>
+	</tr>';
+	$TotalProduto = $TotalProduto + $TotalEtapa;
+	}
+	endforeach;
+	$html .='<tr class="fundo_linha2 left">
+		<td colspan="7"><h2 style="color:green;"><b>Total dos custos administrativos ou do produto</b></h2></td>
+		<td align="center"><h2 style="color:green;"><b>' .$TotalProduto. '</b></h2></td>
+	</tr>';
+	$TotalRecurso = $TotalRecurso + $TotalProduto;
+	}
+	endforeach;
+	$html .= '<tr class="fundo_linha2 left">
+		<td colspan="7"><h1 style="color: red;"><b>Total por Mecanismo de Incentivo</b></h1></td>
+		<td align="center"><h1 style="color: red;"><b>' .$TotalRecurso. '</b></h1></td>
+	</tr>
+	
+</table>';
+endforeach;
+
+?>
+
+<form action="<?php echo $this->url(array("controller" => "gerenciarparecertecnico", "action" => "dadoshtml")) ?>" target="_blank" name="imprimeEtiqueta" id="imprimeEtiqueta" METHOD="POST">
+
+ 		<input type="hidden" name="html" id="html" value='<?php echo $html;?>'/>
+
+</form>
+<script>
+$(document).ready(function() {
+	$("#imprimeEtiqueta").submit();
+	window.location.href = "imprimirparecertecnico";
+
+});
+</script>
+

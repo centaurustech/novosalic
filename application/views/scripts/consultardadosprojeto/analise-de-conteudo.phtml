@@ -1,0 +1,153 @@
+<?php header('Content-Type: text/plain; charset=ISO-8859-1'); ?>
+
+<!-- INFORMACOES ANALISE PARECERISTA -->
+<?php if(is_array($this->dadosAnaliseInicial) && count($this->dadosAnaliseInicial) > 0)
+        foreach($this->dadosAnaliseInicial as $analise): ?>
+        <table class="tabela">
+            <tr class="destacar">
+                <td colspan="4">Produto:&nbsp;<span style="font-size: 13pt;"><?php echo $analise->Produto; ?></span> <?php if($analise->stPrincipal == 1) echo "<font color='red'><b>(principal)</b></font>";?></td>
+            </tr>
+            <tr>
+                <td rowspan="4"  width="300" align="center"><b>Lei 8.313/91 alterada pela Lei 9.874/1999</b> <br /><br /> ( <?php echo $analise->Lei8313; ?> )</td>
+            </tr>
+            <tr>
+                <td><b>Artigo 3</b> <br /> <?php echo $analise->Artigo3; ?></td>
+                <td><b>Inciso</b> <br /> <?php echo $analise->IncisoArtigo3; ?></td>
+                <td><b>Al&iacute;nea</b> <br /> <?php echo $analise->AlineaArtigo3; ?></td>
+            </tr>
+            <tr>
+                <td><b>Artigo 18</b><br /> <?php echo $analise->Artigo18; ?></td>
+                <td colspan="2"><b>Al&iacute;nea</b> <br /> <?php echo $analise->AlineaArtigo18; ?></td>
+            </tr>
+            <tr>
+                <td colspan="3"><b>Artigo 26</b> <br /> <?php echo $analise->Artigo26; ?></td>
+            </tr>
+            <tr>
+                <td><b>Decreto 5761/2006</b> <br /> <?php echo $analise->Lei5761; ?></td>
+                <td><b>Artigo 27</b> <br /> <?php echo $analise->Artigo27; ?></td>
+                <td colspan="2"><b>Inciso(s)</b> <br />
+                     <b>I</b> (<?php echo $analise->IncisoArtigo27_I; ?>)
+                     <b>II</b> (<?php echo $analise->IncisoArtigo27_II; ?>)
+                     <b>III</b> (<?php echo $analise->IncisoArtigo27_III; ?>)
+                     <b>IV</b> (<?php echo $analise->IncisoArtigo27_IV; ?>)
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4"><b>Parecer Favoravel ?</b> <br /> <?php echo $analise->ParecerFavoravel; ?></td>
+            </tr>
+            <tr>
+                <td colspan="4"><b>Parecer</b> <br /><br /> <?php echo $analise->ParecerDeConteudo; ?></td>
+            </tr>
+            <? /*?>
+            <tr>
+                <td colspan="4"><b>Parecerista</b> <br /><?php echo $analise->Parecerista; ?></td>
+            </tr>
+            <? */ ?>
+        </table>
+    <?php endforeach; ?>
+
+<!-- INFORMACOES ANALISE CNIC -->
+<?php if(is_object($this->dadosAnaliseCnic) && count($this->dadosAnaliseCnic) > 0)
+        foreach($this->dadosAnaliseCnic as $analise): ?>
+        <table class="tabela">
+            <tr class="destacar">
+                <td colspan="4">Produto:&nbsp;<span style="font-size: 13pt;"><?php echo $analise->produto; ?></span> <?php if($analise->stPrincipal == 1) echo "<font color='red'><b>(principal)</b></font>";?></td>
+            </tr>
+            <tr>
+                <td rowspan="4"  width="300" align="center"><b>Lei 8.313/91 alterada pela Lei 9.874/1999</b> <br /><br /> ( <?php echo ($analise->stLei8313 == '1') ? 'Sim':'N&atilde;o'; ?> )</td>
+            </tr>
+            <tr>
+                <td><b>Artigo 3</b> <br /> <?php echo ($analise->stArtigo3 == '1') ? 'Sim':'N&atilde;o'; ?></td>
+                <td><b>Inciso</b> <br /> <?php if ($analise->nrIncisoArtigo3 == 1) echo 'I';
+                                               if ($analise->nrIncisoArtigo3 == 2) echo 'II';
+                                               if ($analise->nrIncisoArtigo3 == 3) echo 'III';
+                                               if ($analise->nrIncisoArtigo3 == 4) echo 'IV';?>
+                </td>
+                <td><b>Al&iacute;nea</b> <br /> <?php echo $analise->dsAlineaArt3; ?></td>
+            </tr>
+            <tr>
+                <td><b>Artigo 18</b><br /> <?php echo ($analise->stArtigo18 == '1') ? 'Sim' : 'N&atilde;o'; ?></td>
+                <td colspan="2"><b>Al&iacute;nea</b> <br /> <?php echo $analise->dsAlineaArtigo18; ?></td>
+            </tr>
+            <tr>
+                <td colspan="3"><b>Artigo 26</b> <br /> <?php echo ($analise->stArtigo26 == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+            </tr>
+            <tr>
+                <td><b>Decreto 5761/2006</b> <br /> <?php echo ($analise->stLei5761 == '1') ? 'Sim' : 'N&atilde;o'; ?></td>
+                <td><b>Artigo 27</b> <br /> <?php echo ($analise->stArtigo27 == '1') ? 'Sim' : 'N&atilde;o'; ?></td>
+                <td colspan="2"><b>Inciso(s)</b> <br />
+                    <b>I</b> (<?php echo ($analise->stIncisoArtigo27_I   == '1') ? 'Sim' : 'N&atilde;o'; ?>)
+                    <b>II</b> (<?php echo ($analise->stIncisoArtigo27_II  == '1') ? 'Sim' : 'N&atilde;o'; ?>)
+                    <b>III</b> (<?php echo ($analise->stIncisoArtigo27_III == '1') ? 'Sim' : 'N&atilde;o'; ?>)
+                    <b>IV</b> (<?php echo ($analise->stIncisoArtigo27_IV  == '1') ? 'Sim' : 'N&atilde;o'; ?>)
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4"><b>Parecer Favoravel ?</b> <br /> <?php echo ($analise->stAvaliacao   == '1') ? 'Sim' : 'N&atilde;o'; ?></td>
+            </tr>
+            <tr>
+                <td colspan="4"><b>Parecer</b> <br /><br /> <?php echo (!empty($analise->dsAvaliacao)) ? $analise->dsAvaliacao : '<em>Dados n&atilde;o informados</em>' ; ?></td>
+            </tr>
+            <tr>
+                <td colspan="4"><b>Parecerista</b> <br /><?php echo $analise->Parecerista; ?></td>
+            </tr>
+        </table>
+    <?php endforeach; ?>
+
+
+<!-- INFORMACOES ANALISE PLENARIA -->
+<?php if(is_object($this->dadosAnalisePlenaria) && count($this->dadosAnalisePlenaria) > 0)
+        foreach($this->dadosAnalisePlenaria as $analise): ?>
+        <table class="tabela">
+            <tr class="destacar">
+                <td colspan="4">Produto:&nbsp;<span style="font-size: 13pt;"><?php echo $analise->produto; ?></span> <?php if($analise->stPrincipal == 1) echo "<font color='red'><b>(principal)</b></font>";?></td>
+            </tr>
+            <tr>
+                <td rowspan="4"  width="300" align="center"><b>Lei 8.313/91 alterada pela Lei 9.874/1999</b> <br /><br /> ( <?php echo ($analise->stLei8313 == '1') ? 'Sim':'N&atilde;o'; ?> )</td>
+            </tr>
+            <tr>
+                <td><b>Artigo 3</b> <br /> <?php echo ($analise->stArtigo3 == '1') ? 'Sim':'N&atilde;o'; ?></td>
+                <td><b>Inciso</b> <br /> <?php if ($analise->nrIncisoArtigo3 == 1) echo 'I';
+                                               if ($analise->nrIncisoArtigo3 == 2) echo 'II';
+                                               if ($analise->nrIncisoArtigo3 == 3) echo 'III';
+                                               if ($analise->nrIncisoArtigo3 == 4) echo 'IV';?>
+                </td>
+                <td><b>Al&iacute;nea</b> <br /> <?php echo $analise->dsAlineaArt3; ?></td>
+            </tr>
+            <tr>
+                <td><b>Artigo 18</b><br /> <?php echo ($analise->stArtigo18 == '1') ? 'Sim' : 'N&atilde;o'; ?></td>
+                <td colspan="2"><b>Al&iacute;nea</b> <br /> <?php echo $analise->dsAlineaArtigo18; ?></td>
+            </tr>
+            <tr>
+                <td colspan="3"><b>Artigo 26</b> <br /> <?php echo ($analise->stArtigo26 == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+            </tr>
+            <tr>
+                <td><b>Decreto 5761/2006</b> <br /> <?php echo ($analise->stLei5761 == '1') ? 'Sim' : 'N&atilde;o'; ?></td>
+                <td><b>Artigo 27</b> <br /> <?php echo ($analise->stArtigo27 == '1') ? 'Sim' : 'N&atilde;o'; ?></td>
+                <td colspan="2"><b>Inciso(s)</b> <br />
+                    <b>I</b> (<?php echo ($analise->stIncisoArtigo27_I   == '1') ? 'Sim' : 'N&atilde;o'; ?>)
+                    <b>II</b> (<?php echo ($analise->stIncisoArtigo27_II  == '1') ? 'Sim' : 'N&atilde;o'; ?>)
+                    <b>III</b> (<?php echo ($analise->stIncisoArtigo27_III == '1') ? 'Sim' : 'N&atilde;o'; ?>)
+                    <b>IV</b> (<?php echo ($analise->stIncisoArtigo27_IV  == '1') ? 'Sim' : 'N&atilde;o'; ?>)
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4"><b>Parecer Favoravel ?</b> <br /> <?php echo ($analise->stAvaliacao   == '1') ? 'Sim' : 'N&atilde;o'; ?></td>
+            </tr>
+            <tr>
+                <td colspan="4"><b>Parecer</b> <br /><br /> <?php echo (!empty($analise->dsAvaliacao)) ? $analise->dsAvaliacao : '<em>Dados n&atilde;o informados</em>' ; ?></td>
+            </tr>
+            <tr>
+                <td colspan="4"><b>Parecerista</b> <br /><?php echo $analise->Parecerista; ?></td>
+            </tr>
+        </table>
+    <?php endforeach; ?>
+
+<!-- SEM REGISTROS PARA MOSTRAR -->
+<?php if(count($this->dadosAnaliseInicial)<=0 && count($this->dadosAnaliseCnic)<=0 && count($this->dadosAnalisePlenaria)<=0): ?>
+        <table class="tabela">
+            <tr>
+                <td align="center"><em>Dados n&atilde;o informados!</em></td>
+            </tr>
+        </table>
+<?php endif; ?>

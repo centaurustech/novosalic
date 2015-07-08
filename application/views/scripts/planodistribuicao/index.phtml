@@ -1,0 +1,186 @@
+<?php $frmplanoHref = $this->url(array('controller' => 'plano-distribuicao', 'action' => 'frm-plano-distribuicao')).'?idPreProjeto='.$_GET['idPreProjeto']; ?>
+
+<script language="javascript" type="text/javascript">
+
+    $(document).ready(function(){
+        <?php if(isset($this->movimentacaoAtual) && $this->movimentacaoAtual != '95'){ ?>
+            //DESABILITA ALTERACOES NOS DADOS DO FORMULARIO (INCLUIR/ALTERAR/EXCLUIR)
+            JSBloquearAlteracaoFormulario();
+        <?php } ?>
+    });
+
+    function confirma(obj){
+        $("#confirm").dialog("destroy");
+        $("#confirm").dialog({
+            width:350,
+            height:150,
+            EscClose:false,
+            modal:true,
+            buttons: {
+                'Cancelar':function(){
+                    $(this).dialog('close'); // fecha a modal
+                },
+                'Confirmar':function(){
+                    location.href=obj;
+                }
+            }
+        });
+        $("#confirm").dialog('open');
+    }
+
+    function requisicaoAjaxObj(){
+        var ajaxObj={
+            pagina          :   '',
+            parametros      :   {},
+            type            :   'post',
+            dataType        :   '',
+            resposta        :   '#conteudo',
+            async           :   true,
+            funcaoRetorno   :   function (resposta){
+                $(this.resposta).html(resposta);
+            },
+            executar        :   function(dados){
+                this.refineParametrosObj(dados);
+                var esteObj = this;
+                if(this.resposta != undefined && this.resposta != '')
+                    $(this.resposta).html('<img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" alt="carregando"><br/><br/>Carregando...<br>Por Favor, aguarde!!');
+                $.ajax({
+                    type      : esteObj.type,
+                    url       : esteObj.pagina,
+                    data      : esteObj.parametros,
+                    async     : esteObj.async,
+                    success   : function(resp){
+                        esteObj.funcaoRetorno(resp);
+                    }
+                    ,dataType  : esteObj.dataType
+                });
+            },
+            refineParametrosObj : function(data){
+                if(data!= undefined)
+                    for(var j in data){
+
+                        this[j]=data[j];
+                    }
+            }
+        }
+        return ajaxObj;
+    }
+
+    function janelaObj(dados){
+        var divConteudo = $('<div></div>')
+        .attr('title',dados.title)
+        .appendTo('body');
+        var novaJanela = {
+            divConteudo : divConteudo,
+            removerBtFechar: true,
+            parametros : {autoOpen: false},
+            iniciarJanela : function(dados){
+                this.refineParametrosObj(dados);
+                var esse = this.divConteudo;
+                this.parametros.close = function (){
+                    esse.html('');
+                }
+                this.divConteudo.dialog(this.parametros);
+            },
+            abrirJanela:function(){
+                this.divConteudo.dialog('open');
+                if(this.removerBtFechar)
+                    $('.ui-dialog-titlebar-close').remove();
+            },
+            fecharJanela:function(){
+                this.divConteudo.dialog('close');
+                this.divConteudo.remove();
+            },
+            refineParametrosObj : function(data){
+                if(data!= undefined)
+                    for(var j in data){
+                        this[j]=data[j];
+                    }
+            }
+        }
+        novaJanela.iniciarJanela(dados);
+        return novaJanela;
+    }
+
+    $(function(){
+        $('#btn_novo').click(function(){
+            $("#div_form").html('<br><center><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center>');
+            jqAjaxLinkSemLoading("<?php echo $frmplanoHref; ?>", "", "div_form");
+        });
+    });
+
+    function editar(idPlanoDistribuicao){
+        var url = '<?php echo $this->url(array('controller' => 'plano-distribuicao', 'action' => 'frm-plano-distribuicao')).'?idPreProjeto='.$_GET['idPreProjeto'].'&idPlanoDistribuicao=';?>'+idPlanoDistribuicao;
+        $("#div_form").html('<br><center><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center>');
+        jqAjaxLinkSemLoading(url, "", "div_form");
+    }
+</script>
+
+<?php require_once "scripts/manterpropostaincentivofiscal/inc/menu.inc.php"; // menu ?>
+
+<!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="confirm" title="Confirma&ccedil;&atilde;o" style="display: none">Tem certeza que deseja excluir o registro?</div>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'propostas')); ?>" title="Projetos">Propostas</a></li>
+        <li class="last">Plano de Distribui&ccedil;&atilde;o</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INICIO TITULO ========== -->
+<div id="titulo">
+    <div>Plano de Distribui&ccedil;&atilde;o</div>
+</div>
+
+<!-- ========== FIM TITULO ========== -->
+
+<!-- ========== INICIO CONTEUDO ========== -->
+<div id="conteudo">
+    <div id="div_form"></div>
+    <table class="tabela">
+        <tr class="titulo_tabela">
+            <th width="25%">Nome do Evento / Produto</th>
+            <th width="25%">&Aacute;rea</th>
+            <th width="15%">Segmento</th>
+            <th width="15%">Principal</th>
+            <th width="20%">A&ccedil;&otilde;es</th>
+        </tr>
+        <?php $totalExemplares=0; $totalReceita=0; ?>
+        <?php if(!empty($this->planosDistribuicao)){ ?>
+            <?php foreach($this->planosDistribuicao as $planoDistribuicao){ ?>
+                <?php
+                $totalExemplares += $planoDistribuicao->QtdeProduzida;
+                $receita = ($planoDistribuicao->QtdeVendaNormal*$planoDistribuicao->PrecoUnitarioNormal)+($planoDistribuicao->QtdeVendaPromocional*$planoDistribuicao->PrecoUnitarioPromocional);
+                $totalReceita += $receita;
+                ?>
+            <tr class="fundo">
+                <td class="centro"><?php echo $planoDistribuicao->Produto; ?></td>
+                <td class="centro"><?php echo $planoDistribuicao->DescricaoArea; ?></td>
+                <td align="right"><?php echo $planoDistribuicao->DescricaoSegmento; ?></td>
+                <td align="right"><?php echo ($planoDistribuicao->stPrincipal == 0) ? 'N&atilde;o' : 'Sim'; ?></td>
+                <td class="centro" nowrap>
+                    <input type="button" class="btn_editar" id="btn_editar" onclick="editar(<?php echo $planoDistribuicao->idPlanoDistribuicao; ?>)"/>&nbsp;
+                    <input type="button" class="btn_exclusao" id="btn_excluir" onclick="confirma('<?php echo $this->urlApagar; ?>&idPlanoDistribuicao=<?php echo $planoDistribuicao['idPlanoDistribuicao']; ?>')"/></td>
+            </tr>
+            <?php } ?>
+        <?php } ?>
+    </table>
+
+    <div id="miolo"> <!-- ========== INICIO MIOLO IDENTIFICACAO ========== -->
+        <table class="tabela" style="width: 100%;" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td align="center">
+                    <input type="button" class="btn_novo" id="btn_novo"  />
+                </td>
+            </tr>
+        </table>
+    </div>
+
+</div><!-- ========== FIM CONTEUDO ========== -->
+
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

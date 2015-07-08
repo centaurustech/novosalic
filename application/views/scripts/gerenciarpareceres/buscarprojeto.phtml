@@ -1,0 +1,145 @@
+<script type="text/javascript">
+$(document).ready(function() {
+	$('.dataPicker').datepicker({
+       dateFormat: 'dd/mm/yy',
+       dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'],
+       dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
+       dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb','Dom' ],
+       monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+       monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+       nextText: 'Próximo',
+       prevText: 'Anterior'
+   });	
+}); 
+       
+       
+function modoconsulta(campo,valor)
+{
+
+	// Exatamente igual
+	if(campo == 'dtDocumento' && valor == 1)
+	{
+		$('#dtI').show();			
+		$('#dtF').hide();			
+		$('#dtF').val('');			
+	}
+			
+	// Entre dois valores
+	if(campo == 'dtDocumento' && valor == 2)
+	{
+		$('#dtF').show();			
+	}
+	
+}
+</script>
+<?php
+
+
+//require_once "inc/menu.inc.php"; // menu
+?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''),'',true); ?>" title="Ir para Início">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'index'),'',true); ?>" title="Gerenciar Pareceres">Gerenciar Pareceres T&eacute;cnicos</a></li>
+		<li class="last">Localizar Pareceres</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Localizar Pareceres<span class="voltar"><a href="#" onclick="window.location='<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'index'),'',true); ?>'">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+<form action="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'index')); ?>" method="post">
+	
+<table class="tabela">
+	<tr>	
+		<td width="130">PRONAC</td>
+		<td width="230" align="center">Exatamente igual</td>
+		<td><input type="text" class="input_simples" name="pronac" value="" /></td>
+	</tr>
+	<tr>
+		<td>Nome do Projeto</td>
+		<td align="center">
+			<select name="nometc" style="width: 200px;" class="input_simples">
+				<option value="1">Início igual</option>
+				<option value="2">Que contenha</option>
+				<option value="3">Diferente</option>
+			</select>
+		</td>
+		<td><input type="text" class="input_simples" name="nomeP" value="" /></td>
+	</tr>
+	<tr>
+		<td>Nome do Proponente</td>
+		<td align="center">
+			<select name="tipoPesqPronente" style="width: 200px;" class="input_simples">
+				<option value="1">Início igual</option>
+				<option value="2">Que contenha</option>
+				<option value="3">Diferente</option>
+			</select>
+		</td>
+		<td><input type="text" class="input_simples" name="nomeProponente" value="" /></td>
+	</tr>
+	<tr>	
+		<td>Data Consolidação</td>
+		<td align="center">
+			<select name="dtDocumento" style="width: 200px;" class="input_simples" onchange="modoconsulta('dtDocumento',this.value);">
+				<option value="1">Exatamente igual</option>
+				<option value="2">Entre dois valores</option>												
+			</select>	
+		</td>
+		<td>
+			<input type="text" class="input_simples dataPicker" name="dtI" id="dtI" maxlength="10" onkeyup="mascara(this, format_data);"  />
+	 		<input type="text" class="input_simples dataPicker" name="dtF" id="dtF" maxlength="10" onkeyup="mascara(this, format_data);" style="display:none;" />
+		</td>
+	</tr>
+	<tr>	
+		<td>Situação</td>
+		<td align="center">
+			<select name="situacaotc" style="width: 200px;" class="input_simples" onchange="modoconsulta('dtDocumento',this.value);">
+				<option value="1">Exatamente igual</option>
+				<option value="2">Diferente</option>												
+			</select>
+		</td>
+		<td>
+			<select name="situacao" style="width: 400px;" class="input_simples" onchange="modoconsulta('dtDocumento',this.value);">
+				<option value="">Selecione</option>
+				<option value="C09">Projeto fora da pauta - Proponente inabilitado</option>
+				<option value="C20">Análise técnica concluída</option>
+				<option value="C25">Parecer técnico desfavorável</option>																												
+			</select>
+		</td>
+	</tr>
+	<tr>	
+		<td colspan="3" align="center">
+			<input type="submit" class="btn_localizar" name="name" value=" " />
+			<input type="reset" class="btn_limpar" name="name" value=" " />
+		</td>
+	</tr>
+</table>
+
+</form>
+
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

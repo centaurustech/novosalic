@@ -1,0 +1,45 @@
+<?php
+if($this->erro){
+?>
+<script>window.parent.janelaAlerta('<?php echo $this->mensagemErro;?>');</script>
+<?php
+}
+else{
+    $pagina = '';
+    $campo  = '';
+    if($this->idlicitacao){
+        $pagina = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'alterarlicitacao'));
+        $campo  = 'idlicitacao';
+        $valor  = $this->idlicitacao;
+    }
+    if($this->iddispensa){
+        $pagina = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'incluirdispensa'));
+        $campo  = 'iddispensa';
+        $valor  = $this->iddispensa;
+    }
+    if($this->idcontrato){
+        $pagina = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'incluircontrato'));
+        $campo  = 'idcontrato';
+        $valor  = $this->idcontrato;
+    }
+    if($this->idcotacao){
+        $pagina = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'incluircotacao'));
+        $campo  = 'idcotacao';
+        $valor  = $this->idcotacao;
+    }
+    ?>
+    <script>
+
+        info = {
+            resp        :   true,
+            mensagem    :   'Anexado com sucesso!',
+            pagina      :   '<?php echo $pagina;?>',
+            parametros  :   {
+                                <?php echo $campo;?>:'<?php echo $valor;?>',idpronac:'<?php echo $this->idpronac;?>'
+                            }
+        }
+        window.parent.executarPagina(info);
+    </script>
+    <?php
+}
+?>

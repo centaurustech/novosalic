@@ -1,0 +1,63 @@
+<script type="text/javascript">
+$(document).ready(function() 
+	    { 
+			
+	        $("#tabelabusca").tablesorter(); 
+	    } 
+	);
+
+$('th').css("cursor","pointer");
+$('th').attr("title","Clique aqui para ordenar");
+
+</script>
+<?php if ( !empty ( $this->busca ) ){?>
+<table class="tabela" id="tabelabusca">
+<thead>
+<tr>
+	<th align="center">UF</th>
+	<th>Município</th>
+	<th align="center">Nº <?php echo $this->nome ?></th>
+	<th><?php echo $this->nome ?></th><th>PROPONENTE</th>
+	<th align="center">Nº DO EDITAL</th>
+	<th>EDITAL</th>
+	<th align="center">DATA DE ENVIO</th>
+        <th align="center">DATA DA &Uacute;LTIMA AVALIAÇÃO</th>
+</tr>
+</thead> 
+<tbody>
+<?php foreach($this->busca as $b):?>
+<tr>
+	<td><?php echo utf8_decode(htmlentities($b->c1)); ?></td>
+	<td><?php echo utf8_decode(htmlentities($b->c2)); ?></td>
+	<!--<td><?php //echo utf8_decode(htmlentities($b->c3)); ?></td>-->
+        <?php if($this->relatorio != 3 ) { ?>
+        <td><a href="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'exibirpropostacultural')); ?>?idPreProjeto=<?php echo utf8_decode(htmlentities($b->c3))?>&pesquisa=proposta" target="_blank"><?php echo utf8_decode(htmlentities($b->c3))?></a></td>
+        <?php } else { ?>
+        <td><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index')); ?>?idPronac=<?php echo utf8_decode(htmlentities($b->c10))?>" target="_blank"><?php echo utf8_decode(htmlentities($b->c3))?></a></td>
+        <?php } ?>
+	<td><?php echo utf8_decode(htmlentities($b->c4)); ?></td>
+	<td><?php echo utf8_decode(htmlentities($b->c5)); ?></td>
+	<td><?php echo utf8_decode(htmlentities($b->c6)); ?></td>
+	<td><?php echo utf8_decode(htmlentities($b->c7)); ?></td>
+	<td><?php echo utf8_decode(htmlentities($b->c8)); ?></td>
+	<td><?php echo utf8_decode(htmlentities($b->c9)); ?></td>
+</tr>
+<?php endforeach; ?>
+</tbody> 
+</table>
+<?php } else {?>
+<table class="tabela">
+
+    <tr>
+
+        <td>
+
+            <?php echo "Registro n&atilde;o encontrado!"; ?>
+
+        </td>
+
+    </tr>
+
+</table>
+
+<?php }?>

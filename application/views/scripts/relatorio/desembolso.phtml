@@ -1,0 +1,256 @@
+<script>
+    $(document).ready(function(){
+        $(".btn_pesquisar").click(function(){
+            $("#resultadoConsulta").html("");
+            selecionarOptions();
+            jqAjaxForm(document.getElementById("frmDados"), "resultadoConsulta");
+        });
+
+        $(".cmpNumerico").numeric().attr("maxlength", "9");
+
+        $("#tpDt").change(function(){
+            if($("#spanDt").css("display")=="none" && $(this).val() == "entre"){
+                $("#spanDt").show();
+            }else{
+                $("#spanDt").hide();
+            }
+            //$("#spanDt").toggle();
+        });
+
+        $(function()
+        {
+        	// máscaras dos campos
+    		$("#dt").keyup(function()
+    		{
+    			mascara(this, format_data); // data
+    		});
+            $.datepicker.regional['pt-BR'] = {
+                closeText: 'Fechar',
+                prevText: '&#x3c;Anterior',
+                nextText: 'Pr&oacute;ximo&#x3e;',
+                currentText: 'Hoje',
+                monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+                monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+                dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+                dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                weekHeader: 'Sm',
+                dateFormat: 'dd/mm/yy',
+                firstDay: 0,
+                isRTL: false,
+                showMonthAfterYear: false,
+                yearSuffix: ''};
+            $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+            $(".cmpData").datepicker($.datepicker.regional['pt-BR']);
+        });
+
+    });
+
+    function addTodos() // adiciona todos os options da esquerda para direita
+    {
+        visao       = document.getElementById("visao"); // select de origem
+        visaoAgente = document.getElementById("visaoAgente"); // select de destino
+        for (i = 0; i < visao.length; i++) // varre todo o option de origem
+        {
+            var novoOption = document.createElement("option"); // cria um novo option
+            novoOption.text  = visao.options[i].text; // texto do option
+            novoOption.value = visao.options[i].value; // valor do option
+            visaoAgente.options.add(novoOption); // adiciona o novo option no select de destino
+            visao.remove(i); // remove o option do select de origem
+            i--;
+        }
+    } // fecha funç?o addTodos()
+
+
+    function delTodos() // deleta todos os options da direita
+    {
+        visao       = document.getElementById("visao"); // select de origem
+        visaoAgente = document.getElementById("visaoAgente"); // select de destino
+        for (i = 0; i < visaoAgente.length; i++) // varre todo o option de origem
+        {
+            if (visaoAgente.options[i].value != "144")
+            {
+                var novoOption = document.createElement("option"); // cria um novo option
+                novoOption.text  = visaoAgente.options[i].text; // texto do option
+                novoOption.value = visaoAgente.options[i].value; // valor do option
+                visao.options.add(novoOption); // adiciona o novo option no select de destino
+                visaoAgente.remove(i); // remove o option do select de origem
+                i--;
+            }
+        }
+    } // fecha funç?o delTodos()
+
+
+    function addSelecionado() // adiciona o option selecionado da esquerda para direita
+    {
+        visao       = document.getElementById("visao"); // select de origem
+        visaoAgente = document.getElementById("visaoAgente"); // select de destino
+        for (i = 0; i < visao.length; i++) // varre todo o option de origem
+        {
+            if (visao.options[i].selected == true) // caso o option esteja selecionado
+            {
+                var novoOption = document.createElement("option"); // cria um novo option
+                novoOption.text  = visao.options[i].text; // texto do option
+                novoOption.value = visao.options[i].value; // valor do option
+                visaoAgente.options.add(novoOption); // adiciona o novo option no select de destino
+                visao.remove(i); // remove o option do select de origem
+                i--;
+            }
+        }
+    } // fecha funç?o addSelecionado()
+
+
+    function delSelecionado() // deleta o option selecionado da direita
+    {
+        visao       = document.getElementById("visao"); // select de origem
+        visaoAgente = document.getElementById("visaoAgente"); // select de destino
+        for (i = 0; i < visaoAgente.length; i++) // varre todo o option de origem
+        {
+            if (visaoAgente.options[i].selected == true && visaoAgente.options[i].value != "144") // caso o option esteja selecionado
+            {
+                var novoOption = document.createElement("option"); // cria um novo option
+                novoOption.text  = visaoAgente.options[i].text; // texto do option
+                novoOption.value = visaoAgente.options[i].value; // valor do option
+                visao.options.add(novoOption); // adiciona o novo option no select de destino
+                visaoAgente.remove(i); // remove o option do select de origem
+                i--;
+            }
+        }
+    } // fecha funç?o delSelecionado()
+
+
+    function selecionarOptions() // funç?o para selecionar todos os options antes do envio do formulário
+    {
+        visaoAgente = document.getElementById("visaoAgente"); // select de destino
+        for (i = 0; i < visaoAgente.length; i++) // varre todo o option de origem
+        {
+            visaoAgente.options[i].selected = true; // adiciona o novo option no select de destino
+        }
+    } // fecha funç?o selecionarOptions()
+</script>
+
+<?php include("scripts/relatorio/inc/menuPontoCultural.inc.php"); ?>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''), '', true); ?>" title="Ir para Página Inicial">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'relatorio', 'action' => ''), '', true); ?>" title="Ir para Relatorio">Gerar Relatório Análise</a></li>
+		<li class="last">Desenbolso</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Consulta desembolso<span class="voltar"><a href="javascript:voltar()">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="conteudo" align="center">
+
+    <fieldset>
+        <legend> Filtros de pesquisa </legend>
+        <form action="<?php echo $this->url(array('controller' => 'relatorio', 'action' => 'resultado-desembolso')); ?>" method="post" name="frmDados" id="frmDados">
+        <table class="tabela" style="width: 90%">
+            <tr>
+                <td width="20%"><b>Nr. Edital</b></td>
+                <td align="left" colspan="2"><input type="text" name="nrEdital" id="nrEdital" class="input_simples w200 cmpNumerico"/></td>
+            </tr>
+            <tr>
+                <td><b>Nr. Parcela</b></td>
+                <td colspan="2" align="left"><input type="text" name="nrParcela" id="nrParcela" class="input_simples w200 cmpNumerico"/></td>
+            </tr>
+            <tr>
+                <td><b>Data</b></td>
+                <td width="220" align="left">
+                    <select name="tpDt" id="tpDt" class="select_simples cmpDesabilitar" onchange="if($(this).val()=='OT' || $(this).val()=='U7' || $(this).val()=='SP' || $(this).val()=='MM' || $(this).val()=='UM'){$('#camposDatadt').css('display','none');}else{$('#camposDatadt').css('display','');}">
+                        <OPTGROUP LABEL="Normais">
+                            <option value="">- Selecione -</option>
+                            <option value="igual">Exatamente Igual</option>
+                            <option value="entre">Entre dois valores</option>
+                            <option value="maior">Maior ou igual a </option>
+                            <option value="menor">Menor ou igual a</option>
+                        </OPTGROUP>
+                        <OPTGROUP LABEL="Especiais">
+                           <option value="OT">Ontem</option>
+                           <option value="U7">&Uacute;ltimos 7 dias</option>
+                           <option value="SP">Semana Passada (seg-dom)</option>
+                           <option value="MM">Este m&ecirc;s</option>
+                           <option value="UM">&Uacute;ltimo m&ecirc;s</option>
+                        </OPTGROUP>
+                    </select>
+                <td align="left">
+                    <span id="camposDatadt">
+                        <input name="dt" id="dt" value="" class="input_simples btn_calendario cmpData" onkeyup="mascara(this, format_data);" onclick="limpar_campo(this, '');" maxlength="10"/>
+                        <span id="spanDt" style="display: none;">&nbsp;e&nbsp;<input name="dt_Final" id="dt_Final" value="" class="input_simples btn_calendario cmpData" onkeyup="mascara(this, format_data);" onclick="limpar_campo(this, '');" maxlength="10" /></span>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td><b>Liquidado</b></td>
+                <td align="left" colspan="2">
+                    <select name="liquidado" id="liquidado" class="input_simples w200">
+                        <option value="">- Selecione -</option>
+                        <option value="1">Sim</option>
+                        <option value="0">N&atilde;o</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" align="left">
+                    <table align="left" width="100%">
+                        <tr>
+                        	<th align="center">Não mostrar</th>
+                        	<th align="center"></th>
+                        	<th align="center">Mostrar</th>
+                        </tr>
+                        <tr>
+                            <td class="centro" valign="top">
+                            	<label for="visao"> </label>
+                                <select class="select_simples" name="visao[]" id="visao" multiple="multiple" size="7"  style="width: 200px;"></select>
+							</td>                        
+                            <td class="centro" valign="middle" width="20px">
+                                <p><input class="btn_move_right_all" value="" onkeypress=" " onclick="addTodos();" title="Adicionar todas as vis&otilde;es para o Agente" type="button"></p>
+                                <p><input class="btn_move_right" value="" onkeypress=" " onclick="addSelecionado();" title="Adicionar a vis&atilde;o selecionada para o Agente" type="button"></p>
+                                <p><input class="btn_move_left" value="" onkeypress=" " onclick="delSelecionado();" title="Remover a vis&atilde;o selecionada do Agente" type="button"></p>
+                                <p><input class="btn_move_left_all" value="" onkeypress=" " onclick="delTodos();" title="Remover todas as vis&otilde;es do Agente" type="button"></p>
+                            </td>
+                            <td class="centro" valign="top">
+                                <label for="visaoAgente"> </label>
+                                <select class="select_simples" name="visaoAgente[]" id="visaoAgente" multiple="multiple" size="7" style="width: 200px;">
+	                                <option  value="cmpsOrd_data">Data</option>
+	                                <option  value="cmpsOrd_valor">Valor</option>
+	                                <option  value="cmpsOrd_vlcapital">Vl. Capital</option>
+	                                <option  value="cmpsOrd_nrobcapital">Nr. OB Capital</option>
+	                                <option  value="cmpsOrd_vlcusteio">Vl. Custeio</option>
+	                                <option  value="cmpsOrd_nrobcusteio">Nr. OB Custeio</option>
+	                                <option  value="cmpsOrd_liquidado">Liquidado</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <table class="tabela" style="width: 90%">
+            <tr>
+                <td align="center">
+                    <input type="button" style="width: 88px" class="btn_pesquisar" id="btn_pesquisar"/>
+                    <input type="reset" style="width: 88px" class="btn_limpar" id="btn_limpar" value=""/>
+                </td>
+            </tr>
+        </table>
+        </form>
+</fieldset>
+
+<div id="resultadoConsulta"></div>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

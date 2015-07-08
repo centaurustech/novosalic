@@ -1,0 +1,115 @@
+<?php include_once 'scripts/parecerista/inc/menu-assinantes.php'; ?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'),'',true); ?>" title="Ir para Início">Início</a></li>
+        <li class="last">Gerenciar assinante</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<div id="dialog"></div>
+ 
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Gerenciar assinante <span class="voltar"><a href="javascript:voltar();" title="Página Anterior">Voltar</a></span></div>
+</div>
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+
+<div id="conteudo">
+    <form id="formAssinantes" action="<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'remove-assinante')); ?>" method="POST">
+        <input type="hidden" name="idAssinantes" id="idAssinantes" />
+        
+        <table class="tabela">
+            <tr>
+                <th colspan="3" class="titulo_tabela">Lista de Assinantes</th>
+            </tr>
+            <tr>
+                <th width="350">Assinante</th>
+                <th>Cargo</th>
+                <th width="120"></th>
+            </tr>
+            <?php foreach($this->listaAssinantes as $ass): ?>
+            <tr>
+                <td><?php echo $ass->Nome; ?></td>
+                <td><?php echo $ass->Cargo; ?></td>
+                <td class="centro"><input type="button" onclick="removeAssinante('<?php echo $ass->idAssinantes; ?>');" class="btn_excluir" value=" " title="Desabilitar assinante" /></td>
+            </tr>
+            <?php endforeach; ?>
+        </table>
+    </form>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />
+
+<script>
+    
+    $(document).ready(function(){
+        
+        $('#btnAddAssinante').click(function(){
+            
+            $("#dialog").html('Deseja adicionar a assinatura?');
+        
+            $("#dialog").dialog("destroy");
+            $("#dialog").dialog({
+                width: '400px',
+                modal: true,
+                draggable: false,
+                resizable: false,
+                closeOnEscape: false,
+                title: 'Confirmação',
+                buttons: { 
+                    Cancelar:function() {
+                        $(this).dialog('close');
+                    },
+                    Confirmar:function() {
+                        $('#formConfigurarPagamento').attr('action','add-assinantes');
+                        $('#formConfigurarPagamento').submit();
+                    }
+                }
+            });
+
+            $('.ui-dialog-titlebar-close').remove();
+
+            
+            
+        });
+        
+    });
+
+    function removeAssinante(valor){
+        
+        $("#dialog").html('Deseja desabilitar o assinante?');
+        
+        $("#dialog").dialog("destroy");
+        $("#dialog").dialog({
+            width: '400px',
+            modal: true,
+            draggable: false,
+            resizable: false,
+            closeOnEscape: false,
+            title: 'Confirmação',
+            buttons: { 
+                Cancelar:function() {
+                    $(this).dialog('close');
+                },
+                Confirmar:function() {
+                    $('#idAssinantes').val(valor);
+                    $('#formAssinantes').submit();
+                }
+            }
+        });
+        
+        $('.ui-dialog-titlebar-close').remove();
+
+        
+    }
+    
+</script>

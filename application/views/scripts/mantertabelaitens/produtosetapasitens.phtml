@@ -1,0 +1,106 @@
+
+<!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'propostas')); ?>" title="Ir para Propostas">Propostas</a></li>
+        <li class="last">Produtos / Etapas / Itens  </li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INICIO TITULO ========== -->
+<div id="titulo">
+    <div>Localiza&ccedil;&atilde;o<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+<div id="conteudo">
+
+ 
+<div class="demo">
+ 
+  <form id="formBuscar" name="formBuscar" method="post" action="<?php echo $this->url(array('controller' => 'mantertabelaitens', 'action' => 'produtosetapasitens')); ?>">
+
+  
+
+				<table class="tabela">
+					<tr class="titulo_tabela">
+						<th colspan="3">Localizar Produtos / Etapas / Itens </th>
+			<tr><td colspan="3"></td></tr>
+
+					
+					<tr>
+						<td class="esquerda" ><label for="produto" ><b>Produto </b></label></td>
+						<td class="esquerda"><b>Exatamente igual </b></td>
+						<td class="esquerda"><label for="produto"><b>Todos</b></label>
+						
+						
+					
+						
+						
+										<select class="input_simples" name="produto" id="produto">
+											<option value="todosprodutos" selected="selected">Todos</option>
+											<option value="acervo">Acervo  Bibliogr&aacute;fico e Documental</option>
+											<option value="apresentacao">Apresenta&ccedil;&atilde;o Musical</option>
+											<option value="aquisicao">Aquisi&ccedil;&atilde;o de Acervo Museol&oacute;gico</option>
+										</select>	
+						</td>
+					</tr>
+					<tr>
+						<td class="esquerda" ><label for="etapa" ><b>Etapa</b></label></td>
+						<td class="esquerda"><b>Exatamente igual </b></td>
+						<td class="esquerda">
+						
+
+						
+										<select class="input_simples" name="etapa" id="etapa">
+											<option value="todasetapas" selected="selected">Todos</option>
+											<option value="preproducao">Pr&eacute;-Produ&ccedil;ao / Prepara&ccedil;&atilde;o</option>
+											<option value="producao">Produ&ccedil;&atilde;o / Execu&ccedil;&atilde;o</option>
+											<option value="divulgacao">Divulga&ccedil;&atilde;o / Comercializa&ccedil;&atilde;o</option>
+											<option value="custosadministrativos">Custos / Administrativos</option>
+											<option value="recolhimentos">Recolhimentos</option>
+											<option value="elaboracao">Elabora&ccedil;&atilde;o e Agenciamento</option>
+										</select>	
+						</td>
+					</tr>
+		
+
+				        <tr  class="centro">
+				        						<td class="esquerda" ><label for="item" ><b>Item</b></label></td>
+
+						<td class="esquerda">
+						
+						
+						
+										<select class="input_simples" name="item" id="item">
+											<option value="01" selected="selected">Que contenha</option>
+											<option value="02" >In&iacute;cio Igual</option>
+											<option value="03">Exatamente Igual</option>
+											<option value="04">Diferente</option>
+										</select>
+				        		<td class="esquerda"><input type="text" name="qtdtrechos" id="qtdtrechos" maxlength="4" style="width:600px;" /></td>
+				     </tr>		
+
+			
+        <tr  class="centro">
+        
+        
+                 <td colspan="3" class="centro">
+
+                    <input type="submit" title=" Pesquisar " tabindex="6" class="btn_localizar" value=" " />
+                    &nbsp;&nbsp;&nbsp;
+                    <input type="reset" title=" Cancelar " tabindex="7" class="btn_limpar" value=" " />
+
+                </td>
+        
+        
+</tr>
+    </table>
+    
+    
+        </form>
+</div>
+<br clear="all" />

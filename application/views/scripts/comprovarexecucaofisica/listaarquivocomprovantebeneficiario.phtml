@@ -1,0 +1,50 @@
+<?php
+    $cod = "0";
+    if(isset($this->idPreProjeto)){
+        $cod = "&idPreProjeto=".$this->idPreProjeto;
+    }elseif(isset($_GET['idPreProjeto'])){
+        $cod = "&idPreProjeto=".$this->idPreProjeto;
+    }
+
+    if(isset($this->idPronac)){
+        $cod = "&idPronac=".$this->idPronac;
+    }elseif(isset($_GET['idPronac'])){
+        $cod = "&idPronac=".$_GET['idPronac'];
+    }
+?>
+
+<div style="display: none;" id="exclusaoArquivo2">Deseja realmente excluir o arquivo?</div>
+<div style="display: none;" id="alerta2"></div>
+<table width="90%" style="margin-top: 20px; margin-bottom: 20px;" id="listadeArquivos">
+    <tr>
+        <th>Tipo de Documento</th>
+        <th>Nome</th>
+        <th>Arquivo</th>
+        <th>Tamanho</th>
+        <th>Data de Envio</th>
+        <th></th>
+    </tr>
+    <?php if(count($this->dadosComprovantes2) > 0){
+        foreach ($this->dadosComprovantes2 as $dadosComprovantes2){
+    ?>
+    <tr>
+        <td><?php echo utf8_decode(htmlentities($dadosComprovantes2['dsTipoDocumento'])); ?></td>
+        <td><?php echo utf8_decode(htmlentities($dadosComprovantes2['nmTitulo'])); ?></td>
+        <td><a href="<?php echo $this->url(array('controller'=>'upload', 'action'=>'abrir')); ?>?id=<?php echo $dadosComprovantes2['idArquivo']; ?>"><?php echo utf8_decode(htmlentities($dadosComprovantes2['nmArquivo'])); ?></a></td>
+        <td><?php echo round($dadosComprovantes2['nrTamanho']/1024)." kb"; ?></td>
+        <td><?php echo data::tratarDataZend($dadosComprovantes2['dtEnvio'], 'brasileiro'); ?></td>
+        <td align="center">
+            <input type="button" class="btn_exclusao" onclick="excluirArquivo2('<?php echo utf8_decode(htmlentities($dadosComprovantes2['idComprovanteBeneficiario'])); ?>');">
+            <input type="hidden" name="beneficiarioComprovanteArq" value="true" id="beneficiarioComprovanteArq">
+        </td>
+    </tr>
+    <?php } } else { ?>
+    <tr>
+        <td colspan="6" align="center">
+            N&atilde;o h&aacute; arquivos anexados.
+            <input type="hidden" name="beneficiarioComprovanteArq" value="" id="beneficiarioComprovanteArq">
+        </td>
+    </tr>
+    <?php } ?>
+</table>
+<div id="msgRetorno"></div>

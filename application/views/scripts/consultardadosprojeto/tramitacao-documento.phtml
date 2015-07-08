@@ -1,0 +1,82 @@
+<?php
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+<script>
+    function paginarDoc(pag){
+        $("#pagDoc").val(pag);
+        jqAjaxForm(document.getElementById("frmPaginacaoDoc"), "resultTramitacaoDocumento");
+        $("#resultTramitacaoDocumento").html("");
+        $("#resultTramitacaoDocumento").html('<br><center>Aguarde, carregando dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br>');
+    }
+</script>
+<?php if(is_object($this->registros) && count($this->registros) > 0): ?>
+    <table class="tabela">
+        <tr class="destacar">
+            <td align="center" width="25%"><b>Tipo</b></td>
+            <td align="center" width="15%"><b>Data</b></td>
+            <td align="center" width="15%"><b>Dt. Anexa&ccedil;&atilde;o</b></td>
+            <td align="center" width="15%"><b>Documento</b></td>
+            <td align="center" width="25%"><b>Anexado por</b></td>
+            <td align="center" width="10%"><b>Lote</b></td>
+            <td align="center" width="10%"><b>Estado</b></td>
+        </tr>
+        <?php foreach($this->registros as $tramitacao) : ?>
+        <tr>
+            <td align="left"><?php echo $tramitacao->dsTipoDocumento;?></td>
+            <td align="center" nowrap><?php echo ConverteData($tramitacao->dtDocumento,26);?></td>
+            <td align="center" nowrap><?php echo ConverteData($tramitacao->dtJuntada,26);?></td>
+            <td><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'abrir-documento-tramitacao')); ?>?id=<?php echo $tramitacao->idDocumento; ?>&idPronac=<?php echo $this->idPronac; ?>"><?php echo $tramitacao->noArquivo; ?></a></td>
+            <td align="left"><?php echo $tramitacao->Usuario;?></td>
+            <td><?php echo $tramitacao->idLote;?></td>
+            <td><?php echo $tramitacao->Situacao;?></td>
+        </tr>
+        <?php endforeach; ?>
+    </table>
+<?php else: ?>
+    <table class="tabela">
+        <tr>
+            <td align="center"><em>Dados n&atilde;o informados!</em></td>
+        </tr>
+    </table>
+<?php endif; ?>
+
+
+<form action="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'tramitacao-documento')); ?>" method="post" name="frmPaginacaoDoc" id="frmPaginacaoDoc">
+    <input type="hidden" name="idPronac" id="idPronac" value="<?php echo $this->idPronac; ?>"/>
+<?php if(!empty($this->parametrosBusca)) foreach($this->parametrosBuscaDoc as $name=>$value):?>
+    <?php if(!is_array($value)): ?>
+    <input type="hidden" name="<?php echo $name?>" id="<?php echo $name?>" value="<?php echo $value?>"/>
+    <?php else: ?>
+        <?php foreach($value as $valor):?>
+            <input type="hidden" name="<?php echo $name?>[]" id="<?php echo $name?>" value="<?php echo $valor?>"/>
+        <?php endforeach; ?>
+    <?php endif; ?>
+<?php endforeach; ?>
+    <?php if(empty($this->parametrosBuscaDoc["pagDoc"])):?>
+            <input type="hidden" name="pagDoc" id="pagDoc" value="<?php echo $this->pagDoc; ?>"/>
+    <?php endif; ?>
+</form>
+<table class="tabela">
+    <tr>
+        <td align="center">
+            Exibindo de <b><?php echo $this->inicioDoc; ?></b> a <b><?php echo $this->fimDoc; ?></b> de um total de <b><?php echo $this->totalDoc; ?></b><br>
+            <?php if($this->pagDoc<=1): ?>
+            <input type="button" style="width: 88px" class="btn_p_anterior-off" id="btn_p_anterior">
+            <?php else: ?>
+            <input type="button" style="width: 88px" class="btn_inicio" id="btn_inicio" onclick="paginarDoc('1')"/>
+            <input type="button" style="width: 88px" class="btn_p_anterior" id="btn_p_anterior" onclick="paginarDoc('<?php echo ($this->pagDoc > 1)?$this->pagDoc-1:1; ?>')"/>
+            <?php endif; ?>
+            <select name="pagina" id="pagina" class="input_simples" onchange="paginarDoc(this.value)">
+                <?php for($i=1; $i<$this->totalPag+1; $i++): ?>
+                <option value="<?php echo $i; ?>" <?php if($i == $this->pagDoc){ echo " selected='selected' "; } ?>><?php echo $i; ?></option>
+                <?php endfor; ?>
+            </select>
+            <?php if($this->pagDoc+1 > $this->totalPag): ?>
+            <input type="button" style="width: 88px" class="btn_p_proximo-off" id="btn_p_proximo"/>
+            <?php else: ?>
+            <input type="button" style="width: 88px" class="btn_p_proximo" id="btn_p_proximo" onclick="paginarDoc('<?php echo ($this->pagDoc < $this->totalPag)?$this->pagDoc+1:$this->totalPag; ?>')"/>
+            <input type="button" style="width: 88px" class="btn_ultimo" id="btn_ultimo" onclick="paginarDoc('<?php echo $this->totalPag; ?>')"/>
+            <?php endif; ?>
+        </td>
+    </tr>
+</table>

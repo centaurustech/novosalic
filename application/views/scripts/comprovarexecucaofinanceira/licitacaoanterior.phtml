@@ -1,0 +1,257 @@
+<?php
+$cadastro   =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'cadastraritemcusto')).'?idusuario='.$this->idusuario;
+?>
+<div id="licitacaoanteriorAjax">
+    <div  style="width: 100%;float: left; margin-top: 5px;">
+        <div style="float: left; width: 150px;text-align: center;">
+            Etapa
+        </div>
+        <div style="float: left; width: 200px;">
+            <select name="etapa" null="false" id="etapa">
+                <option value=""></option>
+                <?php
+                if(is_array($this->etapaconteudo) and count($this->etapaconteudo)>0)
+                foreach ($this->etapaconteudo as $etapaConteudo){
+                ?>
+                <option value="<?php echo $etapaConteudo['id']?>"><?php echo $etapaConteudo['nome']?></option>
+                <?php
+                }
+                ?>
+            </select>
+        </div>
+        <div style="float: left; width:  150px;text-align: center;">
+            Item e Custo
+        </div>
+        <div style="float: left; width: 200px;">
+            <input type="text" null="false" name="item_custo" id="item_custo"/>
+        </div>
+    </div>
+    <div style="width: 100%;float: left; margin-top: 5px;">
+        <div style="float: left; width:  150px;text-align: center;">
+            Valor Aprovado
+        </div>
+        <div style="float: left; width: 200px;">
+            <input type="text" dinheiro="true" null="false" name="valorAprovado" id="valorAprovado"/>
+        </div>
+        <div style="float: left; width:  150px;text-align: center;">
+            Data de Pagamento
+        </div>
+        <div style="float: left; width: 200px;">
+            <input type="text" data="true" null="false" name="dataPagamento" id="dataPagamento"/>
+        </div>
+    </div>
+    <div style="float: left; margin-left: 30px; margin-top: 5px;">
+        <div style="float: left; width:  100%;text-align: left;">
+            Justificativa:
+        </div>
+        <div style="float: left; width: 720px">
+            <textarea name="justificativa" id="justificativa"></textarea>
+        </div>
+    </div>
+    <div style="width: 100%;float: left; text-align: center; margin-top: 5px;">
+        <img border="0" id="incluir" style="cursor: pointer;" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/incluir.gif" />
+    </div>
+    <form id="cadastrarItemCusto" action="<?php echo $cadastro;?>">
+        <div style="width: 100%;float: left; margin-top: 10px;">
+            <div style="height: 100px; overflow: auto;">
+                <table id="tabelaItemCusto">
+                    <tr>
+                        <th style="width: 200px;">
+                            Etapa
+                        </th>
+                        <th style="width: 160px;">
+                            Item de Custo
+                        </th>
+                        <th style="width: 160px;">
+                            Valor Aprovado
+                        </th>
+                        <th style="width: 200px;">
+                            Justificativa
+                        </th>
+                        <th style="width: 200px;">
+                            Data de Pagamento
+                        </th>
+                    </tr>
+                    <?php
+                    if(is_array($this->listaItemCusto) and count($this->listaItemCusto)>0)
+                    foreach ($this->listaItemCusto as $ItemCusto){
+                    ?>
+                    <tr>
+                        <td>
+                            <?php echo $ItemCusto['etapa'];?>
+                        </td>
+                        <td>
+                            <?php echo $ItemCusto['itemCusto'];?>
+                        </td>
+                        <td>
+                            R$ <?php echo $ItemCusto['valorAprovado'];?>
+                        </td>
+                        <td>
+                            <?php echo $ItemCusto['justificativa'];?>
+                        </td>
+                        <td>
+                            <?php echo $ItemCusto['dataPagamento'];?>
+                        </td>
+                    </tr>
+                    <?php
+                    }
+                    ?>
+                </table>
+            </div>
+        </div>
+        <div style="width: 100%;float: left; text-align: center; margin-top: 10px;">
+            <img border="0" id="salvar" style="cursor: pointer;" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/salvar.gif" />
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function(){
+        mascaras('#licitacaoanteriorAjax');
+        $('#licitacaoanteriorAjax a').click(function(){
+            var pagina = requisicaoAjaxObj();
+            pagina.executar({
+                pagina: $(this).attr('href'),
+                parametros:{}
+            });
+            return false;
+        });
+        CKEDITOR.replaceAll();
+        
+        $('#licitacaoanteriorAjax #salvar').click(function(){
+            var contador = -1;
+            
+            $('#licitacaoanteriorAjax #tabelaItemCusto tr').each(function(){
+                contador++;
+            });
+
+            if(contador>0){
+                var pagina = requisicaoAjaxObj();
+                pagina.executar({
+                    pagina: $('#licitacaoanteriorAjax #cadastrarItemCusto').attr('action'),
+                    parametros:$('#licitacaoanteriorAjax #cadastrarItemCusto').serializeArray(),
+                    funcaoRetorno: function(resp){
+                        var nomeJanelaAlerta =   janelaObj({
+                            parametros : {
+                                width:      400,
+                                autoOpen:   true,
+                                resizable:  false,
+                                modal:      true,
+                                    buttons: {
+                                        Ok: function() {
+                                            if(resp.result)
+                                                nomeJanelalicitacaoanterior.divConteudo.dialog('close');
+
+                                            $(this).dialog('close');
+                                        }
+                                    }
+                            },
+                            title : 'Alerta'
+                        });
+                        nomeJanelaAlerta.divConteudo.html(resp.mensagem);
+                    },
+                    resposta : undefined,
+                    dataType:'json'
+                });
+            }
+            else{
+                var nomeJanelaAlerta =   janelaObj({
+                    parametros : {
+                        width:      400,
+                        autoOpen:   true,
+                        resizable:  false,
+                        modal:      true,
+                            buttons: {
+                                Ok: function() {
+                                    $(this).dialog('close');
+                                }
+                            }
+                    },
+                    title : 'Alerta'
+                });
+                nomeJanelaAlerta.divConteudo.html(ag1);
+            }
+        });
+
+        $('#licitacaoanteriorAjax #incluir').click(function(){
+            var validar = false;
+            $('#licitacaoanteriorAjax').find('[null=false]').each(function(){
+                if($.trim($(this).val()).length == 0){
+                    validar = true;
+                }
+            });
+            if(validar){
+                var nomeJanelaAlerta =   janelaObj({
+                    parametros : {
+                        width:      400,
+                        autoOpen:   true,
+                        resizable:  false,
+                        modal:      true,
+                            buttons: {
+                                Ok: function() {
+                                    $(this).dialog('close');
+                                }
+                            }
+                    },
+                    title : 'Alerta'
+                });
+                nomeJanelaAlerta.divConteudo.html(ag1);
+            }
+            else{
+
+                var formEnvio = '#cadastrarItemCusto';
+                $('<input />')
+                    .attr('type','hidden')
+                    .attr('name','etapa[]')
+                    .val($('#licitacaoanteriorAjax #etapa').val())
+                    .appendTo(formEnvio);
+                $('<input />')
+                    .attr('type','hidden')
+                    .attr('name','item_custo[]')
+                    .val($('#licitacaoanteriorAjax #item_custo').val())
+                    .appendTo(formEnvio);
+                $('<input />')
+                    .attr('type','hidden')
+                    .attr('name','valorAprovado[]')
+                    .val($('#licitacaoanteriorAjax #valorAprovado').val())
+                    .appendTo(formEnvio);
+                $('<input />')
+                    .attr('type','hidden')
+                    .attr('name','justificativa[]')
+                    .val(CKEDITOR.instances['justificativa'].getData())
+                    .appendTo(formEnvio);
+                $('<input />')
+                    .attr('type','hidden')
+                    .attr('name','dataPagamento[]')
+                    .val($('#licitacaoanteriorAjax #dataPagamento').val())
+                    .appendTo(formEnvio);
+
+
+
+
+                var linha = $('<tr></tr>')
+                                .appendTo('#licitacaoanteriorAjax #tabelaItemCusto');
+                $('<td></td>')
+                    .html($('#licitacaoanteriorAjax #etapa').val())
+                    .appendTo(linha);
+                $('<td></td>')
+                    .html($('#licitacaoanteriorAjax #item_custo').val())
+                    .appendTo(linha);
+                $('<td></td>')
+                    .html('R$ '+$('#licitacaoanteriorAjax #valorAprovado').val())
+                    .appendTo(linha);
+                $('<td></td>')
+                    .html(CKEDITOR.instances['justificativa'].getData())
+                    .appendTo(linha);
+                $('<td></td>')
+                    .html($('#licitacaoanteriorAjax #dataPagamento').val())
+                    .appendTo(linha);
+
+                $('#licitacaoanteriorAjax #etapa').val('');
+                $('#licitacaoanteriorAjax #item_custo').val('');
+                $('#licitacaoanteriorAjax #valorAprovado').val('');
+                CKEDITOR.instances['justificativa'].setData('');
+                $('#licitacaoanteriorAjax #dataPagamento').val('');
+            }
+        });
+    });
+</script>

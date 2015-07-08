@@ -1,0 +1,186 @@
+<script>
+    $(".orderBy").click(function(){
+        var campo = $(this).attr("valorOrdenacao");
+
+        if("ASC" == $("#tipoOrdenacao").val()){
+            tipo = "DESC";
+        }else{
+            tipo = "ASC";
+        }
+
+        ordenar(campo, tipo);
+    });
+
+    $(".orderBy").each(function(){
+        if($("#ordenacao").val() == $(this).attr("valorOrdenacao")){
+            if($("#tipoOrdenacao").val() == "ASC"){
+                $(this).after('<span style="padding-left:4px;"><img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-baixo.PNG" align="absmiddle"></span>');
+            }else{
+                $(this).after('<span style="padding-left:4px;"><img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-cima.PNG" align="absmiddle"></span>');
+            }
+        }
+    });
+    
+    function ordenar(campo, tipo){
+        $("#ordenacao").val(campo);
+        $("#tipoOrdenacao").val(tipo);
+        paginarRedistribuir(1);
+    }
+
+    function paginarRedistribuir(pag){
+        $("#pag").val(pag);
+        jqAjaxForm(document.getElementById("frmBuscarTecnicos"), "resultadoPesquisa");
+        $("#resultadoPesquisa").html("");
+        $('#resultadoPesquisa').html('<br><center>Aguarde, carregando dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br>');
+    }
+    
+    $("#selecionar").change(function(){
+        $("#erro").html("");
+        if($(this).attr('checked') == true){
+            $('.idpronac').attr('checked',true);
+        }
+        else{
+            $('.idpronac').attr('checked',false);
+        }
+
+    });
+    
+    $("#salvar").click(function(){
+        
+        var n = $("input:checkbox:checked").length;
+        var novoTecnico = $("#novoTecnico").val();
+        
+        $("#erro").html("");
+        if(n <=0 || novoTecnico == ""){
+            $("#erro").html("<font color='red'>Campos obrigat&oacute;rios n&atilde;o preenchidos!</font><br /><br />");
+        }else{
+            
+            //CONFIRMAR  REDISTRIBUICAO
+            $('html').css('overflow', 'hidden');
+            $("body").append("<div id='divDinamica'></div>");
+            $("#divDinamica").html("Confirma a redistribuição dos projeto(s) selecionado(s)?");
+            $("#divDinamica").dialog({
+                title: "Confirmação",
+                resizable: true,
+                width:350,
+                height:150,
+                modal: true,
+                autoOpen:true,
+                draggable:false,
+                buttons: {
+                    'Não': function() {
+                        $("#divDinamica").remove();
+                        $(this).dialog('close');
+                        $('html').css('overflow', 'auto');
+                    },
+                    'Sim': function() {
+                        $("#frmRedistribuir").submit();
+                        $("#divDinamica").remove();
+                        $(this).dialog('close');
+                        $('html').css('overflow', 'auto');
+                    }
+                }
+            });
+        }
+
+    });
+</script>
+<?php
+    header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+<div id="resultadoPesquisa">
+    <form name="frmRedistribuir" id="frmRedistribuir" action="<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'redistribuir-projeto', 'tipoAnalise' => $this->tipoAnalise)); ?>" method="post">
+        <table class="tabela tablesorter" id="regularAP" tipo="regularAP">
+            <?php if (count($this->projetos) <= 0) : ?>
+            <tr>
+                    <td align="center" colspan="<?php if (!empty($this->coordenador)){ echo 18; } else { echo 16; }?>"><em>Nenhum projeto encontrado com os parâmentros de pesquisa informados.</em></td>
+            </tr>
+            <?php else: ?>
+            <thead>
+                <tr>
+                    <th width="10px"></th>
+                    <th><input type="checkbox" value="Selecionar todos" class="btn" id='selecionar'></th>
+                    <th><a href="#resultadoPesquisa" class="orderBy" valorOrdenacao="1">pronac</a></th>
+                    <th><a href="#resultadoPesquisa" class="orderBy" valorOrdenacao="2">Nome do Projeto</a></th>
+                    <th><a href="#resultadoPesquisa" class="orderBy" valorOrdenacao="24">N° da Reunião</a></th>
+                    <th><a href="#resultadoPesquisa" class="orderBy" valorOrdenacao="32">Dt. Recebimento</a></th>
+                    <th><a href="#resultadoPesquisa" class="orderBy" valorOrdenacao="31">Tempo de Análise</a></th>
+                    <th><a href="#resultadoPesquisa" class="orderBy" valorOrdenacao="29">Status</a></th>
+                    <th><a href="#resultadoPesquisa" class="orderBy" valorOrdenacao="28">Técnico</a></th>
+                </tr>
+            </thead>
+            <tbody>
+        <?php $linha = 1; if (!empty ( $this->projetos ) ){
+            foreach ($this->projetos as $projeto) { ?>
+                <tr class="maismenos" tipo="regularAP">
+                    <td width="10px"><?php echo $linha; ?></td>
+                    <td class='centro'><input type="checkbox" value="<?php echo $projeto['IdPRONAC']; ?>" class="idpronac" name="idpronac[]"> </td>
+                    <td class="centro">
+                        <a target="_blank" href="<?php echo $this->url ( array ('controller' => 'consultardadosprojeto', 'action' => '' ) ) . '?idPronac=' . $projeto['idpronac']; ?>" class="itenspronac" style="text-decoration: underline; cursor: pointer;">
+                            <?php echo $this->escape($projeto['pronac']); ?>
+                        </a>
+                    </td>
+                    <td><?php echo $this->escape($projeto['NomeProjeto']); ?></td>
+                    <td class="centro"><?php echo $this->escape($projeto['NrReuniao']); ?></td>
+                    <td class="centro"><?php echo date('d/m/Y',  strtotime($projeto['dtRecebido'])); ?></td>
+                    <td align="center"><?php echo $this->escape($projeto['tempoAnalise']); ?> dias</td>
+                    <td align="center">
+                        <?php if($projeto['stAnaliseProjeto'] == '1' || empty($projeto['stAnaliseProjeto'])) $bg = '#FF7B00';?>
+                        <?php //if($projeto['stAnaliseProjeto'] == '2') $bg = '#D3D300';?>
+                        <?php if($projeto['stAnaliseProjeto'] == '2') $bg = '#16C0C9';?>
+                        <?php if($projeto['stAnaliseProjeto'] == '3') $bg = '#66B20A';?>
+                        <span style="font-weight: bold; color: <?php echo $bg;?>"><?php echo $this->escape($projeto['status']); ?></span>
+                    </td>
+                    <td align="center">
+                        <?php echo $this->escape($projeto['NomeTecnico']); ?>
+                    </td>
+                </tr>
+                <?php
+                    $linha++;
+                }
+            }
+            ?>
+            <?php endif; ?>
+            </tbody>
+        </table>
+        <?php if (count($this->projetos) > 0) : ?>
+        <table class="tabela">
+            <tr>
+                <td>
+                    <center>
+                    <span id="erro"></span>
+                    Redistribuir para:&nbsp;
+                    <select name='novoTecnico' id='novoTecnico' class='select_simples focus'>
+                        <option value='' selected> - Selecione - </option>
+                        <?php foreach ($this->tecnicos as $tecnico): ?>
+                        <option value='<?php echo $tecnico->usu_codigo; ?>'>
+                            <?php echo $tecnico->usu_nome; ?>
+                        </option>
+                        <?php endforeach; ?>
+                    </select>&nbsp;&nbsp;&nbsp;<input type="button" class="btn_salvar" name="salvar" id="salvar" value=" ">
+                    </center>
+                </td>
+            </tr>
+        </table>
+        <?php endif; ?>
+    </form>
+</div>
+<!-- FORMULARIO DE PAGINACAO/ORDENACAO -->
+<form action="<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'buscar-tecnicos-redistribuicao', 'tipoAnalise' => $this->tipoAnalise)); ?>" method="post" name="frmBuscarTecnicos" id="frmBuscarTecnicos">
+    <input type="hidden" class="input_simples" name="idPronac" id="idPronac" value="<?php echo $this->idPronac; ?>"/>
+<?php if(!empty($this->parametrosBusca)) foreach($this->parametrosBusca as $name=>$value):?>
+    <?php if(!is_array($value)): ?>
+    <input type="hidden" name="<?php echo $name?>" id="<?php echo $name?>" value="<?php echo utf8_decode($value)?>"/>
+    <?php else: ?>
+        <?php foreach($value as $valor):?>
+            <input type="hidden" name="<?php echo $name?>[]" id="<?php echo $name?>" value="<?php echo utf8_decode($valor)?>"/>
+        <?php endforeach; ?>
+    <?php endif; ?>
+<?php endforeach; ?>
+    <?php if(empty($this->parametrosBusca["ordenacao"])):?>
+    <input type="hidden" name="ordenacao" id="ordenacao" value="<?php echo (!empty($this->parametrosBusca["ordenacao"]))?$this->parametrosBusca["ordenacao"]:""; ?>"/>
+    <?php endif; ?>
+    <?php if(empty($this->parametrosBusca["tipoOrdenacao"])):?>
+    <input type="hidden" name="tipoOrdenacao" id="tipoOrdenacao" value="<?php echo (!empty($this->parametrosBusca["tipoOrdenacao"]))?$this->parametrosBusca["tipoOrdenacao"]:""; ?>"/>
+    <?php endif; ?>
+</form>

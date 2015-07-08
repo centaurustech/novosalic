@@ -1,0 +1,236 @@
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('.enviarDoc').click(function(){
+            $('a[rel~=external]').attr('target','_blank');
+            setTimeout("javascript:location.reload();", 1000);
+        });
+
+        $('.numero').keydown(function(event){
+            if((event.keyCode >= 96 && event.keyCode <= 105) || (event.keyCode >= 48 && event.keyCode <= 57) || event.keyCode == 8 || event.keyCode ==9 ){
+                return true;
+            }
+            else
+                return false;
+            //$(this).val($(this).val().replace(/\D/g,''));
+        });
+    });
+
+    function sumiraqui(id){
+        $('img[class='+id+']').toggle();
+        $('tr[class='+id+']').toggle();
+    }
+
+    function excluir(id, action){
+        $("#confirm").dialog("destroy");
+        $("#confirm").dialog({
+            width:350,
+            height:150,
+            EscClose:false,
+            modal:true,
+            buttons: {
+                'Cancelar':function(){
+                    $(this).dialog('close'); // fecha a modal
+                },
+                'Confirmar':function(){
+                    window.location='./excluirdoc?iddoc='+id+'&action='+action;
+                }
+            }
+        });
+        $("#confirm").dialog('open');
+    }
+
+    function buscarProjeto(v){
+        if($("#pronac").val().length < 6){
+            $("#error").html('Pronac tem que ter no mínimo 6 caracteres!');
+            $("#error").dialog('open');
+            $("#error").dialog({
+                width:350,
+                height: 180,
+                modal: true,
+                draggable: false,
+                resizable: false,
+                closeOnEscape: false,
+                buttons: {
+                    'OK': function(){
+                        $(this).dialog('close');
+                    }
+                }
+            });
+            $(".ui-dialog-titlebar-close").remove();
+        } else {
+            $.ajax({
+                type: "POST",
+                dataType: 'json',
+                data:{
+                    pronac: v
+                },
+
+                url: '../tramitardocumentos/buscaprojeto',
+                success: function(data){
+
+                    for (i in data){
+                        if (data[i].msg == 'ok'){
+                            var codOrgao = <?php echo $this->codOrgao; ?>
+
+                            $('#l_localizacao').html('Localização: '+data[i].localizacao);
+                            $('#l_processonome').html(data[i].processonome);
+                            $('#idpronac').val(data[i].idpronac);
+                            $('#idDestino').val(data[i].Orgao);
+                            $('#btnSalvar').show();
+                            $('#mostraMsg').html('');
+                        } else {
+                            $('#l_localizacao').html('Projeto não Cadastrado!');
+                            $('#l_processonome').html('');
+                            $('#idpronac').val('');
+                        }
+                    }
+                },
+                error: function(data){
+                    $('#l_erro').html('Informe o Pronac!');
+                    //alert('Falha na recuperação dos dados.\nNão foi possível carregar os e-mails!');
+                }
+            });
+        }
+    }
+</script>
+
+<?php if(in_array($this->grupoAtivo, array(90,93,97,103,104,110,113,114,115,121,122,123,124,125,126,127,128,132,134,135,136,137,138,139))){
+    require_once "inc/menu.inc.php"; // menu
+}?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para p&aacute;gina inicial">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'index')); ?>" title="Ir para Tramitar documentos">Tramitar documentos</a></li>
+        <li class="last">Cadastrar documentos</li>
+    </ul>
+</div>
+<!-- ========== FIM BRADCRUMB (LINKS TOPO) ========== -->
+
+<div id="error"></div>
+<div id="wrapper"></div>
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Cadastrar documentos <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="confirm" title="Confirma&ccedil;&atilde;o" style="display: none">Tem certeza que deseja excluir o registro?</div>
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+    <form action="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'despachardoc')); ?>" method="post" enctype="multipart/form-data">
+
+        <input type="hidden" name="idpronac" id="idpronac" value=""  />
+        <input type="hidden" name="idDestino" id="idDestino" value=""  />
+        <table class="tabela">
+            <tr>
+                <td width="120" class="destacar bold">PRONAC <span class="red">*</span></td>
+                <td>
+                    <input type="text" class="input_simples numero" name="pronac" id="pronac" size="10" maxlength="7" onblur="buscarProjeto(this.value);" />
+                    <label id="l_erro" style="color:red; font-size:12px;"></label>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold">Dados do projeto</td>
+                <td>
+                    <label id="l_localizacao"></label>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <label id="l_processonome"></label> &nbsp;&nbsp;&nbsp;&nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold">Tipo Documento <span class="red">*</span></td>
+                <td>
+                    <select name="tipo_doc" style="width: 200px;" class="select_simples">
+                        <?php foreach($this->tipos as $t):?>
+                        <option value="<?php echo $t->idTipoDocumento; ?>"><?php echo $t->dsTipoDocumento; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold">Código ECT</td>
+                <td><input type="text" class="input_simples" name="cod_ect" id="cod_ect" value="" size="20" maxlength="13" /></td>
+            </tr>
+            <tr>
+                <td class="destacar bold">Arquivo <span class="red">*</span></td>
+                <td><input class="input_simples" type="file" id="arquivo" name="arquivo" style="width:350px;" /></td>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <td class="centro">
+                    <input type="submit" id="btnSalvar" value="" class="btn_salvar" />
+                    <div id="mostraMsg"></div>
+                </td>
+            </tr>
+        </table>
+    </form>
+
+    <?php $x = 0;?>
+    <fieldset><legend> Documentos Cadastrados </legend>
+        <?php if($this->orgao):?>
+            <?php foreach($this->orgao as $org):?>
+                <?php $docs = TramitarDocumentosDAO::buscarDocumentos($this->idUsuarioLogado ,$this->codOrgao, $org->idDestino); ?>
+                <?php if($docs):?>
+                    <?php $x = 1;?>
+        <table class="tabela">
+
+            <tr class="fundo_linha2">
+                <td colspan="8" align="left">
+                    <img src="<?php echo $this->baseUrl(); ?>/public/img/icn_menos.gif" class="<?php echo $org->Destino; ?>" style="cursor:pointer;" onclick="sumiraqui('<?php echo $org->Destino; ?>');" />
+                    <img src="<?php echo $this->baseUrl(); ?>/public/img/icn_mais.gif" class="<?php echo $org->Destino; ?>" style="cursor:pointer; display:none;" onclick="sumiraqui('<?php echo $org->Destino; ?>');" />
+                    &nbsp;&nbsp;&nbsp;&nbsp;<strong>Destino:</strong> <?php echo $org->Destino ?>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a class="enviarDoc" rel="external" href="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'enviou')); ?>?Destino=<?php echo $org->idDestino; ?>">Enviar Documentos</a>
+                </td>
+            </tr>
+            <tr class="<?php echo $org->Destino; ?>">
+                <th width="130">Processo</th>
+                <th width="50">PRONAC</th>
+                <th width="320">Nome do Projeto</th>
+                <th width="120">Documento</th>
+                <th width="70">Data</th>
+                <th>Arquivo</th>
+                <th>Situação</th>
+                <th>Excluir</th>
+            </tr>
+            <?php foreach($docs as $doc) { ?>
+            <tr class="<?php echo $org->Destino; ?>">
+                <td align="center"><?php echo $doc->Processo; ?></td>
+                <td align="center"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')); ?>?idPronac=<?php echo $doc->IdPRONAC; ?>" title="Consultar dados do projeto" target="_blank"><?php echo $doc->Pronac; ?></a></td>
+                <td><?php echo $doc->NomeProjeto; ?></td>
+                <td align="center"><?php echo $doc->dsTipoDocumento; ?></td>
+                <td align="center"><?php echo $doc->dtDocumentoBR; ?></td>
+                <td><a href="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'abrir')); ?>?id=<?php echo $doc->idDocumento; ?>"><?php echo $doc->NoArquivo; ?></a></td>
+                <td align="center"><?php echo $doc->Situacao; ?></td>
+                <td align="center"><input type="button" class="btn_excluir" name="btn_excluir" value="" onclick="excluir('<?php echo $doc->idDocumento; ?>','despachar');" /></td>
+            </tr>
+            <?php } ?>
+        </table>
+                <?php endif;?>
+            <?php endforeach; ?>
+        <?php endif;?>
+
+        <?php if($x == 0) :?>
+        <table class="tabela">
+            <tr>
+                <td class="centro">Não há documentos cadastrados!</td>
+            </tr>
+        </table>
+        <?php endif;?>
+    </fieldset>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

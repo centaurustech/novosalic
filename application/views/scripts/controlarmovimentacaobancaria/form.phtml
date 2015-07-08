@@ -1,0 +1,257 @@
+<?php 
+/**
+ * Formulário de geração do extrato bancário
+ * @author emanuel.sampaio - Politec
+ * @since 20/01/2011
+ * @version 1.0
+ * @package application
+ * @subpackage application.views.scripts.controlarmovimentacaobancaria
+ * @copyright © 2011 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+
+/* inclui o menu lateral caso não venha através do proponente */
+if (!isset($this->dadosProjeto) && !empty($this->arrayGrupoProponente)) :
+	require_once 'scripts/controlarmovimentacaobancaria/inc/menu.inc.php';
+
+	$urlInicio = $this->url(array('controller' => 'principal', 'action' => ''), null, true);
+else :
+	$urlInicio = $this->url(array('controller' => 'principalproponente', 'action' => ''), null, true);
+endif;
+?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $urlInicio; ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+		<li>Movimenta&ccedil;&atilde;o banc&aacute;ria</li>
+		<li class="last">Relat&oacute;rio da conta movimenta&ccedil;&atilde;o</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Relat&oacute;rio da conta movimenta&ccedil;&atilde;o</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+	<div id="dialog-data1" class="sumir">No per&iacute;odo fixo, a Data Final, quando preenchida, deve ser <strong>maior ou igual</strong> a Data Inicial!</div>
+	<div id="dialog-data2" class="sumir">No per&iacute;odo fixo, a Data Inicial ou a Data Final deve(m) ser informado(s)!</div>
+
+	<script type="text/javascript">
+	<!--
+	/**
+	 * Função para mostrar/ocultar a faixa de período fixo
+	 */
+	function alterar_periodo(periodo)
+	{
+		if (periodo == 'K') // mostra a data inicial e a data final
+		{
+			$('#faixa_de_periodo').show();
+		}
+		else  // esconde a data inicial e a data final
+		{
+			$('#faixa_de_periodo').hide();
+		}
+	} // fecha função alterar_periodo()
+
+
+
+	/**
+	 * Função para verificar se a data final é menor que a data inicial
+	 */
+	function verificar_data()
+	{
+		// pega a data inicial
+		var dia1  = $('#periodo1').val().substr(0,2);
+		var mes1  = $('#periodo1').val().substr(3,2);
+		var ano1  = $('#periodo1').val().substr(6,4);
+		var data1 = ano1 + mes1 + dia1;
+
+		// pega a data final
+		var dia2  = $('#periodo2').val().substr(0,2);
+		var mes2  = $('#periodo2').val().substr(3,2);
+		var ano2  = $('#periodo2').val().substr(6,4);
+		var data2 = ano2 + mes2 + dia2;
+
+		if (data1.length == 8 && data2.length == 8 && data1 > data2)
+		{
+			alertModal('ERRO!', 'dialog-data1', 300, 180);
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	} // fecha função validar_data()
+
+
+
+	/**
+	 * Funções que são chamadas após a página ser carregada
+	 */
+	$(document).ready(function()
+	{
+		// máscaras dos campos
+		$('#nr_pronac').keyup(function()
+		{
+			mascara(this, format_num); // somente números
+		});
+		$('#periodo1, #periodo2').keyup(function()
+		{
+			mascara(this, format_data); // data
+		});
+
+
+		// alteração de período
+		$('#periodo').change(function()
+		{
+			alterar_periodo(this.value);
+		});
+
+
+		// passa para o período final assim que o período inicial for preenchido
+		$('#periodo1').keyup(function()
+		{
+			if (document.getElementById('periodo1').value.length == '10')
+			{
+				$('#periodo2').focus();
+			}
+		});
+
+
+		// validações antes do envio do formulário
+		$('#enviar').click(function()
+		{
+			// validação do período fixo
+			if (!verificar_data())
+			{
+				return false;
+			}
+			if ($('#periodo').val() == 'K' && $('#periodo1').val() == '' && $('#periodo2').val() == '')
+			{
+				alertModal('ERRO!', 'dialog-data2', 300, 180);
+				return false;
+			}
+		});
+
+
+		// calendário
+		$.datepicker.regional['pt-BR'] = 
+		{
+			closeText: 'Fechar',
+			prevText: '&#x3c;Anterior',
+			nextText: 'Pr&oacute;ximo&#x3e;',
+			currentText: 'Hoje',
+			monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+			monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+			dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','S&aacute;bado'],
+			dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+			dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+			weekHeader: 'Sm',
+			dateFormat: 'dd/mm/yy',
+			firstDay: 0,
+			isRTL: false,
+			showMonthAfterYear: false,
+			yearSuffix: ''
+		};
+		$.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+		$("#periodo1").datepicker($.datepicker.regional['pt-BR']);
+		$("#periodo2").datepicker($.datepicker.regional['pt-BR']);
+	}); // fim $(document).ready()
+	//-->
+	</script>
+
+
+
+	<!-- ========== INÍCIO FORMULÁRIO DE CONSULTA ========== -->
+	<form name="formBuscar" id="formBuscar" method="post" 
+		action="<?php echo $this->url(array('controller' => 'controlarmovimentacaobancaria', 'action' => 'pesquisar')); ?>" 
+		enctype="multipart/form-data">
+
+		<table class="tabela w700">
+			<tr>
+				<th class="fundo_linha2 w150"><label for="nr_pronac">PRONAC</label></th>
+				<td>
+					<?php if (isset($this->dadosProjeto) && empty($this->arrayGrupoProponente)) { ?>
+					<?php echo $this->dadosProjeto[0]->pronac . " - " . $this->dadosProjeto[0]->NomeProjeto; ?>
+					<input type="hidden" name="nr_pronac" id="nr_pronac" value="<?php echo $this->dadosProjeto[0]->pronac; ?>" /> &nbsp;
+					<input type="hidden" name="id_pronac" id="id_pronac" value="<?php echo $this->dadosProjeto[0]->IdPRONAC; ?>" />
+					<?php } else { ?>
+					<input type="text" class="input_simples w200" name="nr_pronac" id="nr_pronac" maxlength="7" /> &nbsp;
+					<input type="hidden" name="id_pronac" id="id_pronac" value="" />
+					<?php } ?> 
+					<?php if ($this->grupoAtivo == 121 || $this->grupoAtivo == 122 || $this->grupoAtivo == 123 || $this->grupoAtivo == 129 || $this->grupoAtivo == 124 || $this->grupoAtivo == 125 || $this->grupoAtivo == 126) : ?>
+					<input type="checkbox" name="conta_rejeitada" id="conta_rejeitada" /> <label for="conta_rejeitada">Movimenta&ccedil;&atilde;o Rejeitada</label>
+					<?php endif; ?>
+				</td>
+			</tr>
+			<tr>
+				<th class="fundo_linha2 w150"><label for="periodo">PER&Iacute;ODO</label></th>
+				<td>
+					<span class="float_left">
+						<select class="select_simples w200" name="periodo[]" id="periodo">
+							<option value=""> Todo o per&iacute;odo </option>
+							<option value="A"> Hoje </option>
+							<option value="B"> Ontem </option>
+							<option value="C"> &Uacute;ltimos 7 dias </option>
+							<option value="D"> Semana passada (seg-dom) </option>
+							<option value="E"> &Uacute;ltima semana (seg-sex) </option>
+							<option value="F"> Este m&ecirc;s </option>
+							<option value="G"> Ano passado </option>
+							<option value="H"> &Uacute;ltimos 12 meses </option>
+							<option value="I"> &Uacute;ltimos 06 meses </option>
+							<option value="J"> &Uacute;ltimos 03 meses </option>
+							<option value="K"> Per&iacute;odo Fixo </option>
+						</select>
+					</span>
+					<span id="faixa_de_periodo" class="float_right sumir">
+						<label for="periodo1">De</label> <input type="text" class="select_simples btn_calendario" name="periodo[]" id="periodo1" maxlength="10" title="Selecione uma data v&aacute;lida!" /> 
+						<label for="periodo2">&agrave;</label> <input type="text" class="select_simples btn_calendario" name="periodo[]" id="periodo2" maxlength="10" title="Selecione uma data v&aacute;lida!" />
+					</span>
+				</td>
+			</tr>
+			<tr>
+				<th class="fundo_linha2 w150"><label for="operacao">TIPO DE OPERA&Ccedil;&Atilde;O</label></th>
+				<td>
+					<select class="select_simples w200" name="operacao" id="operacao">
+						<option value=""> Todas </option>
+						<option value="D"> - D&eacute;bito </option>
+						<option value="C"> - Cr&eacute;dito </option>
+					</select>
+				</td>
+			</tr>
+		</table>
+
+		<table class="tabela w700">
+			<tr>
+				<td align="center">
+					<input type="reset" title="Cancelar" class="btn_cancelar" value=" " onclick="voltar();" /> &nbsp; 
+					<input type="submit" id="enviar" title="Gerar Extrato de Movimenta&ccedil;&atilde;o Banc&aacute;ria" class="btn_gerar_extrato" value=" " />
+				</td>
+			</tr>
+		</table>
+
+	</form>
+	<!-- ========== FIM FORMULÁRIO DE CONSULTA ========== -->
+
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

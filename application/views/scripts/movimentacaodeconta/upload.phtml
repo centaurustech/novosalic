@@ -1,0 +1,101 @@
+<?php 
+/**
+ * Formulário para upload do arquivo do banco do brasil
+ * @author emanuel.sampaio - Politec
+ * @since 30/06/2011
+ * @version 1.0
+ * @package application
+ * @subpackage application.views.scripts.controlarmovimentacaobancaria
+ * @copyright © 2011 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+
+/* menu lateral */
+require_once 'scripts/controlarmovimentacaobancaria/inc/menu.inc.php';
+?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'), '', true); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second">Movimenta&ccedil;&atilde;o banc&aacute;ria</li>
+        <li class="last">Atualizar arquivo de conta capta&ccedil;&atilde;o</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Enviar arquivo da conta capta&ccedil;&atilde;o</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+    <script type="text/javascript">
+        /**
+         * Funções que são chamadas após a página ser carregada
+         */
+        $(document).ready(function(){
+            // validações antes do envio do formulário
+            $('.btn_enviar').click(function(){
+                if ( $('#arquivo').val() == '' ){
+                    $('#msg').show();
+                    $('#txtMSG').html('Por favor, informe o arquivo!');
+                    $('#arquivo').focus();
+                    $('.btn_enviar').show();
+                    $('.carregando_ajax').hide();
+                    return false;
+                } else {
+                    $('#msg').hide();
+                    $('.btn_enviar').hide();
+                    $('.carregando_ajax').show();
+                }
+            });
+        }); // fim $(document).ready()
+    </script>
+
+    <br clear="all" />
+    
+    <!-- ========== INÍCIO FORMULÁRIO ========== -->
+    <form name="form" id="form" method="post"
+          action="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'upload')); ?>"
+          enctype="multipart/form-data">
+
+        <table class="tabela">
+            <tr>
+                <th class="w150"><label for="arquivo">Arquivo</label></th>
+                <td>
+                    <input type="hidden" name="MAX_SIZE_FILE" value="10485760" />
+                    <input type="file" name="arquivo" id="arquivo" class="input_simples w500" />
+                </td>
+            </tr>
+            <tr id="msg" class="msgERRO sumir">
+                <td colspan="2" class="red centro" id="txtMSG"></td>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <td align="center">
+                    <div class="carregando_ajax sumir"><div class="txt_ajax">Enviando arquivo, por favor, aguarde...</div></div>
+                    <input type="submit" title="Enviar arquivo" class="btn_enviar" value=" " />
+                </td>
+            </tr>
+        </table>
+
+    </form>
+    <!-- ========== FIM FORMULÁRIO DE CONSULTA ========== -->
+    <br clear="all" />
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

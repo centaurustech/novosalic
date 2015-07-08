@@ -1,0 +1,239 @@
+<?php include_once 'inc/menu.inc.php'; ?>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li>Acompanhamento</li>
+        <li class="last">Verificar readequa&ccedil;&atilde;o de projeto</li>
+    </ul>
+</div>
+
+<div id="mostra"></div>
+<!-- ========== INÍCIO TÍTULO ========== -->
+<form name="formfinalizar" action="<?php echo $this->url(array('controller' => 'verificaralteracaotecnico', 'action' => 'finalizaprop')); ?>" method="post" >
+<div id="titulo">
+    <div>READEQUAÇÃO: NOME DO PROPONENTE
+        <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span>
+        <span style="vertical-align: middle;">
+            <?php
+            $nomeForm = "'solaltnomprp'";
+            if ($this->dados->stAvaliacaoItemPedidoAlteracao == "AG") {
+                echo '<select name="status" id="status" style="float: right; width: 12em;" class="select_simples" onchange="stAnalise('.$this->stResult[0]->idAvaliacaoItemPedidoAlteracao . ','. $this->escape($this->idpedidoalteracao) . ',this , '.$nomeForm.' )">';
+                echo "<option value='0' selected='selected'>Aguardando Análise</option>
+                      <option value='1'>Em Análise</option>";
+                echo '</select>';
+            } else if ($this->dados->stAvaliacaoItemPedidoAlteracao == "EA") {
+                echo '<select name="status" id="status" style="float: right; width: 12em;" class="select_simples" onchange="finalizar()">';
+                echo "<option value='1' selected='selected'>Em Análise</option>
+                      <option value='2'>Aprovado</option>
+                      <option value='3'>Indeferido</option>";
+                echo '</select>';
+            }
+            ?>
+        </span>
+    </div>
+    <script type="text/javascript">
+        function finalizar()
+        {
+            if( $("#editor1").val() == '' ){
+                    $("#mostra").dialog("destroy");
+                    $('#mostra').html('Favor preencher a Análise da Proposta e Alteraç&atilde;o.');
+                    $("#mostra").dialog
+                    ({
+                        height: 180,
+                        modal: true,
+                        title: 'Alerta',
+                        draggable: false,
+                        resizable: false,
+                        closeOnEscape: false,
+                        buttons: {
+                            'Ok': function()
+                            {
+                                document.getElementById('status').options[0].selected = true;
+                                $(this).dialog('close');
+                            }
+                        }
+                    });
+
+                } else {
+
+                    $("#mostra").dialog("destroy");
+                    $('#mostra').html('O projeto será finalizado e encaminhado ao Coordenador de Acompanhamento.<br/><br/>Deseja continuar?');
+                    $("#mostra").dialog
+                    ({
+                        height: 250,
+                        modal: true,
+                        title: 'Confirma',
+                        draggable: false,
+                        resizable: false,
+                        closeOnEscape: false,
+                        buttons: {
+                            'Não': function()
+                            {
+                                document.getElementById('status').options[0].selected = true;
+                                $(this).dialog('close');
+                            },
+                            'Sim': function()
+                            {
+                                document.forms['formfinalizar'].action = "<?php echo $this->url(array('controller' => 'verificaralteracaotecnico', 'action' => 'finalizaprop')); ?>";
+                                document.forms['formfinalizar'].submit();
+                            }
+                        }
+                    });
+               
+               }
+        }
+    </script>
+
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="conteudo">
+    <script type='text/javascript' src='<?php echo $this->baseUrl(); ?>/public/js/projetosGerenciar.js'></script>
+
+            <table class="tabela">
+                    <thead>
+                        <tr>
+                            <th align="center">Nº PRONAC:</th>
+                            <th align="center">Nome do Projeto:</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="linha">
+                            <td align="center"><?php echo $this->escape($this->resultConsulta['pronac']); ?></td>
+                            <td align="center"><?php echo $this->escape($this->resultConsulta['NomeProjeto']); ?></td>
+                        </tr>
+                    </tbody>
+                    <thead>
+                        <th align="center">CNPJ/CPF:</th>
+                        <th align="center">Proponente:</th>
+                    </thead>
+                    <tbody>
+                        <tr class="linha">
+
+                            <td align="center"><?php echo $this->escape(VerificarAlteracaoTecnicoController::VerificarCpfCnpj($this->resultConsulta['CgcCpf'])); ?></td>
+                            <td align="center"><?php echo $this->escape($this->resultConsulta['proponente']); ?></td>
+                        </tr>
+                    </tbody>
+                </table>
+            
+        <table class="tabela">
+            <tr>
+                <th>
+                    Projetos sob responsabilidade do Proponente
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <?php if($this->resultProjeto){ ?>
+                    <div style="height:220px; overflow:auto;" align="center">
+                        <table width="95%" border="0" cellpadding="0" cellspacing="1" style="margin: 0px; padding: 0px;">
+                            <tr>
+                                <td align="center" class="destacar bold">PRONAC</td>
+                                <td align="center" class="destacar bold">NOME DO PROJETO</td>
+                                <td align="center" class="destacar bold">SITUAÇÃO</td>
+                            </tr>
+                            <?php foreach ($this->resultProjeto as $projeto) { ?>
+                                <tr>
+                                    <td><?php echo $this->escape($projeto->IdPRONAC); ?></td>
+                                    <td><?php echo $this->escape($projeto->NomeProjeto); ?></td>
+                                    <td><?php echo $this->escape($projeto->situacao); ?></td>
+                                </tr>
+                            <?php } ?>
+                        </table>
+                    </div>
+                    <?php } else { echo '<span style="color: red;">Não existe projetos para este proponente.</span>'; } ?>
+                </td>
+            </tr>
+            <tr>
+                <th>Solicitação de Alteração do nome do proponente</th>
+            </tr>
+            <tr>
+                <td><strong>CNPJ/CPF:</strong>&nbsp;<?php echo VerificarAlteracaoTecnicoController::VerificarCpfCnpj($this->resultAlteracaoNomeProponente['CgcCpf']); ?></td>
+            </tr>
+            <tr>
+                <td><strong>Novo Proponente:</strong>&nbsp;<?php echo $this->resultAlteracaoNomeProponente['proponente']; ?></td>
+            </tr>
+            <tr>
+                <th>Justificativa:</th>
+            </tr>
+            <tr>
+                <td align="center"><textarea class="textarea_simples" style="width: 98%" readonly="readonly" cols="" rows="5"><?php echo strip_tags($this->resultAlteracaoNomeProponente['dsJustificativa']); ?></textarea></td>
+            </tr>
+            <tr>
+                <th>Anexos:</th>
+            </tr>
+            
+            <?php 
+            if($this->resultArquivo){
+                foreach ($this->resultArquivo as $arquivo) { ?>
+            <tr>
+                <td style="width: 25%; padding-left: 5%; text-decoration: underline;"><a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id=<?php echo $arquivo->idArquivo; ?>"><?php echo $arquivo->nmarquivo ?></a></td>
+            </tr>
+            <?php } } else { echo '<tr><td><span style="color: red;">Não há arquivos anexados!</span></td></tr>'; } ?>
+            
+            <?php if ($this->dados->stAvaliacaoItemPedidoAlteracao != 'AG') { ?>
+            <tr>
+                <th>
+                    ANÁLISE DA PROPOSTA E ALTERAÇÃO
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <!-- ========== EDITOR 1 ========== -->
+                    <script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/ckeditor.js"></script>
+                    <script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.js"></script>
+
+                    <textarea class="input_simples" cols="100" id="editor1" name="editor1" rows="10"><?php //echo $dados->dsEstrategiaExecucao;   ?></textarea>
+<!--                    <script type="text/javascript">
+                        //<![CDATA[
+                        CKEDITOR.replace('editor1', {	fullPage : true });
+                        //]]>
+                    </script>-->
+                </td>
+            </tr>
+            <?php } ?>
+            <input type="hidden" name="idPronac" value="<?php echo $this->escape($this->resultConsulta['pronac']) ?>" />
+            <input type="hidden" name="idAvaliacao" value="<?php echo $this->escape($this->dados->idAvaliacaoItemPedidoAlteracao) ?>" />
+            <input type="hidden" name="idPedidoAlteracao" value="<?php echo $this->escape($this->dados->idPedidoAlteracao) ?>" />
+            <input type="hidden" name="tpAlteracaoProjeto" value="1" />
+            <input type="hidden" name="idOrgao" value="<?php echo $this->dados->idOrgao; ?>" />
+            <input type="hidden" name="idAcao" value="<?php echo $this->dados->idAcaoAvaliacaoItemPedidoAlter; ?>" />
+            <input type="hidden" name="IdProposta" value="<?php echo $this->dados->IdProposta; ?>" />
+        </table>
+
+        <br />
+
+</div>
+</form>
+        <!-- ========== FIM CONTEÚDO ========== -->
+
+
+<!-- MODAL DILIGENCIAR -->
+<div style="display:none;" id="diligencia" title="Diligenciar" >
+    <form name="formdiligencia" id="formdiligencia" method="post" action="<?php echo $this->baseUrl(); ?>/verificaralteracaotecnico/solaltnomprp">
+        <table width="100%">
+            <tr>
+                <td width="1px">PRONAC</td>
+                <td>Nome do Projeto</td>
+            </tr>
+            <tr>
+                <td><?php echo $this->dados->IdPRONAC; ?></td>
+                <td><?php echo $this->resultConsulta['NomeProjeto']; ?></td>
+            </tr>
+        </table>
+        <br /><label for="solicitacao">Solicitação:</label><br />
+        <textarea name="solicitacao" id="solicitacao" rows="6" class="input_simples" cols="170" style="width:100%;"></textarea>
+        <input type="hidden" name="IdPronac" value="<?php echo $this->dados->IdPRONAC; ?>" />
+        <p align="left" style="margin-top:1%;">
+            <input id="btn_enviar" type="submit" value=" " name="diligenciar" class="btn_enviar" />
+        </p>
+    </form>
+</div>
+<!-- FIM DO MODAL DILIGENCIAR -->
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

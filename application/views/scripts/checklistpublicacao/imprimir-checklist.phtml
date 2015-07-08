@@ -1,0 +1,254 @@
+<script language="javascript" type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        window.print();
+    });
+</script>
+
+<style type="text/css" media="all">
+    body {
+        margin:0;
+        font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+        color:#000;
+        line-height:14pt;
+    }
+    a:link, a:active, a:visited {
+        text-decoration:underline;
+    }
+    a:hover {
+        text-decoration:none;
+    }
+    .tabela { /* tamanho de tabelas com registros */
+        margin:10px auto;
+        width:97%;
+        font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+        border: 1px #999 solid;
+        border-spacing: 1px;
+        empty-cells: show;
+    }
+    table td {
+        background:#fff;
+        padding:4px;
+        color:auto;
+        font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+        border: 1px #999 solid;
+    }
+    table tr.destacar td, table td.destacar {
+        background:#e2e2e2;
+        font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+        border: 1px #999 solid;
+    }
+    table th {
+        background:#cdcdcd;
+        padding:4px;
+        text-transform:uppercase;
+        font-size:11px;
+        border: 1px #999 solid;
+        color: #000;
+    }
+    #brasao{
+        width : 85px;
+        height: 86px;
+    }
+    legend{
+        font-size:13px;
+        font-weight: bold;
+    }
+    .btn_imprimir{
+        border-top:1px solid #efefef;
+        border-left:1px solid #efefef;
+        border-right:1px solid #aaa;
+        border-bottom:1px solid #aaa;
+        margin:0 5px 0 0;
+        width:20px;
+        height:21px;
+        text-align:center;
+        cursor:pointer;
+        background:url('<?php echo $this->baseUrl(); ?>/public/img/buttons/imprimir.gif') center center no-repeat;
+    }
+    .btn_imprimir:hover{
+        background-color:#fff;
+        border-top:1px solid #aaa;
+        border-left:1px solid #aaa;
+        border-right:1px solid #efefef;
+        border-bottom:1px solid #efefef;
+    }
+    .paginaA4{
+        width:auto;
+        margin: 1.111cm 1cm 1cm 1.005cm;
+        page-break-after: always;
+    }
+    .TituloMinC{
+        font-size: 14px;
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+    .SubTituloMinC{
+        font-size: 12px;
+        text-transform: uppercase;
+    }
+    .TituloDoDocumento{
+        font-size: 12px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    .DataDoDocumento{
+        font-size: 10px;
+    }
+    .QntdRegistros{
+        font-size: 12px;
+    }
+</style>
+
+<?php
+    $data = date('d/m/Y');
+    $data = explode('/',$data);
+    $dia  = $data[0];
+    $mes  = $data[1];
+    $ano  = $data[2];
+
+    switch($mes) {
+        case '01': $mes = "janeiro";
+            break;
+        case '02': $mes = "fevereiro";
+            break;
+        case '03': $mes = "mar&ccedil;o";
+            break;
+        case '04': $mes = "abril";
+            break;
+        case '05': $mes = "maio";
+            break;
+        case '06': $mes = "junho";
+            break;
+        case '07': $mes = "julho";
+            break;
+        case '08': $mes = "agosto";
+            break;
+        case '09': $mes = "setembro";
+            break;
+        case '10': $mes = "outubro";
+            break;
+        case '11': $mes = "novembro";
+            break;
+        case '12': $mes = "dezembro";
+            break;
+    }
+    $dataEscrita = $dia.' de '.$mes.' de '.$ano;
+
+?>
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div class="paginaA4">
+    <div align="center">
+        <img id="brasao" src="<?php echo $this->baseUrl(); ?>/public/img/brasaoArmas.jpg" alt="Ministério da Cultura"/>
+        <br clear="all" /><span class="TituloMinC">Ministério da Cultura</span>
+        <br clear="all" /><span class="SubTituloMinC">Secretaria de Fomento e Incentivo à Cultura</span>
+        <br clear="all" /><span class="SubTituloMinC">Diretoria de Incentivo à Cultura</span>
+        <br clear="all" /><span class="SubTituloMinC">Coordenação-Geral de Análise de Projetos de Incentivos Fiscais</span>
+        <br clear="all" /><span class="SubTituloMinC">Coordenação de Aprovação de Projetos</span>
+        <!--<br clear="all" /><span class="DataDoDocumento">Data da impressão: <?php //echo date('d/m/Y - H:i:s'); ?></span>-->
+    </div>
+    
+    <br clear="all" />
+    
+    <?php foreach ($this->arrayGrupos as $g){ ?>
+        <?php if ($g->gru_codigo == $this->grupoAtivo && $g->uog_orgao == $this->orgaoAtivo){ $siglaOrgao = $g->org_siglaautorizado; } ?>
+    <?php } ?>
+
+    <div>
+        <p>Despacho nº _____________/<?php echo date('Y'); ?>-<?php echo $siglaOrgao; ?></p>
+        <p align="right">Brasília, <?php echo $dataEscrita; ?></p>
+        <p>À <span style="font-weight: bold;">Coordenação-Geral de Acompanhamento e Avaliação</span>.</p>
+        <p>
+            <span style="font-weight: bold;">Projeto:</span> <?php echo $this->dadosProjeto['NomeProjeto']; ?><br />
+            <span style="font-weight: bold;">Proponente:</span> <?php echo $this->dadosProjeto['Proponente']; ?><br />
+            <span style="font-weight: bold;">Processo:</span> <?php echo $this->dadosProjeto['Processo']; ?><br />
+            <span style="font-weight: bold;">Pronac:</span> <?php echo $this->dadosProjeto['NrProjeto']; ?><br />
+            <span style="font-weight: bold;">Assunto:</span> Análise documental
+        </p>
+        <br clear="all" />
+        <p style="margin-left: 2em;">Senhor(a)  Coordenador(a),</p>
+        <br clear="all" />
+        <p style="text-align: justify;">1. Considerando o resultado da avaliação técnica realizada pela(s) área(s) competente(s) e ainda da apreciação da Comissão Nacional de Incentivo à Cultura - CNIC, o projeto em epígrafe foi devidamente aprovado pela Secretaria de Fomento e Incentivo à Cultura, conforme decisão do Diretor de Incentivo à Cultura.</p>
+        <br clear="all" />
+        <p style="text-align: justify;">2. Desta forma, visando a publicação da Portaria de Autorização para Captação de Recursos, esta Coordenação procedeu a verificação da plena instrução dos autos mediante a checagem da documentação jurídica e de regularidade fiscal, em observância ao disposto nos incisos I ou II, e inciso IV do art. 11º da Instrução Normativa nº 1, de 24/06/2013, bem assim nos incisos I ou II do art. 46 desta mesma Instrução e observamos que, na presente data, constam dos autos, em meio virtual, os documentos listados em espelho de documentos anexados.</p>
+        <br clear="all" />
+        <p style="text-align: justify;">3. Face ao resultado da análise documental realizada, constatamos que o projeto está plenamente instruído, conforme indicado no check list abaixo, resultando na necessidade de encaminhamento à Coordenação-Geral de Acompanhamento e Avaliação desta Secretaria para continuidade dos trâmites administrativos afetos à publicação da Portaria de Autorização para Captação de Recursos, de acordo com o disposto no art. 47 da Instrução Normativa nº 1, de 24/06/2013.</p>
+        
+    </div>
+</div>
+    
+<div class="paginaA4">
+    <div>
+        <p>
+        <table class="tabela">
+            <tr>
+                <td>Cópia do documento legal de identificação dos dirigentes da Instituição ou do proponente em caso de Pessoa Física, que contenha foto e assinatura, nº da Carteira de Identidade e do CPF</td>
+                <td style="width: 50px;" align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png" alt="Ok"/></td>
+            </tr>
+            <tr>
+                <td>Cópia da ata de eleição da atual diretoria, do termo de posse de seus dirigentes, devidamente registrado, ou do ato de nomeação de seus dirigentes</td>
+                <td align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png" alt="Ok"/></td>
+            </tr>
+            <tr>
+                <td>Cronograma de execução atualizado, com data de início e término do projeto</td>
+                <td align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png" alt="Ok"/></td>
+            </tr>
+            <tr>
+                <td>Certidão Conjunta Negativa de Débitos relativos aos Tributos Federais e à Divida Ativa da União - CQTF</td>
+                <td align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png" alt="Ok"/></td>
+            </tr>
+            <tr>
+                <td>Certificado de Regularidade do FGTS</td>
+                <td align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png" alt="Ok"/></td>
+            </tr>
+            <tr>
+                <td>Certidão Negativa de Débitos Relativos às Contribuições Previdenciárias e às de Terceiros - INSS</td>
+                <td align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png" alt="Ok"/></td>
+            </tr>
+            <tr>
+                <td>Espelho de regularidade do proponente junto ao Ministério da Cultura</td>
+                <td align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png" alt="Ok"/></td>
+            </tr>
+            <tr>
+                <td>Espelho de certidões negativas emitido pelo SALIC</td>
+                <td align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png" alt="Ok"/></td>
+            </tr>
+            <tr>
+                <td>Espelho de documentos anexados</td>
+                <td align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png" alt="Ok"/></td>
+            </tr>
+        </table>
+        </p>
+        
+        <br clear="all" />
+        <p style="margin-left: 2em;">Atenciosamente,</p>
+        <p style="font-size: 14px;" align="center">
+            <?php echo $this->dados['agenteAdministrativoNome']; ?><br />
+            <span style="font-weight: bold;"><?php echo $this->dados['agenteAdministrativoCargo']; ?></span>
+        </p>
+        
+        <br clear="all" />
+        <p style="margin-left: 2em;">De acordo. À consideração da Coordenadora de Aprovação de Projetos.</p>
+        <p align="right">Brasília, <?php echo $dataEscrita; ?>.</p>
+        <p style="font-size: 14px;" align="center">
+            <?php echo $this->dados['chefeDivisaoNome']; ?><br />
+            <span style="font-weight: bold;"><?php echo $this->dados['chefeDivisaoCargo']; ?></span>
+        </p>
+        
+        <br clear="all" />
+        <p style="margin-left: 2em;">De acordo. Encaminhar o projeto para publicação.</p>
+        <p align="right">Brasília, <?php echo $dataEscrita; ?>.</p>
+        <p style="font-size: 14px;" align="center">
+            <?php echo $this->dados['coordAprovacaoNome']; ?><br />
+            <span style="font-weight: bold;"><?php echo $this->dados['coordAprovacaoCargo']; ?></span>
+        </p>
+        
+<!--        [agenteAdministrativoCargo] => Agente Administrativo
+    [agenteAdministrativoNome] => Rômulo Menhô Barbosa
+    [chefeDivisaoCargo] => Chefe de Divisão
+    [chefeDivisaoNome] => Jefferson
+    [coordAprovacaoCargo] => Coordenadora de Aprovação de Projetos
+    [coordAprovacaoNome] => Alessandro-->
+    </div>
+</div>

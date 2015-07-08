@@ -1,0 +1,91 @@
+
+<?php
+require_once "inc/menu.inc.php"; // menu
+?>
+<script>
+function gerar_pdf(formato){
+document.getElementById("html").value = "<html><style>table {width:790px; font-size:9pt} table td { background-color:#EEE; padding:3px; text-align:center}table th { background-color:#CCC; padding:3px; text-align:center}</style><center><h2>Parecer Técnico</h2></center>"
+document.getElementById("html").value = document.getElementById("html").value + document.getElementById("conteudo").innerHTML+"</html>";
+document.getElementById("formato").value = formato;
+document.formulario1.submit();
+
+}
+
+</script>
+<form name="formulario1"  class="sumir" method="post" action="<?php echo $this->url(array('controller' => 'mantercalendariocnic', 'action' => 'gerarpdf')); ?>" >
+    <input type="hiddem" id="html" name="html" value="">
+    <input type="hiddem" id="formato" name="formato" value="">
+</form>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para Início">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'tramitarprojetos', 'action' => 'index')); ?>" title="Tramitação de Projetos">Tramitação de Projetos</a></li>
+		<li class="last">Consolida&ccedil;&atilde;o por Parecerista</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Parecer T&eacute;cnico<span>ID #23A</span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+ 	<table class="tabela">
+ 		<tr>
+ 			<th width="15%"  align="center" style="color: #36963f;">Pronac</th>
+ 			<th width="45%" align="center" style="color: #36963f;">Nome do Projeto</th>
+ 			<th width="15%"  align="center" style="color: #36963f;">Tipo de Parecer</th>
+ 			<th width="15%" align="center" style="color: #36963f;">Estado</th>
+                        <th width="15%" align="center" style="color: #36963f;">Açao</th>
+
+ 		</tr>
+                <?php
+                $i = 0;
+                //xd($this->listaparecer);
+                foreach ($this->listaparecer as $e){
+                ?>
+                                <tr>
+ 			<td align="center"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index')).'?idPronac='.$e->idPronac; ?>"><?php echo $e->AnoProjeto.''.$e->Sequencial ?></a></td>
+ 			<td align="center"><?php echo $e->NomeProjeto ?></td>
+ 			<td align="center"><?php if($e->TipoParecer == 1){echo "APROVAÇÃO";}elseif($e->TipoParecer == 2){echo "COMPLEMENTAÇÃO";}elseif($e->TipoParecer == 3){echo"REDUÇÃO";} ?></td>
+                        <td align="center"><?php if($e->Atendimento == 'S'){echo 'Atendido';}elseif($e->Atendimento == 'N'){echo 'Não atendido';} ?></td>
+                        <td align="center"><a href="<?php echo $this->url(array('controller' => 'gerenciarparecertecnico', 'action' => 'dadosdoparecer')).'?parecer='.$e->idParecer; ?>">Visualizar Parecer</a></td>
+ 		</tr>
+                <?php
+                $i++;
+                 }
+
+                     ?>
+ 		<tr>
+ 			<td colspan="5" align="right">
+ 				<input type="button" class="btn_pdf" style = "width: 3.5%; border: 0px"  onclick="gerar_pdf('pdf');" />
+ 				<input type="button" class="btn_xls" style = "width: 3.5%; border: 0px"  onclick="gerar_pdf('excel');" />
+                                <input type="button" class="btn_novo" onclick="document.novo.submit()"/>
+ 				<input type="button" class="btn_voltar" style = "width: 7%; border: 0px"/>
+                                <form action="novoparecer" method="post" name="novo">
+                                    <input type="hidden" name="pronac" value="<?php echo $this->listaparecer[0]->AnoProjeto.''.$this->listaparecer[0]->Sequencial ?>">
+                                    <input type="hidden" value="<?php echo $this->listaparecer[0]->NomeProjeto ?>">
+                                    <input type="hidden" value="<?php echo $this->listaparecer[0]->AreaDescricao ?>">
+                                    <input type="hidden" value="<?php echo $this->listaparecer[0]->SegmentoDescricao ?>">
+                                    <input type="hidden" value="<?php echo $this->listaparecer[0]->UfProjeto ?>">
+                                    <input type="hidden" value="<?php echo $this->listaparecer[0]->MecanismoDescricao ?>">
+                                </form>
+ 			</td>
+ 		</tr>
+
+ 						
+ 	</table>	   
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

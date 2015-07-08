@@ -1,0 +1,90 @@
+<?php require_once "inc/menu.inc.php"; // menu ?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para Início">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'areadetrabalho', 'action' => 'index')); ?>" title="Ir para Visualizar Área de Trabalho">Visualizar Área de Trabalho</a></li>
+		<li class="last">Análise de Cortes Sugeridos</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Análise de Cortes Sugeridos <span>ID #23A</span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+
+
+     <table class="tabela">
+     <?php foreach($this->lembretesprojeto as $tblembretesprojeto): ?>
+<tr>
+<td class="titulo_tabela"> <a href='analiseprojeto?idPRONAC=<?php echo $this->escape($tblembretesprojeto->IdPRONAC);?>'>Análise Técnica</a></td>
+<td class="titulo_tabela"> <a href='proponente?idPRONAC=<?php echo $this->escape($tblembretesprojeto->IdPRONAC);?>'>Proponente</a></td>
+<td class="titulo_tabela"> <a href='anexardocumentos?pronac=<?php echo $this->escape($tblembretesprojeto->IdPRONAC);?>'>Documentos Anexados</a></td>
+<td class="titulo_tabela"> <a href='lembretes?idPRONAC=<?php echo $this->escape($tblembretesprojeto->IdPRONAC);?>'>Lembretes</a></td>
+<td class="titulo_tabela"> <a href='visualizarhistorico?idPRONAC=<?php echo $this->escape($tblembretesprojeto->IdPRONAC);?>'>Histórico</a></td>	
+<td class="titulo_tabela"> <a href='dadosprojeto?idPRONAC=<?php echo $this->escape($tblembretesprojeto->IdPRONAC);?>'>Consultar Dados do Projeto</a></td>	
+					</tr>
+				<?php endforeach;?>	
+				</table>
+
+
+<table class="tabela" >
+  <tr>
+    <th><div align="center" class="titulo_tabela">PRONAC</div></th>
+    <th><div align="center" class="titulo_tabela">Nome do Projeto</div></th>
+
+  </tr>
+<?php foreach($this->lembretes as $tblembretes): ?>
+   <tr>
+    <td><?php echo $this->escape($tblembretes->IdPRONAC);?></td>
+    <td><?php echo $this->escape($tblembretes->NomeProjeto);?></td>
+
+  </tr>
+  <?php endforeach;?>
+</table>
+
+<table class="tabela">
+<tr>
+  <div align="center" class="titulo_tabela">Incluir Lembretes</div>
+</tr>
+<form id="formCadastrar" name="formCadastrar" method="post" action="">
+   <tr>
+     <td><input type="text" name="dtlembrete" id="dtlembrete" value=" " /> </td>
+     <td><td><textarea  type="text" name="descricao" id="descricao" cols="40" rows="4"><?php echo isset($this->lembrete) ? $this->lembrete : ''; ?></textarea>
+     </td></tr>
+  </table>
+  <table class="tabela" >
+<?php foreach($this->lembretes as $tblembretes): ?>
+<input type="hidden" name="pronac" value="<?php echo $this->escape($tblembretes->IdPRONAC);?>">
+<?php endforeach;?>
+<td class="right" ><input type="submit" class="btn_incluir" name="enviar" id="enviar" value=" " /> </td>
+<td class="left" ><input type="reset" class="btn_limpar" name="limpar" id="limpar" value=" " /> </td>
+
+
+</form>
+</div>
+</table>
+
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

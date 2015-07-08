@@ -1,0 +1,363 @@
+<!-- ========== INï¿½CIO AJUSTE DO LAYOUT PARA ACOPLAR MENU LATERAL ========== -->
+<script type="text/javascript">
+<!--
+function layout_fluido()
+{
+	var janela         = $(window).width();
+	var fluidNavGlobal = janela - 245;
+	var fluidConteudo  = janela - 253;
+	var fluidTitulo    = janela - 252;
+	var fluidRodape    = janela - 19;
+	$("#navglobal").css("width", fluidNavGlobal);
+	$("#conteudo").css("width", fluidConteudo);
+	$("#titulo").css("width", fluidTitulo);
+	$("#rodapeConteudo").css("width", fluidConteudo);
+	$("#imagemRodape").css("width", fluidConteudo);
+	$("#rodape").css("width", fluidRodape);
+	$("#conteudo").css("min-height", $('#menuContexto').height()); // altura minima do conteudo
+	$("#rodapeConteudo").css("margin-left", "225px");
+} // fecha funï¿½ï¿½o layout_fluido()
+//-->
+
+function modaljustificativa(id){
+    $('#modal-justificativa'+id).dialog({
+        //bgiframe: true,
+        autoOpen: false,
+        height: 350,
+        width: 600,
+        modal: true
+    });
+    $('#modal-justificativa'+id).dialog('open');
+};
+</script>
+<!-- ========== FIM AJUSTE DO LAYOUT PARA ACOPLAR MENU LATERAL ========== -->
+<div style="float: left;"><br />
+<!--<iframe  style="width:200px; height:280px; margin: -8px 0px 0px 10px; overflow:hidden; background: #fff;" scrolling="no" frameborder="0" src="<?php echo $this->baseUrl(); ?>/checarregularidade?CgcCpf=<?php echo $this->resultConsulta['CgcCpf']; ?>"></iframe>-->
+    <div id="UC27" style="width:200px; height:280px; margin: 1.2em 0em 0em 2em; overflow:hidden; background: #fff;"></div>
+    <script>abrir_pag('<?php echo $this->url(array('controller' => 'checarregularidade', 'action' => 'index')); ?>?CgcCpf=<?php echo $this->resultConsulta['CgcCpf']; ?>', 'UC27');</script>
+</div>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->baseUrl(); ?>" title="Inï¿½cio">In&iacute;cio</a></li>
+        <li class="last">Acompanhamento</li>
+        <li class="last">Verificar Readequa&ccedil;&atilde;o de Projeto</li>
+    </ul>
+</div>
+<div id="mostra"></div>
+
+<!-- ========== INï¿½CIO Tï¿½TULO ========== -->
+<div id="titulo">
+    <div>READEQUA&Ccedil;&Atilde;O: LOCAL DE REALIZA&Ccedil;&Atilde;O
+        <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span>
+        <span style="vertical-align: middle;">
+        <?php
+        $status_itemPedido = array("AP", "IN");
+        if (in_array($this->dados->stAvaliacaoItemPedidoAlteracao, $status_itemPedido)) {
+        ?>
+            <select name="status" disabled="disabled" id="status" style="float: right; width: 12em" class="select_simples" onchange="stAnalise(<?php echo $this->stResult[0]->idAvaliacaoItemPedidoAlteracao; ?>,<?php echo $this->escape($this->idpedidoalteracao) ?>,this ,'solaltlocrel')" >
+            <?php
+            if ($this->dados->stAvaliacaoItemPedidoAlteracao == "AG") {
+                echo "<option value='0' selected='selected'>Aguardando An&aacute;lise</option>
+                      <option value='1'>Em An&aacute;lise</option>";
+            } else if ($this->dados->stAvaliacaoItemPedidoAlteracao == "EA") {
+                echo "<option value='1' selected='selected'>Em An&aacute;lise</option>
+                      <option value='2'>Aprovado</option>
+                      <option value='3'>Indeferido</option>";
+            } else if ($this->dados->stAvaliacaoItemPedidoAlteracao == "AP") {
+                echo "<option value='2' selected='selected'>Aprovado</option>
+                      <option value='3'>Indeferido</option>";
+            } else if ($this->dados->stAvaliacaoItemPedidoAlteracao == "IN") {
+                echo "<option value='2'>Aprovado</option>
+                      <option value='3' selected='selected'>Indeferido</option>";
+            }
+            ?>
+            <?php } ?>
+        </select></span>
+    </div>
+
+</div>
+<!-- ========== FIM Tï¿½TULO ========== -->
+<div id="conteudo">
+    <script type='text/javascript' src='<?php echo $this->baseUrl(); ?>/public/js/projetosGerenciar.js'></script>
+
+        <form name="formfinalizar" action="<?php echo $this->url(array('controller' => 'verificaralteracaotecnico', 'action' => 'finalizaprop')); ?>" method="post" >
+                <table class="tabela">
+                    <thead>
+                        <tr>
+                            <th align="center">N&ordm; PRONAC:</th>
+                            <th align="center">Nome do Projeto:</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="linha">
+                            <td align="center"><?php echo $this->escape($this->resultConsulta['pronac']); ?></td>
+                            <td align="center"><?php echo $this->escape($this->resultConsulta['NomeProjeto']); ?></td>
+                        </tr>
+                    </tbody>
+                    <tr>
+                        <th align="center">CNPJ/CPF:</th>
+                        <th align="center">Proponente:</th>
+                    </tr>
+                    <tbody>
+                        <tr class="linha">
+
+                            <td align="center"><?php echo $this->escape(VerificaralteracaotecnicoController::VerificarCpfCnpj($this->resultConsulta['CgcCpf'])); ?></td>
+                            <td align="center"><?php echo $this->escape($this->resultConsulta['proponente']); ?></td>
+                        </tr>
+                    </tbody>
+                </table>
+            <table class="tabela">
+                <tr>
+                    <th colspan="2">DADOS ATUAIS DO LOCAL DE REALIZA&Ccedil;&Atilde;O</th>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <?php if (count($this->resultLocalRel)>0) { ?>
+                        <table width="100%" border="0" cellpadding="0" cellspacing="1" style="margin: 0; padding: 0;">
+                            <tr>
+                                <td align="center" class="destacar bold">Pa&iacute;s</td>
+                                <td align="center" class="destacar bold">UF</td>
+                                <td align="center" class="destacar bold">Cidade</td>
+                            </tr>
+                            <?php
+                            $antpais = "";
+                            $antuf = "";
+                            $antmun = "";
+                            if ($this->resultLocalRel) {
+                                foreach ($this->resultLocalRel as $abrangencia) {
+                            ?>
+                                    <tr>
+                                        <td>
+                                    <?php
+                                    if ($antpais == $this->escape($abrangencia->pais))
+                                        echo ''; else {
+                                        echo $this->escape($abrangencia->pais);
+                                        $antpais = $this->escape($abrangencia->pais);
+                                    } ?>
+                                </td>
+                                <td>
+                                    <?php
+                                    if ($antuf == $this->escape($abrangencia->uf))
+                                        echo ''; else {
+                                        echo $this->escape($abrangencia->uf);
+                                        $antuf = $this->escape($abrangencia->uf);
+                                    }
+                                    ?>
+                                </td>
+                                <td>
+                                    <?php
+                                    if ($antmun == $this->escape($abrangencia->mun))
+                                        echo ''; else {
+                                        echo $this->escape($abrangencia->mun);
+                                        $antmun = $this->escape($abrangencia->mun);
+                                    }
+                                    ?>
+                                </td>
+                            </tr>
+                            <?php }
+                            } ?>
+                        </table><br/>
+                        <?php } else { ?>
+                        <br/>
+                        <table width="100%" border="0" cellpadding="0" cellspacing="1" style="margin: 0; padding: 0;">
+                            <tr>
+                                <td align="center"><i>Dados n&atilde;o cadastrados na proposta!</i></td>
+                            </tr>
+                        </table>
+                        <br/>
+                        <?php } ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="2">SOLICITA&Ccedil;&Otilde;ES DE LOCAL DE REALIZA&Ccedil;&Atilde;O</th>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                    <table width="100%" border="0" cellpadding="0" cellspacing="1" style="margin: 0; padding: 0;">
+                        <tr>
+                            <td align="center" class="destacar bold">Pa&iacute;s</td>
+                            <td align="center" class="destacar bold">UF</td>
+                            <td align="center" class="destacar bold">Cidade</td>
+                            <td align="center" class="destacar bold">A&ccedil;&atilde;o</td>
+                            <td align="center" class="destacar bold">Avalia&ccedil;&atilde;o</td>
+                            <td align="center" class="destacar bold">Justificativa da Exclus&atilde;o</td>
+                            <td align="center" class="destacar bold">An&aacute;lise Técnica</td>
+                        </tr>
+                        <?php
+                        $antpais = "";
+                        $antuf = "";
+                        $antmun = "";
+                        $justificativa = "";
+                        
+                        $contAbrangencia = 0;
+                        if ($this->resultAbrangencia) {
+                        	$i = 1;
+
+                        //$qtdAbrangencia[$locarel->idAbrangencia] = 0;
+                        foreach ($this->resultAbrangencia as $locarel) :
+                            @$qtdAbrangencia[$locarel->idAbrangencia]++;
+                        endforeach;
+
+                        $x = $qtdAbrangencia[$locarel->idAbrangencia];
+                        //Zend_Debug::dump($qtdAbrangencia[$locarel->idAbrangencia]);
+
+                        foreach ($this->resultAbrangencia as $locarel) {
+
+                        if ($qtdAbrangencia[$locarel->idAbrangencia] == $x) // um elemento
+                        {
+                            $exibirMais = true;
+                            $x--;
+                            if($x == 0){
+                                $x = $qtdAbrangencia[$locarel->idAbrangencia];
+                            }
+                        } else {
+                            $exibirMais = false;
+                            $x--;
+                            if($x == 0){
+                                $x = $qtdAbrangencia[$locarel->idAbrangencia];
+                            }
+                        }
+                        ?>
+                        
+
+
+                                <?php if (!$exibirMais) { ?>
+                                <tbody class="<?php echo $locarel->idAbrangencia;?> sumir">
+                                <?php  } else { ?>
+
+                                <?php } ?>
+
+                                <tr>
+                                    <td>
+                                        
+                                        <?php //if ($exibirMais && (isset($this->resultAbrangencia[$i]->idAbrangencia) && $locarel->idAbrangencia == $this->resultAbrangencia[$i]->idAbrangencia)) { // verifica se tem histï¿½rico ?>
+                                                <div class="exibir<?php echo $locarel->idAbrangencia;?>"><div class="icn_mais"><span><?php echo $locarel->pais; ?></span></div></a></div>
+                                                <div class="ocultar<?php echo $locarel->idAbrangencia;?> sumir" style="display:none;"><div class="icn_menos"><span><?php echo $locarel->pais; ?></span></div></a></div>
+                                        <?php //} else { // sem histï¿½rico ?>
+                                        <?php //} ?>
+
+                                    <?php
+
+                                
+                        ?>
+                                    </td>
+                            <td><?php
+                                if ($antuf == $this->escape($locarel->uf))
+                                    echo ''; else {
+                                    echo $this->escape($locarel->uf);
+                                    $antuf = $this->escape($locarel->uf);
+                                } ?></td>
+                            <td><?php
+                                if ($antmun == $this->escape($locarel->mun))
+                                    echo ''; else {
+                                    echo $this->escape($locarel->mun);
+                                    $antmun = $this->escape($locarel->mun);
+                                }
+                        ?></td>
+                            <td><?php echo $this->StatusLocalRealizacaoProjeto($locarel->tpoperacao); ?></td>
+                            <td align="center" class="<?php echo ($locarel->avaliacao == "D" ? "green" : "red"); ?>">
+                            	<?php
+                            	if (isset($locarel->avaliacao) && !empty($locarel->avaliacao))
+                            	{
+                            		echo ($locarel->avaliacao == "D" ? "Deferido" : "Indeferido");
+                            	}
+                            	else
+                            	{
+                                        if ($this->dados->stAvaliacaoItemPedidoAlteracao == "EA") {
+                                            echo "<button class=\"btn_avaliar\" onclick=\"avaliar_localidade('" . $i ."'); return false;\" />";
+                                        }
+                                        else {
+                                            echo "-";
+                                        }
+                            	}
+                            	?>
+                            </td>
+                            <td align="center">
+                                <?php if (!empty($locarel->dsExclusao)) { ?>
+                                <img style="cursor: pointer;" border="0" src="../public/img/table_multiple.png" onclick="modaljustificativa(<?php echo $locarel->idAbrangencia; ?>)" id="justificativa" />
+                                <?php } ?>
+                            </td>
+                            <td>
+                            	<?php
+                            	if (isset($locarel->dsAvaliacao) && !empty($locarel->dsAvaliacao))
+                            	{
+                            		echo $locarel->dsAvaliacao;
+                            	}
+                            	else
+                            	{
+                            		echo "<em>N&atilde;o avaliado.</em>";
+                            	}
+                            	?>
+                            </td>
+                        </tr>
+                        
+                        <?php if (!$exibirMais) { ?>
+                            </tbody>
+                            <?php } ?>
+
+                            <div title="Justificativa da Exclusão" style="display: none;" id="modal-justificativa<?php echo $locarel->idAbrangencia; ?>">
+                                        <?php echo $locarel->dsExclusao; ?>
+                            </div>
+
+
+                                        <?php
+                                        $i++;
+                                    } // fecha foreach
+                                } // fecha if
+                                        ?>
+                    </table><br/>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="2">JUSTIFICATIVA DA SOLICITAÇÃO DE ALTERAÇÃO</th>
+                </tr>
+                <tr>
+                    <td align="left" colspan="2"><textarea cols="" rows="7"  class="textarea_simples" style="width: 99%" readonly="readonly" ><?php echo isset($this->resultAbrangencia[0]->dsjustificativa) ? strip_tags($this->resultAbrangencia[0]->dsjustificativa) : '' ?></textarea></td>
+                </tr>
+                <tr>
+                    <td colspan="2"> Anexos:</td>
+                </tr>
+                <?php
+                if($this->resultArquivo){
+                foreach ($this->resultArquivo as $arquivo) {                 
+                ?>
+                <tr>
+                    <td style="width: 25%; padding-left: 5%; text-decoration: underline;" colspan="2"><a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id=<?php echo $arquivo->idArquivo; ?>"><?php echo $arquivo->nmarquivo; ?></a></td>
+                </tr>
+                <?php } } else { echo '<tr><td colspan="2"><span style="color: red;">N&atilde;o h&aacute; arquivos anexados!</span></td></tr>'; } ?>
+
+                <?php if ($this->resultParecerTecnico) { ?>
+                <tr>
+                    <th colspan="2">Parecer do T&eacute;cnico</th>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        Coment&aacute;rios:
+                    </td>
+                </tr>
+                    <?php
+                            $justificativa = "";
+                            if ($this->resultParecerTecnico) {
+                                foreach ($this->resultParecerTecnico as $parecerTecnico) {
+                                    $justificativa .= "<tr><td colspan='2'>" . Data::tratarDataZend($parecerTecnico->dtparecertecnico, 'brasileiro') . " / " . $parecerTecnico->nometecnico . " - " . $parecerTecnico->dsparecertecnico . "</td></tr>";
+                                }
+                            }
+                            echo $justificativa;
+                    ?>
+                <?php } ?>
+            </table>
+            <br/>
+        </form>
+
+</div>
+
+<!-- ========== FIM CONTEï¿½DO ========== -->
+
+
+
+<!-- ========== INï¿½CIO RODAPï¿½ DO CONTEï¿½DO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPï¿½ DO CONTEï¿½DO ========== -->
+
+<br clear="all" />

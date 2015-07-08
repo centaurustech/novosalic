@@ -1,0 +1,13 @@
+<?php
+$r_cidade = $this->buscacidade;
+$p1 ="<option value='";
+          $p2 = "'>";
+          $p3= "</option>";
+echo $p1.$p2.'Selecione'.$p3;
+     if(is_array($r_cidade) and count($r_cidade)>0)
+     foreach ($r_cidade as $c){
+
+            echo $p1.$c->id.$p2.utf8_encode($c->descricao).$p3;
+
+      }
+?>

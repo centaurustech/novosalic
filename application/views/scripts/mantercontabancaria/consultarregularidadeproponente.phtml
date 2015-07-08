@@ -1,0 +1,83 @@
+<?php require_once "scripts/controlarmovimentacaobancaria/inc/menu.inc.php" // menu ?>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#btn_imprimir').click(function(){
+            window.open("<?php echo $this->url(array('controller' => 'mantercontabancaria', 'action' => 'imprimir-consulta-regularidade'), null, true); ?>?cpfCnpj=<?php echo $this->cgccpf; ?>");
+        });
+    });
+</script>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''), null, true); ?>" title="Ir para p&aacute;gina inicial">In&iacute;cio</a></li>
+        <li class="second">Manter Conta Bancária</li>
+        <li><a href="<?php echo $this->url(array('controller' => 'mantercontabancaria', 'action' => 'regularidade-proponente')); ?>" title="Ir para Regularidade Proponente">Regularidade Proponente</a></li>
+        <li class="last">Resultado da consulta</li>
+    </ul>
+</div> <!-- final: #breadcrumb -->
+
+<!-- inï¿½cio: #titulo -->
+<div id="titulo">
+    <div>Regularidade Proponente <span class="voltar"><a href="javascript:voltar();" title="Voltar">Voltar</a></span></div>
+</div>
+
+<!-- inï¿½cio: área principal #conteudo -->
+<div id="conteudo">
+    <table class="tabela">
+        <tr>
+            <td class="destacar bold" align="center" width="30%">CNPJ/CPF</td>
+            <td class="destacar bold" align="center">PROPONENTE</td>
+        </tr>
+        <tr class="linha">
+            <td align="center"><?php echo (strlen($this->cgccpf) > 11) ? Mascara::addMaskCNPJ($this->cgccpf) : Mascara::addMaskCPF($this->cgccpf); ?></td>
+            <td align="center"><?php echo $this->nomeProponente; ?></td>
+        </tr>
+    </table>
+    
+    <?php if(count($this->resultadoRegularidade)>0){ ?>
+    <table class="tabela">
+        <tr>
+            <td class="destacar bold" align="center">PRONAC</td>
+            <td class="destacar bold" align="center">NOME DO PROJETO</td>
+            <td class="destacar bold" align="center">ÓRGÃO</td>
+            <td class="destacar bold" align="center">OBSERVAÇÃO</td>
+        </tr>
+        <?php foreach ($this->resultadoRegularidade as $r){ ?>
+        <tr>
+            <td align="center"><?php echo $r->PRONAC; ?></td>
+            <td align="center"><?php echo $r->NomeProjeto; ?></td>
+            <td align="center"><?php echo $r->Orgao; ?></td>
+            <td align="center"><?php echo $r->Observacao; ?></td>
+        </tr>
+        <?php } ?>
+    </table>
+    <?php } else { ?>
+    <table class="tabela">
+        <tr>
+            <td align="center" style="font-size: 16px;" class="bold">Proponente REGULAR</td>
+        </tr>
+    </table>
+    <?php } ?>
+
+    <table class="tabela">
+        <tr>
+            <td class="destacar bold" align="center">Dados da consulta</td>
+        </tr>
+        <tr>
+            <td align="center"><?php echo $this->dadosUsuarioConsulta; ?></td>
+        </tr>
+    </table>
+
+    <p align="center"><input type="button" class="btn_imprimir" id="btn_imprimir"></p>
+    <br clear="all" />
+
+</div>
+<!-- final: conteï¿½do principal #conteudo -->
+
+
+<!-- inï¿½cio: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+<br clear="all" />

@@ -1,0 +1,198 @@
+<style>
+label.error{color:red;}
+</style>
+<script type="text/javascript">
+
+        $(document).ready( function() {
+	$("#gerarSenha").validate({
+		// Define as regras
+		rules:{
+                        cpf:{
+				// campoNome será obrigatório (required) e terá tamanho mínimo (minLength)
+				required: true, 
+                                minlength: 14,
+                                verificaCPF: true
+			},
+			nome:{
+				// campoNome será obrigatório (required) e terá tamanho mínimo (minLength)
+				required: true, minlength: 2
+			}
+
+		},
+		// Define as mensagens de erro para cada regra
+		messages:{
+                        cpf:{
+				required: "&nbsp;Informe CPF",
+				minlength: "&nbsp;CPF deve conter, no mínimo, 11 caracteres",
+                                verificaCPF: "Informe CPF v&aacute;lido"
+			},
+			nome:{
+				required: "&nbsp;Informe nome",
+				minlength: "&nbsp;Nome deve conter, no mínimo, 2 caracteres"
+			}			
+		}
+	});
+});
+
+    $(document).ready(function() {
+        $('#gerarSenha').submit(function(){
+            if($('#cpfRetorno').html().length == 0)
+                return true;
+            else
+                return false;
+        });
+
+        $("#cpf").keyup(function(){
+        
+            if($("#cpf").val().length > 13){
+
+                var cpfLimpo = replaceAll(replaceAll(replaceAll($(this).val(),".",""),"-",""),"/","");
+                $.ajax({ //funcao jquery para enviar os formularios via ajax
+                    type: "POST",
+                    dataType: 'json',
+                    url:  "<?php echo $this->url(array('controller' => 'manterusuario', 'action' => 'regerarsenha')); ?>",
+                    data: {
+                        cpf : cpfLimpo
+                    },
+
+                    success: function(data)
+                    {
+
+
+
+                        if(!data.error)
+                        {
+
+                            if ( data.semdados )
+                            {
+                                $('#cpfRetorno').html('<font color="red">N&atilde;o encontrado</font>');
+                                $('#nome').val('');
+                                $('#lotacao').val('');
+                            }
+                            else if ( data.sememail )
+                            {
+                                $('#cpfRetorno').html('<font color="red">Nenhum e-mail encontrado para o Usuario, <a href="<?php echo $this->url(array('controller' => 'agentes', 'action' => 'agentes'));?>?cpf='+ cpfLimpo +'">clique aqui</a> e atualize seus dados!</font>');
+                                $('#nome').val('');
+                                $('#lotacao').val('');
+                            }
+                            else
+                            {
+                                $('#cpfRetorno').html('');
+                                $('#nome').html(data.usu_nome);
+                                $('#lotacao').html(data.org_sigla);
+                                $('#email').val(data.Descricao);
+                            }
+                        }
+                        else
+                        {
+                            $('#cpfRetorno').html('<font color="red">N&atilde;o encontrado</font>');
+                        }
+
+
+
+                    }
+                });
+             }else{
+                $('#cpfRetorno').html('');
+             }
+        });
+    });
+function replaceAll(string, token, newtoken) {
+	while (string.indexOf(token) != -1) {
+ 		string = string.replace(token, newtoken);
+	}
+	return string;
+}
+
+    function carregaCampo(cpf){
+
+   }
+
+
+</script>
+
+<!-- ========== INï¿½CIO BREADCRUMB (LINKS TOPO) ========== -->
+<div style="display:none" id="confirm">Por favor, informe seu email!</div>
+<div style="display:none" id="dialog-alert2"></div>
+<div style="display:none" id="confirmInforma">Por favor, digite seu email corretamente!</div>
+<div id="breadcrumb">
+
+<ul>
+<li class="first"><a href="<?php echo $this->url(array('controller' => 'cadastrarusuario', 'action' => 'index')); ?>">In&iacute;cio</a></li>
+<li class="last">Cadastrar Usuário</li>
+</ul>
+
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INï¿½CIO Tï¿½TULO ========== -->
+
+<div id="titulo">
+<div>Regerar Senha Usu&aacute;rio<span></span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+
+</div>
+<!-- ========== FIM Tï¿½TULO ========== -->
+
+
+
+<!-- ========== INï¿½CIO CONTEï¿½DO ========== -->
+
+	<div id="conteudo">
+<fieldset><legend>Informações</legend>
+
+            <form method="POST" action="<?php echo $this->url(array('controller' => 'manterusuario', 'action' => 'regerarsenha')); ?>" name="gerarSenha" id="gerarSenha">
+                <center>
+                    <table  class="tabela">
+                    <thead>
+                        <tr>
+                            <th colspan="2">Regerar Senha Usu&aacute;rio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td align="left">CPF </td>
+                            <td align="left"><input value="" onblur="mascaraCnpjCpf(this);"  onkeydown="mascaraCnpjCpf(this);" onkeypress="mascaraCnpjCpf(this);" onkeyup="mascaraCnpjCpf(this);" maxlength="14" class="input_simples" type="text" name="cpf" id="cpf"  /><div id="cpfRetorno" ></div> </td>
+                        </tr>
+                        <tr>
+                            <td align="left">Nome Completo </td>
+                            <td align="left"><div class="input_simples w400" id="nome" style="height: 15px;width: 300px;"  ></div> </td>
+                        </tr>
+                        <tr>
+                            <td align="left">Lota&ccedil;&atilde;o </td>
+                            <td align="left"><div class="input_simples w400" id="lotacao" style="height: 15px;width: 300px;"  ></div></td>
+                        </tr>
+                        <tr>
+                            <td align="center" colspan="2">
+                            <input type="hidden" id='alterar' name="alterar" value="alterar"/>
+                            <input id='btConfirmar' type='submit' value='' class='btn_enviar'/>
+                            <input id='btLimpar' type='reset' onclick="$('#nome').html(''); $('#lotacao').html('')" value='' class='btn_limpar enviar'  />
+                            <input id='btCancelar' type='button' value='' class='btn_cancelar enviar' onClick="history.go(-1)" onkeypress=" " />
+                            </td>
+                        </tr>
+                        <input id='email' type='hidden' name="email"/>
+                    </tbody>
+                </table>
+                </center>
+
+            </form>
+</fieldset>
+
+        </div>
+
+
+<!-- ========== FIM CONTEï¿½DO ========== -->
+
+
+
+<!-- ========== INï¿½CIO RODAPï¿½ DO CONTEï¿½DO ========== -->
+	<div id="rodapeConteudo"><span></span></div>
+
+<!-- ========== FIM RODAPï¿½ DO CONTEï¿½DO ========== -->
+			<br clear="all" />
+
+
+
+
+</body>
+</html>

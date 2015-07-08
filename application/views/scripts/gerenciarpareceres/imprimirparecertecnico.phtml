@@ -1,0 +1,61 @@
+<?php //include_once 'scripts/admissibilidade/inc/menu.inc.php';     ?>
+<div id="titulo">
+    <div>Imprimir Parecer T&eacute;cnico <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+
+        $("#nrPronac").numeric();
+        $("#frmImprimir").validate({
+            rules: {
+                nrPronac: { required: true }
+            },
+            messages: {
+                nrPronac: { required:  "<br><br>Dado obrigat&oacute;rio n&atilde;o informado" }
+            },
+            submitHandler: function(form) {
+                
+                //jqAjaxForm(form, 'divDadosImpressao')
+                form.submit();
+            }
+        });
+        
+    });//fecha document ready
+</script>
+
+<style type="text/css">
+    label.error{ color:red; font-weight: normal; }
+</style>
+
+<div id="conteudo">
+    <br clear="all" />
+    <form id="frmImprimir" name="frmImprimir" action="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'imprimir-parecer-tecnico'));?>" method="post" target="_blank">
+        <table style="margin: 0 auto; width: 300px;">
+            <tr>
+                <th align="center" colspan="2">Imprimir Parecer T&eacute;cnico</th>
+            </tr>
+            <tr>
+                <td align="center" class="destacar bold" width="60px">PRONAC</td>
+                <td>
+                    <input type="text" name="nrPronac" id="nrPronac" maxlength="7" class="input_simples" />
+                </td>
+            </tr>
+        </table>
+        <br clear="all" />
+        <p align="center">
+            <input type="submit" name="confirmar" class="btn_confirmar" value=""  style="width: 88px">
+        </p>
+        <?php if(isset($this->mensagem)){ ?>
+        <p align="center">
+            <span><?php echo $this->mensagem;?></span>
+        </p>
+        <?php } ?>
+    </form>
+    <br clear="all" />
+</div>
+<!-- ========== FIM CONTE�DO ========== -->
+<!-- ========== IN�CIO RODAP� DO CONTE�DO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAP� DO CONTE�DO ========== -->
+<br clear="all" />

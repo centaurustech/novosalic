@@ -1,0 +1,55 @@
+<?php
+
+
+
+    echo "<table>";
+    echo "<tr>";
+    echo "<th>";
+    echo "Nº Projeto";
+    echo "</th>";
+    echo "<th>";
+    echo "Nome do Projeto";
+    echo "</th>";
+    echo "<th>";
+    echo "Situação";
+    echo "</th>";
+    echo "<th>";
+    echo "Data Envio";
+    echo "</th>";
+    echo "<th>";
+    echo "Data Recebimento";
+    echo "</th>";
+    echo "</tr>";
+
+
+        foreach ($this->buscarprojeto as $value)
+        {
+
+            echo "<tr>";
+            echo "<td>";
+            echo "<a href='detalhesprojeto'>";
+            echo $value->nrPronac;
+            echo "</a>";
+            echo "</td>";
+            echo "<td>";
+            echo $value->NomeProjeto;
+            echo "</td>";
+            echo "<td>";
+            echo $value->Situacao;
+            echo "</td>";
+            echo "<td>";
+            echo $value->DtSaida;
+            echo "</td>";
+            echo "<td>";
+            echo $value->DtRetorno;
+            echo "</td>";
+            echo "</tr>";
+
+        }
+
+
+    echo "</table>";
+
+
+
+?>

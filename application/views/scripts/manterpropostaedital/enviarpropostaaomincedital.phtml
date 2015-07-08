@@ -1,0 +1,63 @@
+<?php
+include_once 'scripts/manterpropostaedital/inc/menu.inc.php';
+?>
+
+<!-- ==========  BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'projetos')); ?>" title="Projetos">Projetos</a></li>
+        <li class="last">Local e Per&iacute;odo de Realiza&ccedil;&atilde;o</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INULO ========== -->
+<div id="titulo">
+    <div>Envio Proposta ao MINC <span>Teste</span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+
+
+
+<!-- ========== IDO ========== -->
+<div id="conteudo">
+
+    <table >
+
+        <tr class="titulo_tabela" >
+            <th colspan="5">Alerta!</th>
+
+        </tr>
+
+        <tr class="fundo">
+            <td class="centro" colspan="5">
+            <?php echo "
+            Deseja Enviar Proposta?" ?>
+            </td>
+
+        </tr>
+
+
+            <tr>
+                <td align="left" colspan="6">
+                    <input type="button" style="width: 3.3em;" class="btn" name="pdf" value="aceitar" />
+                     <input type="button" style="width: 3.3em;" class="btn" name="pdf" value="negar" />
+
+
+
+                </td>
+            </tr>
+
+    </table>
+
+
+
+</div><!-- ========== FIM CONTEUDO ========== -->
+
+<!-- ========== I ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RO ========== -->
+<br clear="all" />

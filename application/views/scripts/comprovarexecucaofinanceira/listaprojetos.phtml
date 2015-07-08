@@ -1,0 +1,65 @@
+<?php
+$menuHref          =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'menu')).'?idusuario='.$this->idusuario;
+$pagamentoHref          =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'pagamento')).'?idusuario='.$this->idusuario;
+?>
+<div id="miolo">
+    <fieldset><legend>Licita&ccedil;&atilde;o</legend>
+        <div id="listaprojetosAjax">
+            <table>
+                <tr>
+                    <th>
+                        PRONAC
+                    </th>
+                    <th>
+                        Nome do Projeto
+                    </th>
+                    <th>
+                        &Aacute;rea
+                    </th>
+                    <th>
+                        Segmento
+                    </th>
+                </tr>
+                <?php
+
+                foreach ($this->projetosConteudo as $linha){
+                ?>
+                <tr>
+                    <td>
+                        <a href="<?php echo $pagamentoHref;?>" idpronac="<?php echo $linha['idpronac'];?>"><?php echo $linha['pronac'];?></a>
+                    </td>
+                    <td>
+                        <?php echo $linha['nomeProjeto'];?>
+                    </td>
+                    <td>
+                        <?php echo $linha['area'];?>
+                    </td>
+                    <td>
+                        <?php echo $linha['segmento'];?>
+                    </td>
+                </tr>
+                <?php
+                }
+                ?>
+            </table>
+        </div>
+    </fieldset>
+</div>
+<script>
+    $('#listaprojetosAjax a').click(function(){
+       var pagina = requisicaoAjaxObj();
+        var menuAjax = requisicaoAjaxObj();
+
+        var idpronac = $(this).attr('idpronac');
+        menuAjax.executar({
+            pagina: '<?php echo $menuHref;?>',
+            parametros:{idpronac:idpronac},
+            resposta:'#menuContexto'
+        });
+        pagina.executar({
+            pagina: $(this).attr('href'),
+            parametros:{idpronac:idpronac}
+        });        
+        return false;
+    });
+</script>

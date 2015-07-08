@@ -1,0 +1,211 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        
+        $("#dtInicioLtCap, #dtFimLtCap").keyup(function(){
+            mascara(this, format_data);
+        });
+        
+        $(".btn_pesquisar").click(function(){
+            if($('#tpDtLtCap').val() != ''){
+                var dtInicio = $('#dtInicioLtCap').val(),
+                    dtFim = $('#dtFimLtCap').val();
+                    
+                if($('#tpDtLtCap').val() == 'entre'){
+                    if(dtInicio == '' || dtFim == ''){
+                        $("#alerta").dialog("destroy");
+                        $("#alerta").html('É necessário informar as duas datas para realizarmos a pesquisa!');
+                        $("#alerta").dialog({
+                            title: 'Alerta!',
+                            resizable: false,
+                            width:380,
+                            modal: true,
+                            buttons : {
+                                'OK' : function(){
+                                    $(this).dialog('close');
+                                }
+                            }
+                        });
+                        $('.ui-dialog-titlebar-close').remove();
+                        return false;
+                    }
+                } else {
+                    if(dtInicio == ''){
+                        $("#alerta").dialog("destroy");
+                        $("#alerta").html('É necessário informar a data para realizarmos a pesquisa!');
+                        $("#alerta").dialog({
+                            title: 'Alerta!',
+                            resizable: false,
+                            width:320,
+                            modal: true,
+                            buttons : {
+                                'OK' : function(){
+                                    $(this).dialog('close');
+                                }
+                            }
+                        });
+                        $('.ui-dialog-titlebar-close').remove();
+                        return false;
+                    }
+                }
+            }
+            $("#form").submit();
+        });
+        
+        $("#tpDtPedido").change(function(){
+            if($("#spanDtPedido").css("display")=="none" && $(this).val() == "entre"){
+                $("#spanDtPedido").show();
+            }else{
+                $("#spanDtPedido").hide();
+            }
+            //$("#spanDtFinal").toggle();
+        });
+
+        $("#tpDtLtCap").change(function(){
+            var vl = $(this).val();
+            if(vl == ''){
+                $('#dtInicioLtCap').val('');
+            } else {
+                $('#dtInicioLtCap').focus();
+            }
+            
+            if($("#spanDtInicioLtCap").css("display")=="none" && vl == "entre"){
+                $("#spanDtInicioLtCap").show();
+            }else{
+                $("#spanDtInicioLtCap").hide();
+            }
+            //$("#spanDtFinal").toggle();
+        });
+
+        $(function(){
+            $.datepicker.regional['pt-BR'] = {
+                closeText: 'Fechar',
+                prevText: '&#x3c;Anterior',
+                nextText: 'Pr&oacute;ximo&#x3e;',
+                currentText: 'Hoje',
+                monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+                monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+                dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+                dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                weekHeader: 'Sm',
+                dateFormat: 'dd/mm/yy',
+                firstDay: 0,
+                isRTL: false,
+                showMonthAfterYear: false,
+                yearSuffix: ''};
+            $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+            $(".cmpData").datepicker($.datepicker.regional['pt-BR']);
+        });
+
+    });
+</script>
+
+<?php include("scripts/operacional/inc/menu.inc.php"); ?>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => '')); ?>">In&iacute;cio</a></li>
+        <li class="last">Conta Banc&aacute;ria</li>
+    </ul>
+</div>
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="alerta"></div>
+<div id="titulo">
+    <div>Conta Banc&aacute;ria<span class="voltar"><a href="javascript:voltar();">Voltar</a></span></div>
+</div>
+
+<div id="conteudo" align="center">
+
+    <form name="form" id="form" action="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')); ?>" method="get">
+        <table class="tabela">
+            <tr>
+                <th colspan="3">Selecionar campos para pesquisa</th>
+            </tr>
+            <tr>
+                <td width="170" class="destacar bold">PRONAC</td>
+                <td width="220" align="center">Exatamente Igual</td>
+                <td align="left">
+                    <input name="pronac" id="pronac" value="" class="input_simples" maxlength="7"/>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold">Tipo Pessoa</td>
+                <td width="220" align="center">Exatamente Igual</td>
+                <td align="left">
+                    <select name="tpPessoa" id="tpPessoa" class="select_simples">
+                        <option value=""> - Selecione - </option>
+                        <option value="0">Pessoa Física</option>
+                        <option value="1">Pessoa Jurídica</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold">Dt. Lote Remessa Captação</td>
+                <td width="220" align="center">
+                    <select name="tpDtLtCap" id="tpDtLtCap" class="select_simples">
+                        <option value=""> - Selecione - </option>
+                        <option value="igual">Exatamente Igual</option>
+                        <option value="entre">Entre dois valores</option>
+                        <option value="maior">Maior que</option>
+                        <option value="menor">Menor que</option>
+                    </select>
+                </td>
+                <td align="left">
+                    <span id="camposDataDtInicio">
+                        <input name="dtInicioLtCap" id="dtInicioLtCap" maxlength="10" value="" class="input_simples cmpData btn_calendario"/>
+                        <span id="spanDtInicioLtCap" style="display: none;">&nbsp;e&nbsp;<input name="dtFimLtCap" id="dtFimLtCap" maxlength="10" value="" class="input_simples cmpData btn_calendario"/></span>
+                    </span>(dd/mm/aaaa)
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold">Ocorrência Captação</td>
+                <td width="220" align="center">Exatamente Igual</td>
+                <td align="left">
+                    <select name="ocorrencia" id="ocorrencia" class="select_simples">
+                        <option value="000"> - Selecione - </option>
+                        <option value="001">Tipo de pessoa inválido</option>
+                        <option value="002">Tipo de CPF/CNPJ inválido</option>
+                        <option value="003">CPF/CNPJ inválido</option>
+                        <option value="004">Data de nascimento inválida</option>
+                        <option value="005">Nome cliente inválido</option>
+                        <option value="006">Agência inválida</option>
+                        <option value="007">Mais de 5 clientes cadastrado p/o CPF informado</option>
+                        <option value="008">Cliente BB-Campus fora da faixa etária (16 a 28 anos)</option>
+                        <option value="009">Cliente BB-Campus não titular do CPF</option>
+                        <option value="010">Dados pessoa física divergentes</option>
+                        <option value="011">Dados pessoa jurídica divergentes</option>
+                        <option value="013">Cliente BB-Campus não  titular do CPF</option>
+                        <option value="014">Perfil agência incompatível com tipo de pessoa</option>
+                        <option value="015">Tipo de pessoa incompatível  com natureza jurídica</option>
+                        <option value="016">Tipo de repasse inválido</option>
+                        <option value="017">Tipo de pessoa não permitido para esse processo/tipo de repasse</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold">Estado Conta Captação</td>
+                <td width="220" align="center">Exatamente Igual</td>
+                <td align="left">
+                    <select name="estadoConta" id="estadoConta" class="select_simples">
+                        <option value=""> - Selecione - </option>
+                        <option value="1">Sem conta</option>
+                        <option value="2">Conta aberta</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <table class="tabela">
+            <tr>
+                <td align="center">
+                    <input type="button" class="btn_pesquisar" id="btn_pesquisar" value=""/>
+                    <input type="reset" class="btn_limpar" id="btn_limpar" value=""/>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

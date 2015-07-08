@@ -1,0 +1,27 @@
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<?php if(count($this->itensDivulgacao)>0) : ?>
+<table class="tabela">
+    <tr class="titulo_tabela">
+        <th align="left" width="50%">Pe&ccedil;a</th>
+        <th align="left" width="50%">Ve&iacute;culo</th>
+    </tr>
+    <?php
+        if(is_array($this->itensDivulgacao) and count($this->itensDivulgacao)>0)
+        foreach ($this->itensDivulgacao as $divulgacao){
+            //Zend_Debug::dump($divulgacao);
+            ?>
+                <tr class="fundo">
+                    <td align="left"><?php echo utf8_decode(htmlentities($divulgacao->Peça)); ?></td>
+                    <td align="left"><?php echo utf8_decode(htmlentities($divulgacao->Veiculo)); ?></td>
+                </tr>
+           <?php
+        }
+       ?>
+</table>
+<?php else:?>
+<table class="tabela">
+    <tr class="fundo">
+        <td align="left">Nenhum registro encontrado.</td>
+    </tr>
+</table>
+<?php endif;?>

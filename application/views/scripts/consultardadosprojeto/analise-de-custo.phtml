@@ -1,0 +1,209 @@
+<?php
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+<script type="text/javascript">
+function AbrirFecharPlanilha(elemento)
+{
+	$('.' + elemento).toggle();
+
+	if ($('#' + elemento).hasClass('icn_mais'))
+	{
+		$('#' + elemento).addClass('icn_menos');
+		$('#' + elemento).removeClass('icn_mais');
+	}
+	else
+	{
+		$('#' + elemento).addClass('icn_mais');
+		$('#' + elemento).removeClass('icn_menos');
+	}
+}
+    $(".icn_menos").click(function(){
+        var tipo = $(this).attr('tipo');
+        var aberto = $(this).attr('aberto');
+        if(aberto == 'true'){
+            adisplay = 'none';
+            $(this).attr('aberto','false');
+            $(this).removeClass('icn_menos').addClass('icn_mais');
+        }
+        else{
+            adisplay = '';
+            $(this).attr('aberto','true');
+            $(this).removeClass('icn_mais').addClass('icn_menos');
+        }
+        if(tipo == 'fonte'){
+            fonte = $(this).attr('fonte');
+            $(".master[fonte='"+fonte+"']").css('display', adisplay);
+            $(".clickproduto").removeClass('icn_mais').addClass('icn_menos');
+        }
+        if(tipo == 'produto'){
+            fonte = $(this).attr('fonte');
+            produto = $(this).attr('produto');
+            $(".produto[produto='"+produto+"'][fonte='"+fonte+"']").css('display', adisplay);
+        }
+        if(tipo == 'etapa'){
+            fonte = $(this).attr('fonte');
+            produto = $(this).attr('produto');
+            etapa = $(this).attr('etapa');
+            $(".etapa[produto='"+produto+"'][etapa='"+etapa+"'][fonte='"+fonte+"']").css('display', adisplay);
+        }
+        if(tipo == 'cidade'){
+            fonte = $(this).attr('fonte');
+            produto = $(this).attr('produto');
+            etapa = $(this).attr('etapa');
+            cidade = $(this).attr('cidade');
+            $(".cidade[produto='"+produto+"'][etapa='"+etapa+"'][cidade='"+cidade+"'][fonte='"+fonte+"']").css('display', adisplay);
+        }
+    });
+    $(".item").mouseover(function(){
+        $(this).addClass('fundo_linha3');
+    });
+    $(".item").mouseout(function(){
+        $(this).removeClass('fundo_linha3');
+    });
+    $(".item").click(function(){
+        if($(this).hasClass('fundo_linha4')){
+            $(this).removeClass('fundo_linha4');
+        }
+        else{
+            $(this).addClass('fundo_linha4');
+        }
+    });
+</script>
+<table class="tabela" style="width: 95%;" width="95%">
+    <tr>
+        <th colspan="13">Planilha de Or&ccedil;amento Sugerido</th>
+    </tr>
+    <?php
+    $nrfonte = 0;
+    $item = 1;
+    //ForeachFonteIncentivo
+    foreach ($this->itens['fonte'] as $fonte => $arrayProdutos)
+    {
+        ?>
+        <tr>
+            <td colspan="11">
+                <div tipo="fonte" fonte="<?php echo $nrfonte; ?>" aberto="true" class="icn_menos" style="width:90%"><span class="red del_link" style="font-size: 20pt; font-weight: 800;"><?php echo $fonte; ?></span></div>
+            </td>
+        </tr>
+        <?php
+        $nrproduto = 0;
+        foreach ($arrayProdutos as $produto => $arrayEtapas)
+        {
+            ?>
+            <tr class='master' fonte="<?php echo $nrfonte; ?>">
+                <td class='master' colspan="11">
+                    <div  tipo="produto" aberto="true" fonte="<?php echo $nrfonte; ?>" produto ="<?php echo $nrproduto; ?>" class="icn_menos clickproduto" style="width:98%; margin-left:2%;"><span class="green del_link" style="font-size: 16pt; font-weight: 800;"><?php echo $produto; ?></span></div>
+                </td>
+            </tr>
+            <?php
+            $nretapa = 0;
+            foreach ($arrayEtapas as $etapa => $arrayCidades)
+            {
+                ?>
+                <tr class="master produto" produto="<?php echo $nrproduto; ?>"  fonte="<?php echo $nrfonte; ?>" >
+                    <td colspan="11">
+                        <div><div tipo="etapa" fonte="<?php echo $nrfonte; ?>" produto="<?php echo $nrproduto; ?>" etapa="<?php echo $nretapa; ?>" aberto="true" class="icn_menos" style="width:94%; margin-left:4%;"><span class="orange del_link" style="font-size: 14pt; font-weight: 800;"><?php echo $etapa; ?></span></div></div>
+                    </td>
+                </tr>
+                <?php
+                $nrcidade = 0;
+                foreach ($arrayCidades as $cidade => $planilha)
+                {
+                    ?>
+                    <tr class="master produto etapa" produto="<?php echo $nrproduto; ?>" etapa="<?php echo $nretapa; ?>"  fonte="<?php echo $nrfonte; ?>" >
+                        <td colspan="11">
+                            <div tipo="cidade" fonte="<?php echo $nrfonte; ?>" produto="<?php echo $nrproduto; ?>" etapa="<?php echo $nretapa; ?>" cidade="<?php echo $nrcidade; ?>" aberto="true" class="icn_menos" style="width:94%; margin-left:6%;">
+                                <span class="black del_link" style="font-size: 12pt; font-weight: 800;"><?php echo $cidade; ?></span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="master produto etapa cidade" produto="<?php echo $nrproduto; ?>" etapa="<?php echo $nretapa; ?>"  fonte="<?php echo $nrfonte; ?>" cidade="<?php echo $nrcidade; ?>">
+                        <td colspan="11">
+                            <table class="tabela">
+                                <?php
+                                /* INICIO PLANILHA DE ITENS */
+                                $primeiro = 0;
+                                foreach ($planilha['itens'] as $idPlanilhaProjeto => $valPlanilha)
+                                {
+                                    $valorprodutosolicitado = 0;
+                                    $valorprodutoparecerista = 0;
+                                    $trCampo = "<tr class='destacar'>";
+                                    $conteudo = "<tr class='item' idPlanilhaProjeto='{$idPlanilhaProjeto}' id='item{$idPlanilhaProjeto}'>";
+
+                                    foreach ($valPlanilha as $camp => $cont)
+                                    {
+                                        $trCampo .= "<td>{$camp}</td>";
+                                        if ($camp == 'Valor Unitário' || $camp == 'Valor Solicitado' || $camp == 'Valor Sugerido pelo Parecerista')
+                                        {
+                                            if ($camp == 'Valor Sugerido pelo Parecerista')
+                                            {
+                                                $conteudo .= "<td class='ValorSugerido' style='width:10;'>{$this->formatarReal($cont)}</td>";
+                                            }
+                                            else
+                                            {
+                                                $conteudo .= "<td style='width:12%;'>{$this->formatarReal($cont)}</td>";
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if ($camp == 'Justificativas do Parecerista')
+                                            {
+                                                $conteudo .= "<td class='JustParecerista'>{$cont}</td>";
+                                            }
+                                            else
+                                            {
+                                                $conteudo .= "<td>{$cont}</td>";
+                                            }
+                                        }
+                                    }
+                                    $trCampo .= "</tr>";
+                                    $conteudo .= "</tr>";
+
+                                    if ($primeiro == 0)
+                                    {
+                                        echo $trCampo;
+                                    }
+
+                                    echo $conteudo;
+                                    $primeiro++;
+                                }
+                                ?>
+                                <tr style="font-weight: bold;">
+                                    <td class="esquerda black" style="font-size: 12pt; width: 12%;" colspan="7">Total de UF</td>
+                                    <td class="esquerda black" style="font-size: 12pt; width: 15%;"><?php echo $planilha['totalUfSolicitado']; ?></td>
+                                    <td class="esquerda black" style="font-size: 12pt; width: 12%;">&nbsp;</td>
+                                    <td class="valorUfSugerido esquerda black" style="font-size: 12pt; width: 15%;"><?php echo $planilha['totalUfSugerido']; ?></td>
+                                    <td class="esquerda black" style="font-size: 12pt; width: 12%;">&nbsp;</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <?php
+                    /* FIM PLANILHA DE ITENS */
+                }
+                $nretapa++;
+            } //fechaForeachetapa
+            $nrproduto++;
+        } //fechaForeachproduto
+        $nrfonte++;
+    }//fechaForeachFonteIncentivo
+    ?>
+    <tr>
+        <td colspan="11">
+             <table class="tabela">
+               <tr class="destacar" style="font-size: 14pt;">
+                   <td colspan="3">Total Geral</td>
+               </tr>
+                <tr class="destacar">
+                    <td>Total Solicitado</td>
+                    <td>Total Parecerista</td>
+                </tr>
+                <tr>
+                    <td class="direita red" style="font-size: 14pt;"><?php echo $this->itens['totalSolicitado']; ?></td>
+                    <td class="direita red" style="font-size: 14pt;"><?php echo $this->itens['totalSugerido']; ?></td>
+                </tr>
+            </table>
+        </td>
+    <tr>
+</table>
+

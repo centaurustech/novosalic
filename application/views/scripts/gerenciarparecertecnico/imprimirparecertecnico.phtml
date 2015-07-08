@@ -1,0 +1,71 @@
+<?php
+include_once 'scripts/admissibilidade/inc/menu.inc.php';
+?>
+
+<!-- ========== INCIO BREADCRUMB (LINKS TOPO) ========== -->
+			<div id="breadcrumb">
+				<ul>
+					<li class="first"><a href="<?php echo $this->url(array('controller' => 'consultarparecertecnico', 'action' => 'index')); ?>" title="Ir para Incio">In&iacute;cio</a></li>
+					<li class="last">Projetos</li>
+				</ul>
+			</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INCIO TTULO ========== -->
+				<div id="titulo" style="height: 10%">
+					<div>Imprimir Parecer T&eacute;cnico<span>Teste</span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+				</div>
+<!-- ========== FIM TTULO ========== -->
+
+<!-- ========== INCIO CONTEDO ========== -->
+<script>
+function preencher_pronac(pronac)
+{
+	document.getElementById('vpronac').value = pronac;
+} 
+</script>
+
+
+	<div id="conteudo" style="min-height: 300px;" align="center">
+	<form action="<?php echo $this->url(array("controller" => "gerenciarparecertecnico", "action" => "imprimirparecertecnico")) ?>" name="buscarProjeto" id="buscarProjeto" METHOD="POST">
+		<table width="40%" class="tabela_simples">
+		<tr>
+			<th colspan="1">Imprimir Parecer T&eacute;cnico</th>
+		</tr>
+
+ 		<tr>
+ 			<td width="50%" align="center" ><b>PRONAC: </b>&nbsp;&nbsp;&nbsp;<input type="text" name="pronac" id="pronac" class="input_simples" size="10px" onblur="preencher_pronac(this.value);" /></td>
+
+ 		</tr>
+ 		<tr>
+ 			<td colspan="1" align="center">
+ 				<input type="button" name="confirmar" id="confirmar" class="btn_confirmar" style="width: 17%" onClick="buscaHtml()"/>
+ 			</td>
+ 		</tr>
+ 						
+ 		</table>
+	
+	</form>
+</div>
+
+<form action="<?php echo $this->url(array("controller" => "gerenciarparecertecnico", "action" => "imprimirparecertecnico")) ?>" name="imprimeEtiqueta" id="imprimeEtiqueta" METHOD="POST">
+
+ 		<input type="hidden" name="vpronac" id="vpronac" />
+
+</form>
+<script>
+
+function buscaHtml()
+{
+	document.forms["imprimeEtiqueta"].submit();
+}
+
+</script>
+
+			
+<!-- ========== FIM CONTEDO ========== -->
+
+<!-- ========== INCIO RODAP DO CONTEDO ========== -->
+	<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAP DO CONTEDO ========== -->
+			<br clear="all" />

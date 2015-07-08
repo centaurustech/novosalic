@@ -1,0 +1,17 @@
+<img src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png" class="corrigir-agencia-conta" style="cursor: pointer" />
+<script>
+	$('.corrigir-agencia-conta').click(function(){
+		$("#msgAlerta").dialog("destroy");
+        $("#msgAlerta").html(
+        	'<p>Efetue a correção dessa inconsistência, editando as informações bancárias do proponente.' +
+        	'<br />Após efetuar a devida correção, clicar novamente em validar.</p>'
+        );
+        $("#msgAlerta").dialog({
+            resizable: false,
+            title: 'Alerta!',
+            width: 700,
+            height: 100,
+            modal: true
+        });
+	});
+</script>

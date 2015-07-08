@@ -1,0 +1,161 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#pronac").numeric();
+        $("#qtDiasDistribuirVl").numeric();
+        $("#qtDiasAnalisarVl").numeric();
+        $("#qtDiasCoordVl").numeric();
+        
+        $('.btn_limpar').click(function(){
+            $(".cmpDesabilitar").attr("disabled", "");
+            $(".cmpDesabilitarSelect").attr("disabled", "");
+        });
+        
+        $("#pronac").keyup(function(){
+            if($(this).val() != ""){
+                $(".cmpDesabilitar").attr("disabled", "disabled").val("");
+                $(".cmpDesabilitarSelect").attr("disabled", "disabled").val("");
+            }else{
+                $(".cmpDesabilitar").attr("disabled", "");
+                $(".cmpDesabilitarSelect").attr("disabled", "");
+            }
+        });
+        
+        $('#pronac').focusout(function(){
+            if( $('#pronac').val() != ""){
+                $(".cmpDesabilitar").attr("disabled", "disabled").val("");
+                $(".cmpDesabilitarSelect").attr("disabled", "disabled").val("");
+            } else {
+                $(".cmpDesabilitar").attr("disabled", "");
+                $(".cmpDesabilitarSelect").attr("disabled", "");
+            }
+        });
+        
+        $('select.cmpDesabilitarSelect').change(function(){
+            var campo = $(this),
+                nome = $(this).attr('name'),
+                input = $("#"+nome+"Vl");
+            if( $(this).val() != ""){
+                $('select.cmpDesabilitarSelect').attr("disabled", "disabled");
+                $('input.cmpDesabilitar').attr("disabled", "disabled");
+                $('input.cmpDesabilitar').not(input).val('');
+                campo.attr("disabled", "");
+                input.attr("disabled", "");
+            } else {
+                $('select.cmpDesabilitarSelect').attr("disabled", "");
+                $('input.cmpDesabilitar').attr("disabled", "");
+            }
+        });
+        
+        $('.btn_localizar').click(function(){
+            $('#formGeralAnalise').submit();
+        });
+    });
+</script>
+
+<style type="text/css">
+    .disable{
+        color: rgb(160, 160, 160);
+    }
+</style>
+
+<?php
+    if($this->idPerfil == 137){
+        include_once 'inc/menu.inc.php';
+    }
+?>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second">Gerar Relat&oacute;rios de Parecerista</li>
+        <li class="last">Relat&oacute;rio geral de an&aacute;lise</li>
+    </ul>
+</div>
+
+<div id="titulo">
+    <div>Relatório geral de análise<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+
+<div id="conteudo">
+    <form id="formGeralAnalise" action="<?php echo $this->url(array('controller' => 'gerarrelatorioparecerista', 'action' => 'resgeraldeanalise')); ?>" method="get">
+        <table class="tabela">
+            <tr>
+                <td class="destacar bold w300">PRONAC</td>
+                <td><input name="pronac" id="pronac" class="input_simples" sonumero="true" maxlength="7" type="text" size="10"/></td>
+            </tr>
+            <tr>
+                <td class="destacar bold">Nome do Projeto</td>
+                <td><input name="nmProjeto" type="text" maxlength="300" size="40" class="cmpDesabilitar input_simples"/></td>
+            </tr>
+            <tr>
+                <td class="destacar bold">Unidade Vinculada</td>
+                <td>
+                    <select name="unVinculada" style="width: 250px;" class="cmpDesabilitar select_simples">
+                        <option value=""> - Selecione - </option>
+                        <?php foreach ($this->Orgaos as $val){ ?>
+                        <option value="<?php echo $val->Codigo; ?>"><?php echo $val->Sigla; ?></option>
+                        <?php } ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold">Qntd de dias para distribuir para o parecerista</td>
+                <td>
+                    <select name="qtDiasDistribuir" style="width: 150px;" class="cmpDesabilitarSelect select_simples">
+                        <option value=""> - Selecione - </option>
+                        <option value="1">Maoir ou igual a</option>
+                        <option value="2">Menor ou igual a</option>
+                    </select>
+                    <input type="text" name="qtDiasDistribuirVl" id="qtDiasDistribuirVl" class="cmpDesabilitar input_simples" maxlength="7" size="10"/>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold">Qntd de dias para parecerista analisar</td>
+                <td>
+                    <select name="qtDiasAnalisar" style="width: 150px;" class="cmpDesabilitarSelect select_simples">
+                        <option value=""> - Selecione - </option>
+                        <option value="1">Maoir ou igual a</option>
+                        <option value="2">Menor ou igual a</option>
+                    </select>
+                    <input type="text" name="qtDiasAnalisarVl" id="qtDiasAnalisarVl" class="cmpDesabilitar input_simples" maxlength="7" size="10"/>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold">Qntd de dias devolvido para o coordenador</td>
+                <td>
+                    <select name="qtDiasCoord" style="width: 150px;" class="cmpDesabilitarSelect select_simples">
+                        <option value=""> - Selecione - </option>
+                        <option value="1">Maoir ou igual a</option>
+                        <option value="2">Menor ou igual a</option>
+                    </select>
+                    <input type="text" name="qtDiasCoordVl" id="qtDiasCoordVl" class="cmpDesabilitar input_simples" maxlength="7" size="10"/>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold">Qntd de dias para o início de execução</td>
+                <td>
+                    <select name="qtDiasIniExec" style="width: 150px;" class="cmpDesabilitarSelect select_simples">
+                        <option value=""> - Selecione - </option>
+                        <option value="1">Maoir ou igual a</option>
+                        <option value="2">Menor ou igual a</option>
+                    </select>
+                    <input type="text" name="qtDiasIniExecVl" id="qtDiasIniExecVl" class="cmpDesabilitar input_simples" maxlength="7" size="10"/>
+                </td>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <td align="center">
+                    <input type="button" value=" " class="btn_localizar"/>
+                    <input type="reset" value=" " class="btn_limpar" />
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

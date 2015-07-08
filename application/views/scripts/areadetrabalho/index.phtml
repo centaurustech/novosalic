@@ -1,0 +1,617 @@
+<script type="text/javascript">
+    var votacao = window.setInterval(
+    function(){
+        verificarReuniao()
+    }, 3000);
+    function verificarReuniao(){
+            stplenariaatual  = "<?php echo $this->dadosReuniaoPlenariaAtual['stPlenaria']; ?>";
+        $.ajax({
+            type: "POST",
+            url: "<?php echo $this->url(array('controller' => 'gerenciarpautareuniao', 'action' => 'verificarcnic')) ?>",
+            data:{
+                verificacnic : true,
+                stPlenaria : stplenariaatual
+            },
+            success: function(dados)
+            {
+                if(!dados.error)
+                {
+                    if(dados.acao != 'reload'){
+
+                        if(dados.real > 0)
+                        {
+                            if(dados.status != stplenariaatual)
+                            {
+                                if(dados.cronometro != 'vazio')
+                                {
+                                    data = dados.cronometro;
+                                    valor = data.split(":");
+                                    if(dados.stPlenaria == 'A'){
+                                        $('#cronometro').css('display','');
+                                        $("#minu").html(valor[0]);
+                                        $("#seg").html(valor[1]);
+                                        clearInterval(votacao);
+                                        cronometro(function(){
+                                                window.location = "<?php echo $this->url(array('controller' => 'gerenciarpautareuniao', 'action' => 'gerenciarpautareuniao')); ?>";
+                                        });// fim function cronometro
+                                    }// fim stPlenaria == A
+                                    else{
+                                        window.location = "<?php echo $this->url(array('controller' => 'areadetrabalho', 'action' => 'index')) ?>";
+                                    } // // fim else stPlenaria == A
+                                }// fim dados.dataCron != 'vazio'
+                            }// fim dados.stPlenaria != stplenariaatual
+                            else if(dados.status == stplenariaatual)
+                            {
+                                if(dados.cronometro != 'vazio')
+                                {
+                                    if(dados.status == 'A')
+                                    {
+                                        data = dados.cronometro;
+                                        valor = data.split(":");
+                                        $('#cronometro').css('display','');
+                                        $("#minu").html(valor[0]);
+                                        $("#seg").html(valor[1]);
+                                        clearInterval(votacao);
+                                        cronometro(function(){
+                                                window.location = "<?php echo $this->url(array('controller' => 'gerenciarpautareuniao', 'action' => 'gerenciarpautareuniao')); ?>";
+                                        }); // fim funcao cronometro
+                                    }// fim if stPlenaria == A
+                                }//fim if vazio
+                            }// fim elseif dados.stPlenaria == stplenariaatual
+                        }
+                        else{
+                            if(dados.status == 'A')
+                            {
+                                    window.location = "<?php echo $this->url(array('controller' => 'gerenciarpautareuniao', 'action' => 'gerenciarpautareuniao')); ?>";
+                                    $('.retirarlink').removeAttr('href');
+                            }
+                        }
+                    }
+                    else{
+                    window.location.reload();
+                    }
+                }
+                // fim !dados.error
+            }
+            , dataType : 'json'
+        });
+    }
+    var contador;
+    function cronometro(funcaofim){
+        clearInterval(contador);
+        contador = setInterval(function(){
+            var minu = $('#cronometro #minu').html()*1;
+            var seg = $('#cronometro #seg').html()*1;
+
+            if(seg == 0){
+                minu--;
+                seg = 59;
+            }
+            else
+                seg--;
+
+            if(seg < 10)
+                seg = '0'+seg;
+            if(minu < 10)
+                minu = '0'+minu;
+
+            $('#cronometro #minu').html(minu);
+            $('#cronometro #seg').html(seg);
+
+            if(minu==0 && seg==0){
+                $("#alert").dialog('open');
+                clearInterval(contador);
+                funcaofim();
+            }
+        },1000);
+    }
+
+    $(document).ready(function(){
+        $("table").tablesorter();
+            $('.linkProjeto').click(function(){
+                var idPronac = $(this).attr('idPronac');
+                window.location = '<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'parecerconsolidado'), '', true); ?>/idpronac/'+idPronac;
+            });
+        });
+
+	// funcao para abrir a modal com o formulario pra retirar os projetos de pauta
+	function retirarDePauta(idPronac, pronac, nomeProjeto) {
+            clearInterval(votacao);
+            $('#retirar-pauta').dialog("destroy");
+            $('#retirar-pauta').dialog({
+                modal: true,
+                resizable: false,
+                EscClose: false,
+                width: 700,
+                height: 540,
+                title: 'Retirar de Pauta'
+            });
+            $('.ui-dialog-titlebar-close').remove();
+
+            // restaura valores de campos
+            document.getElementById('idPronacPauta').value           = idPronac;
+            document.getElementById('justificativaPauta').value      = '';
+            document.getElementById('mp1').checked                   = false;
+            document.getElementById('mp2').checked                   = false;
+            document.getElementById('mp3').checked                   = false;
+            document.getElementById('mp4').checked                   = false;
+            document.getElementById('pronacPauta').innerHTML         = pronac;
+            document.getElementById('nomeProjetoPauta').innerHTML    = nomeProjeto;
+            document.getElementById('exibirContadorTextarea').value  = 1000;
+            $('#erroMotivo, #erroJustificativa').html('');
+        } // fecha funcao retirar_de_pauta()
+
+
+
+	// funcao para retirar de pauta
+	function confirmarRetirarDePauta() {
+            // dados do formulario
+            var justificativa = document.getElementById('justificativaPauta').value;
+            var mp1           = document.getElementById('mp1').checked;
+            var mp2           = document.getElementById('mp2').checked;
+            var mp3           = document.getElementById('mp3').checked;
+            var mp4           = document.getElementById('mp4').checked;
+
+            if (!mp1 && !mp2 && !mp3 && !mp4){
+                $('#erroMotivo').html('<p>Por favor, selecione um motivo!</p>');
+                return false;
+            } else {
+                $('#erroMotivo').html('');
+                if (justificativa == ''){
+                    $('#erroJustificativa').html('<p>Por favor, informe a justificativa!</p>');
+                    return false;
+                } else if (justificativa.length < 20) {
+                    $('#erroJustificativa').html('<p>A justificativa deve conter no m&iacute;nimo 20 caracteres!!</p>');
+                    return false;
+                } else {
+                    $('#erroJustificativa').html('');
+                    fecharModal('retirar-pauta');
+                    carregandoModal();
+                    $('#formRetirarPauta').submit();
+                }
+            }
+        } // fecha funcao confirmarRetirarDePauta()
+
+
+	// funcao para fecha retirar de pauta
+	function fecharRetirarDePauta() {
+            fecharModal('retirar-pauta');
+            votacao = window.setInterval(function(){verificarReuniao()}, 1000);
+        } // fecha funcao fecharRetirarDePauta()
+
+
+	// funcao para cancelar a retirada dos projetos de pauta
+	function cancelarRetirarDePauta(idRetirarDePauta){
+            clearInterval(votacao);
+            $('#cancelar-retirar-pauta').dialog("destroy");
+            $('#cancelar-retirar-pauta').dialog({
+                modal: true,
+                resizable: false,
+                EscClose: false,
+                width: 300,
+                height: 200,
+                title: 'Confirma&ccedil;&atilde;o',
+                buttons: {
+                    Não: function() {
+                        fecharModal('cancelar-retirar-pauta');
+                        votacao = window.setInterval(function(){verificarReuniao()}, 1000);
+                    },
+                    "Sim": function() {
+                        fecharModal('cancelar-retirar-pauta');
+                        if (idRetirarDePauta != '') {
+                            // dados do formulario
+                            document.getElementById('idRetirarDePauta').value = idRetirarDePauta;
+                            carregandoModal();
+                            $('#formCancelarRetirarPauta').submit();
+                        }
+                    }
+                }
+            });
+            $('.ui-dialog-titlebar-close').remove();
+	} // fecha funcao cancelarRetirarDePauta()
+
+</script>
+<!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="alert"></div>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="last">An&aacute;lise do Membro da Comiss&atilde;o</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INICIO TITULO ========== -->
+<div id="titulo">
+    <div>An&aacute;lise do Membro da Comiss&atilde;o <!--<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span>--></div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+
+
+<!-- ========== INICIO CONTEUDO ========== -->
+<div id="conteudo">
+    <div id="cronometro" style="display: none; font-size: 2em; margin-top: 0.5em; text-align: center; color: red;" >
+        Tempo restante para in&iacute;cio da Plen&aacute;ria = <span id="minu" ></span>' : <span id="seg" ></span>"
+    </div>
+
+    <!-- ========== INICIO FORMULARIO PARA RETIRAR DE PAUTA ========== -->
+    <div id="retirar-pauta" class="sumir">
+        <form name="formRetirarPauta" id="formRetirarPauta" action="<?php echo $this->url(array('controller' => 'areadetrabalho', 'action' => 'retirar-de-pauta')); ?>" method="post">
+            <input type="hidden" name="idPronacPauta" id="idPronacPauta" />
+            <table class="tabela">
+                <tr>
+                    <th>Pronac</th>
+                    <th>Nome do Projeto</th>
+                </tr>
+                <tr>
+                    <td id="pronacPauta"></td>
+                    <td id="nomeProjetoPauta"></td>
+                </tr>
+            </table>
+            <table class="tabela">
+                <tr>
+                    <th colspan="2">Motivo</th>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <span id="erroMotivo" class="red bold"></span>
+                        <input type="radio" name="motivoPauta" id="mp1" value="1" /> <label for="mp1">Devolver para Vinculada</label><br />
+                        <input type="radio" name="motivoPauta" id="mp2" value="2" /> <label for="mp2">Consultoria da CONJUR</label><br />
+                        <input type="radio" name="motivoPauta" id="mp3" value="3" /> <label for="mp3">Mudan&ccedil;a de &Aacute;rea/Segmento</label><br />
+                        <input type="radio" name="motivoPauta" id="mp4" value="4" /> <label for="mp4">Outras</label>
+                    </td>
+                </tr>
+            </table>
+            <table class="tabela">
+                <tr>
+                    <th colspan="2">Justificativa</th>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <span id="erroJustificativa" class="red bold"></span>
+                        <textarea name="justificativaPauta" id="justificativaPauta" class="input_simples w600 h100" cols="100" rows="5" <?php echo $this->contadorTextarea('form.justificativaPauta', 'form.exibirContadorTextarea', 1000); ?>></textarea>
+                                                                                                    <?php echo $this->exibirContadorTextarea('exibirContadorTextarea', 4, 1000, 0, '5%'); ?>
+                    </td>
+                </tr>
+            </table>
+            <p class="centro">
+                <input type="button" class="btn_confirmar" value=" " title="Confirmar retirada de pauta" onclick="confirmarRetirarDePauta(); return false;" />
+                <input type="button" class="btn_cancelar" value=" " title="Cancelar retirada de pauta" onclick="fecharRetirarDePauta(); return false;" />
+            </p>
+        </form>
+    </div>
+    <!-- ========== FIM FORMULARIO PARA RETIRAR DE PAUTA ========== -->
+
+
+    <!-- ========== INICIO FORMULARIO PARA CANCELAR A RETIRADA DE PAUTA ========== -->
+    <div id="cancelar-retirar-pauta" class="sumir">
+            Tem certeza que deseja cancelar solicita&ccedil;&atilde;o de retirada de pauta?<br />O motivo e sua justificativa serão deletados.
+        <form name="formCancelarRetirarPauta" id="formCancelarRetirarPauta" action="<?php echo $this->url(array('controller' => 'areadetrabalho', 'action' => 'cancelar-retirar-de-pauta')); ?>" method="post">
+            <input type="hidden" name="idRetirarDePauta" id="idRetirarDePauta" />
+        </form>
+    </div>
+    <!-- ========== FIM FORMULARIO PARA CANCELAR A RETIRADA DE PAUTA ========== -->
+
+
+    <!-- ========== SCRIPT PARA ABRIR O RESPECTIVO REGISTRO ========== -->
+    <script type="text/javascript">
+        function JSMostraOcultaElemento(elemento){
+            $('.' + elemento).toggle();
+
+            if ($('#' + elemento).hasClass('btn_adicionar')){
+                $('#' + elemento).removeClass('btn_adicionar');
+                $('#' + elemento).addClass('btn_remover');
+            } else {
+                $('#' + elemento).removeClass('btn_remover');
+                $('#' + elemento).addClass('btn_adicionar');
+            }
+        }
+    </script>
+
+    <!-- ======================================================================-->
+    <!-- ================ PROJETOS - ANALISE INICIAL ==========================-->
+    <!-- ======================================================================-->
+    <table class="tabela tablesorter">
+        <tr>
+            <td><input type="button" id="analise1" class="btn_adicionar" onclick="JSMostraOcultaElemento(this.id);" />An&aacute;lise Inicial
+                <b>Total: <?php echo count($this->analise);?></b>
+            </td>
+        </tr>
+    </table>
+    <div class="analise1" style="display:none;">
+        <?php if (count($this->analise) > 0) { ?>
+            <table class="tabela tablesorter">
+                <thead>
+                    <tr class="titulo_tabela">
+                        <th>Seq</th>
+                        <th>Pronac</th>
+                        <th>Nome do Projeto</th>
+                        <th>Parecer T&eacute;cnico Favor&aacute;vel</th>
+                        <th>Status</th>
+                        <th style="background-image:none;" class="destacar">A&ccedil;&atilde;o</th>
+                    </tr>
+                </thead>
+
+            <?php
+            $i = 0; $y=1;
+            foreach ($this->analise as $tbanalise) :
+//                if ($i % 2 == 0)
+//                    $fundo = "linha1";
+//                else
+//                    $fundo="linha2";
+//
+//                    $tpAcaoPauta      = isset($this->statusRetirarDePauta($tbanalise->idPRONAC, $this->idAgente)->tpAcao) ? $this->statusRetirarDePauta($tbanalise->idPRONAC, $this->idAgente)->tpAcao : 0;
+//                    $qtPauta          = count($this->statusRetirarDePauta($tbanalise->idPRONAC, $this->idAgente));
+//                    $idRetirarDePauta = isset($this->statusRetirarDePauta($tbanalise->idPRONAC, $this->idAgente)->idRetirarDePauta) ? $this->statusRetirarDePauta($tbanalise->idPRONAC, $this->idAgente)->idRetirarDePauta : 0;
+            
+            ?>
+
+                <!--<tr class="fundo_<?php //echo $fundo; ?>">-->
+                <tr>
+                    <td><?php echo $y; ?></td>
+                    <td class="centro">
+                        <?php if ($tbanalise->Acao == '1') { ?>
+                            <?php echo $this->escape($tbanalise->PRONAC); ?>
+                        <?php } else { ?>
+                            <a href="<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'parecerconsolidado'), '', true); ?>/idpronac/<?php echo $this->escape($tbanalise->idPRONAC); ?>"><?php echo $this->escape($tbanalise->PRONAC); ?></a>
+                        <?php } ?>
+                    </td>
+                    <td><?php echo $tbanalise->NomeProjeto; ?></td>
+                    <td class="centro"><?php echo $tbanalise->ParecerFavoravel; ?></td>
+                    <td class="centro"><?php echo $tbanalise->Situacao == 'D01' ? 'Ajuste para Aprova&ccedil;&atilde;o' : ($tbanalise->idTipoAgente == 6 ? 'Projeto analisado' :'N&atilde;o analisado'); ?></td>
+                    <td class="centro">
+                        <?php
+                        $acoes = array(0,2,4,5);
+                        if (in_array($tbanalise->Acao, $acoes)) { ?>
+                            <input type="button" class="btn_retirar_pauta" title="Retirar de Pauta" onclick="retirarDePauta('<?php echo $tbanalise->idPRONAC; ?>', '<?php echo $tbanalise->PRONAC; ?>', '<?php echo $this->escape($tbanalise->NomeProjeto); ?>');" />
+                        <?php } else { ?>
+                            <input type="button" class="btn_cancelar_solicitacao" title="Cancelamento da solicita&ccedil;&atilde;o de retirada de pauta" onclick="cancelarRetirarDePauta('<?php echo $tbanalise->idRetiradaPauta; ?>');" />
+                        <?php } ?>
+                    </td>
+                </tr>
+
+            <?php
+                $i++; $y++;
+            endforeach;
+            ?>
+
+        </table>
+        <?php } else { ?>
+        <table class="tabela tablesorter">
+            <tr>
+                <th>
+                    Voc&ecirc; n&atilde;o possui projetos para an&aacute;lise nessa CNIC.
+                </th>
+            </tr>
+        </table>
+        <?php } ?>
+    </div>
+
+    <!-- ======================================================================-->
+    <!-- ================ PROJETOS - READEQUACAO ==============================-->
+    <!-- ======================================================================-->
+    <table class="tabela tablesorter">
+        <tr>
+            <td><input type="button" id="analise2" class="btn_adicionar"  onclick="JSMostraOcultaElemento(this.id);" />Readequa&ccedil;&atilde;o de Projeto
+                <b>Total: <?php echo count($this->analisereadequacao);?></b>
+            </td>
+        </tr>
+    </table>
+
+    <div class="analise2" style="display:none;">
+        <?php if (count($this->analisereadequacao) > 0) { ?>
+            <table class="tabela tablesorter">
+                <thead>
+                    <tr class="titulo_tabela">
+                        <th>Pronac</th>
+                        <th>Nome do Projeto</th>
+                        <th>Parecer T&eacute;cnico Favor&aacute;vel</th>
+                        <th>Status</th>
+                        <th style="background-image:none;" class="destacar">A&ccedil;&atilde;o</th>
+                    </tr>
+                </thead>
+
+            <?php
+            $i = 0;
+            foreach ($this->analisereadequacao as $tbanalise) :
+//                if ($i % 2 == 0)
+//                    $fundo = "linha1";
+//                else
+//                    $fundo="linha2";
+
+                    $tpAcaoPauta      = isset($this->statusRetirarDePauta($tbanalise->idPRONAC, $this->idAgente)->tpAcao) ? $this->statusRetirarDePauta($tbanalise->idPRONAC, $this->idAgente)->tpAcao : 0;
+                    $qtPauta          = count($this->statusRetirarDePauta($tbanalise->idPRONAC, $this->idAgente));
+                    $idRetirarDePauta = isset($this->statusRetirarDePauta($tbanalise->idPRONAC, $this->idAgente)->idRetirarDePauta) ? $this->statusRetirarDePauta($tbanalise->idPRONAC, $this->idAgente)->idRetirarDePauta : 0;
+            ?>
+
+                <!--<tr class="fundo_<?php //echo $fundo; ?>">-->
+                <tr>
+                    <td class="centro">
+                        <?php if ($tpAcaoPauta == '1') { ?>
+                            <?php echo $this->escape($tbanalise->PRONAC); ?>
+                        <?php } else { ?>
+                            <a href="<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'parecerconsolidado'), '', true); ?>/idpronac/<?php echo $this->escape($tbanalise->idPRONAC); ?>"><?php echo $this->escape($tbanalise->PRONAC); ?></a>
+                        <?php } ?>
+                    </td>
+                    <td><?php echo $tbanalise->NomeProjeto; ?></td>
+                    <td class="centro"><?php echo $tbanalise->ParecerFavoravel; ?></td>
+                    <td class="centro"><?php echo $tbanalise->Situacao == 'D01' ? 'Ajuste para Aprova&ccedil;&atilde;o' : ($tbanalise->idTipoAgente == 6 ? 'Projeto analisado' :'N&atilde;o analisado'); ?></td>
+                    <td class="centro">
+                        <?php if ($qtPauta <= 0 || $tpAcaoPauta == '2' || $tpAcaoPauta == '4' || $tpAcaoPauta == '5') { ?>
+                            <input type="button" class="btn_retirar_pauta" title="Retirar de Pauta" onclick="retirarDePauta('<?php echo $tbanalise->idPRONAC; ?>', '<?php echo $tbanalise->PRONAC; ?>', '<?php echo $this->escape($tbanalise->NomeProjeto); ?>');" />
+                        <?php } else { ?>
+                            <input type="button" class="btn_cancelar_solicitacao" title="Cancelamento da solicita&ccedil;&atilde;o de retirada de pauta" onclick="cancelarRetirarDePauta('<?php echo $idRetirarDePauta; ?>');" />
+                        <?php } ?>
+                    </td>
+                </tr>
+
+            <?php
+                $i++;
+            endforeach;
+            ?>
+
+        </table>
+        <?php } else { ?>
+        <table class="tabela tablesorter">
+            <tr>
+                <th>
+                    Voc&ecirc; n&atilde;o possui projetos readequados para an&aacute;lise nessa CNIC.
+                </th>
+            </tr>
+        </table>
+        <?php } ?>
+    </div>
+
+
+    <!-- ======================================================================-->
+    <!-- ================ PROJETOS - DILIGENCIADO =============================-->
+    <!-- ======================================================================-->
+    <table class="tabela tablesorter">
+        <tr>
+            <td><input type="button" id="analise3" class="btn_adicionar"  onclick="JSMostraOcultaElemento(this.id);" />Diligenciado - <b>Total: <?php echo $this->qtddiligenciados;?></b></td>
+        </tr>
+    </table>
+
+    <div class="analise3" style="display:none;">
+        <?php if (count($this->diligenciado) > 0) { ?>
+        <table class="tabela tablesorter">
+            <thead>
+                <tr class="titulo_tabela">
+                    <th>Pronac</th>
+                    <th>Nome do Projeto</th>
+                    <th>Parecer T&eacute;cnico Favor&aacute;vel</th>
+                    <th>Data do &uacute;ltimo envio de dilig&ecirc;ncia</th>
+                </tr>
+            </thead>
+
+            <?php
+            $i = 0;
+            $pronac = 0;
+            foreach ($this->diligenciado as $diligencia):
+              if($pronac != $diligencia->PRONAC): //U_Us@ari
+//                ($i % 2 == 0)?$fundo = "linha1":$fundo="linha2";
+            ?>
+
+                <!--<tr class="fundo_<?php //echo $fundo; ?>">-->
+                <tr>
+                    <td class="centro">
+                        <?php echo $this->escape($diligencia->PRONAC); ?>
+                        <!--<a href="<?php //echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'parecerconsolidado'), '', true); ?>/idpronac/<?php //echo $this->escape($diligencia->idPRONAC); ?>"><?php //echo $this->escape($diligencia->PRONAC); ?></a>-->
+                    </td>
+                    <!-- <td><a class="retirarlink" href="<?php echo $this->url(array('controller' => 'dadosprojeto', 'action' => '')); ?>?idPronac=<?php echo $this->escape($diligencia->PRONAC); ?>"><?php echo $this->escape($diligencia->PRONAC); ?></a></td> -->
+                    <td><?php echo $diligencia->NomeProjeto; ?></td>
+                    <td class="centro"><?php echo $diligencia->ParecerFavoravel; ?></td>
+                    <td class="centro"><?php echo $diligencia->dtSolicitacao; ?></td>
+                </tr>
+
+            <?php
+                $i++;
+             endif;
+             $pronac = $diligencia->PRONAC;
+            endforeach;
+            ?>
+
+        </table>
+        <?php } else { ?>
+        <table class="tabela tablesorter">
+            <tr>
+                <th>
+                    Voc&ecirc; n&atilde;o possui projetos diligenciados para an&aacute;lise nessa CNIC.
+                </th>
+            </tr>
+        </table>
+        <?php } ?>
+    </div>
+
+
+    <!-- ======================================================================-->
+    <!-- ================ PROJETOS - DILIGENCIA RESPONDIDA ====================-->
+    <!-- ======================================================================-->
+    <table class="tabela tablesorter">
+        <tr>
+            <td><input type="button" id="analise4" class="btn_adicionar"  onclick="JSMostraOcultaElemento(this.id);" />Dilig&ecirc;ncias Respondidas - <b>Total: <?php echo $this->qtdrespondidos?></b></td>
+        </tr>
+    </table>
+
+    <div class="analise4" style="display:none;">
+        <?php if (count($this->diligenciarespondida) > 0) { ?>
+        <table class="tabela tablesorter">
+            <thead>
+                <tr class="titulo_tabela">
+                    <th>Pronac</th>
+                    <th>Nome do Projeto</th>
+                    <th>Parecer T&eacute;cnico Favor&aacute;vel</th>
+                    <th>Data da &uacute;ltima dilig&ecirc;ncia respondida</th>
+                    <th style="background-image:none;" class="destacar">A&ccedil;&atilde;o</th>
+                </tr>
+            </thead>
+
+            <?php
+            $i = 0;
+
+            $pronac = 0;
+            foreach ($this->diligenciarespondida as $tbresposta):
+             if($pronac != $tbresposta->idPRONAC): //U_Us@ari
+//                ($i % 2 == 0)?$fundo = "linha1":$fundo="linha2";
+
+//                $tpAcaoPauta      = isset($this->statusRetirarDePauta($tbresposta->idPRONAC, $this->idAgente)->tpAcao) ? $this->statusRetirarDePauta($tbresposta->idPRONAC, $this->idAgente)->tpAcao : 0;
+//                $qtPauta          = count($this->statusRetirarDePauta($tbresposta->idPRONAC, $this->idAgente));
+//                $idRetirarDePauta = isset($this->statusRetirarDePauta($tbresposta->idPRONAC, $this->idAgente)->idRetirarDePauta) ? $this->statusRetirarDePauta($tbresposta->idPRONAC, $this->idAgente)->idRetirarDePauta : 0;
+            ?>
+
+                <!--<tr class="fundo_<?php //echo $fundo; ?>">-->
+                <tr>
+                    <td class="centro">
+                   	<?php if ($tbresposta->Acao == '1') { ?>
+                            <?php echo $this->escape($tbresposta->PRONAC); ?>
+                        <?php } else { ?>
+                            <!--<a href="<?php //echo $this->url(array('controller' => 'diligenciar', 'action' => 'listardiligenciaanalista')); ?>?idPronac=<?php //echo $tbresposta->idPRONAC;?>&situacao=C30&tpDiligencia=126"><?php //echo $this->escape($tbresposta->PRONAC); ?></a>-->
+                            <a href="<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'parecerconsolidado'), '', true); ?>/idpronac/<?php echo $tbresposta->idPRONAC;?>"><?php echo $this->escape($tbresposta->PRONAC); ?></a>
+                        <?php } ?>	
+                    </td>
+                    <td><?php echo $tbresposta->NomeProjeto; ?></td>
+                    <td class="centro"><?php echo $tbresposta->ParecerFavoravel; ?></td>
+                    <td class="centro"><?php echo $tbresposta->dtSolicitacao; ?></td>
+                    <td class="centro">
+                        <?php
+                        $acoes = array(0,2,5);
+                        if (in_array($tbresposta->Acao, $acoes)) { ?>
+                            <input type="button" class="btn_retirar_pauta" title="Retirar de Pauta" onclick="retirarDePauta('<?php echo $tbresposta->idPRONAC; ?>', '<?php echo $tbresposta->PRONAC; ?>', '<?php echo $this->escape($tbresposta->NomeProjeto); ?>');" />
+                        <?php } else { ?>
+                            <input type="button" class="btn_cancelar_solicitacao" title="Cancelamento da solicita&ccedil;&atilde;o de retirada de pauta" onclick="cancelarRetirarDePauta('<?php echo $tbresposta->idRetiradaPauta; ?>');" />
+                        <?php } ?>
+                    </td>
+                </tr>
+
+            <?php
+                $i++;
+             endif;
+             $pronac = $tbresposta->idPRONAC;
+            endforeach;
+            ?>
+
+        </table>
+        <?php } else { ?>
+        <table class="tabela tablesorter">
+            <tr>
+                <th>
+                    Voc&ecirc; n&atilde;o possui projetos com diligencias respondidas para an&aacute;lise nessa CNIC.
+                </th>
+            </tr>
+        </table>
+        <?php } ?>
+    </div>
+
+
+
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+
+
+
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+
+
+<br clear="all" />

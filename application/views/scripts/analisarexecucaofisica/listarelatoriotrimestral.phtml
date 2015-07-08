@@ -1,0 +1,72 @@
+<?php
+/**
+ * Alterar Projeto
+ * @author Equipe RUP - Politec
+ * @since 15/01/2011
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.alterarprojeto
+ * @copyright ? 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="index.html" title="Ir para Início">Início</a></li>
+        <li class="last">Relat&oacute;rios Trimestrais,</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<div id="titulo">
+    <div>Analisar Relat&oacute;rios Trimestrais
+        <span class="voltar"><a href="#" onkeypress="voltar()" onclick="voltar();">Voltar</a></span>
+    </div>
+</div>
+<div id="conteudo">
+    <?php
+    $a = 1;
+    foreach ($this->relatorios as $key => $relatorios) {
+ ?>
+        <table class="tabela">
+            <tr>
+                <td><input type="button" id="abrir_fechar_analisados" class="btn_adicionar" />Relatórios Trimestrais -  Ano <?php echo $key; ?></td>
+            </tr>
+        </table>
+        <table class="tabela">
+            <tr>    
+                <th>Relat&oacute;rios</th>
+                <th>Analisar Relat&oacute;rios</th>
+                <th>Status</th>
+            </tr>
+            <?php
+            foreach($this->relatorios[$key] as $dados){?>
+            <tr>
+                <td><?php echo $dados['descricao']?></td>
+                <td style="text-align: center;">
+                    <?php if($a <= $this->qtdrelatorios){ ?><a href="<?php echo $this->url(array('controller' => 'analisarexecucaofisicatecnico', 'action' => 'relatoriotrimestral', 'idpronac' => $this->idpronac, 'nrrelatorio' => $a)); ?>">
+                        <img src="<?php echo $this->baseurl(); ?>/public/img/table_multiple.png" alt=""></a>
+                    <?php }
+                    else { ?>
+                    <img src="<?php echo $this->baseurl(); ?>/public/img/table_multiple-off.png" title="Relatório trimestral ainda n&atilde;o cadastrado pelo proponente!" alt="">
+                    <?php } ?>
+                </td>
+                <td><?php echo isset($this->status[$a]) ? $this->statusProjetoRelatorio($this->status[$a]) : 'Relat&oacute;rio n&atilde;o enviado';?></td>
+            </tr>
+            <?php
+            $a++;
+            }
+            ?>
+        </table>
+<?php } ?>
+</div><!-- final: conteudo principal #conteudo -->
+
+<!-- início: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+
+<br clear="all" />

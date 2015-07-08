@@ -1,0 +1,281 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(".orderBy").click(function(){
+            var campo = $(this).attr("valorOrdenacao");
+
+            if("ASC" == $("#tipoOrdenacao").val()){
+                tipo = "DESC";
+            }else{
+                tipo = "ASC";
+            }
+
+            ordenar(campo, tipo);
+        });
+
+        $(".orderBy").each(function(){
+            if($("#ordenacao").val() == $(this).attr("valorOrdenacao")){
+                if($("#tipoOrdenacao").val() == "ASC"){
+                    $(this).after('<span style="padding-left:4px;"><img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-baixo.PNG" align="absmiddle"></span>');
+                }else{
+                    $(this).after('<span style="padding-left:4px;"><img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-cima.PNG" align="absmiddle"></span>');
+                }
+            }
+        });
+
+        $(".gerarResumo").click(function(){
+            var campoGerarResumo = "<input type='hidden' name='gerarResumo' id='gerarResumo' value='true'>";
+            $("#frmPaginacao").append(campoGerarResumo);
+            jqAjaxForm(document.getElementById("frmPaginacao"), "resultadoConsulta");
+        });
+
+        $('.btn_imprimir').click(function(){
+            $('#formImpressao').submit();
+        });
+
+        $(".btn_recarregar").click(function(){
+            paginar(1);
+        });
+
+    });
+
+    function ordenar(campo, tipo){
+        $("#ordenacao").val(campo);
+        $("#tipoOrdenacao").val(tipo);
+        paginar(1);
+    }
+
+    function paginar(pag){
+        var regPorPag = $("#registroPorPag").val();
+        $("#intTamPag").val(regPorPag);
+        $("#pag").val(pag);
+        jqAjaxForm(document.getElementById("frmPaginarRelatorio"), "resultadoPesquisa");
+        $("#resultadoPesquisa").html("");
+        $('#resultadoPesquisa').html('<br><center>Aguarde, carregando dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br>');
+    }
+</script>
+
+<?php if($this->modal != 's') { ?>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'form-relatorio-recibo-captacao')); ?>" title="Ir para Recibo de conta capta&ccedil;&atilde;o">Recibo de capta&ccedil;&atilde;o</a></li>
+        <li class="last">Resultado da consulta</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Recibo de capta&ccedil;&atilde;o <span class="voltar"><a href="<?php echo $this->url(array('controller'=>'movimentacaodeconta', 'action'=>'form-relatorio-recibo-captacao')); ?>" title="Ir para página anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+<?php } ?>
+
+    <?php if(count($this->dados)>0){ ?>
+    <!-- ============ PAGINAÇÃO ============ -->
+    <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+        <tbody>
+            <tr>
+                <td align="center">
+                <form name="form1" id="form1" action="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-relatorio-recibo-captacao'));?>" method="get">
+                    <?php if($this->paginacao['pag']>1) { ?>
+                    <input class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-relatorio-recibo-captacao')).'?pag=1'."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']."&pronac=".$this->pronac."&proponente=".$this->proponente."&incentivador=".$this->incentivador."&numLote=".$this->numLote."&dtLote=".$this->dtLote."&tpDtLote=".$this->tpDtLote."&dtLote_Final=".$this->dtLote_Final."&dtCaptacao=".$this->dtCaptacao."&tpDtCaptacao=".$this->tpDtCaptacao."&dtCaptacao_Final=".$this->dtCaptacao_Final; ?>'">
+                    <?php } ?>
+                    <input id="btn_p_anterior" type="button"
+                    <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                    <?php }else { ?>
+                           class="btn_p_anterior"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-relatorio-recibo-captacao')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']."&pronac=".$this->pronac."&proponente=".$this->proponente."&incentivador=".$this->incentivador."&numLote=".$this->numLote."&dtLote=".$this->dtLote."&tpDtLote=".$this->tpDtLote."&dtLote_Final=".$this->dtLote_Final."&dtCaptacao=".$this->dtCaptacao."&tpDtCaptacao=".$this->tpDtCaptacao."&dtCaptacao_Final=".$this->dtCaptacao_Final; ?>'"
+                    <?php } ?>>
+                    <input id="btn_p_proximo" type="button"
+                           <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                           class="btn_p_proximo-off"
+                    <?php }else { ?>
+                           class="btn_p_proximo"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-relatorio-recibo-captacao')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']."&pronac=".$this->pronac."&proponente=".$this->proponente."&incentivador=".$this->incentivador."&numLote=".$this->numLote."&dtLote=".$this->dtLote."&tpDtLote=".$this->tpDtLote."&dtLote_Final=".$this->dtLote_Final."&dtCaptacao=".$this->dtCaptacao."&tpDtCaptacao=".$this->tpDtCaptacao."&dtCaptacao_Final=".$this->dtCaptacao_Final; ?>'"
+                    <?php } ?>>
+                    <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                    <input class="btn_ultimo" id="btn_ultimo" type="button"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-relatorio-recibo-captacao')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']."&pronac=".$this->pronac."&proponente=".$this->proponente."&incentivador=".$this->incentivador."&numLote=".$this->numLote."&dtLote=".$this->dtLote."&tpDtLote=".$this->tpDtLote."&dtLote_Final=".$this->dtLote_Final."&dtCaptacao=".$this->dtCaptacao."&tpDtCaptacao=".$this->tpDtCaptacao."&dtCaptacao_Final=".$this->dtCaptacao_Final; ?>'">
+                    <?php } ?>
+                    Pág.:<select name="pag" id="pag" onchange="$('#form1').submit()" class="input_simples">
+                        <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                        <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                        <?php endfor; ?>
+                    </select>
+                    &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>"><input type="submit" class="btn_recarregar" value="">
+                    <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                    <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                    <input type="hidden" name="pronac" value="<?php echo $this->pronac;?>">
+                    <input type="hidden" name="proponente" value="<?php echo $this->proponente;?>">
+                    <input type="hidden" name="incentivador" value="<?php echo $this->incentivador;?>">
+                    <input type="hidden" name="dtLote" value="<?php echo $this->dtLote;?>">
+                    <input type="hidden" name="tpDtLote" value="<?php echo $this->tpDtLote;?>">
+                    <input type="hidden" name="dtLote_Final" value="<?php echo $this->dtLote_Final;?>">
+                    <input type="hidden" name="dtCaptacao" value="<?php echo $this->dtCaptacao;?>">
+                    <input type="hidden" name="tpDtCaptacao" value="<?php echo $this->tpDtCaptacao;?>">
+                    <input type="hidden" name="dtCaptacao_Final" value="<?php echo $this->dtCaptacao_Final;?>">
+                    <input type="hidden" name="numLote" value="<?php echo $this->numLote;?>">
+                    <input type="button" value=" " class="btn_imprimir" title="Imprimir" />
+                 </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <center>
+        <?php
+            echo $this->paginacao['inicio']." a ";
+            echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+            echo " de ". $this->paginacao['total']. " Projetos listados";
+        ?>
+    </center>
+    <!-- ========== FIM PAGINAÇÃO ========== -->
+    <?php } ?>
+
+
+    <?php if($this->qtdDocumentos != 0){ ?>
+    <table class="tabela tablesorter">
+        <thead>
+            <tr class="titulo_tabela">
+                <th><a href="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-relatorio-recibo-captacao')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=8&ordem='.$this->paginacao['novaOrdem']."&pronac=".$this->pronac."&proponente=".$this->proponente."&incentivador=".$this->incentivador."&numLote=".$this->numLote."&dtLote=".$this->dtLote."&tpDtLote=".$this->tpDtLote."&dtLote_Final=".$this->dtLote_Final."&dtCaptacao=".$this->dtCaptacao."&tpDtCaptacao=".$this->tpDtCaptacao."&dtCaptacao_Final=".$this->dtCaptacao_Final;?>">PRONAC</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-relatorio-recibo-captacao')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=1&ordem='.$this->paginacao['novaOrdem']."&pronac=".$this->pronac."&proponente=".$this->proponente."&incentivador=".$this->incentivador."&numLote=".$this->numLote."&dtLote=".$this->dtLote."&tpDtLote=".$this->tpDtLote."&dtLote_Final=".$this->dtLote_Final."&dtCaptacao=".$this->dtCaptacao."&tpDtCaptacao=".$this->tpDtCaptacao."&dtCaptacao_Final=".$this->dtCaptacao_Final;?>">CNPJ / CPF</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-relatorio-recibo-captacao')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=7&ordem='.$this->paginacao['novaOrdem']."&pronac=".$this->pronac."&proponente=".$this->proponente."&incentivador=".$this->incentivador."&numLote=".$this->numLote."&dtLote=".$this->dtLote."&tpDtLote=".$this->tpDtLote."&dtLote_Final=".$this->dtLote_Final."&dtCaptacao=".$this->dtCaptacao."&tpDtCaptacao=".$this->tpDtCaptacao."&dtCaptacao_Final=".$this->dtCaptacao_Final;?>">Incentivador</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-relatorio-recibo-captacao')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=5&ordem='.$this->paginacao['novaOrdem']."&pronac=".$this->pronac."&proponente=".$this->proponente."&incentivador=".$this->incentivador."&numLote=".$this->numLote."&dtLote=".$this->dtLote."&tpDtLote=".$this->tpDtLote."&dtLote_Final=".$this->dtLote_Final."&dtCaptacao=".$this->dtCaptacao."&tpDtCaptacao=".$this->tpDtCaptacao."&dtCaptacao_Final=".$this->dtCaptacao_Final;?>">N&ordm; Lote</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-relatorio-recibo-captacao')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=2&ordem='.$this->paginacao['novaOrdem']."&pronac=".$this->pronac."&proponente=".$this->proponente."&incentivador=".$this->incentivador."&numLote=".$this->numLote."&dtLote=".$this->dtLote."&tpDtLote=".$this->tpDtLote."&dtLote_Final=".$this->dtLote_Final."&dtCaptacao=".$this->dtCaptacao."&tpDtCaptacao=".$this->tpDtCaptacao."&dtCaptacao_Final=".$this->dtCaptacao_Final;?>">Dt.Lote</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-relatorio-recibo-captacao')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=3&ordem='.$this->paginacao['novaOrdem']."&pronac=".$this->pronac."&proponente=".$this->proponente."&incentivador=".$this->incentivador."&numLote=".$this->numLote."&dtLote=".$this->dtLote."&tpDtLote=".$this->tpDtLote."&dtLote_Final=".$this->dtLote_Final."&dtCaptacao=".$this->dtCaptacao."&tpDtCaptacao=".$this->tpDtCaptacao."&dtCaptacao_Final=".$this->dtCaptacao_Final;?>">Dt.Capta&ccedil;&atilde;o</a></th>
+                <th width="140px"><a href="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-relatorio-recibo-captacao')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=4&ordem='.$this->paginacao['novaOrdem']."&pronac=".$this->pronac."&proponente=".$this->proponente."&incentivador=".$this->incentivador."&numLote=".$this->numLote."&dtLote=".$this->dtLote."&tpDtLote=".$this->tpDtLote."&dtLote_Final=".$this->dtLote_Final."&dtCaptacao=".$this->dtCaptacao."&tpDtCaptacao=".$this->tpDtCaptacao."&dtCaptacao_Final=".$this->dtCaptacao_Final;?>">Vl.Captado</a></th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach($this->dados as $d){ ?>
+            <tr>
+                <td>
+                    <a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'));?>?idPronac=<?php echo ($d->IdPRONAC); ?>" target="_blank">
+                        <?php echo $d->PRONAC; ?>
+                    </a>
+                </td>
+                <td><?php echo strlen($d->cnpjcpfIncentivador) > 11 ? Mascara::addMaskCNPJ($d->cnpjcpfIncentivador) : Mascara::addMaskCPF($d->cnpjcpfIncentivador); ?></td>
+                <td><?php echo $d->Incentivador; ?></td>
+                <td align="center"><?php echo $d->numLote; ?></td>
+                <td align="center"><?php echo Data::tratarDataZend($d->dtLote, 'Brasileira'); ?></td>
+                <td align="center"><?php echo Data::tratarDataZend($d->dtCaptacao, 'Brasileira'); ?></td>
+                <td align="right"><?php echo 'R$ '.number_format($d->vlCaptado, 2, ",", "."); ?></td>
+            </tr>
+            <?php } ?>
+        </tbody>
+    </table>
+    
+    <br clear="all" />
+
+    <table class="tabela">
+        <tr>
+            <td align="right" style="font-size: 16px; color: #333; font-weight: bold;">Total Captado</td>
+            <td align="right" width="140px" style="font-size: 14px; color: #333; font-weight: bold;" nowrap><?php echo 'R$ '.number_format($this->vlrTotalGrid->vlrCaptado, 2, ",", "."); ?></td>
+        </tr>
+    </table>
+    <?php } ?>
+
+    <?php if(count($this->dados)>0){ ?>
+
+        <!-- ============ PAGINAÇÃO ============ -->
+        <?php if($this->qtdDocumentos > 10) { //echo $this->dados; ?>
+        <center>
+            <?php
+                echo $this->paginacao['inicio']." a ";
+                echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+                echo " de ". $this->paginacao['total'];
+            ?>
+        </center>
+        <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+            <tbody>
+                <tr>
+                    <td align="center">
+                    <form name="form2" id="form2" action="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-relatorio-recibo-captacao'));?>" method="get">
+                        <?php if($this->paginacao['pag']>1) { ?>
+                        <input class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-relatorio-recibo-captacao')).'?pag=1'."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']."&pronac=".$this->pronac."&proponente=".$this->proponente."&incentivador=".$this->incentivador."&numLote=".$this->numLote."&dtLote=".$this->dtLote."&tpDtLote=".$this->tpDtLote."&dtLote_Final=".$this->dtLote_Final."&dtCaptacao=".$this->dtCaptacao."&tpDtCaptacao=".$this->tpDtCaptacao."&dtCaptacao_Final=".$this->dtCaptacao_Final; ?>'">
+                        <?php } ?>
+                        <input id="btn_p_anterior" type="button"
+                        <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                        <?php }else { ?>
+                               class="btn_p_anterior"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-relatorio-recibo-captacao')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']."&pronac=".$this->pronac."&proponente=".$this->proponente."&incentivador=".$this->incentivador."&numLote=".$this->numLote."&dtLote=".$this->dtLote."&tpDtLote=".$this->tpDtLote."&dtLote_Final=".$this->dtLote_Final."&dtCaptacao=".$this->dtCaptacao."&tpDtCaptacao=".$this->tpDtCaptacao."&dtCaptacao_Final=".$this->dtCaptacao_Final; ?>'"
+                        <?php } ?>>
+                        <input id="btn_p_proximo" type="button"
+                               <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                               class="btn_p_proximo-off"
+                        <?php }else { ?>
+                               class="btn_p_proximo"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-relatorio-recibo-captacao')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']."&pronac=".$this->pronac."&proponente=".$this->proponente."&incentivador=".$this->incentivador."&numLote=".$this->numLote."&dtLote=".$this->dtLote."&tpDtLote=".$this->tpDtLote."&dtLote_Final=".$this->dtLote_Final."&dtCaptacao=".$this->dtCaptacao."&tpDtCaptacao=".$this->tpDtCaptacao."&dtCaptacao_Final=".$this->dtCaptacao_Final; ?>'"
+                        <?php } ?>>
+                        <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                        <input class="btn_ultimo" id="btn_ultimo" type="button"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-relatorio-recibo-captacao')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']."&pronac=".$this->pronac."&proponente=".$this->proponente."&incentivador=".$this->incentivador."&numLote=".$this->numLote."&dtLote=".$this->dtLote."&tpDtLote=".$this->tpDtLote."&dtLote_Final=".$this->dtLote_Final."&dtCaptacao=".$this->dtCaptacao."&tpDtCaptacao=".$this->tpDtCaptacao."&dtCaptacao_Final=".$this->dtCaptacao_Final; ?>'">
+                        <?php } ?>
+                        Pág.:<select name="pag" id="pag" onchange="$('#form2').submit()" class="input_simples">
+                            <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                            <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                            <?php endfor; ?>
+                        </select>
+                        &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>"><input type="submit" class="btn_recarregar" value="">
+                        <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                        <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                        <input type="hidden" name="pronac" value="<?php echo $this->pronac;?>">
+                        <input type="hidden" name="proponente" value="<?php echo $this->proponente;?>">
+                        <input type="hidden" name="incentivador" value="<?php echo $this->incentivador;?>">
+                        <input type="hidden" name="dtLote" value="<?php echo $this->dtLote;?>">
+                        <input type="hidden" name="tpDtLote" value="<?php echo $this->tpDtLote;?>">
+                        <input type="hidden" name="dtLote_Final" value="<?php echo $this->dtLote_Final;?>">
+                        <input type="hidden" name="dtCaptacao" value="<?php echo $this->dtCaptacao;?>">
+                        <input type="hidden" name="tpDtCaptacao" value="<?php echo $this->tpDtCaptacao;?>">
+                        <input type="hidden" name="dtCaptacao_Final" value="<?php echo $this->dtCaptacao_Final;?>">
+                        <input type="hidden" name="numLote" value="<?php echo $this->numLote;?>">
+                        <input type="button" value=" " class="btn_imprimir" title="Imprimir" />
+                     </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- ========== FIM PAGINAÇÃO ========== -->
+
+        <?php } } else { ?>
+        <br clear="all" />
+        <table class="tabela">
+            <tr>
+                <td align="center">Nenhum registro encontrado!</td>
+            </tr>
+        </table>
+        <?php } ?>
+        <br clear="all" />
+
+    <?php if($this->modal != 's') { ?>
+
+
+    <form name="formImpressao" id="formImpressao" action="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'imprimir-relatorio-recibo-captacao'));?>" method="post" target="_blank">
+        <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+        <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+        <input type="hidden" name="pronac" value="<?php echo $this->pronac;?>">
+        <input type="hidden" name="proponente" value="<?php echo $this->proponente;?>">
+        <input type="hidden" name="incentivador" value="<?php echo $this->incentivador;?>">
+        <input type="hidden" name="dtLote" value="<?php echo $this->dtLote;?>">
+        <input type="hidden" name="tpDtLote" value="<?php echo $this->tpDtLote;?>">
+        <input type="hidden" name="dtLote_Final" value="<?php echo $this->dtLote_Final;?>">
+        <input type="hidden" name="dtCaptacao" value="<?php echo $this->dtCaptacao;?>">
+        <input type="hidden" name="tpDtCaptacao" value="<?php echo $this->tpDtCaptacao;?>">
+        <input type="hidden" name="dtCaptacao_Final" value="<?php echo $this->dtCaptacao_Final;?>">
+        <input type="hidden" name="numLote" value="<?php echo $this->numLote;?>">
+     </form>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />
+<?php } ?>

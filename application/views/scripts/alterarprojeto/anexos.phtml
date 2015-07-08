@@ -1,0 +1,134 @@
+<?php
+/**
+ * Alterar Projeto
+ * @author Equipe RUP - Politec
+ * @since 15/01/2011
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.alterarprojeto
+ * @copyright (c) 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+
+include_once 'scripts/alterarprojeto/inc/menu.inc.php';
+?>
+
+<style type="text/css">
+<!--
+.excluir{
+	display: none;
+}
+-->
+</style>
+
+
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para p&aacute;gina inicial">Início</a></li>
+		<li><!--a href="<?php echo $this->baseUrl(); ?>" title="Início"-->Manuten&ccedil;&atilde;o<!--/a--></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'alterarprojeto', 'action' => 'consultarprojeto')); ?>" title="Ir para alterar projeto">Alterar projeto</a></li>
+		<li class="last">Documentos anexados</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== BUTTON VOLTAR ========== -->
+<div id="titulo">
+	<div>Documentos anexados <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== GRID NOME DA PROPOSTA ========== -->
+<script type="text/javascript">
+<!--
+$(document).ready( function() {
+	$("#formularioAtualizaAnexo").validate({
+		// Define as regras
+		rules:{
+            NomeProjeto:{
+				// campoNome será obrigatório (required) e terá tamanho mínimo (minLength)
+				required: true
+			},
+			justificativa:{
+				// campoEmail será obrigatório (required) e precisará ser um e-mail válido (email)
+				required: true
+			}
+
+		},
+		// Define as mensagens de erro para cada regra
+		messages:{
+            NomeProjeto:{
+				required: "<br>Dados obrigatórios n&atilde;o informados"
+
+			},
+			justificativa:{
+				required: "<br>Dados obrigatórios n&atilde;o informados"
+
+			}
+		}
+	});
+});
+
+function abrir_fechar(id_div){
+
+    $('#'+id_div).slideToggle(400);
+    $('#maiss'+id_div).toggle().focus();
+    $('#menoss'+id_div).toggle().focus();
+
+}
+//-->
+</script>
+
+
+
+<div id="conteudo">
+    <form name="formularioAtualizaAnexo" id="formularioAtualizaAnexo" method="post" action="<?php echo $this->url(array('controller' => 'alterarprojeto', 'action' => 'salvaalterarprojeto')); ?>" >
+        <input type="hidden" name="pronac" value="<?php echo $this->parecer->pronac ?>" />
+        <input type="hidden" name="pagina" value="anexos" />
+        <input type="hidden" name="justificativa" value="Anexando arquivo ao projeto pelo Manutenção" />
+
+            <table class="tabela" id="tabelaArquivos">
+                <tr>
+                    <th>Tipo Documento</th>
+                    <th>Data</th>
+                    <th>Classifica&ccedil;&atilde;o</th>
+                    <th>Documento</th>
+                 </tr>
+                <?php foreach ($this->documentos as $documentos){?>
+                <tr class="fundo" >
+                    <td><?php echo !empty($documentos->AgenteDoc) ? 'Proponente' : 'Projeto' ?></td>
+                    <td><?php echo date("d/m/Y H:i:s",strtotime($documentos->Data)) ?></td>
+                    <td><?php echo $documentos->Descricao; ?></td>
+                    <td><a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id=<?php echo $documentos->idDocumentosAgentes; ?>" title="Abrir arquivo"><?php echo $documentos->NoArquivo;?></a></td>
+                </tr>
+                <?php }?>
+            </table>
+
+            <table class="tabela">
+                <tr>
+                    <td class="direita">
+                        <input class="btn_incluir" id="btn_incluir" value=" " type="button" onclick="EnviarArquivo()" title="Incluir" />
+                    </td>
+                </tr>
+            </table>
+
+        <table class="tabela">
+        </table>
+
+    </form>
+</div>
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />
+<iframe name="enviar_arquivo" id="enviar_arquivo" style="height: 20px; display: none;"></iframe>

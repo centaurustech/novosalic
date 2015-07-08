@@ -1,0 +1,80 @@
+<?php
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+<script>
+    function paginarProj(pag){
+        $("#pag").val(pag);
+        jqAjaxForm(document.getElementById("frmPaginacaoProj"), "resultTramitacaoProjeto");
+        $("#resultTramitacaoProjeto").html("");
+        $("#resultTramitacaoProjeto").html('<br><center>Aguarde, carregando dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br>');
+    }
+</script>
+<?php if(is_object($this->registros) && count($this->registros) > 0): ?>
+    <table class="tabela">
+        <tr class="destacar">
+            <td align="center" width="15%"><b>Origem</b></td>
+            <td align="center" width="15%"><b>Dt. Envio</b></td>
+            <td align="center" width="15%"><b>Destino</b></td>
+            <td align="center" width="15%"><b>Dt. Recebimento</b></td>
+            <td align="center" width="10%"><b>Estado</b></td>
+            <td align="center" width="30%"><b>Despacho</b></td>
+        </tr>
+        <?php foreach($this->registros as $tramitacao) : ?>
+        <tr>
+            <td align="left"><?php echo $tramitacao->Origem;?></td>
+            <td align="center" nowrap><?php echo ConverteData($tramitacao->dtTramitacaoEnvio,26);?></td>
+            <td><?php echo $tramitacao->Destino;?></td>
+            <td align="center" nowrap><?php echo ConverteData($tramitacao->dtTramitacaoRecebida,26);?></td>
+            <td align="left"><?php echo $tramitacao->Situacao;?></td>
+            <td align="left"><?php echo $tramitacao->meDespacho;?></td>
+        </tr>
+        <?php endforeach; ?>
+    </table>
+<?php else: ?>
+    <table class="tabela">
+        <tr>
+            <td align="center"><em>Dados n&atilde;o informados!</em></td>
+        </tr>
+    </table>
+<?php endif; ?>
+
+
+<form action="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'tramitacao-projeto')); ?>" method="post" name="frmPaginacaoProj" id="frmPaginacaoProj">
+    <input type="hidden" name="idPronac" id="idPronac" value="<?php echo $this->idPronac; ?>"/>
+<?php if(!empty($this->parametrosBusca)) foreach($this->parametrosBusca as $name=>$value):?>
+    <?php if(!is_array($value)): ?>
+    <input type="hidden" name="<?php echo $name?>" id="<?php echo $name?>" value="<?php echo $value?>"/>
+    <?php else: ?>
+        <?php foreach($value as $valor):?>
+    <input type="hidden" name="<?php echo $name?>[]" id="<?php echo $name?>" value="<?php echo $valor?>"/>
+        <?php endforeach; ?>
+    <?php endif; ?>
+<?php endforeach; ?>
+    <?php if(empty($this->parametrosBusca["pag"])):?>
+    <input type="hidden" name="pag" id="pag" value="<?php echo $this->pag; ?>"/>
+    <?php endif; ?>
+</form>
+<table class="tabela">
+    <tr>
+        <td align="center">
+            Exibindo de <b><?php echo $this->inicio; ?></b> a <b><?php echo $this->fim; ?></b> de um total de <b><?php echo $this->total; ?></b><br>
+            <?php if($this->pag<=1): ?>
+            <input type="button" style="width: 88px" class="btn_p_anterior-off" id="btn_p_anterior">
+            <?php else: ?>
+            <input type="button" style="width: 88px" class="btn_inicio" id="btn_inicio" onclick="paginarProj('1')"/>
+            <input type="button" style="width: 88px" class="btn_p_anterior" id="btn_p_anterior" onclick="paginarProj('<?php echo ($this->pag > 1)?$this->pag-1:1; ?>')"/>
+            <?php endif; ?>
+            <select name="pagina" id="pagina" class="input_simples" onchange="paginarProj(this.value)">
+                <?php for($i=1; $i<$this->totalPag+1; $i++): ?>
+                <option value="<?php echo $i; ?>" <?php if($i == $this->pag){ echo " selected='selected' "; } ?>><?php echo $i; ?></option>
+                <?php endfor; ?>
+            </select>
+            <?php if($this->pag+1 > $this->totalPag): ?>
+            <input type="button" style="width: 88px" class="btn_p_proximo-off" id="btn_p_proximo"/>
+            <?php else: ?>
+            <input type="button" style="width: 88px" class="btn_p_proximo" id="btn_p_proximo" onclick="paginarProj('<?php echo ($this->pag < $this->totalPag)?$this->pag+1:$this->totalPag; ?>')"/>
+            <input type="button" style="width: 88px" class="btn_ultimo" id="btn_ultimo" onclick="paginarProj('<?php echo $this->totalPag; ?>')"/>
+            <?php endif; ?>
+        </td>
+    </tr>
+</table>

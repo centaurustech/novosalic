@@ -1,0 +1,135 @@
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(".data").datepicker({
+            dateFormat: 'dd/mm/yy',
+            dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'],
+            dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
+            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb','Dom' ],
+            monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+            nextText: 'Próximo',
+            prevText: 'Anterior',
+            altField : $('#data_add').val()
+        });
+        $(".btn_limpar").click(function() {
+            $("#nrEdital").val('');
+            $("#Classificacao").val('');
+            $("#dtEditalInicial").val('');
+            $("#dtEditalFinal").val('');
+            $("#dtInicoInscricaoInicial").val('');
+            $("#dtInicoInscricaoFinal").val('');
+            $("#dtFinalInscricaoInicial").val('');
+            $("#dtFinalInscricaoFinal").val('');
+        });
+        $("#btn_salvar").click(function() {
+            var mensagem = false;
+            if(($("#dtEditalInicial").val() && !$("#dtEditalFinal").val()) || (!$("#dtEditalInicial").val() && $("#dtEditalFinal").val())) {
+                mensagem = 'Selecione 2 datas para o campo Data Edital';
+            }
+            if(($("#dtInicoInscricaoInicial").val() && !$("#dtInicoInscricaoFinal").val()) || (!$("#dtInicoInscricaoInicial").val() && $("#dtInicoInscricaoFinal").val())) {
+                mensagem = 'Selecione 2 datas para o campo Data Inicio Inscrição';
+            }
+            if(($("#dtFinalInscricaoInicial").val() && !$("#dtFinalInscricaoFinal").val()) || (!$("#dtFinalInscricaoInicial").val() && $("#dtFinalInscricaoFinal").val())) {
+                mensagem = 'Selecione 2 datas para o campo Dt.Fim Inscrição';
+            }
+            if(!mensagem) {
+                $(".formulario").submit();
+            } else {
+                alert(mensagem);
+            }
+        });
+    });
+</script>
+<div id="titulo">
+    <div>Edital Localizar <span class="voltar"><a href="#" onclick="location.href='<?php echo $this->baseUrl(); ?>/manterpropostaincentivofiscal/listar-propostas';">Voltar</a></span></div>
+</div>
+<div id="conteudo">
+    <form name="form" class="formulario" action="<?php echo $this->url(array('controller' => 'manterpropostaedital', 'action' => 'editalconfirmar'))."?idAgente=". $this->idAgente; ?>" method="post">
+        <table  class="tabela">
+            <tr class="centro">
+                <th colspan="5">
+                    Consulta Edital
+                </th>
+            </tr>
+            <tr class="fundo">
+                <td class="direita" colspan="1">
+                    <label for=""><b>Fundo </b></label>
+                </td>
+                <td class="esquerda" colspan="1">
+                    <input type="text" class="input_simples" name="Fundo" id="Fundo"  />
+                </td>
+            </tr>
+                  <tr class="fundo">
+                <td class="direita" colspan="1">
+                    <label for=""><b>Classificação </b></label>
+                </td>
+                <td class="esquerda" colspan="1">
+                    <input type="text" class="input_simples" name="Classificacao" id="Classificacao"  />
+                </td>
+            </tr>
+                  <tr class="fundo">
+                <td class="direita" colspan="1">
+                    <label for=""><b>Nome do Edital </b></label>
+                </td>
+                <td class="esquerda" colspan="1">
+                    <input type="text" class="input_simples" name="nmDocumento" id="nmDocumento"  />
+                </td>
+            </tr>
+            <tr class="fundo">
+                <td class="direita" colspan="1">
+                    <label for=""><b>Número do Edital </b></label>
+                </td>
+                <td class="esquerda" colspan="1">
+                    <input type="text" class="input_simples" name="nrEdital" id="nrEdital" maxlength="12" />
+                </td>
+            </tr>
+         
+            <tr class="fundo">
+                <td class="direita" colspan="1">
+                    <label for="cep" ><b>Data Edital </b></label>
+                </td>
+                <td class="esquerda" colspan="1">
+                    <input type="text" class="input_simples data" name="dtEditalInicial" id="dtEditalInicial" maxlength="10" />
+                    a
+                    <input type="text" class="input_simples data" name="dtEditalFinal" id="dtEditalFinal" maxlength="10" />
+                </td>
+            </tr>
+            <tr class="fundo">
+                <td class="direita" colspan="1">
+                    <label for="cep" ><b>Data Inicio Inscrição </b></label>
+                </td>
+                <td class="esquerda" colspan="1">
+                    <input type="text" class="input_simples data" name="dtInicoInscricaoInicial" id="dtInicoInscricaoInicial" maxlength="10" />
+                    a
+                    <input type="text" class="input_simples data" name="dtInicoInscricaoFinal" id="dtInicoInscricaoFinal" maxlength="10" />
+                </td>
+            </tr>
+            <tr class="fundo">
+                <td class="direita" colspan="1">
+                    <label for="cep" ><b>Dt.Fim Inscrição </b></label>
+                </td>
+                <td class="esquerda" colspan="1">
+                    <input type="text" class="input_simples data" name="dtFinalInscricaoInicial" id="dtFinalInscricaoInicial" maxlength="10" />
+                    a
+                    <input type="text" class="input_simples data" name="dtFinalInscricaoFinal" id="dtFinalInscricaoFinal" maxlength="10" />
+                </td>
+            </tr>
+            <tr class="fundo">
+                <td class="direita" colspan="1">
+                    <label for="cep" ><b>Edital </b></label>
+                </td>
+                <td class="esquerda" colspan="1">
+                    <input type="text" class="input_simples" name="nmEdital" id="nmEdital" maxlength="10" />
+                </td>
+            </tr>
+            <tr>
+                <td align="center" colspan="2">
+                    <input type="button" name="inicio" style="width: 88px" class="btn_limpar"/>
+                    <input type="button" id="btn_salvar" name="inicio" style="width: 88px" class="btn_localizar"/>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div id="rodapeConteudo"><span></span></div>
+<br clear="all" />

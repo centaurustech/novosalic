@@ -1,0 +1,360 @@
+<?php
+include 'inc/menu.inc.php';
+$buscarFornecedorHref = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'buscarfornecedor')).'?idusuario='.$this->idusuario;
+?>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+
+        $('#cpfProponente').keypress(function(){
+            $('#results').addClass('sumir');
+            $('#results tr.respostaAjax').remove();
+        });
+
+        $('#checkAll').live('change', function(){
+            if($('#checkAll').attr('checked')){
+                $('.checks').attr('checked','checked');
+            } else {
+                $('.checks').removeAttr('checked');
+            }
+        });
+
+        $('#localizar').click(function(){
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo $this->url(array('controller' => 'procuracao', 'action' => 'buscar-projetos-procuracao')); ?>',
+                data: {
+                    cpf: $('#cpfProponente').val()
+                },
+                success: function(data){
+                    var recebe = $('#results');
+                    if(data.resposta){
+                        $('#results tr.respostaAjax').remove();
+                        $('#results').removeClass('sumir');
+                        recebe.append('<tr class="respostaAjax"><td class="destacar bold" align="center">Pronac</td><td class="destacar bold">Nome do Projeto</td><td class="destacar bold">CPF/CNPJ</td><td class="destacar bold">Proponente</td><td class="destacar bold" align="center"><input type="checkbox" id="checkAll" /></td></tr>');
+                        for ( i in data.conteudo){
+                           recebe.append('<tr class="respostaAjax"><td align="center">'+data.conteudo[i].Pronac+'</td><td>'+data.conteudo[i].NomeProjeto+'</td><td>'+data.conteudo[i].CgcCpf+'</td><td>'+data.conteudo[i].nmAgente+'</td><td align="center"><input type="checkbox" class="checks" name="idPronac[]" value="'+data.conteudo[i].idPronac+'" /></td></tr>');
+                        }
+                    } else {
+                        $('#results').removeClass('sumir');
+                        $('#results tr.respostaAjax').remove();
+                        recebe.append('<tr class="respostaAjax"><td align="center" colspan="5">Nenhum registro encontrado!</td></tr>');
+                    }
+                },
+                dataType : 'json'
+            });
+        });
+
+        $('#limpar').click(function(){
+            $('#cpfProponente').val('');
+            $('#cpfProponente').focus();
+            $('#results').addClass('sumir');
+            $('#results tr.respostaAjax').remove();
+        });
+
+        $('#limparProcurador').click(function(){
+            $('#cpfProcurador').val('');
+            $('#nomeProcurador').html('');
+            $('#idAgenteProcurador').val('');
+            $('#cpfProcurador').focus();
+        });
+
+        $('#cpfProcurador').mask('999.999.999-99');
+        $('#cpfProcurador').keypress(function(){
+            $('#nomeProcurador').html('');
+            $('#idAgenteProcurador').val('');
+        });
+
+        $('#localizarProcurador').click(function(){
+            if($('#cpfProcurador').val().length == 14){
+                $.ajax({
+                    type: 'POST',
+                    url: '<?php echo $this->url(array('controller' => 'procuracao', 'action' => 'buscar-procurador')); ?>',
+                    data: {
+                        cpf: $('#cpfProcurador').val()
+                    },
+                    success: function(data){
+                        if(data.resposta){
+                            for ( i in data.conteudo){
+                               $('#nomeProcurador').html(data.conteudo[i].nmAgente);
+                               $('#idAgenteProcurador').val(data.conteudo[i].idAgente);
+                            }
+                        } else {
+                            $('html').css('overflow', 'hidden');
+                            $("body").append("<div id='divDinamicaAgentes'></div>");
+                            $("#divDinamicaAgentes").html("");
+                            $('#divDinamicaAgentes').html("<br><br><center>Carregando dados...</center>");
+                            $.ajax({
+                                url : '<?php echo $this->url(array('controller' => 'agentes', 'action' => 'incluirprocurador')); ?>',
+                                data : {
+                                    cpf : data.CNPJCPF,
+                                    caminho: "",
+                                    modal : "s"
+                                },
+                                success: function(data){
+                                    if (data.error) {
+                                        $('#divDinamicaAgentes').html(data.msg);
+                                    } else {
+                                        $('#divDinamicaAgentes').html(data);
+                                    }
+                                },
+                                complete: function(){
+                                    $("#resultadoFinalizar").html("");
+                                },
+                                type : 'post'
+
+                            });
+
+                            $("#divDinamicaAgentes").dialog({
+                                resizable: true,
+                                width:$(window).width() - 100,
+                                height:$(window).height() - 100,
+                                modal: true,
+                                autoOpen:true,
+                                draggable:false,
+                                title: 'Cadastrar Procurador',
+                                buttons: {
+                                    'Fechar': function() {
+                                        $("#divDinamicaAgentes").remove();
+                                        $(this).dialog('close');
+                                        $('html').css('overflow', 'auto');
+                                        outroFornecedor();
+                                    }
+                                }
+                            });
+//                            alert('Abrir a tela de cadastro');
+                        }
+                    },
+                    dataType : 'json'
+                });
+                
+            } else {
+                $("#msgAlerta").dialog("destroy");
+                $("#msgAlerta").html("Favor informar o CPF do Procurador!");
+                $("#msgAlerta").dialog({
+                    resizable: false,
+                    title: 'Alerta!',
+                    width:300,
+                    height:160,
+                    modal: true,
+                    buttons : {
+                        'OK' : function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+                $('.ui-dialog-titlebar-close').remove();
+            }
+        });
+
+        $("#salvarProcuracao").click(function(){
+            var preenchimento = false;
+            $('.obrigatorio').each(function(){
+                if($.trim($(this).val()) == '')
+                    preenchimento = true;
+            });
+
+            if(preenchimento) {
+                $("#camposObrigatorios").dialog("destroy");
+                $("#camposObrigatorios").html("Favor preencher os dados obrig&aacute;torios!");
+                $("#camposObrigatorios").dialog({
+                    resizable: false,
+                    title: 'Alerta!',
+                    width:320,
+                    height:160,
+                    modal: true,
+                    buttons : {
+                        'OK' : function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+                $('.ui-dialog-titlebar-close').remove();
+            
+            } else {
+                $.ajax({
+                    type: 'POST',
+                    url: '<?php echo $this->url(array('controller' => 'procuracao', 'action' => 'verificar-dirigente')); ?>',
+                    data: {
+                        cpfProponente: $('#cpfProponente').val(),
+                        cpfProcurador: $('#cpfProcurador').val()
+                    },
+                    success: function(data){
+                        if(data.resposta){
+                            $("#alertaDirigente").dialog("destroy");
+                            $("#alertaDirigente").html("N&atilde;o &eacute; necess&aacute;rio que o dirigente envie procura&ccedil;&atilde;o para acessar os projetos da institui&ccedil;&atilde;o.");
+                            $("#alertaDirigente").dialog({
+                                resizable: false,
+                                title: 'Alerta!',
+                                width:380,
+                                height:170,
+                                modal: true,
+                                buttons : {
+                                    'OK' : function(){
+                                        $(this).dialog('close');
+                                    }
+                                }
+                            });
+                            $('.ui-dialog-titlebar-close').remove();
+                        
+                        
+                        } else {
+
+                            var checks = false;
+                            $('.checks').each(function(){
+                                if($(this).attr('checked'))
+                                    checks = true;
+                            });
+
+                            if(!checks){
+                                $("#camposObrigatorios").dialog("destroy");
+                                $("#camposObrigatorios").html("Favor preencher algum projeto!");
+                                $("#camposObrigatorios").dialog({
+                                    resizable: false,
+                                    title: 'Alerta!',
+                                    width:320,
+                                    height:160,
+                                    modal: true,
+                                    buttons : {
+                                        'OK' : function(){
+                                            $(this).dialog('close');
+                                        }
+                                    }
+                                });
+                                $('.ui-dialog-titlebar-close').remove();
+                            } else {
+                                $('#formularioProcuracao').submit();
+                            }
+                        }
+                    },
+                    dataType : 'json'
+                });
+            }
+        });
+
+    });
+
+    function outroFornecedor(){
+        $("#divPerguntaFornecedor").dialog('close');
+        $("#divPerguntaFornecedor").html('Deseja utilizar este procurador no cadastro da procuração?');
+        $("#divPerguntaFornecedor").dialog('open');
+        $("#divPerguntaFornecedor").dialog({
+            resizable: false,
+            width: 320,
+            height: 180,
+            modal: true,
+            draggable:false,
+            title: 'Alerta!',
+            buttons: {
+                'Não': function(){
+//                    $('#'+$(este).attr('idAgente')).val('');
+//                    $('#'+$(este).attr('idDescricao')).val('');
+                    $('#CNPJCPF').val('');
+                    $("#divPerguntaFornecedor").dialog('close');
+                },
+                'Sim': function() {
+                    $(this).dialog('close');
+//                    buscarFornecedor();
+                    $('#localizarProcurador').click();
+                }
+            }
+        });
+        $('.ui-dialog-titlebar-close').remove();
+    }
+    
+</script>
+
+<div id="msgAlerta" class="sumir"></div>
+<div id="camposObrigatorios" class="sumir"></div>
+<div id="divPerguntaFornecedor" class="sumir"></div>
+<div id="alertaDirigente" class="sumir"></div>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para Inï¿½cio">Início</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'procuracao', 'action' => 'index'), '', true); ?>?idPreProjeto=<?php echo $this->projeto; ?>" title="Procura&ccedil;&atilde;o">Procura&ccedil;&atilde;o</a></li>
+        <li class="last">Cadastramento</li>
+    </ul>
+</div>
+
+<div id="titulo">
+    <div>Cadastrar Procura&ccedil;&atilde;o<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+
+<div id="conteudo">
+    <form id="formularioProcuracao" action="<?php echo $this->url(array('controller' => 'procuracao', 'action' => 'cadastrar-procuracao')); ?>" method="post" enctype="multipart/form-data">
+        <table class="tabela">
+            <tr>
+                <th colspan="2">Proponente</th>
+            </tr>
+            <tr>
+                <td class="destacar bold w100" align="right">CPF/CNPJ<span style="color: red;">*</span></td>
+                <td><input maxlength="18" onkeydown="mascaraCnpjCpf(this);" onkeypress="mascaraCnpjCpf(this);" onkeyup="mascaraCnpjCpf(this);" type="text" name="cpfProponente" id="cpfProponente" class="input_simples obrigatorio"></td>
+            </tr>
+        </table>
+        <div style="width: 100%; text-align: center;">
+            <input class="btn_localizar" type="button" value="" name="localizar" id="localizar" >
+            <input class="btn_limpar" type="button" value="" name="limpar" id="limpar" >
+        </div>
+        <br clear="all" />
+
+        <table class="tabela sumir" id="results">
+            <tr>
+                <th colspan="5">Resultado da Pesquisa</th>
+            </tr>
+        </table>
+        <br clear="all" />
+
+        <table class="tabela">
+            <tr>
+                <th colspan="2">Procurador</th>
+            </tr>
+            <tr>
+                <td class="destacar bold w100" align="right">CPF<span style="color: red;">*</span></td>
+                <td><input type="text" name="cpfProcurador" id="cpfProcurador" class="input_simples obrigatorio"></td>
+            </tr>
+            <tr>
+                <td class="destacar bold w100" align="right">NOME</td>
+                <td>
+                    <span id="nomeProcurador"></span>
+                    <input type="hidden" name="idAgenteProcurador" id="idAgenteProcurador" class="obrigatorio">
+                </td>
+            </tr>
+        </table>
+        <div style="width: 100%; text-align: center;">
+            <input class="btn_localizar" type="button" value="" name="localizarProcurador" id="localizarProcurador" >
+            <input class="btn_limpar" type="button" value="" name="limparProcurador" id="limparProcurador" >
+        </div>
+        <br clear="all" />
+
+        <table class="tabela">
+            <tr>
+                <th colspan="2">Dados da Procura&ccedil;&atilde;o</th>
+            </tr>
+            <tr>
+                <td class="destacar bold w100" align="right">JUSTIFICATIVA</td>
+                <td>
+                    <textarea name="dsJustificativa" class="input_simples w800" cols="" rows=""></textarea>
+                    <br clear="all" /><span style="color: red; font-size: 11px;">Limite máximo de 300 caracteres</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold w100" align="right">ARQUIVO<span style="color: red;">*</span></td>
+                <td>
+                    <input type="file" name="arquivoProcuracao" id="arquivoProcuracao" class="input_simples obrigatorio" />
+                    <br clear="all" /><span style="color: red; font-size: 11px;">Tamanho m&aacute;ximo permitido de 5MB, e somente no formato PDF.
+                    <br clear="all" />A procura&ccedil;&atilde;o deve ter firma reconhecida e estar acompanhada dos documentos de identifica&ccedil;&atilde;o do procurador.</span>
+                </td>
+            </tr>
+        </table>
+        <div style="width: 100%; text-align: center;">
+            <input class="btn_salvar" type="button" value="" name="salvarForm" id="salvarProcuracao" >
+        </div>
+        <br clear="all" />
+    </form>
+</div>
+
+
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

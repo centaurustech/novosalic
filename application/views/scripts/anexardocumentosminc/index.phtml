@@ -1,0 +1,127 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#campoPesquisa').focusout(function(){
+            var pronac = $('#campoPesquisa').val();
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo $this->url(array('controller' => 'anexardocumentosminc', 'action' => 'buscar-projetos')); ?>',
+                data: {
+                    pronac: pronac
+                },
+                success: function(data){
+                    if(data.resposta){
+                        $('#salvarAnexo').removeClass('btn_salvar-off');
+                        $('#salvarAnexo').addClass('btn_salvar');
+                        $('#nomeProjeto').html(data.conteudo.NomeProjeto);
+                        $('#Pronac').val(pronac);
+                    } else {
+                        $('#salvarAnexo').removeClass('btn_salvar');
+                        $('#salvarAnexo').addClass('btn_salvar-off');
+                        $('#nomeProjeto').html(data.conteudo.msg);
+                        $('#Pronac').val('');
+                    }
+                },
+                dataType : 'json'
+            });
+        });
+
+        $('#campoPesquisa').focus(function(){
+            $('#salvarAnexo').removeClass('btn_salvar');
+            $('#salvarAnexo').addClass('btn_salvar-off');
+            $('#nomeProjeto').html('');
+            $('#Pronac').val('');
+        });
+
+        $('.btn_salvar').live('click', function(){
+            var i=0;
+            $('.obrigatorio').each(function(){
+                if($.trim($(this).val()) == '')
+                    i++;
+            });
+
+            if(i > 0){
+                $("#camposObrigatorios").dialog("destroy");
+                $("#camposObrigatorios").html("Favor preencher os dados obrig&aacute;torios!");
+                $("#camposObrigatorios").dialog({
+                    resizable: false,
+                    title: 'Alerta!',
+                    width:320,
+                    height:160,
+                    modal: true,
+                    buttons : {
+                        'OK' : function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+                $('.ui-dialog-titlebar-close').remove();
+
+            } else {
+                $('#formularioAnexo').submit();
+            }
+        });
+
+    });
+</script>
+
+<div id="camposObrigatorios"></div>
+
+<!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="index.html" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second">Acompanhamento</li>
+        <li class="last">Anexar Documentos</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<div id="titulo">
+    <div>Anexar Documentos</div>
+</div>
+
+
+<div id="conteudo">
+    <form id="formularioAnexo" action="<?php echo $this->url(array('controller' => 'anexardocumentosminc', 'action' => 'cadastrar-documento')); ?>" method="post" enctype="multipart/form-data">
+        <table class="tabela">
+            <tr>
+                <td class="destacar bold" width="150" align="right">Pronac<span style="color: red;">*</span></td>
+                <td>
+                    <input type="text" class="input_simples obrigatorio" id="campoPesquisa" maxlength="10" value="<?php echo $this->pronacProjeto;?>" />
+                    <input type="hidden" class="obrigatorio" value="" name="Pronac" id="Pronac" />
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" width="150" height="27px" align="right">Nome do Projeto<span style="color: red;">*</span></td>
+                <td><span id="nomeProjeto" class="bold"></span></td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Tipo de Documento<span style="color: red;">*</span></td>
+                <td>
+                    <select class="select_simples obrigatorio" name="tpDocumento" id="tpDocumento">
+                        <option value=""> - Selecione - </option>
+                        <?php foreach ($this->tpDocumentos as $tipos) { ?>
+                        <option value="<?php echo $tipos->idTipoDocumento; ?>"><?php echo $tipos->dsTipoDocumento; ?></option>
+                        <?php } ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Arquivo<span style="color: red;">*</span></td>
+                <td>
+                    <input type="file" name="arquivo" class="obrigatorio" />
+                </td>
+            </tr>
+        </table>
+    </form>
+    <div style="width: 100%; text-align: center;">
+        <input class="btn_salvar-off" type="button" value="" id="salvarAnexo" >
+    </div>
+    <br clear="all" />
+</div>
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

@@ -1,0 +1,102 @@
+<script type="text/javascript"> 
+    $(document).ready(function(){
+        $(".btn_pesquisar").click(function(){
+            
+            var reuniao = $('#reuniao').val();
+            var pronac  = $('#pronac').val();
+            var tecnico = $('#tecnico').val();
+            
+            $('#msgErro').html('');
+            
+            if($.trim(reuniao) != "")
+            {
+                if($.trim(pronac) == "" && $.trim(tecnico) == ""){
+                    $('#msgErro').html("<font color='red'>Favor informar o campo Técnico ou PRONAC junto com o Nº da Reunião.</font><br /><br />");
+                    return false;
+                }
+            }
+            if($.trim(reuniao) == "" && $.trim(pronac) == "" && $.trim(tecnico) == "" ){
+                $('#msgErro').html("<font color='red'>Favor informar ao menos um campo para pesquisa.</font><br /><br />");
+                return false;
+            }
+            
+            $("#resultadoConsulta").html("");
+            jqAjaxForm(document.getElementById("frmPesquisa"), "resultadoConsulta");
+        });
+
+        $(".cmpNumerico").numeric();
+    });
+</script>
+
+<!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first">Início</li>
+        <li class=""><a href="<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'listas')); ?>">Checklist de publica&atilde;o</a></li>
+        <li class="last">Redistribuir projeto por técnico</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Redistribuir projeto por técnico
+    <span class="voltar"><a href="javascript:voltar();" title="Página Anterior">Voltar</a></span>
+    </div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="conteudo" align="center">
+    <form action="<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'buscar-tecnicos-redistribuicao')); ?>" method="post" name="frmPesquisa" id="frmPesquisa">
+        <table class="tabela">
+            <tbody>
+                <tr>
+                    <th colspan="3">Selecionar campos para pesquisa</th>
+                </tr>
+                <tr>
+                    <td class="destacar bold" align="right" width="100"><b>Técnico</b></td>
+                    <td align="left" colspan="2">
+                        <select name='tecnico' id='tecnico' class='select_simples focus'>
+                            <option value='' selected> - Selecione - </option>
+                            <?php foreach ($this->tecnicos as $tecnico){ ?>
+                            <option value='<?php echo $tecnico->usu_codigo; ?>'><?php echo $tecnico->usu_nome; ?></option>
+                            <?php } ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="destacar bold" align="right"><b>N° da Reunião</b></td>
+                    <td align="left" colspan="2">
+                        <input type="text" name="reuniao" id="reuniao" class="input_simples cmpNumerico" size="12" maxlength="5" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="destacar bold" align="right"><b>PRONAC</b></td>
+                    <td align="left" colspan="2">
+                        <input class="input_simples cmpNumerico" name="pronac" id="pronac" maxlength="8" type="text" size="12">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="tabela">
+            <tr>
+                <td align="center">
+                    <span id="msgErro"></span>
+                    <input type="button" style="width: 88px" class="btn_pesquisar" id="btn_pesquisar" value=" "/>
+                    <input type="reset" style="width: 88px" class="btn_limpar" id="btn_limpar" value="" onclick="$('#msgErro').html('');"/>
+                </td>
+            </tr>
+        </table>
+    </form>
+    <!-- ====== INICIO RESULTADO PESQUISA ========== -->
+    <div id="resultadoConsulta"></div>
+    <!-- ====== FIM RESULTADO PESQUISA ========== -->
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" /> 

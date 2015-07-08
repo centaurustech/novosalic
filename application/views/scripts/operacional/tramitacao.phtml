@@ -1,0 +1,411 @@
+<script>
+    $(document).ready(function(){
+        $("#tpDtDocumento").change(function(){
+            if($("#spanDtDocumento").css("display")=="none" && $(this).val() == "entre"){
+                $("#spanDtDocumento").show();
+            }else{
+                $("#spanDtDocumento").hide();
+            }
+        });
+
+        $("#tpDtEnvio").change(function(){
+            if($("#spanDtEnvio").css("display")=="none" && $(this).val() == "entre"){
+                $("#spanDtEnvio").show();
+            }else{
+                $("#spanDtEnvio").hide();
+            }
+        });
+
+        $("#tpDtRecebido").change(function(){
+            if($("#spanDtRecebido").css("display")=="none" && $(this).val() == "entre"){
+                $("#spanDtRecebido").show();
+            }else{
+                $("#spanDtRecebido").hide();
+            }
+        });
+
+        $("#tpDtEnvioProjeto").change(function(){
+            if($("#spanDtEnvioProjeto").css("display")=="none" && $(this).val() == "entre"){
+                $("#spanDtEnvioProjeto").show();
+            }else{
+                $("#spanDtEnvioProjeto").hide();
+            }
+        });
+
+        $("#tpDtRecebidoProjeto").change(function(){
+            if($("#spanDtRecebidoProjeto").css("display")=="none" && $(this).val() == "entre"){
+                $("#spanDtRecebidoProjeto").show();
+            }else{
+                $("#spanDtRecebidoProjeto").hide();
+            }
+        });
+
+        $(function()
+        {
+            $.datepicker.regional['pt-BR'] = {
+                closeText: 'Fechar',
+                prevText: '&#x3c;Anterior',
+                nextText: 'Pr&oacute;ximo&#x3e;',
+                currentText: 'Hoje',
+                monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+                monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+                dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+                dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                weekHeader: 'Sm',
+                dateFormat: 'dd/mm/yy',
+                firstDay: 0,
+                isRTL: false,
+                showMonthAfterYear: false,
+                yearSuffix: ''};
+            $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+            $(".cmpData").datepicker($.datepicker.regional['pt-BR']);
+        });
+
+        $("#btn_pesquisar_documentos").click(function(){
+            $("#resultadoConsulta").html("");
+            jqAjaxForm(document.getElementById("frmTramitacaoDocumentos"), "resultadoConsulta");
+        });
+
+        $("#btn_pesquisar_projetos").click(function(){
+            $("#resultadoConsulta").html("");
+            jqAjaxForm(document.getElementById("frmTramitacaoProjetos"), "resultadoConsulta");
+        });
+    });
+</script>
+
+<?php include("scripts/operacional/inc/menu.inc.php"); ?>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => '')); ?>">In&iacute;cio</a></li>
+        <li class="last">Tramitações</li>
+    </ul>
+</div>
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Tramitações<span class="voltar"><a href="javascript:voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="conteudo" align="center">
+    <table class="tabela">
+        <tr onclick="$('#documentos').toggle('fast'); $('#projetos').toggle();" style="cursor:pointer" >
+            <th width="5%" align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/btn_adicionar.gif" id="imgDinamica"></th>
+            <th>Tramitação de documentos</th>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <fieldset id="documentos" class="divChave">
+                    <legend> Filtro de Consultas </legend>
+                    <form action="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-tramitacao-documentos')); ?>" method="post" name="frmTramitacaoDocumentos" id="frmTramitacaoDocumentos">
+                    <table class="tabela" style="width: 90%">
+                        <tbody>
+                            <tr>
+                                <td width="120" align="left" class="destacar bold">Origem</td>
+                                <td width="220" align="left">
+                                    <select name="formaorigem" style="width: 200px;" class="input_simples">
+                                        <option value="1">Exatamente igual</option>
+                                        <option value="2">Diferente</option>
+                                    </select>
+                                </td>
+                                <td align="left">
+                                    <select name="origem" id="origem" class="input_simples">
+                                        <option value="">Selecione</option>
+                                        <?php foreach($this->orgaos as $orgao):?>
+                                        <option value="<?php echo $orgao->Codigo; ?>"><?php echo $orgao->Sigla; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="left" class="destacar bold">Dt.Documento</td>
+                                <td width="220" align="left">
+                                    <select name="tpDtDocumento" id="tpDtDocumento" class="select_simples" onchange="if($(this).val()=='OT' || $(this).val()=='U7' || $(this).val()=='SP' || $(this).val()=='MM' || $(this).val()=='UM'){$('#camposDatadtDocumento').css('display','none');}else{$('#camposDatadtDocumento').css('display','');}">
+                                        <OPTGROUP LABEL="Normais">
+                                            <option value="">Selecione</option>
+                                            <option value="igual">Exatamente Igual</option>
+                                            <option value="entre">Entre dois valores</option>
+                                            <option value="maior">Maior ou igual a </option>
+                                            <option value="menor">Menor ou igual a</option>
+                                        </OPTGROUP>
+                                        <OPTGROUP LABEL="Especiais">
+                                           <option value="OT">Ontem</option>
+                                           <option value="U7">&Uacute;ltimos 7 dias</option>
+                                           <option value="SP">Semana Passada (seg-dom)</option>
+                                           <option value="MM">Este m&ecirc;s</option>
+                                           <option value="UM">&Uacute;ltimo m&ecirc;s</option>
+                                        </OPTGROUP>
+                                    </select>
+                                <td align="left">
+                                    <span id="camposDatadtDocumento">
+                                        <input name="dtDocumento" id="dtDocumento" value="" class="input_simples cmpData"/> (dd/mm/aaaa)
+                                        <span id="spanDtDocumento" style="display: none;">&nbsp;e&nbsp;<input name="dtDocumento_Final" id="dtDocumento_Final" value="" class="input_simples cmpData"/></span>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="left" class="destacar bold">Dt. Envio</td>
+                                <td width="220" align="left">
+                                    <select name="tpDtEnvio" id="tpDtEnvio" class="select_simples" onchange="if($(this).val()=='OT' || $(this).val()=='U7' || $(this).val()=='SP' || $(this).val()=='MM' || $(this).val()=='UM'){$('#camposDatadtEnvio').css('display','none');}else{$('#camposDatadtEnvio').css('display','');}">
+                                        <OPTGROUP LABEL="Normais">
+                                            <option value="">Selecione</option>
+                                            <option value="igual">Exatamente Igual</option>
+                                            <option value="entre">Entre dois valores</option>
+                                            <option value="maior">Maior ou igual a </option>
+                                            <option value="menor">Menor ou igual a</option>
+                                        </OPTGROUP>
+                                        <OPTGROUP LABEL="Especiais">
+                                           <option value="OT">Ontem</option>
+                                           <option value="U7">&Uacute;ltimos 7 dias</option>
+                                           <option value="SP">Semana Passada (seg-dom)</option>
+                                           <option value="MM">Este m&ecirc;s</option>
+                                           <option value="UM">&Uacute;ltimo m&ecirc;s</option>
+                                        </OPTGROUP>
+                                    </select>
+                                <td align="left">
+                                    <span id="camposDatadtEnvio">
+                                        <input name="dtEnvio" id="dtEnvio" value="" class="input_simples cmpData"/> (dd/mm/aaaa)
+                                        <span id="spanDtEnvio" style="display: none;">&nbsp;e&nbsp;<input name="dtEnvio_Final" id="dtEnvio_Final" value="" class="input_simples cmpData"/></span>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="left" class="destacar bold">Dt. Recebido</td>
+                                <td width="220" align="left">
+                                    <select name="tpDtRecebido" id="tpDtRecebido" class="select_simples" onchange="if($(this).val()=='OT' || $(this).val()=='U7' || $(this).val()=='SP' || $(this).val()=='MM' || $(this).val()=='UM'){$('#camposDatadtRecebido').css('display','none');}else{$('#camposDatadtRecebido').css('display','');}">
+                                        <OPTGROUP LABEL="Normais">
+                                            <option value="">Selecione</option>
+                                            <option value="igual">Exatamente Igual</option>
+                                            <option value="entre">Entre dois valores</option>
+                                            <option value="maior">Maior ou igual a </option>
+                                            <option value="menor">Menor ou igual a</option>
+                                        </OPTGROUP>
+                                        <OPTGROUP LABEL="Especiais">
+                                           <option value="OT">Ontem</option>
+                                           <option value="U7">&Uacute;ltimos 7 dias</option>
+                                           <option value="SP">Semana Passada (seg-dom)</option>
+                                           <option value="MM">Este m&ecirc;s</option>
+                                           <option value="UM">&Uacute;ltimo m&ecirc;s</option>
+                                        </OPTGROUP>
+                                    </select>
+                                <td align="left">
+                                    <span id="camposDatadtRecebido">
+                                        <input name="dtRecebido" id="dtRecebido" value="" class="input_simples cmpData"/> (dd/mm/aaaa)
+                                        <span id="spanDtRecebido" style="display: none;">&nbsp;e&nbsp;<input name="dtRecebido_Final" id="dtRecebido_Final" value="" class="input_simples cmpData"/></span>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="left" class="destacar bold">Lote Nr:</td>
+                                <td align="left">Exatamente igual</td>
+                                <td align="left"><input class="input_simples" name="lote" id="lote" maxlength="10" type="text"></td>
+                            </tr>
+                            <tr>
+                                <td align="left" class="destacar bold">Destino</td>
+                                <td align="left">
+                                    <select name="formadestino" style="width: 200px;" class="input_simples" onchange="modoconsulta('dtDestino',this.value);">
+                                        <option value="1">Exatamente igual</option>
+                                        <option value="2">Diferente</option>
+                                    </select>
+                                </td>
+                                <td align="left">
+                                    <select name="destino" id="destino" class="input_simples">
+                                        <option value="">Selecione</option>
+                                        <?php foreach($this->orgaos as $orgao):?>
+                                        <option value="<?php echo $orgao->Codigo; ?>"><?php echo $orgao->Sigla; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td align="left" class="destacar bold">Situação</td>
+                                <td align="left">
+                                    <select name="formasituacao" style="width: 200px;" class="input_simples">
+                                        <option value="1">Exatamente igual</option>
+                                        <option value="2">Diferente</option>
+                                    </select>
+                                </td>
+                                <td align="left">
+                                    <select name="situacao" id="situacao" style="width: 200px;" class="input_simples">
+                                        <option value="">Selecione</option>
+                                        <option value="1">Despachado/Cadastrado</option>
+                                        <option value="2">Enviados</option>
+                                        <option value="3">Recebidos</option>
+                                        <option value="4">Recusado</option>
+                                        <option value="6">Anexado</option>
+                                    </select>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="left" class="destacar bold">C&oacute;digo do correio:</td>
+                                <td align="left">Exatamente igual</td>
+                                <td align="left"><input class="input_simples" name="correio" id="correio" maxlength="20" type="text"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="tabela" style="width: 90%">
+                        <tr>
+                            <td align="center">
+                                <input type="button" class="btn_pesquisar" id="btn_pesquisar_documentos"/>
+                                <input type="reset" class="btn_limpar" id="btn_limpar" value=""/>
+                            </td>
+                        </tr>
+                    </table>
+                    </form>
+                </fieldset>
+            </td>
+        </tr>
+        <tr onclick="$('#projetos').toggle('fast'); $('#documentos').toggle();" style="cursor:pointer" >
+            <th width="5%" align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/btn_adicionar.gif" id="imgDinamica"></th>
+            <th>Tramitação de projetos</th>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <!-- INICIO DO FORMULARIO PARA PROJETOS -->
+                <fieldset id="projetos" class="divChave" style="display:none">
+                    <legend>Filtro de Consultas</legend>
+                    <form action="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-tramitacao-projetos')); ?>" method="post" name="frmTramitacaoProjetos" id="frmTramitacaoProjetos">
+                    <table class="tabela" style="width: 90%">
+                        <tbody><tr>
+                                <td width="120" align="left" class="destacar bold">Origem</td>
+                                <td width="220" align="left">
+                                    <select name="formaorigem" style="width: 200px;" class="input_simples">
+                                        <option value="1">Exatamente igual</option>
+                                        <option value="2">Diferente</option>
+                                    </select>
+                                </td>
+                                <td align="left">
+                                    <select name="origem" id="origem" class="input_simples">
+                                        <option value="">Selecione</option>
+                                        <?php foreach($this->orgaos as $orgao):?>
+                                        <option value="<?php echo $orgao->Codigo; ?>"><?php echo $orgao->Sigla; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="left" class="destacar bold">Dt. Envio</td>
+                                <td width="220" align="left">
+                                    <select name="tpDtEnvio" id="tpDtEnvioProjeto" class="select_simples" onchange="if($(this).val()=='OT' || $(this).val()=='U7' || $(this).val()=='SP' || $(this).val()=='MM' || $(this).val()=='UM'){$('#camposDatadtEnvio').css('display','none');}else{$('#camposDatadtEnvio').css('display','');}">
+                                        <OPTGROUP LABEL="Normais">
+                                            <option value="">Selecione</option>
+                                            <option value="igual">Exatamente Igual</option>
+                                            <option value="entre">Entre dois valores</option>
+                                            <option value="maior">Maior ou igual a </option>
+                                            <option value="menor">Menor ou igual a</option>
+                                        </OPTGROUP>
+                                        <OPTGROUP LABEL="Especiais">
+                                           <option value="OT">Ontem</option>
+                                           <option value="U7">&Uacute;ltimos 7 dias</option>
+                                           <option value="SP">Semana Passada (seg-dom)</option>
+                                           <option value="MM">Este m&ecirc;s</option>
+                                           <option value="UM">&Uacute;ltimo m&ecirc;s</option>
+                                        </OPTGROUP>
+                                    </select>
+                                <td align="left">
+                                    <span id="camposDatadtEnvio">
+                                        <input name="dtEnvio" id="dtEnvioProjeto" value="" class="input_simples cmpData"/> (dd/mm/aaaa)
+                                        <span id="spanDtEnvioProjeto" style="display: none;">&nbsp;e&nbsp;<input name="dtEnvio_Final" id="dtEnvio_FinalProjeto" value="" class="input_simples cmpData"/></span>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="left" class="destacar bold">Dt. Recebido</td>
+                                <td width="220" align="left">
+                                    <select name="tpDtRecebido" id="tpDtRecebidoProjeto" class="select_simples" onchange="if($(this).val()=='OT' || $(this).val()=='U7' || $(this).val()=='SP' || $(this).val()=='MM' || $(this).val()=='UM'){$('#camposDatadtRecebido').css('display','none');}else{$('#camposDatadtRecebido').css('display','');}">
+                                        <OPTGROUP LABEL="Normais">
+                                            <option value="">Selecione</option>
+                                            <option value="igual">Exatamente Igual</option>
+                                            <option value="entre">Entre dois valores</option>
+                                            <option value="maior">Maior ou igual a </option>
+                                            <option value="menor">Menor ou igual a</option>
+                                        </OPTGROUP>
+                                        <OPTGROUP LABEL="Especiais">
+                                           <option value="OT">Ontem</option>
+                                           <option value="U7">&Uacute;ltimos 7 dias</option>
+                                           <option value="SP">Semana Passada (seg-dom)</option>
+                                           <option value="MM">Este m&ecirc;s</option>
+                                           <option value="UM">&Uacute;ltimo m&ecirc;s</option>
+                                        </OPTGROUP>
+                                    </select>
+                                <td align="left">
+                                    <span id="camposDatadtRecebido">
+                                        <input name="dtRecebido" id="dtRecebidoProjeto" value="" class="input_simples cmpData"/> (dd/mm/aaaa)
+                                        <span id="spanDtRecebidoProjeto" style="display: none;">&nbsp;e&nbsp;<input name="dtRecebido_Final" id="dtRecebido_FinalProjeto" value="" class="input_simples cmpData"/></span>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="left" class="destacar bold">Lote Nr:</td>
+                                <td align="left">Exatamente igual</td>
+                                <td align="left"><input class="input_simples" name="lote" id="lote" maxlength="10" type="text"></td>
+                            </tr>
+                            <tr>
+                                <td align="left" class="destacar bold">Destino</td>
+                                <td align="left">
+                                    <select name="formadestino" style="width: 200px;" class="input_simples" onchange="modoconsulta('dtDestino',this.value);">
+                                        <option value="1">Exatamente igual</option>
+                                        <option value="2">Diferente</option>
+                                    </select>
+                                </td>
+                                <td align="left">
+                                    <select name="destino" id="destino" class="input_simples">
+                                        <option value="">Selecione</option>
+                                        <?php foreach($this->orgaos as $orgao):?>
+                                        <option value="<?php echo $orgao->Codigo; ?>"><?php echo $orgao->Sigla; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td align="left" class="destacar bold">Situação</td>
+                                <td align="left">
+                                    <select name="formasituacao" style="width: 200px;" class="input_simples">
+                                        <option value="1">Exatamente igual</option>
+                                        <option value="2">Diferente</option>
+                                    </select>
+                                </td>
+                                <td align="left">
+                                    <select name="situacao" id="situacao" style="width: 200px;" class="input_simples">
+                                        <option value="">Selecione</option>
+                                        <option value="1">Despachado/Cadastrado</option>
+                                        <option value="2">Enviados</option>
+                                        <option value="3">Recebidos</option>
+                                        <option value="4">Recusado</option>
+                                        <option value="6">Anexado</option>
+                                    </select>
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="tabela" style="width: 90%">
+                        <tr>
+                            <td align="center">
+                                <input type="button" class="btn_pesquisar" id="btn_pesquisar_projetos"/>
+                                <input type="reset" class="btn_limpar" id="btn_limpar" value=""/>
+                            </td>
+                        </tr>
+                    </table>
+                    </form>
+                </fieldset>
+            </td>
+        </tr>
+    </table>
+
+    <div id="resultadoConsulta"></div>
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

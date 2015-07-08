@@ -1,0 +1,197 @@
+<?php 
+//xd($this->listaFormaPagamento);
+if(isset ($this->listaFormaPagamento) && count($this->listaFormaPagamento)>0){ 
+?>
+<table class="tabelaSemLateralQuestionario" style="width:95%;border: 1px  #8ba3b9 solid; padding: 0px;">
+    <tr style="font-weight: bold;">
+        <th>Descri&ccedil;&atilde;o da Forma de Pagamento:</th>
+        <th>Valor do Apoio:</th>
+        <th>Quantidade de Parcelas:</th>
+        <th colspan="2">Opera&ccedil;&atilde;o:</th>
+    </tr>
+    <?php
+        foreach ($this->listaFormaPagamento as $FormasPagamentos){ 
+            $listaParcelasDao = new tbPagamento();
+            $listaParcelas = $listaParcelasDao->buscarParcelas($FormasPagamentos->nrOpcao);
+        ?>
+        <tr class="overtr" >
+            <td>
+                <?php echo utf8_encode($FormasPagamentos['dsLabelResposta']);?>
+            </td>
+            <td>
+                <?php echo utf8_encode($FormasPagamentos['dsOpcao']);?>
+            </td>
+            <td style="text-align: center">
+                <?php echo count($listaParcelas);?>
+            </td>
+            <td style="text-align: center">
+                <img class="alterar" alt="Alterar" nrOpcao="<?php echo $FormasPagamentos['nrOpcao'];?>" nrPergunta="<?php echo $FormasPagamentos['nrPergunta'];?>" nrFormDocumentoPagamento="<?php echo $FormasPagamentos['nrFormDocumento'];?>"  nrVersaoDocumento="<?php echo $FormasPagamentos['nrVersaoDocumento'];?>" idEdital="<?php echo $this->idEdital;?>" idUsuario="<?php echo $this->idUsuario;?>" src="<?php echo $this->baseUrl(); ?>/public/img/botaoEditarNovo.gif" style="cursor: pointer;" />
+            </td>
+            <td style="text-align: center">
+                <img class="excluir" alt="Excluir" nrOpcao="<?php echo $FormasPagamentos['nrOpcao'];?>" nrPergunta="<?php echo $FormasPagamentos['nrPergunta'];?>" nrFormDocumentoPagamento="<?php echo $FormasPagamentos['nrFormDocumento'];?>"  nrVersaoDocumento="<?php echo $FormasPagamentos['nrVersaoDocumento'];?>" idEdital="<?php echo $this->idEdital;?>" idUsuario="<?php echo $this->idUsuario;?>" src="<?php echo $this->baseUrl(); ?>/public/img/botaoExcluir.png" style="cursor: pointer;" />
+            </td>
+        </tr>
+        <?php
+    }
+    ?>
+</table>
+<?php
+}
+?>
+<script>
+    $('.overtr').mouseover(function(){
+        $(this).css('backgroundColor','#E7E7E7');
+    })
+    .mouseout(function(){
+        $(this).css('backgroundColor','#ffffff');
+    });
+    $('.alterar').click(function(){
+        var obj = this;
+        var dados={
+            nrFormDocumentoPagamento:$(obj).attr('nrFormDocumentoPagamento'),
+            nrVersaoDocumento:$(obj).attr('nrVersaoDocumento'),
+            nrPergunta:$(obj).attr('nrPergunta'),
+            nrOpcao:$(obj).attr('nrOpcao'),
+            idEdital:$(obj).attr('idEdital'),
+            idUsuario:$(obj).attr('idUsuario'),
+            operacao:'pesquisa'
+        };
+        $.post('<?php  echo $this->url(array('controller'=>'Cadastraredital','action'=>'formapagamentoopcoes'))?>',
+        dados,
+        function(data){
+
+//*****************************************
+            $('#tdParcelas').html('');
+            //var valorApoio      = limparFormatacao(valor.dsOpcao);
+            var conteiner = $('<table></table>')
+                    .appendTo('#tdParcelas');
+//*****************************************
+
+            for(var c in data){
+
+                var valor = data[c];
+                $("#nrOpcao").val($(obj).attr('nrOpcao'));
+                $("#valorApoio").val(valor.dsOpcao);
+                $("#dsPagamento").val(valor.dsLabelResposta);
+                $("#operacao").val('alterar');
+                $("#btSubmit").val('Alterar');
+                $("#btCancelar").css('display','');
+//*****************************************
+                var tr = $('<tr></tr>')
+                    .appendTo(conteiner);
+                var td1 = $('<td></td>')
+                    .html(valor.nrParcela)
+                    .appendTo(tr);
+                var td2 = $('<td></td>')
+                    .appendTo(tr);
+                var td3 = $('<td></td>')
+                    .appendTo(tr);
+                var inp = $('<input />')
+                    .attr('name','vlParcela[]')
+                    .attr('type','text')
+                    .attr('null','false')
+                    .attr('title','Valor Parcela '+valor.nrParcela+' ')
+                    .attr('valida','maiorQzero')
+                    .attr('class','input_simples')
+                    .val(formataNumeroEmMoeda(valor.vlParcela))
+                    .attr('maxlength',14)
+                    .keydown(function(e){
+                        if($(this).val().length<14){
+                            validaDigito(e);
+                            formataValorMonetario(this,14,e,2);
+                        }
+                    })
+                    .keyup(function(){
+                        recalcularValorTotal(limparFormatacao($('#valorApoio').val()));
+                    })
+                    .appendTo(td2);
+
+                if(c>0){
+                    var sel = $('<select></select>')
+                        .attr('name','nrParcelaPrestConta[]')
+                        .attr('atual','')
+                        .change(function (){
+
+                            var selec   =   this;
+                            var valorEscolhido = $(selec).val();
+                            var valorAnterior  = '';
+                            if($(selec).attr('atual') != valorEscolhido){
+                                valorAnterior  = $(selec).attr('atual');
+                                $(selec).attr('atual',valorEscolhido);
+                            }
+                            var contador = 0;
+
+                            $('#tdParcelas').find('select').each(function (){
+                                var selec2 = this;
+                                contador++;
+                                var verifica = true;
+                                if(selec != selec2){
+                                    $(selec2).find('option').each(function(){
+                                        if(valorAnterior!='' && contador > valorAnterior &&  $(this).val() > valorAnterior && verifica){
+                                            $('<option></option>')
+                                                .html(valorAnterior)
+                                                .val(valorAnterior)
+                                                .insertBefore($(this));
+                                            verifica = false;
+                                        }
+                                        if(contador == valorAnterior && verifica){
+                                            $('<option></option>')
+                                                .html(valorAnterior)
+                                                .val(valorAnterior)
+                                                .appendTo($(selec2));
+                                            verifica = false;
+                                        }
+                                            if($(this).val() == valorEscolhido && $(this).val()!='' && $(selec).val()!=''){
+                                                $(this).remove();
+                                            }
+                                    });
+                                }
+                            });
+
+                        })
+                        .appendTo(td3);
+
+                    $('<option></option>')
+                        .html('Nenhuma')
+                        .val('')
+                        .appendTo(sel);
+                    for(var c2=1;c2<=c;c2++){
+
+                        var vali = true;
+                        for(var cont in data){
+                            if(c != cont && data[cont].nrParcelaPrestConta ==c2)
+                                vali = false;
+                        }
+                        if(vali){
+                            $('<option></option>')
+                                .val(c2)
+                                .html(c2)
+                                .appendTo(sel);
+                        }
+                    }
+                    sel.val(valor.nrParcelaPrestConta);
+                }
+                else{
+                    if($(this).val()>1)
+                        td3.html('Prestar Contas?');
+                }
+// ******************************************************************8
+            }
+            $('#qtdParcelas').val((parseInt(c)+1));
+        }
+        , 'json'
+        );
+    });
+    $('.excluir').click(function(){
+        mudancaDeOperacaoInc();
+        $("#dialog_confirm_pagamento").dialog('open');
+        $("#dialog_confirm_pagamento").attr('nrFormDocumentoPagamento',$(this).attr('nrFormDocumentoPagamento'));
+        $("#dialog_confirm_pagamento").attr('nrVersaoDocumento',$(this).attr('nrVersaoDocumento'));
+        $("#dialog_confirm_pagamento").attr('nrPergunta',$(this).attr('nrPergunta'));
+        $("#dialog_confirm_pagamento").attr('idEdital',$(this).attr('idEdital'));
+        $("#dialog_confirm_pagamento").attr('idUsuario',$(this).attr('idUsuario'));
+        $("#dialog_confirm_pagamento").attr('nrOpcao',$(this).attr('nrOpcao'));
+        $("#dialog_confirm_pagamento").attr('operacao','excluir');
+    });
+</script>
+

@@ -1,0 +1,219 @@
+<?php include_once 'inc/menu-montagem.php'; ?>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first">Início</li>
+        <li class=""><a href="index-cadastrar-edital.htm">Criar Edital - Passo 1</a></li>
+        <li class=""><a href="form-informacoes-basicas.htm">Criar Edital - Passo 2</a></li>
+        <li class=""><a href="form-modulos-edital.htm">Criar Edital - Passo 3</a></li>
+        <li class="last">Criar Edital - Passo Final</li>
+    </ul>
+</div>
+<div id="titulo" style="width: 1333px;">
+    <div>Criar Edital<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<div id="conteudo" style="width: 1347px;">
+
+    <fieldset>
+        <legend> Passo Final - Montagem do Edital</legend>
+        <!-- ============================================================ --> 
+        <!-- ============= INICIO - MONTAGEM EDITAL ===================== -->
+        <!-- ============================================================ -->
+        <div id="montagemEdital" class=" _conteudoAba">
+            <form id="frmCadQuestao" action="<?php echo $this->url(array('controller' => 'edital', 'action' => 'salvar-texto')); ?>" method="post">
+                <input type="hidden"  id="idEdital" value="<?php echo $this->idEdital; ?>" />
+                <table class="tabela" id="tbCriterioAvaliacao" style="margin-bottom: 0px !important; padding-bottom: 0px !important;">
+                    <tbody>
+                        <tr>
+                            <th colspan="2" style="font-size: 14px">MONTAGEM DO EDITAL</th>
+                        </tr>
+                    </tbody>
+                </table>
+                <br clear="all">
+                <div id="conteudoAdicionadoEdital"></div>
+                <div style="width: 100%; text-align: center; margin: 0 auto;">
+                    <img src="<?php echo $this->baseUrl(); ?>/public/img/adicionar-texto.gif" style="cursor: pointer" onclick="JSAdicionarTextoConteudoEdital()">&nbsp;&nbsp;
+                    <img src="<?php echo $this->baseUrl(); ?>/public/img/adicionar-referencia.gif" style="cursor: pointer" onclick="JSAdicionarReferenciaConteudoEdital()">
+                </div>
+                <div style="width: 100%; text-align: center;">
+                    <input class="btn_salvar" type="button" value="" name="salvar" id="btsalvar">
+                    <input type="button" style="width: 88px; vertical-align: top" class="btn_p_proximo" onclick="JSMostaConteudo('visualizarFinalizar')" value=" ">
+                </div>
+                <br clear="all">
+            </form>
+            <br clear="all">
+            <?php if (empty($this->editalmontado)): ?>
+                <table class="tabela">
+                    <tr>
+                        <td class="centro"><em>Nenhum texto cadastrado!</em></td>
+                    </tr>
+                </table>
+            <?php else: ?>
+                <table class="tabela">
+                    <tr>
+                        <th colspan="9">Textos adicionados</th>
+                    </tr>
+                    <tr>
+                        <td class="destacar bold">Numero do Texto</td>
+                        <td class="destacar bold">Descrição</td>
+                        <td class="destacar bold centro" style="width: 150px;">A&ccedil;&otilde;es</td>
+                    </tr>
+                    <?php foreach ($this->editalmontado as $em): ?>
+                        <tr>
+                            <td style="vertical-align: top;">
+                                <?php echo $em['nrTexto']; ?>
+                            </td>
+                            <td style="vertical-align: top;">
+                                <?php echo $em['dsTexto']; ?>
+                            </td>
+                            <td nowrap class="centro">
+                                <input type="button" class="btn_editar" onclick="editarCriterio('<?php echo $em['idTextoEdital']; ?>');" />
+                                <input type="button" class="btn_exclusao" onclick="excluirTexto('<?php echo $em['idTextoEdital']; ?>');" />
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </table>    
+            <?php endif; ?>
+            <br clear="all" />
+        </div>
+        <br clear="all">
+    </fieldset>
+
+    <!-- ========== FIM CONTEÚDO ========== -->
+</div>
+
+<br clear="all" />
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+
+
+
+
+
+        $('#btsalvar').click(function() {
+            $('#frmCadQuestao').submit();
+        });
+
+        //editor para o cadastro de anexo de edital
+        CKEDITOR.replace('txtConteudoAnexo', {
+            toolbar: [[
+                    'Bold', 'Italic', 'Underline', 'Scayt',
+                    '-',
+                    'Cut', 'Copy', 'PasteText', 'PasteFromWord',
+                    '-',
+                    'Undo', 'Redo',
+                    '-',
+                    'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock',
+                    '-',
+                    'Outdent', 'Indent', 'NumberedList', 'BulletedList', 'BidiLtr', 'BidiRtl',
+                    '-',
+                    'FontSize', 'Maximize',
+                ]]
+        });
+
+        //CALENDARIO - CAMPOS DATA
+        $.datepicker.regional['pt-BR'] =
+                {
+                    closeText: 'Fechar',
+                    prevText: '&#x3c;Anterior',
+                    nextText: 'Pr&oacute;ximo&#x3e;',
+                    currentText: 'Hoje',
+                    monthNames: ['Janeiro', 'Fevereiro', 'Mar&ccedil;o', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                    monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                    dayNames: ['Domingo', 'Segunda-feira', 'Ter&ccedil;a-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'S&aacute;bado'],
+                    dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
+                    dayNamesMin: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
+                    weekHeader: 'Sm',
+                    dateFormat: 'dd/mm/yy',
+                    firstDay: 0,
+                    isRTL: false,
+                    showMonthAfterYear: false,
+                    yearSuffix: ''
+                };
+        $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+
+        // classe dos campos que utilizarao o calendario
+        $(".cmpData").datepicker($.datepicker.regional['pt-BR']);
+
+    });
+
+    function excluirTexto(id) {
+        var idEdital = $('#idEdital').val();
+        window.location = '<?php echo $this->url(array('controller' => 'edital', 'action' => 'deletar-texto-edital'), '', true); ?>/idTextoEdital/' + id + '/idEdital/' + idEdital;
+    }
+
+    function layout_fluido()
+    {
+        var janela = $(window).width();
+
+        var fluidNavGlobal = janela - 245;
+        var fluidConteudo = janela - 253;
+        var fluidTitulo = janela - 252;
+        var fluidRodape = janela - 19;
+
+        $("#navglobal").css("width", fluidNavGlobal);
+        $("#conteudo").css("width", fluidConteudo);
+        $("#titulo").css("width", fluidTitulo);
+        $("#rodapeConteudo").css("width", fluidConteudo);
+        $("#rodape").css("width", fluidRodape);
+        $("div#rodapeConteudo").attr("id", "rodapeConteudo_com_menu");
+    }
+
+    function JSAdicionarTextoConteudoEdital() {
+
+        var conteudo = '';
+        conteudo += '<table class="tabela">';
+        conteudo += '<tr>';
+        conteudo += '   <td class="bold">Texto</td>';
+        conteudo += '</tr>';
+        conteudo += '<tr>';
+        conteudo += '    <td style="vertical-align: top;"> <textarea style="width:99%; height:240px" class="input_simples" name="txtConteudo" id="txtConteudo"></textarea></td>';
+        conteudo += '</tr>';
+        conteudo += '</table>';
+
+        //adiciona coneudo a tabela
+        $("#conteudoAdicionadoEdital").append(conteudo);
+        //editor para o cadastro de conteudo de edital
+        CKEDITOR.replace('txtConteudo', {
+            toolbar: [[
+                    'Bold', 'Italic', 'Underline', 'Scayt',
+                    '-',
+                    'Cut', 'Copy', 'PasteText', 'PasteFromWord',
+                    '-',
+                    'Undo', 'Redo',
+                    '-',
+                    'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock',
+                    '-',
+                    'Outdent', 'Indent', 'NumberedList', 'BulletedList', 'BidiLtr', 'BidiRtl',
+                    '-',
+                    'FontSize', 'Maximize',
+                ]]
+        });
+
+    }
+
+    function JSAdicionarReferenciaConteudoEdital() {
+
+        var conteudo = '';
+        conteudo += '<table class="tabela">';
+        conteudo += '<tr>';
+        conteudo += '   <td class="bold">Referência</td>';
+        conteudo += '</tr>';
+        conteudo += '<tr>';
+        conteudo += '    <td style="vertical-align: top;"> ';
+        conteudo += '    <select class="input_simples" name="nrCodReferencia">';
+        conteudo += '       <option>- Selecione -</option>';
+        conteudo += '       <option value="1">Critérios de Avaliação</option>';
+        conteudo += '       <option value="2">Formas de Pagamento</option>';
+        conteudo += '    </select>';
+        conteudo += '    </td>';
+        conteudo += '</tr>';
+        conteudo += '</table>';
+
+        //adiciona coneudo a tabela
+        $("#conteudoAdicionadoEdital").append(conteudo);
+
+    }
+</script>

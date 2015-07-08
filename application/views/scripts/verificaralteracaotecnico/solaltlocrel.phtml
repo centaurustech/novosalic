@@ -1,0 +1,601 @@
+<?php include_once 'inc/menu.inc.php'; ?>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li>Acompanhamento</li>
+        <li class="last">Verificar readequa&ccedil;&atilde;o de projeto</li>
+    </ul>
+</div>
+
+<div id="mostra"></div>
+<!-- ========== INÍCIO TÍTULO ========== -->
+<?php
+if ($this->resultAbrangencia) {
+    $i = 1;
+    foreach ($this->resultAbrangencia as $locarel) {
+?>
+
+        <div id="avaliacaoLocalidade<?php echo $i; ?>" title="Avaliar Localidade" style="display:none;">
+            <form name="formlocalidade<?php echo $i; ?>" id="formlocalidade<?php echo $i; ?>" method="post" action="<?php echo $this->baseUrl(); ?>/verificaralteracaotecnico/avaliarlocalrealizacao" >
+                <input type="hidden" name="idPronac" value="<?php echo $this->dados->IdPRONAC; ?>" />
+                <input type="hidden" name="idAbrangencia" value="<?php echo $locarel->idAbrangencia; ?>" />
+                <input type="hidden" name="idAvaliacaoItemPedidoAlteracao" value="<?php echo $locarel->idAvaliacaoItemPedidoAlteracao; ?>" />
+
+                <table class="tabela">
+                    <tr>
+                        <th>PRONAC</th>
+                        <th>Nome do Projeto</th>
+                        <th>País</th>
+                        <th>UF</th>
+                        <th>Cidade</th>
+                    </tr>
+                    <tr>
+                        <td><?php echo $this->dados->PRONAC; ?></td>
+                        <td><?php echo $this->resultConsulta['NomeProjeto']; ?></td>
+                        <td><?php echo $locarel->pais; ?></td>
+                        <td><?php echo $locarel->uf; ?></td>
+                        <td><?php echo $locarel->mun; ?></td>
+                    </tr>
+                </table>
+
+                <br /><label for="solicitacao">Avaliação:</label><br />
+                <center>
+                    <input type="radio" class="avaliacao<?php echo $i; ?>" name="avaliacao" id="avaliacaoD<?php echo $i; ?>" value="D" /> <label for="avaliacaoD<?php echo $i; ?>">Deferir</label> &nbsp;
+                    <input type="radio" class="avaliacao<?php echo $i; ?>" name="avaliacao" id="avaliacaoI<?php echo $i; ?>" value="I" /> <label for="avaliacaoI<?php echo $i; ?>">Indeferir</label>
+                </center>
+                <br /><div id="erroAvaliar<?php echo $i; ?>" align="center" class="red"></div>
+                <br /><label for="dsAvaliacao<?php echo $i; ?>">Justificativa:</label><br />
+                <textarea name="dsAvaliacao" id="dsAvaliacao<?php echo $i; ?>" rows="6" class="input_simples" cols="170" style="width:98%;"></textarea>
+            </form>
+        </div>
+<?php
+        $i++;
+    }
+}
+?>
+<form name="formfinalizar" id="formfinalizar" action="<?php echo $this->url(array('controller' => 'verificaralteracaotecnico', 'action' => 'finalizaprop')); ?>" method="post">
+    <div id="titulo">
+        <div>READEQUAÇÃO: LOCAL DE REALIZAÇÃO
+            <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span>
+            <span style="vertical-align: middle;">
+<?php
+$nomeForm = "'solaltlocrel'";
+if ($this->dados->stAvaliacaoItemPedidoAlteracao == "AG") {
+    echo '<select name="status" id="status" style="float: right; width: 12em;" class="select_simples" onchange="stAnalise(' . $this->stResult[0]->idAvaliacaoItemPedidoAlteracao . ',' . $this->escape($this->idpedidoalteracao) . ',this , ' . $nomeForm . ' )">';
+    echo "<option value='0' selected='selected'>Aguardando Análise</option>
+                      <option value='1'>Em Análise</option>";
+    echo '</select>';
+} else if ($this->dados->stAvaliacaoItemPedidoAlteracao == "EA") {
+
+    $verificarAvaliados = true; // todos avaliados
+    foreach ($this->resultAbrangencia as $_avaliacao) :
+        $_avaliacao->avaliacao = trim($_avaliacao->avaliacao);
+        if ($_avaliacao->avaliacao != 'D' && $_avaliacao->avaliacao != 'I') {
+            $verificarAvaliados = false; // tem algum item se avaliação
+        }
+    //Zend_Debug::dump(trim());
+    endforeach;
+
+    if ($verificarAvaliados) {
+        $todosVerdadeiros = 2;
+        $arrayAbrangencia = array();
+        foreach ($this->resultAbrangencia as $_avaliacao) :
+            if (!in_array($_avaliacao->idAbrangencia, $arrayAbrangencia)) {
+                $arrayAvaliacao[] = trim($_avaliacao->avaliacao);
+            }
+            $arrayAbrangencia[] = $_avaliacao->idAbrangencia;
+        endforeach;
+        if (!in_array('D', $arrayAvaliacao)) {
+            $todosVerdadeiros = 3; // INDEFERIDO
+        }
+        if ($todosVerdadeiros == 2) {
+            //Deferido
+            echo '<select name="status" id="status" style="float: right; width: 12em;" class="select_simples" onchange="finalizar()">';
+            echo "<option value='1' selected='selected'>Em Análise</option>
+                                      <option value='2'>Finalizar</option>";
+            echo '</select>';
+        } else {
+            //Indeferido
+            echo '<select name="status" id="status" style="float: right; width: 12em;" class="select_simples" onchange="finalizar()">';
+            echo "<option value='1' selected='selected'>Em Análise</option>
+                                      <option value='3'>Finalizar</option>";
+            echo '</select>';
+        }
+    } else {
+        echo '<select name="status" id="status" style="float: right; width: 12em;" class="select_simples" disabled="disabled">';
+        echo "<option value='1' selected='selected'>Em Análise</option>";
+        echo '</select>';
+    }
+}
+?>
+            </span>
+        </div>
+        <script type="text/javascript">
+            function finalizar()
+            {
+                // alert( CKEDITOR.instances['editor1'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'') );
+
+                if( $("#editor1").val() == '' ){
+                    $("#mostra").dialog("destroy");
+                    $('#mostra').html('Favor preencher a Análise da Proposta e Alteraç&atilde;o.');
+                    $("#mostra").dialog
+                    ({
+                        height: 180,
+                        modal: true,
+                        title: 'Alerta',
+                        draggable: false,
+                        resizable: false,
+                        closeOnEscape: false,
+                        buttons: {
+                            'Ok': function()
+                            {
+                                document.getElementById('status').options[0].selected = true;
+                                $(this).dialog('close');
+                            }
+                        }
+                    });
+
+                } else {
+                    $("#mostra").dialog("destroy");
+                    $('#mostra').html('O projeto será finalizado e encaminhado ao Coordenador de Acompanhamento.<br/><br/>Deseja continuar?');
+                    $("#mostra").dialog
+                    ({
+                        height: 250,
+                        modal: true,
+                        title: 'Confirma',
+                        draggable: false,
+                        resizable: false,
+                        closeOnEscape: false,
+                        buttons: {
+                            'Não': function()
+                            {
+                                document.getElementById('status').options[0].selected = true;
+                                $(this).dialog('close');
+                            },
+                            'Sim': function()
+                            {
+                                //document.forms['formfinalizar'].action = "<?php echo $this->url(array('controller' => 'verificaralteracaotecnico', 'action' => 'finalizaprop')); ?>";
+                                //document.forms['formfinalizar'].submit();
+                                //$('#formfinalizar').submit();
+                            	envia();
+                            }
+                        }
+                    });
+
+                }
+
+            }
+
+            function envia()
+            {
+            	$("#mostra").dialog('close');
+                $("#mostra").dialog("destroy");
+                $('#justificativaencaminha').html('Digite a observação...');
+                $("#encaminhar").dialog
+                ({
+                    height: 250,
+                    width: 400,
+                    modal: true,
+                    closeOnEscape: false,
+                    buttons:
+                    {
+                        'Ok': function()
+                        {
+		                	dsObservacao = $('#justificativaencaminha').val();
+		                    if ( dsObservacao == "Digite a observação..." || dsObservacao == "")
+		                    {
+		                        $("#alertaObs").html('Preencha a observação');
+		                        $("#alertaObs").dialog
+		                        ({
+		                            height: 160,
+		                            width: 360,
+		                            modal: true,
+		                            closeOnEscape: false,
+		                            buttons:
+		                            {
+		                                'Ok': function()
+		                                {
+		                        			$("#alertaObs").dialog('close');
+		                                }
+		                            }
+		                        });
+		                        return false;
+		                    }else{
+	                			$("#encaminhar").dialog('close');
+	                            fim();
+		                    }
+                        }
+                    }
+                });
+            }
+
+            function fim()
+            { 
+                var atilde = "atilde";
+                
+                $.ajax({ //funcao jquery para enviar os formularios via ajax
+                    type: "POST",
+                    url:  "<?php echo $this->url(array('controller' => 'Verificaralteracaotecnico', 'action' => 'planilhasolicitada')); ?>?v=fim",
+                    data: {
+                        idpronac : <?php echo $this->resultConsulta['idPronac']; ?>,
+                        finaliza : 'S',
+                        dsObservacao : dsObservacao
+
+                    }
+                    , success: function(data) {
+                        $("#justificativaencaminha").dialog('close');
+                        $("#justificativaencaminha").dialog("destroy");
+                        $("#modal-validacao").html('A análise do Local de Realização foi realizada com sucesso!');
+                        $("#modal-validacao").dialog({
+                            height: 160,
+                            width: 360,
+                            modal: true,
+                            draggable: false,
+                            resizable: false,
+                            closeOnEscape: false,
+                            buttons: {
+                                'Ok': function() {
+                                    $('#formfinalizar').submit();
+                                    $(this).dialog('close');
+                                }
+                            }
+                        });
+                        $('.ui-dialog-titlebar-close').remove();
+                    }
+                    , dataType : 'json'
+                });
+                $(this).dialog('close');
+            }
+
+            function modaljustificativa(id){
+                $('#modal-justificativa'+id).dialog({
+                    //bgiframe: true,
+                    autoOpen: false,
+                    height: 350,
+                    width: 600,
+                    modal: true
+                });
+                $('#modal-justificativa'+id).dialog('open');
+            };
+
+            function avaliar_localidade(i)
+            {
+                $("#avaliacaoLocalidade" + i).dialog("destroy");
+                $("#avaliacaoLocalidade" + i).dialog({
+                    width:770,
+                    height: 450,
+                    modal: true,
+                    title: 'Avaliação',
+                    draggable: false,
+                    resizable: false,
+                    closeOnEscape: false,
+                    buttons: {
+                        'Sair':function() {
+                            $(this).dialog('close'); // fecha a modal
+                        },
+                        'Avaliar':function() {
+                            dsAvaliacao = $('#dsAvaliacao'+i).val();
+                            var valida = 0;
+
+                            $(".avaliacao"+i).each(function(){
+                                if($(this).attr('checked') == true){
+                                    valida++;
+                                }
+                            });
+
+                            if ( dsAvaliacao == '' || valida==0 ) {
+                                $("#erroAvaliar" + i).html('Dados obrigatórios não preenchidos!');
+                            } else {
+                                $("#formlocalidade" + i).submit(); // envia o formulário
+                            }
+                        }
+                    }
+                });
+                $('.ui-dialog-titlebar-close').remove();
+            } // fecha função modal()
+        </script>
+
+    </div>
+    <!-- ========== FIM TÍTULO ========== -->
+
+<div id="modal-validacao" class="sumir"></div>
+<div style="display:none;" id="alertaObs"></div>
+<div style="display:none;" id="encaminhar" title="Observaç&otilde;es de Encaminhamento" >
+    <textarea name="justificativa" id="justificativaencaminha" rows="6" cols="50" style="width:95%;" onclick="limpar_campo(this, 'Digite a observação...');" onkeypress=" " onblur="restaurar_campo(this, 'Digite a observação...');">Digite a observação...</textarea>
+</div>
+
+<div id="conteudo">
+    <script type='text/javascript' src='<?php echo $this->baseUrl(); ?>/public/js/projetosGerenciar.js'></script>
+    <table class="tabela">
+        <thead>
+            <tr>
+                <th align="center">Nº PRONAC:</th>
+                <th align="center">Nome do Projeto:</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="linha">
+                <td align="center"><?php echo $this->escape($this->resultConsulta['pronac']); ?></td>
+                <td align="center"><?php echo $this->escape($this->resultConsulta['NomeProjeto']); ?></td>
+            </tr>
+        </tbody>
+        <tr>
+            <th align="center">CNPJ/CPF:</th>
+            <th align="center">Proponente:</th>
+        </tr>
+        <tbody>
+            <tr class="linha">
+                <td align="center"><?php echo $this->escape(VerificarAlteracaoTecnicoController::VerificarCpfCnpj($this->resultConsulta['CgcCpf'])); ?></td>
+                <td align="center"><?php echo $this->escape($this->resultConsulta['proponente']); ?></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="tabela">
+        <tr>
+            <th colspan="2">DADOS ATUAIS DO LOCAL DE REALIZAÇÃO</th>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table width="100%" border="0" cellpadding="0" cellspacing="1" style="margin: 0; padding: 0;">
+                    <tr>
+                        <td align="center" class="destacar bold">Pa&iacute;s</td>
+                        <td align="center" class="destacar bold">UF</td>
+                        <td align="center" class="destacar bold">Cidade</td>
+                    </tr>
+                    <?php
+                        $antpais = "";
+                        $antuf = "";
+                        $antmun = "";
+                        if ($this->resultLocalRel) {
+                            foreach ($this->resultLocalRel as $abrangencia) {
+                    ?>
+                    <tr>
+                        <td> <?php
+                            if ($antpais == $this->escape($abrangencia->pais))
+                                echo ''; else {
+                                echo $this->escape($abrangencia->pais);
+                                $antpais = $this->escape($abrangencia->pais);
+                        } ?>
+                        </td>
+                        <td><?php
+                            if ($antuf == $this->escape($abrangencia->uf))
+                                echo ''; else {
+                                echo $this->escape($abrangencia->uf);
+                                $antuf = $this->escape($abrangencia->uf);
+                            } ?>
+                        </td>
+                        <td><?php
+                            if ($antmun == $this->escape($abrangencia->mun))
+                                echo ''; else {
+                                echo $this->escape($abrangencia->mun);
+                                $antmun = $this->escape($abrangencia->mun);
+                            } ?>
+                        </td>
+                    </tr>
+                    <?php }
+                    } ?>
+                </table>
+                <br/>
+            </td>
+        </tr>
+        <tr>
+            <th colspan="2">SOLICITAÇÕES DE LOCAL DE REALIZAÇÃO</th>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table width="100%" border="0" cellpadding="0" cellspacing="1" style="margin: 0; padding: 0;">
+                    <tr>
+                        <td align="center" class="destacar bold">Pa&iacute;s</td>
+                        <td align="center" class="destacar bold">UF</td>
+                        <td align="center" class="destacar bold">Cidade</td>
+                        <td align="center" class="destacar bold">A&ccedil;&atilde;o</td>
+                        <td align="center" class="destacar bold">Avalia&ccedil;&atilde;o</td>
+                        <!--<td align="center" class="destacar bold">Status da An&aacute;lise</td> -->
+                        <td align="center" class="destacar bold">Justificativa da Exclus&atilde;o</td>
+                        <td align="center" class="destacar bold">An&aacute;lise Técnica</td>
+                    </tr>
+                    <?php
+                        $antpais = "";
+                        $antuf = "";
+                        $antmun = "";
+                        $justificativa = "";
+
+                        $contAbrangencia = 0;
+                        if ($this->resultAbrangencia) {
+                            $i = 1;
+
+                            //$qtdAbrangencia[$locarel->idAbrangencia] = 0;
+                            foreach ($this->resultAbrangencia as $locarel) :
+                                @$qtdAbrangencia[$locarel->idAbrangencia]++;
+                            endforeach;
+
+                            $x = $qtdAbrangencia[$locarel->idAbrangencia];
+                            //Zend_Debug::dump($qtdAbrangencia[$locarel->idAbrangencia]);
+
+                            foreach ($this->resultAbrangencia as $locarel) {
+
+                                if ($qtdAbrangencia[$locarel->idAbrangencia] == $x) { // um elemento
+                                    $exibirMais = true;
+                                    $x--;
+                                    if ($x == 0) {
+                                        $x = $qtdAbrangencia[$locarel->idAbrangencia];
+                                    }
+                                } else {
+                                    $exibirMais = false;
+                                    $x--;
+                                    if ($x == 0) {
+                                        $x = $qtdAbrangencia[$locarel->idAbrangencia];
+                                    }
+                                }
+                            ?>
+
+
+                            <?php if (!$exibirMais) { ?>
+                                <tbody class="<?php echo $locarel->idAbrangencia; ?> sumir">
+                            <?php } else { } ?>
+
+
+                    <tr>
+                        <td>
+                            <?php // if ($exibirMais && (isset($this->resultAbrangencia[$i]->idAbrangencia) && $locarel->idAbrangencia == $this->resultAbrangencia[$i]->idAbrangencia)) { // verifica se tem histórico ?>
+                            <div class="exibir<?php echo $locarel->idAbrangencia; ?>"><a href="#" title="Expandir" onclick="aparecer('<?php echo $locarel->idAbrangencia; ?>', 'exibir<?php echo $locarel->idAbrangencia; ?>', 'ocultar<?php echo $locarel->idAbrangencia; ?>'); return false;"><div class="icn_mais"><span><?php echo $locarel->pais; ?></span></div></a></div>
+                            <div class="ocultar<?php echo $locarel->idAbrangencia; ?> sumir" style="display:none;"><a href="#" title="Recolher" onclick="esconder('<?php echo $locarel->idAbrangencia; ?>', 'exibir<?php echo $locarel->idAbrangencia; ?>', 'ocultar<?php echo $locarel->idAbrangencia; ?>'); return false;"><div class="icn_menos"><span><?php echo $locarel->pais; ?></span></div></a></div>
+                                <?php // } else { // sem histórico
+                            ?>
+                            <?php // } ?>
+
+                            <?php ?>
+                        </td>
+                        <td>
+                            <?php
+                                if ($antuf == $this->escape($locarel->uf))
+                                    echo ''; else {
+                                    echo $this->escape($locarel->uf);
+                                    $antuf = $this->escape($locarel->uf);
+                                }
+                            ?>
+                        </td>
+                        <td>
+                            <?php
+                                if ($antmun == $this->escape($locarel->mun))
+                                    echo ''; else {
+                                    echo $this->escape($locarel->mun);
+                                    $antmun = $this->escape($locarel->mun);
+                                }
+                            ?>
+                        </td>
+                        <td><?php echo $this->StatusLocalRealizacaoProjeto($locarel->tpoperacao); ?></td>
+                        <td align="center" class="<?php echo (trim($locarel->avaliacao) == "D" ? "green" : "red"); ?>">
+                            <?php
+                                if (isset($locarel->avaliacao) && !empty($locarel->avaliacao)) {
+                                    echo (trim($locarel->avaliacao) == "D" ? "Deferido" : "Indeferido");
+                                } else {
+                                    if ($this->dados->stAvaliacaoItemPedidoAlteracao == "EA") {
+                                        echo "<button class=\"btn_avaliar\" onclick=\"avaliar_localidade('" . $i . "'); return false;\" />";
+                                    } else {
+                                        echo "-";
+                                    }
+                                }
+                            ?>
+                        </td>
+                        <td align="center">
+                            <?php if (!empty($locarel->dsExclusao)) { ?>
+                            <img style="cursor: pointer;" border="0" src="../public/img/table_multiple.png" onclick="modaljustificativa(<?php echo $locarel->idAbrangencia; ?>)" id="justificativa" />
+                            <?php } ?>
+                        </td>
+                        <td>
+                            <?php echo $locarel->dsAvaliacao;
+                                /*if (isset($locarel->dsAvaliacao) && !empty($locarel->dsAvaliacao)) {
+                                    echo "<em>Avaliado.</em>";
+                                } else {
+                                    echo "<em>Não avaliado.</em>";
+                                }*/
+                            ?>
+                        </td>
+                    </tr>
+                        <?php if (!$exibirMais) { ?>
+                            </tbody>
+                            <?php } ?>
+
+                            <div title="Justificativa da Exclusão" style="display: none" id="modal-justificativa<?php echo $locarel->idAbrangencia; ?>">
+                                        <?php echo $locarel->dsExclusao; ?>
+                            </div>
+
+
+                                        <?php
+                                        $i++;
+                                    } // fecha foreach
+                                } // fecha if
+                                        ?>
+                        </table>
+                        <br/>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="2">JUSTIFICATIVA DA SOLICITAÇÃO DE ALTERAÇÃO</th>
+                </tr>
+                <tr>
+                    <td align="left" colspan="2"><textarea cols="" rows="5"  class="textarea_simples" style="width: 99%" readonly="readonly" ><?php echo strip_tags($this->resultAbrangencia[0]->dsjustificativa) ?></textarea></td>
+                </tr>
+                <tr>
+                    <th colspan="2"> Anexos:</th>
+                </tr>
+                <?php if ($this->resultArquivo) {
+                        foreach ($this->resultArquivo as $arquivo) { ?>
+                        <tr>
+                            <td style="width: 25%; padding-left: 5%; text-decoration: underline;" colspan="2"><a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id=<?php echo $arquivo->idArquivo; ?>"><?php echo $arquivo->nmarquivo ?></a></td>
+                        </tr>
+                    <?php }
+                } else { echo '<tr><td colspan="2"><span style="color: red;">Não há arquivos anexados!</span></td></tr>'; } ?>
+
+                <?php
+                    if ($this->dados->stAvaliacaoItemPedidoAlteracao != 'AG') {
+                        if ($verificarAvaliados) { ?>
+                        <tr>
+                            <th colspan="2">
+                                ANÁLISE DA PROPOSTA E ALTERAÇÃO
+                            </th>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <!-- ========== EDITOR 1 ========== -->
+                                <script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/ckeditor.js"></script>
+                                <script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.js"></script>
+
+                                <textarea class="input_simples" style="width: 99%;" cols="100" id="editor1" name="editor1" rows="7"></textarea>
+    <!--                                                <script type="text/javascript">
+                                    //<![CDATA[
+                                    CKEDITOR.replace('editor1', {	fullPage : true });
+                                    //]]>
+                                </script>-->
+                            </td>
+                        </tr>
+                        <?php }
+                                } ?>
+                                <input type="hidden" name="idPronac" value="<?php echo $this->escape($this->resultConsulta['pronac']) ?>" />
+                                <input type="hidden" name="idAvaliacao" value="<?php echo $this->escape($this->dados->idAvaliacaoItemPedidoAlteracao) ?>" />
+                                <input type="hidden" name="idPedidoAlteracao" value="<?php echo $this->escape($this->dados->idPedidoAlteracao) ?>" />
+                                <input type="hidden" name="tpAlteracaoProjeto" value="4" />
+                                <input type="hidden" name="idOrgao" value="<?php echo $this->dados->idOrgao; ?>" />
+                                <input type="hidden" name="idAcao" value="<?php echo $this->dados->idAcaoAvaliacaoItemPedidoAlter; ?>" />
+                                <input type="hidden" name="IdProposta" value="<?php echo $this->dados->IdProposta; ?>" />
+                            </table>
+
+                            <br />
+
+                    </div>
+                </form>
+
+                <!-- ========== FIM CONTEÚDO ========== -->
+
+
+                <!-- MODAL DILIGENCIAR -->
+                <div style="display:none;" id="diligencia" title="Diligenciar" >
+                    <form name="formdiligencia" id="formdiligencia" method="post" action="<?php echo $this->baseUrl(); ?>/verificaralteracaotecnico/solaltlocrel">
+                        <table width="100%">
+                            <tr>
+                                <td width="1px">PRONAC</td>
+                                <td>Nome do Projeto</td>
+                            </tr>
+                            <tr>
+                                <td><?php echo $this->dados->IdPRONAC; ?></td>
+                                <td><?php echo $this->resultConsulta['NomeProjeto']; ?></td>
+                            </tr>
+                        </table>
+                        <br /><label for="solicitacao">Solicitação:</label><br />
+                        <textarea name="solicitacao" id="solicitacao" rows="6" class="input_simples" cols="170" style="width:100%;"></textarea>
+                        <input type="hidden" name="IdPronac" value="<?php echo $this->dados->IdPRONAC; ?>" />
+        <p align="left" style="margin-top:1%;">
+            <input id="btn_enviar" type="submit" value=" " name="diligenciar" class="btn_enviar" />
+        </p>
+    </form>
+</div>
+<!-- FIM DO MODAL DILIGENCIAR -->
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

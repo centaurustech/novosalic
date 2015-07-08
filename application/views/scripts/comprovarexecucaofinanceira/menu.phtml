@@ -1,0 +1,145 @@
+<?php
+$licitacaoHref          =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'licitacao')).'?idusuario='.$this->idusuario;
+$cotacaoHref            =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'cotacao')).'?idusuario='.$this->idusuario;
+$dispensaHref           =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'dispensa')).'?idusuario='.$this->idusuario;
+$contratoHref           =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'contrato')).'?idusuario='.$this->idusuario;
+$pagamentoHref          =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'pagamento')).'?idusuario='.$this->idusuario;
+$licitacaoAnteriorHref  =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'licitacaoanterior')).'?idusuario='.$this->idusuario;
+
+$vincularCEFHref        =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'vincularcomprovacao')).'?idusuario='.$this->idusuario;
+?>
+
+<div class="top"></div>
+<div id="qm0" class="qmmc">
+    <a class="no_seta"      href="<?php echo $pagamentoHref; ?>" title="Ir para Pagamento">Pagamento</a>
+    <a class="no_seta"      href="<?php echo $licitacaoHref; ?>" title="Ir para Licita&ccedil;&atilde;o">Licita&ccedil;&atilde;o</a>
+    <a class="no_seta"      href="<?php echo $cotacaoHref; ?>"   title="Ir para Cota&ccedil;&atilde;o">Cota&ccedil;&atilde;o</a>
+    <a class="no_seta"      href="<?php echo $dispensaHref; ?>"  title="Ir para Dispensa">Dispensa</a>
+    <a class="no_seta last" href="<?php echo $contratoHref; ?>"  title="Ir para Contrato">Contrato</a>
+	<br clear="left" />
+</div>
+<div class="bottom"></div>
+<script>
+var nomeJanelalicitacaoanterior = undefined;
+var nomeJanelaveriCEF           = undefined;
+$(document).ready(function(){
+
+    <?php /* Retirado do caso de uso
+    //se licitação anterior a 2009 abre modal
+    if(<?php echo $this->anoAntes;?>){
+        var nomeJanelaAlerta =   janelaObj({
+            parametros : {
+                width:      400,
+                autoOpen:   false,
+                resizable:  false,
+                modal:      true,
+                    buttons: {
+                        Ok: function() {
+                            nomeJanelalicitacaoanterior      =   janelaObj({
+                                parametros : {
+                                    width:800,
+                                    autoOpen: false,
+                                    modal:true,
+                                    resizable: false
+                                },
+                                removerBtFechar:true,
+                                title : 'Inclus\u00e3o de Item de Custo'
+                            });
+                            var carregarCont    =   requisicaoAjaxObj();
+                            carregarCont.executar({
+                                pagina      :   '<?php echo $licitacaoAnteriorHref;?>',
+                                parametros:{},
+                                resposta    :   nomeJanelalicitacaoanterior.divConteudo
+                            });
+                            nomeJanelalicitacaoanterior.abrirJanela();
+
+                            $(this).dialog('close');
+                        }
+                    }
+            },
+            removerBtFechar:true,
+            title : 'Alerta'
+        });
+        nomeJanelaAlerta.divConteudo.html(me71);
+        nomeJanelaAlerta.abrirJanela();
+    }
+    if(<?php echo $this->veriCEF;?>){
+        nomeJanelaveriCEF      =   janelaObj({
+            parametros : {
+                width:800,
+                autoOpen: false,
+                modal:true,
+                resizable: false,
+                buttons: {
+                        'N\u00e3o': function() {
+                            $(this).dialog('close');
+                        },
+                        Sim: function() {
+                            var verificaURL = '';
+                            nomeJanelaveriCEF.divConteudo.find('[name=escolha]').each(function(){
+                               if($(this).attr('checked')){
+                                   verificaURL = $(this).val();
+                                   
+                               }
+                            });
+
+                            if(verificaURL != ''){
+                                var listaProjetosAjax = requisicaoAjaxObj();
+                                listaProjetosAjax.executar({
+                                    pagina: verificaURL,
+                                    parametros:{idpronac:'<?php echo $this->idpronac;?>'},
+                                    async:false
+                                });
+                                $(this).dialog('close');
+                            }
+                            /*else{
+                                var nomeJanelaAlert      =   janelaObj({
+                                    parametros : {
+                                        width:800,
+                                        autoOpen: false,
+                                        modal:true,
+                                        resizable: false,
+                                        buttons: {
+                                                Ok: function() {
+                                                    $(this).dialog('close');
+                                                }
+                                         }
+
+                                    },
+                                    removerBtFechar:true,
+                                    title : 'Comprovar Execu\u00e7\u00e3o Financeira'
+                                });
+                                nomeJanelaAlert.divConteudo.html();
+                                nomeJanelaAlert.abrirJanela();
+                            }* /
+                        }
+                }
+            },
+            removerBtFechar:true,
+            title : 'Comprovar Execu\u00e7\u00e3o Financeira'
+        });
+        var carregarCont    =   requisicaoAjaxObj();
+        carregarCont.executar({
+            pagina      :   '<?php echo $vincularCEFHref;?>',
+            parametros:{},
+            resposta    :   nomeJanelaveriCEF.divConteudo
+        });
+        nomeJanelaveriCEF.abrirJanela();
+    }*/ ?>
+    $('.sanfona > a').click(function(){
+            $('.sanfona .sanfonaDiv').each(function(indice, valor) {
+                $(valor).hide('fast');
+            });
+            $(this).next().toggle('fast');
+    });
+    $('#menuContexto a').click(function(){
+        var pagina = requisicaoAjaxObj();
+        pagina.executar({
+            pagina: $(this).attr('href'),
+            parametros:{idpronac:'<?php echo $this->idpronac;?>'}
+        });
+        return false;
+    });
+});
+//fim licitação anterior
+</script>

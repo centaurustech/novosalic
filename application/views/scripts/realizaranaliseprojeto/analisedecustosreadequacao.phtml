@@ -1,0 +1,740 @@
+<?php
+/**
+ * Analise de Custos
+ * @author Equipe RUP - Politec
+ * @since 07/06/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.views.realizaranaliseprojeto
+ * @link © http://www.cultura.gov.br
+ */
+require_once "inc/menu.inc.php"; // menu vertical
+?>
+<script>
+    $(document).ready(function(){
+        
+        var idplanilha = '<?php echo (isset($_GET['idplanilha'])) ? $_GET['idplanilha'] : '';?>';
+        if(idplanilha != ""){
+            setTimeout(function(){
+                //apos carregamento da tela leva o usuario ate o item que foi alterado
+                $('html, body').animate({
+                    scrollTop: $('#scroll'+idplanilha).offset().top
+                }, 1500);
+            }, '1500');
+            
+        }
+        
+        var codEtapa = '<?php echo (isset($_GET['ETP'])) ? $_GET['ETP'] : '';?>';
+        if(codEtapa != ""){
+            setTimeout(function(){
+                //apos carregamento da tela leva o usuario ate a etapa que foi alterada
+                $('html, body').animate({
+                    scrollTop: $('#scrollEtapa'+codEtapa).offset().top
+                }, 1500);
+            }, '1500');
+        }
+        
+        $(".reintegrar").click(function(){
+            var quantidade = $(this).attr('quantidade');
+            var valorunitario = $(this).attr('valorunitario').replace('.',',');
+            var dias = $(this).attr('dias');
+            var ocorrencia = $(this).attr('ocorrencia');
+            var idplanilhaaprovacao = $(this).attr('idplanilhaaprovacao');
+            $("#confirma").html("Os valores que voc&ecirc; selecionou ser&atilde;o reintegrados. Tem certeza que deseja continuar?");
+            confirma(
+                function(){
+                    $("#mensagemAlerta").html("Os campos ter&atilde;o seus valores redefinidos!");
+                    abreAlerta();
+                    $("#qtd"+idplanilhaaprovacao).val(quantidade)
+                    $("#vlunitario"+idplanilhaaprovacao).val(valorunitario)
+                    $("#dias"+idplanilhaaprovacao).val(dias)
+                    $("#ocorrencia"+idplanilhaaprovacao).val(ocorrencia)
+                    calcular_planilha_projeto(idplanilhaaprovacao)
+                    validar_val_parec_relat(idplanilhaaprovacao)
+                  $("#confirma").dialog('close');  
+                }
+                ,
+                function(){
+                  $("#confirma").dialog('close');  
+                }
+            )
+            $("#confirma").dialog('open');  
+        })
+        $("#error").dialog({
+            title:"Erro",
+            resizable: true,
+            width:300,
+            height:200,
+            modal: true,
+            autoOpen:false,
+            buttons:
+                {
+                'OK': function()
+                {
+                    $(this).dialog('close');
+                }
+            }
+        });
+        $(".icn_menos").click(function(){
+            var tipo = $(this).attr('tipo');
+            var aberto = $(this).attr('aberto');
+            if(aberto == 'true'){
+                adisplay = 'none';
+                $(this).attr('aberto','false')
+                $(this).removeClass('icn_menos').addClass('icn_mais')
+            }
+            else{
+                adisplay = '';
+                $(this).attr('aberto','true')
+                $(this).removeClass('icn_mais').addClass('icn_menos')
+            }
+            if(tipo == 'fonte'){
+                fonte = $(this).attr('fonte');
+                $(".master[fonte='"+fonte+"']").css('display', adisplay);
+                $(".clickproduto").removeClass('icn_mais').addClass('icn_menos');
+            }
+            if(tipo == 'produto'){
+                fonte = $(this).attr('fonte');
+                produto = $(this).attr('produto');
+                $(".produto[produto='"+produto+"'][fonte='"+fonte+"']").css('display', adisplay);
+            }
+            if(tipo == 'etapa'){
+                fonte = $(this).attr('fonte');
+                produto = $(this).attr('produto');
+                etapa = $(this).attr('etapa');
+                $(".etapa[produto='"+produto+"'][etapa='"+etapa+"'][fonte='"+fonte+"']").css('display', adisplay);
+            }
+            if(tipo == 'cidade'){
+                fonte = $(this).attr('fonte');
+                produto = $(this).attr('produto');
+                etapa = $(this).attr('etapa');
+                cidade = $(this).attr('cidade');
+                $(".cidade[produto='"+produto+"'][etapa='"+etapa+"'][cidade='"+cidade+"'][fonte='"+fonte+"']").css('display', adisplay);
+            }
+        })
+        $(".item").mouseover(function(){
+            $(this).addClass('fundo_linha3');
+        })
+        $(".item").mouseout(function(){
+            $(this).removeClass('fundo_linha3');
+        })
+        $(".item").click(function(){
+            if($(this).hasClass('fundo_linha4')){
+                $(this).removeClass('fundo_linha4');
+            }
+            else{
+                $(this).addClass('fundo_linha4');
+            }
+        })
+        $(".linkplanilha").click(function(){
+            $('.fundo_linha4').removeClass('fundo_linha4');
+            var idplanilhaaprovacao = $(this).attr('idPlanilhaAprovacao');
+            var idProduto = $(this).attr('idProduto');
+            var idEtapa   = $(this).attr('idEtapa');
+            var idItem    = $(this).attr('idPlanilhaItem');
+            var nomeEtapa = $(this).attr('etapa');
+            $("#form" + idplanilhaaprovacao).each(function() // necessário para resetar o formulário, pois, quando a modal ï¿½ fechada o mesmo não é resetado
+            {
+                this.reset();
+                calcular_planilha_projeto(idplanilhaaprovacao); // recalcula o valor total do produto
+                buscar_val_pred_parec_relat(idplanilhaaprovacao); // busca os valores predefinidos dos campos
+            });
+			$.ajax({
+                async: true,
+                type : 'post',
+                url : '<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'recuperar-etapas-do-item')); ?>',
+                beforeSend: function(){
+                    
+                },
+                data :
+                {
+                    idProduto : idProduto,
+                    idItem: idItem
+                },
+                success: function(data){
+                    
+                    $("#selEtapaItem"+idplanilhaaprovacao+" option").remove(); //remove options existentes
+                    if(data.length > 0)
+                    {
+                        var option = null;
+                        $.each(data, function(chave, valor) {
+                            if(idEtapa == valor.idPlanilhaEtapa){
+                                option += "<option selected value='" + valor.idPlanilhaEtapa + "'>" + valor.etapa + "</option>";
+                            }else{
+                                option += "<option value='" + valor.idPlanilhaEtapa + "'>" + valor.etapa + "</option>";
+                            }
+                        });
+
+                        $("#selEtapaItem"+idplanilhaaprovacao).append(option);
+                        
+                    }else{
+                        var option = "<option selected value='" + idEtapa + "'>" + nomeEtapa + "</option>";
+                        $("#selEtapaItem"+idplanilhaaprovacao).append(option);
+                    }
+                },
+                complete: function(){
+
+                },
+                dataType : 'json'
+            });
+            $(".tela[idPlanilhaAprovacao='"+idplanilhaaprovacao+"']").dialog({
+                title:"Planilha",
+                resizable: true,
+                width:1000,
+                height:700,
+                modal: true,
+                autoOpen:false,
+                buttons:
+                    {
+                    'Cancelar': function()
+                    {
+                        $(this).dialog('close');
+                    },
+                    'Salvar': function()
+                    {
+                        if(($.trim($('#qtd'+idplanilhaaprovacao).val())== '') || ($.trim($('#justificativa'+idplanilhaaprovacao).val())== '') || ($.trim($('#qtd'+idplanilhaaprovacao).val())== '')|| ($.trim($('#ocorrencia'+idplanilhaaprovacao).val())== '') || ($.trim($('#vlunitario'+idplanilhaaprovacao).val())== '') || ($.trim($('#dias'+idplanilhaaprovacao).val())== '') || $("#selEtapaItem"+idplanilhaaprovacao).val() == '')
+                        {
+                            $("#error").html('Dados Obrigat&oacute;rios n&atilde;o informados!');
+                            $("#error").dialog('open');
+                            return false;
+                        }
+                        
+                        $("#form" + idplanilhaaprovacao).submit(); // envia o formulario
+                        $(this).dialog('close');
+                    }
+                }
+            });
+            $(".tela[idPlanilhaAprovacao='"+idplanilhaaprovacao+"']").dialog('open')
+        });
+		
+		$(".selEtapaItem").change(function(){
+            var idEtapa    = $(this).attr('idEtapa');
+            var valorEtapa = $(this).val();
+            var txtEtapa   = $(this).find('option').filter(':selected').text(); //pega texto da combo selecionada
+            
+            if(valorEtapa != idEtapa)
+            {
+                $("#mensagemAlerta").html("Este item será movido para a etapa de " + txtEtapa + "!");
+                abreAlerta();
+            }
+        });
+    });//fecha $(document).ready
+    
+    function confirma(functionsim, functionnao){
+    $("#confirma").dialog({
+        title:"Confirma",
+        resizable: true,
+        width:400,
+        height:200,
+        modal: true,
+        autoOpen:false,
+        buttons:
+            {
+            'Nao':functionnao,
+            'Sim':functionsim
+            }
+        });
+    }
+    function abreAlerta(){
+        $("#dialog-alerta").dialog("destroy");
+        $("#dialog-alerta").dialog
+        ({
+                width:450,
+                height:230,
+                resizable:false,
+                EscClose:false,
+                modal:false,
+                buttons:
+                {
+                        'Ok':function()
+                        {
+                                $(this).dialog('close'); // fecha a modal
+                        }
+                }
+        });
+        $('.ui-dialog-titlebar-close').remove();
+    }
+    
+    function JSReintegrarEtapa(intProduto, intEtapa){
+        
+        var idPronac   = $("#divEtapa"+intProduto+"_"+intEtapa).find("input:[name='idPronac']").val();
+        var idProduto  = $("#divEtapa"+intProduto+"_"+intEtapa).find("input:[name='idProduto']").val();
+        var idEtapa    = $("#divEtapa"+intProduto+"_"+intEtapa).find("input:[name='idEtapa']").val();
+        var tpPlanilha = $("#divEtapa"+intProduto+"_"+intEtapa).find("input:[name='tpPlanilha']").val();
+        
+        $("#divDinamicaReintegrarEtapa").remove();
+        $("#divDinamicaReintegrarEtapa").dialog("destroy");
+                
+        $('html').css('overflow', 'hidden');
+        $("body").append("<div id='divDinamicaReintegrarEtapa'></div>");
+        $("#divDinamicaReintegrarEtapa").html("");
+        $('#divDinamicaReintegrarEtapa').html("<br><br><center>Carregando dados...</center>");
+        $.ajax({
+            url : '<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'form-reintegrar-etapa')); ?>',
+            data :
+                {
+                idPronac: idPronac,
+                idProduto : idProduto,
+                idEtapa: idEtapa,
+                tpPlanilha: tpPlanilha,
+                codEtapa: intProduto+intEtapa
+            },
+            success: function(data){
+                $('#divDinamicaReintegrarEtapa').html(data);
+            },
+            type : 'post'
+        });
+
+        $("#divDinamicaReintegrarEtapa").dialog({
+            width:800,
+            height:625,
+            resizable:true,
+            EscClose:true,
+            modal:true,
+            autoOpen:true,
+            title: 'Reintegrar valores da etapa',
+            buttons: {
+                'Sair': function() {
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');
+                    $("#divDinamicaReintegrarEtapa").remove();
+                },
+                'Salvar': function() {
+                    
+                    var justificativa    = $("#formReintegrarEtapa").find("textarea:[name='justificativa']").val();
+                    var etapaAReintegrar = $("#formReintegrarEtapa").find("input:[name='etapaAReintegrar']").val();
+                    var msgErro = $("#formReintegrarEtapa").find("span:[id='msgErro']");
+                    
+                    msgErro.html('');
+                    
+                    if($.trim(etapaAReintegrar) == ''){
+                        $("#error").html('Informe qual Etapa deseja reintegrar!');
+                        $("#error").dialog('open');
+                        //msgErro.html('Informe qual Etapa deseja reintegrar');
+                        return false;
+                    }
+                    if($.trim(justificativa) == ''){
+                        $("#error").html('O campo justificativa &eacute; obrigat&oacute;rio!');
+                        $("#error").dialog('open');
+                        //msgErro.html('Campo obrigatório não preenchido');
+                        return false;
+                    }
+                    
+                    $("#confirma").html("Os valores da Etapa que voc&ecirc; selecionou ser&atilde;o reintegrados. Tem certeza que deseja continuar?");
+                    confirma(
+                        function(){
+                            $("#confirma").dialog('close');  
+                            $("#formReintegrarEtapa").submit();
+                            //jqAjaxForm(document.getElementById('formReintegrarEtapa'), 'resultadoPesquisa');
+                            $(this).dialog('close');
+                            $('html').css('overflow', 'auto');
+                            $("#divDinamicaReintegrarEtapa").remove();
+                        }
+                        ,
+                        function(){
+                            $("#confirma").dialog('close');  
+                        }
+                    )
+                    $("#confirma").dialog('open');
+                }
+            },
+            close: function() {
+                $('html').css('overflow', 'auto');
+                $(this).dialog('close');
+                $("#divDinamicaReintegrarEtapa").remove();
+            }
+        });
+    }
+</script>
+
+<!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->baseUrl(); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'areadetrabalho', 'action' => 'index')); ?>" title="An&aacute;lise do Membro da Comiss&atilde;o">An&aacute;lise do Membro da Comiss&atilde;o</a></li>
+        <li class="last">An&aacute;lise de Custos</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+<!-- ========== INICIO TITULO ========== -->
+<div id="titulo">
+    <div>An&aacute;lise de Custos <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+<div id="conteudo">
+    <?php require_once "inc/menu_abas.inc.php"; // menu    ?>
+    <div id="dialog-valor" class="sumir" title="Valor Inv&aacute;lido">
+        <div class="msgERROR">
+            <div>Valor de remanejamento maior que o permitido! M&aacute;ximo : <?php echo $this->formatarReal($this->totalproponente - $this->totalcomponente);?></div>
+        </div>
+    </div>
+    <div id="dialog-alerta" class="sumir" title="">
+        <div class="msgALERT">
+            <div id="mensagemAlerta"></div>
+        </div>
+    </div>
+    <div id="error"></div>
+    <div id="confirma"></div>
+
+    <table class="tabela">
+        <tr>
+            <th>An&aacute;lise de Custos</th>
+        </tr>
+        <tr>
+            <th>PRONAC: <?php echo $this->projeto->AnoProjeto . $this->projeto->Sequencial; ?> - Nome do projeto: <?php echo $this->projeto->NomeProjeto; ?></th>
+        </tr>
+    </table>
+    <table class="tabela">
+        <tr>
+            <th colspan="13">Planilha de Or&ccedil;amento Sugerido</th>
+        </tr>
+        <tr>
+            <td></td>
+        </tr>
+        <?php
+        $nrfonte = 0;
+        $item = 1;
+        foreach ($this->planilha as $fonte => $planilha) { //ForeachFonteIncentivo
+        ?>
+            <tr>
+                <td>
+                    <div tipo="fonte" fonte="<?php echo $nrfonte;?>" aberto="true" class="icn_menos" style="width:90%"><span class="red del_link" style="font-size: 20pt; font-weight: 800;"><?php echo $fonte; ?></span></div>
+                </td>
+            </tr>
+        <?php
+            $nrproduto = 0;
+            $valorprodutosolicitado = 0;
+            $valorprodutoparecerista  = 0;
+            $valorprodutocomponente = 0;
+            foreach ($this->planilha[$fonte] as $produto => $planilha) {
+        ?>
+                <tr class='master' fonte="<?php echo $nrfonte;?>">
+                    <td class='master'>
+                        <div  tipo="produto" aberto="true" fonte="<?php echo $nrfonte;?>" produto ="<?php echo $nrproduto; ?>" class="icn_menos clickproduto" style="width:98%; margin-left:2%;"><span class="green del_link" style="font-size: 16pt; font-weight: 800;"><?php echo $produto; ?></span></div>
+                    </td>
+                </tr>
+        <?php
+                $nretapa = 0;
+                foreach ($this->planilha[$fonte][$produto] as $etapa => $planilha) {
+                $valoretapasolicitado = 0;
+                $valoretapaparecerista  = 0;
+                $valoretapacomponente = 0;
+        ?>
+                    <tr class="master produto" produto="<?php echo $nrproduto; ?>"  fonte="<?php echo $nrfonte;?>" id="scrollEtapa<?php echo $nrproduto.$nretapa;?>">
+                        <td>
+                            <div>
+                                <div tipo="etapa" fonte="<?php echo $nrfonte;?>" produto="<?php echo $nrproduto; ?>" etapa="<?php echo $nretapa; ?>" aberto="true" class="icn_menos" style="width:80%; margin-left:4%; "><span class="orange del_link" style="font-size: 14pt; font-weight: 800;"><?php echo $etapa; ?></span></div>
+                                <?php if(array_key_exists($produto,$this->produtosFavoraveis)): ?> 
+                                    <div id="icnReintegrarEtapa" style="float: right;"><input type="button" class="btn_reintegrar reintegrarEtapa" value=" " onclick="JSReintegrarEtapa('<?php echo $nrproduto;?>','<?php echo $nretapa;?>')"></div>
+                                <?php endif; ?>
+                            </div>
+                        </td>
+                    </tr>
+        <?php
+                    $nrcidade = 0;
+                    foreach ($this->planilha[$fonte][$produto][$etapa] as $cidade => $planilha) {
+        ?>
+                        <tr class="master produto etapa" produto="<?php echo $nrproduto; ?>" etapa="<?php echo $nretapa; ?>"  fonte="<?php echo $nrfonte;?>" >
+                            <td>
+                                <div tipo="cidade" fonte="<?php echo $nrfonte;?>" produto="<?php echo $nrproduto; ?>" etapa="<?php echo $nretapa; ?>" cidade="<?php echo $nrcidade; ?>" aberto="true" class="icn_menos" style="width:94%; margin-left:6%;"><span class="black del_link" style="font-size: 12pt; font-weight: 800;"><?php echo $cidade; ?></span></div>
+                            </td>
+                        </tr>
+                        <tr class="master produto etapa cidade" produto="<?php echo $nrproduto; ?>" etapa="<?php echo $nretapa; ?>" cidade="<?php echo $nrcidade; ?>"  fonte="<?php echo $nrfonte;?>">
+                            <td>
+                                <table class="tabela">
+                                    <tr>
+                                        <th>&nbsp;</th>
+                                        <th>Item</th>
+                                        <th>Vl. total solicitado</th>
+                                        <th>Justif. do proponente</th>
+                                        <th>Vl. total sugerido do parecerista</th>
+                                        <th>Justif.do Parecerista</th>
+                                        <th>Dias (Relator)</th>
+                                        <th>Unidade (Relator)</th>
+                                        <th>Qtde (Relator)</th>
+                                        <th>Ocor. (Relator)</th>
+                                        <th>Vl. Unit&aacute;rio (Relator)</th>
+                                        <th>Vl. total Sugerido do Relator</th>
+                                        <th>Justif. do Relator</th>
+                                    </tr>
+                    <?php
+                                        $valorufsolicitado = 0;
+                                        $valorufparecerista = 0;
+                                        $valorufcomponente = 0;
+                                        foreach ($this->planilha[$fonte][$produto][$etapa][$cidade] as $planilha) {
+                                        $valorufsolicitado += $planilha['vlproponente'];
+                                        $valorufparecerista += $planilha['vlparecerista'];
+                                        $valorufcomponente += $planilha['vlconselheiro'];
+                                    ?>
+                                            <tr class="item" <?php echo $planilha['reducao'] == 1 ? "style='color : red;'" : 0; ?> id="scroll<?php echo $planilha['idPlanilhaAprovacao']; ?>">
+                                                <td><?php echo $item; ?></td>
+                                                <td>
+                                                    <?php if(array_key_exists($produto,$this->produtosFavoraveis)): ?> 
+                                                        <a <?php echo $planilha['nrFonteRecurso'] == 109 ? "class='linkplanilha' valor='".$planilha['idPlanilhaAprovacao']."' style='text-decoration: underline; cursor:pointer;'" : '' ?> idPlanilhaAprovacao ="<?php echo $planilha['idPlanilhaAprovacao']; ?>"  idProduto="<?php echo $planilha['idProduto']; ?>"  idEtapa="<?php echo $planilha['idEtapa']; ?>" idPlanilhaItem="<?php echo $planilha['idPlanilhaItem']; ?>" etapa="<?php echo $etapa; ?>"  name="<?php echo $planilha['idPlanilhaAprovacao']; ?>" ><?php echo $planilha['item']; ?></a>
+                                                    <?php else: ?>
+                                                        <?php echo $planilha['item']; ?>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td><?php echo $this->formatarReal($planilha['vlproponente']); ?></td>
+                                                <td><?php echo $planilha['justificitivaproponente']; ?></td>
+                                                <td><?php echo $this->formatarReal($planilha['vlparecerista']); ?></td>
+                                                <td><?php echo $planilha['justificativaparecerista']; ?></td>
+                                                <td><?php echo $planilha['qtdiascomp']; ?></td>
+                                                <td><?php echo $planilha['Unidadecomp']; ?></td>
+                                                <td><?php echo (int)$planilha['qtitemcomp']; ?></td>
+                                                <td><?php echo (int)$planilha['nrocorrenciacomp']; ?></td>
+                                                <td><?php echo $this->formatarReal($planilha['vlunitariocomp']); ?></td>
+                                                <td><?php echo $this->formatarReal($planilha['vlconselheiro']); ?></td>
+                                                <td><?php echo $planilha['justificativaconselheiro']; ?>
+                                                    
+                                                    <!-- ================================================= -->
+                                                    <!-- ========== INICIO MODAL REINTEGRAR ETAPA ======== -->
+                                                    <!-- ================================================= -->
+                                                    <div class="sumir" title="Reintegrar Etapa" id="divEtapa<?php echo $nrproduto."_".$nretapa;?>">
+                                                        <form id='form<?php echo $nrproduto."_".$nretapa; ?>' class="form" action="<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'analisedecustos')); ?>" method="post">
+                                                            <input type="hidden" name="idPronac"  id="idPronac" value="<?php echo $this->projeto->IdPRONAC; ?>"/>
+                                                            <input type="hidden" name="idProduto" id="idProduto" value="<?php echo $planilha['idProduto']; ?>"/>
+                                                            <input type="hidden" name="idEtapa"   id="idEtapa" value="<?php echo $planilha['idEtapa']; ?>"/>
+                                                            <input type="hidden" name="tpPlanilha" id="tpPlanilha" value="<?php echo $this->tpPlanilha; ?>"/>
+                                                        </form>
+                                                    </div>
+                                                    <!-- ================================================= -->
+                                                    <!-- ========== FIM  MODAL REINTEGRAR ETAPA ========== -->
+                                                    <!-- ================================================= -->
+                                                    
+                                                    <!-- =============================================== -->
+                                                    <!-- ========== INICIO MODAL EDITAR ITEM =========== -->
+                                                    <!-- =============================================== -->
+                                                       <div class="sumir tela" title="Atualizacao da Planilha de Projeto" idPlanilhaAprovacao ="<?php echo $planilha['idPlanilhaAprovacao']; ?>">
+                                                         <form id='form<?php echo $planilha['idPlanilhaAprovacao']; ?>' class="form" action="<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'analisedecustosreadequacao')); ?>" method="post">
+                                                            <input type="hidden" name="idPlanilha" id="idPlanilha" value="<?php echo $planilha['idPlanilhaAprovacao']; ?>"/>
+                                                            <input type="hidden" name="idpronac" id="idPlanilha" value="<?php echo $this->projeto->IdPRONAC; ?>"/>
+                                                            <table class="tabela">
+                                                                <tr valign="top">
+                                                                    <td colspan="3"><strong>PRONAC:</strong><br /><?php echo $this->projeto->AnoProjeto . $this->projeto->Sequencial; ?></td>
+                                                                    <td colspan="4"><strong>Nome do Projeto:</strong><br /><?php echo $this->projeto->NomeProjeto; ?></td>
+                                                                </tr>
+                                                                <tr valign="top">
+                                                                            <td colspan="2"><strong>Produto:</strong><br />
+                                                                        <?php echo $produto; ?>
+                                                                    </td>
+                                                                    <td colspan="2">
+                                                                        <strong>Etapa:</strong><br />
+                                                                        
+																		<?php //echo $etapa; ?>
+                                                                        <select name="idEtapaDoItem" id="selEtapaItem<?php echo $planilha['idPlanilhaAprovacao']; ?>" class="input_simples selEtapaItem" idEtapa="<?php echo $planilha['idEtapa']; ?>"><option value="">&nbsp;carregando...&nbsp;</option></select>
+                                                                    </td>
+                                                                    <td colspan="4"><strong>Item:</strong><br />
+                                                                        <?php echo $planilha['item']; ?>
+                                                                    </td>
+                                                                </tr>
+                                                                <!-- ============================= -->
+                                                                <!-- ===== DADOS DO PROPONENTE ====-->
+                                                                <tr>
+                                                                    <th colspan="7"> Valores Solicitados</th>
+                                                                </tr>
+                                                                <tr valign="top">
+                                                                    <td class="centro">
+                                                                        <label for="unidade"><strong>Unidade:</strong></label><br />
+                                                                        <?php echo $planilha['UnidadeProposta']; ?>
+                                                                    </td>
+                                                                    <td class="centro w100">
+                                                                        <strong>Qtd.:</strong><br />
+                                                                        <?php echo (int) $planilha['quantidadeprop']; ?>
+                                                                    </td>
+                                                                    <td class="centro">
+                                                                        <strong>Ocorr&ecirc;ncia:</strong><br />
+                                                                        <?php echo (int) $planilha['ocorrenciaprop']; ?>
+                                                                    </td>
+                                                                    <td class="centro">
+                                                                        <strong>Vl. Unit&aacute;rio:</strong><br />
+                                                                        <?php echo $this->formatarReal($planilha['valorUnitarioprop']); ?>
+                                                                    </td>
+                                                                    <td class="centro">
+                                                                        <strong>Dias:</strong><br />
+                                                                        <?php echo (int) $planilha['diasprop']; ?>
+                                                                    </td>
+                                                                    <td class="centro">
+                                                                        <strong>Total:</strong><br />
+                                                                        <?php echo $this->formatarReal($planilha['quantidadeprop']*$planilha['ocorrenciaprop']*$planilha['valorUnitarioprop']); ?>
+                                                                    </td>
+                                                                    <td class="centro" valign="center">
+                                                                        <img style="cursor: pointer" class="reintegrar" title="Reintegrar Item (Solicitado)" src="<?php echo $this->baseUrl();?>/public/img/refresh.gif" idplanilhaaprovacao="<?php echo $planilha['idPlanilhaAprovacao']; ?>" ocorrencia="<?php echo (int) $planilha['ocorrenciaprop']; ?>" dias="<?php echo  (int) $planilha['diasprop']; ?>" valorunitario="<?php echo $planilha['valorUnitarioprop']; ?>"  quantidade=" <?php echo (int) $planilha['quantidadeprop']; ?>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <!-- ================================ -->
+                                                                <!-- ==== FIM DADOS DO PROPONENTE === -->
+                                                                
+                                                                <!-- ================================= -->
+                                                                <!-- ======= DADOS DO PARECERISTA ==== -->
+                                                                <tr>
+                                                                    <th colspan="7"> Valores Parecerista</th>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="centro">
+                                                                        <label for="unidade"><strong>Unidade:</strong></label><br />
+                                                                        <?php echo $planilha['UnidadeProjeto']; ?>
+                                                                    </td>
+                                                                    <td class="centro w100">
+                                                                        <strong>Qtd.:</strong><br />
+                                                                        <?php echo $planilha['quantidadeparc']; ?>
+                                                                    </td>
+                                                                    <td class="centro">
+                                                                        <strong>Ocorr&ecirc;ncia:</strong><br />
+                                                                        <?php echo $planilha['ocorrenciaparc']; ?>
+                                                                    </td>
+                                                                    <td class="centro">
+                                                                        <strong>Vl. Unit&aacute;rio:</strong><br />
+                                                                        <?php echo $this->formatarReal($planilha['valorUnitarioparc']); ?>
+                                                                    </td>
+                                                                    <td class="centro">
+                                                                        <strong>Dias:</strong><br />
+                                                                        <?php echo $planilha['diasparc']; ?>
+                                                                    </td>
+                                                                    <td class="centro">
+                                                                        <strong>Total:</strong><br />
+                                                                        <?php echo $this->formatarReal($planilha['quantidadeparc']*$planilha['ocorrenciaparc']*$planilha['valorUnitarioparc']); ?>
+                                                                    </td>
+                                                                    <td class="centro" valign="center">
+                                                                        <img style="cursor: pointer" class="reintegrar"  title="Reintegrar Item (Parecerista)" src="<?php echo $this->baseUrl();?>/public/img/refresh.gif" idplanilhaaprovacao="<?php echo (int) $planilha['idPlanilhaAprovacao']; ?>"  ocorrencia="<?php echo (int) $planilha['ocorrenciaparc']; ?>" dias="<?php echo (int) $planilha['diasparc']; ?>" valorunitario="<?php echo $planilha['valorUnitarioparc']; ?>"  quantidade=" <?php echo (int)$planilha['quantidadeparc']; ?>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <!-- ================================= -->
+                                                                <!-- ==== FIM DADOS DO PARECERISTA === -->
+                                                                
+                                                                <!-- ============================= -->
+                                                                <!-- ===== DADOS DO RELATOR ====== -->
+                                                                <tr>
+                                                                    <th colspan="7"> Valores Relator</th>
+                                                                </tr>
+                                                                <tr valign="top">
+                                                                    <td>
+                                                                        <label for="unidade"><strong>Unidade:</strong></label><br />
+                                                                        <select class="input_simples" name="unidade" id="unidade">
+                                                                            <?php foreach ($this->planilhaUnidade as $unidade) : ?>
+                                                                                <option value="<?php echo $unidade->idUnidade; ?>" <?php if ($unidade->idUnidade == $planilha['idUnidade'])
+                                                                                    echo "selected=\"selected\""; ?>>
+                                                                                        <?php echo $this->escape($unidade->Descricao); ?>
+                                                                            </option>
+                                                                <?php endforeach; ?>
+                                                                        </select>
+                                                                    </td>
+                                                                    <td class="w50">
+                                                                        <label for="qtd<?php echo $planilha['idPlanilhaAprovacao']; ?>"><strong>Qtd.:</strong></label><br />
+                                                                        <input class="input_simples w50" type="text" onkeyup="calcular_planilha_projeto(<?php echo $planilha['idPlanilhaAprovacao']; ?>); validar_val_parec_relat(<?php echo $planilha['idPlanilhaAprovacao']; ?>); mascara(this, format_num);" onkeydown="calcular_planilha_projeto(<?php echo $planilha['idPlanilhaAprovacao']; ?>); mascara(this, format_num);" name="qtd" id="qtd<?php echo $planilha['idPlanilhaAprovacao']; ?>" maxlength="5" value="<?php echo (int) $planilha['qtitemcomp']; ?>" />
+                                                                    </td>
+                                                                    <td>
+                                                                        <label for="ocorrencia<?php echo $planilha['idPlanilhaAprovacao']; ?>"><strong>Ocorr&ecirc;ncia:</strong></label><br />
+                                                                        <input class="input_simples w50" type="text" onkeyup="calcular_planilha_projeto(<?php echo $planilha['idPlanilhaAprovacao']; ?>); validar_val_parec_relat(<?php echo $planilha['idPlanilhaAprovacao']; ?>); mascara(this, format_num);" onkeydown="calcular_planilha_projeto(<?php echo $planilha['idPlanilhaAprovacao']; ?>); mascara(this, format_num);" name="ocorrencia" id="ocorrencia<?php echo $planilha['idPlanilhaAprovacao']; ?>" maxlength="5" value="<?php echo (int) $planilha['nrocorrenciacomp'] ?>" />
+                                                                    </td>
+                                                                    <td>
+                                                                        <label for="vlunitario<?php echo $planilha['idPlanilhaAprovacao']; ?>"><strong>Vl Unit&aacute;rio:</strong></label><br />
+                                                                        <input class="input_simples w100" type="text" onkeyup="calcular_planilha_projeto(<?php echo $planilha['idPlanilhaAprovacao']; ?>); validar_val_parec_relat(<?php echo $planilha['idPlanilhaAprovacao']; ?>); mascara(this, format_moeda);" onkeydown="calcular_planilha_projeto(<?php echo $planilha['idPlanilhaAprovacao']; ?>); mascara(this, format_moeda);" name="vlunitario" id="vlunitario<?php echo $planilha['idPlanilhaAprovacao']; ?>" maxlength="13" value="<?php echo str_replace("R$ ", "", $this->formatarReal($planilha['vlunitariocomp'])); ?>" />
+                                                                    </td>
+                                                                    <td>
+                                                                        <label for="dias<?php echo $planilha['idPlanilhaAprovacao']; ?>"><strong>Dias:</strong></label><br />
+                                                                        <input class="input_simples w50" type="text" onkeyup="mascara(this, format_num);" name="dias" id="dias<?php echo $planilha['idPlanilhaAprovacao']; ?>" maxlength="4" value="<?php echo $planilha['qtdiascomp']; ?>" />
+                                                                    </td>
+                                                                    <td colspan="2">
+                                                                        <strong>Total:</strong><br />
+                                                                        <div id="calcular_total<?php echo $planilha['idPlanilhaAprovacao']; ?>" style="height:2%"></div>
+                                                                        <input type="hidden" id="totalcalculos<?php echo $planilha['idPlanilhaAprovacao']; ?>" value="<?php echo $planilha['qtitemcomp']*$planilha['nrocorrenciacomp']*$planilha['vlunitariocomp']?>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <!-- =============================== -->
+                                                                <!-- ====== FIM DADOS DO RELATOR === -->
+                                                                <tr valign="top">
+                                                                    <td colspan="7">
+                                                                        <label for="justificativa<?php echo $planilha['idPlanilhaAprovacao']; ?>"><strong>Justificativa</strong></label><br />
+                                                                        <textarea class="textarea_simples w900 h180" name="justificativa" id="justificativa<?php echo $planilha['idPlanilhaAprovacao']; ?>" cols="70" rows="10" <?php echo $this->contadorTextarea('form.justificativa', 'form.exibirContadorTextarea', 5000); ?>><?php echo $planilha['justificativaconselheiro']; ?></textarea>
+                                                                        <?php echo $this->exibirContadorTextarea('exibirContadorTextarea', 4, 5000, strlen($planilha['justificativaconselheiro'])); ?>
+                                                                    </td>
+                                                                </tr>
+
+                                                                    </table>
+                                                                </form>
+                                                            </div>
+                                                            <!-- =============================================== -->
+                                                            <!-- ========== FIM MODAL EDITAR ITEM ============== -->
+                                                            <!-- =============================================== -->
+                                                        </td>
+                                                    </tr>
+                                    <?php $item++;
+                                                            } //fechaForeachplanilha
+                                                        $nrcidade++;
+                                                        $valoretapasolicitado += $valorufsolicitado;
+                                                        $valoretapaparecerista += $valorufparecerista;
+                                                        $valoretapacomponente += $valorufcomponente;
+                                                        
+                                                        $valorprodutosolicitado += $valorufsolicitado;
+                                                        $valorprodutoparecerista += $valorufparecerista;
+                                                        $valorprodutocomponente += $valorufcomponente;
+                                                      ?>
+                                                    <tr>
+                                                        <td colspan="7" class="black" style="font-size: 14pt;">Total de UF</td>
+                                                        <td class="black" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($valorufsolicitado) ;?></td>
+                                                        <td></td>
+                                                        <td class="black" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($valorufparecerista)  ;?></td>
+                                                        <td></td>
+                                                        <td class="black" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($valorufcomponente)   ;?></td>
+                                                        <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="7" class="orange" style="font-size: 14pt;">Total da Etapa</td>
+                                                        <td class="orange" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($valoretapasolicitado) ;?></td>
+                                                        <td></td>
+                                                        <td class="orange" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($valoretapaparecerista)  ;?></td>
+                                                        <td></td>
+                                                        <td class="orange" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($valoretapacomponente)   ;?></td>
+                                                        <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="7" class="green" style="font-size: 14pt;">Valor para <?php echo $produto;?></td>
+                                                        <td class="green" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($valorprodutosolicitado) ;?></td>
+                                                        <td></td>
+                                                        <td class="green" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($valorprodutoparecerista)  ;?></td>
+                                                        <td></td>
+                                                        <td class="green" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($valorprodutocomponente)   ;?></td>
+                                                        <td></td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+        <?php
+                                                        } //fechaForeachcidade
+                                                        $nretapa++;
+                                                    } //fechaForeachetapa
+                                                    $valorprodutosolicitado = 0;
+                                                    $valorprodutoparecerista = 0;
+                                                    $valorprodutocomponente = 0;
+                                                    $nrproduto++;
+                                                } //fechaForeachproduto
+                                                $nrfonte++;
+                                            }//fechaForeachFonteIncentivo
+        ?>
+         <tr>
+            <td>
+                <table class="tabela">
+                    <tr>
+                        <th>Total Solicitado</th>
+                        <th>Total do Parecerista</th>
+                        <th>Total Componente</th>
+                    </tr>
+                    <tr>
+                        <td class="black" style="font-size: 12pt; font-weight: 600; "><?php echo $this->formatarReal($this->totalproponente)   ;?></td>
+                        <td class="black" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($this->totalparecerista)   ;?></td>
+                        <td class="black" style="font-size: 12pt; font-weight: 600;"><?php echo $this->formatarReal($this->totalcomponente)   ;?></td>
+                    </tr>
+                </table>
+            </td>
+        <tr>
+    </table>
+    <input id="valorpossivel" value="<?php echo $this->totalproponente - $this->totalcomponente;?>" type="hidden"/>
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+
+<br clear="all" />

@@ -1,0 +1,66 @@
+<?php require_once "scripts/controlarmovimentacaobancaria/inc/menu.inc.php" // menu ?>
+<!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'), '', true); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second">Movimenta&ccedil;&atilde;o banc&aacute;ria</li>
+        <li class="last">Manter conta banc&aacute;ria</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+<!-- ========== BUTTON VOLTAR ========== -->
+<div id="titulo">
+    <div>Manter conta banc&aacute;ria<span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(".btn_localizar").click(function(){
+            $("#msgErro").html("");
+            if($("#pronac").val() == ''){
+                $("#msgErro").html("<center><font color='red'>Campo obrigat&oacute;rio n&atilde;o preenchido.</font></center>");
+            } else {
+                $("#formBuscar").submit();
+            }
+        })
+    });
+</script>
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <div id="erro"></div>
+
+    <!-- ========== INÍCIO FORMULÁRIO DE BUSCA ========== -->
+    <form class="form" name="formBuscar" id="formBuscar" method="get" action="<?php echo $this->url(array('controller' => 'mantercontabancaria', 'action' => 'alterar')); ?>">
+        
+        <table class="tabela w400" style="margin-top: 50px;">
+            <tr>
+                <th>Informe o Pronac para verificar a conta banc&aacute;ria</th>
+            </tr>
+            <tr>
+                <td>
+                    <center>
+                    <label>PRONAC</label>:&nbsp;
+                    <input type="text" name="pronac" id="pronac" class="input_simples" maxlength="7" onkeypress="mascara(this,format_num);" onchange="mascara(this,format_num);" onkeydown="mascara(this,format_num);">
+                    </center>
+                </td>
+            </tr>
+        </table>
+
+        <!-- ========== FIM FORMULÁRIO DE BUSCA ========== -->
+        <span id="msgErro"></span>
+        <p align="center" style="margin-top: 20px; margin-bottom: 20px;">
+            <input type="button" class="btn_localizar" style="width: 87px">
+        </p>
+
+    </form>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

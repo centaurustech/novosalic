@@ -1,0 +1,57 @@
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first">Início</li>
+        <li><a href="<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'listas'),'',true); ?>" title="Ir para CheckList para Publicação">CheckList para Publicação</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'localizar'),'',true); ?>" title="Localizar CheckList para Publicação">Localizar</a></li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Localizar CheckList para Publicação</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <br clear="all" />
+    <form action="<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'listas')); ?>" method="post">
+        <table class="tabela">
+            <!--<tr>
+                <td width="100" class="destacar bold" align="right">PRONAC</td>
+                <td><input type="text" class="input_simples" name="pronac" value="" /></td>
+            </tr>-->
+            <tr>
+                <td width="100" class="destacar bold" align="right">ESTADO</td>
+                <td>
+                    <select name="tipoFiltro" style="width: 235px;" class="input_simples">
+                        <option value="">Aguardando Análise Documental</option>
+                        <option value="diligenciados">Proponente Diligenciado</option>
+                        <option value="respondidos">Diligencia Respondida</option>
+                        <option value="finalizados">Projetos Finalizados</option>
+                        <option value="irregulares">Proponente Irregular</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center">
+                    <input type="submit" class="btn_localizar" value=" " />
+                    <input type="reset" class="btn_limpar" value=" " />
+                </td>
+            </tr>
+        </table>
+    </form>
+    <br clear="all" />
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

@@ -1,0 +1,215 @@
+<html>
+    <head>
+        <style type="text/css" media="All">
+            html{margin:0;height:100%} 
+            .titulo{
+                text-align: center;
+                padding-bottom: 1cm;
+                font-family: Times New Roman;
+                font-size: 9pt;
+            }
+            /*.conteudo{
+                text-align: justify;
+                font-size: 9pt;
+                font-family: Times New Roman;
+            }
+            .contexto{
+                font-size: 9pt;
+                font-family: Times New Roman;
+                padding-top: 0.5cm;
+            }
+            .sugestao{
+                font-size: 9pt;
+                font-family: Times New Roman;
+                padding-top: 0.5cm;
+            }*/
+            #brasao{
+                width : 273.5px;
+                height: 136px;
+            }
+            /*#assinatura{
+                page-break-before: avoid;
+                padding-top : 2cm;
+                text-align: center;
+                font-family: Times New Roman;
+                font-size: 9pt;
+            }*/
+            .paginaa4{
+                width:auto;
+                margin: 1cm 1cm 1cm 2cm;
+                page-break-after: always;
+            }
+            /*.dadossugestao{
+                text-align: justify;
+                font-size: 9pt;
+                font-family: Times New Roman;
+            }*/
+            body{
+                page-break-before: avoid;
+            }
+        </style>
+    </head>
+    <body>
+        
+            <!--===================================================================-->
+            <!--======================== PROJETOS DA SEFIC ========================-->
+            <!--===================================================================-->
+            
+            <!--========= PROJETOS APROVADOS SEFIC - APROVACAO INICIAL ============-->
+            <?php
+            foreach ($this->pautaAprovados as $pauta) {
+            ?>
+                <div class="paginaa4">
+                    <div class="titulo"><img id="brasao" src="<?php echo $this->baseUrl() . "/public/img/minc_brasao.PNG" ?>"/></div>
+                    <div class="conteudo">
+                        <?php   
+                        
+                            $dia    = (int) date('d',strtotime($pauta['DtAssinatura']));
+                            $mes    = (int) date('m',strtotime($pauta['DtAssinatura']));
+                            $ano    = (int) date('Y',strtotime($pauta['DtAssinatura']));
+                            $dataAssinatura = $dia." de ".$this->mesPorExtenso[$mes]." ".$ano;
+                            
+                            $arrParametros = array();
+                            $arrParametros['numReuniao']         = $pauta['NrReuniao'];
+                            $arrParametros['diaInicioReuniao']   = $pauta['DtInicio'];
+                            $arrParametros['dtFinalReuniao']     = $pauta['DtFinal'];
+                            $arrParametros['PRONAC']             = $pauta['PRONAC'];
+                            $arrParametros['NomeProjeto']        = $pauta['NomeProjeto'];
+                            $arrParametros['TipoParecer']        = $pauta['TipoParecer'];
+                            $arrParametros['parecerParecerista'] = $pauta['parecerista'];
+                            $arrParametros['parecerComponente']  = $pauta['componente'];
+                            $arrParametros['parecerCNIC']        = $pauta['Consolidacao'];
+                            $arrParametros['dtAssinatura']       = $dataAssinatura;
+                            $arrParametros['nomeSecretario']     = $this->nomeSecretario;
+                            $arrParametros['cargoSecretario']    = $this->nomeOrgao;
+
+                            echo $texto = $this->buscarTextoTermoDecisao()->buscarDadosTermoDecisao($pauta['PRONAC'],'251','AN','A',$arrParametros);
+                            
+                        ?>
+                     <!--<div id="assinatura">
+                        <b>
+                            <?php
+                                //$dia    = (int) date('d',strtotime($pauta['DtAssinatura']));
+                                //$mes    = (int) date('m',strtotime($pauta['DtAssinatura']));
+                                //$ano    = (int) date('Y',strtotime($pauta['DtAssinatura']));
+                            ?>
+                            <!--<div style="float: right">Bras&iacute;lia, <?php //echo $dia; ?> de <?php //echo $this->mesPorExtenso[$mes]; ?> de <?php //echo $ano; ?>.</div><br /><br /><br /><br />--
+                            <?php //echo $this->nomeSecretario;?><br />
+                            <?php //echo $this->nomeOrgao;?>
+                        </b>
+                    </div>-->
+                    </div>
+                </div>
+                <br>
+            <?php } ?>
+            <!--========= FIM PROJETOS APROVADOS SEFIC - APROVACAO INICIAL ======-->
+            
+            <!--========= PROJETOS INDEFERIDOS SEFIC - APROVACAO INICIAL ========-->
+            <?php
+            foreach ($this->pautaIndeferidos as $pauta) {
+            ?>
+                <div class="paginaa4">
+                    <div class="titulo"><img id="brasao" src="<?php echo $this->baseUrl() . "/public/img/minc_brasao.PNG" ?>"/></div>
+                    <div class="conteudo">
+                        <?php   
+                            $dia    = (int) date('d',strtotime($pauta['DtAssinatura']));
+                            $mes    = (int) date('m',strtotime($pauta['DtAssinatura']));
+                            $ano    = (int) date('Y',strtotime($pauta['DtAssinatura']));
+                            $dataAssinatura = $dia." de ".$this->mesPorExtenso[$mes]." ".$ano;
+                            
+                            $arrParametros = array();
+                            $arrParametros['numReuniao']         = $pauta['NrReuniao'];
+                            $arrParametros['diaInicioReuniao']   = $pauta['DtInicio'];
+                            $arrParametros['dtFinalReuniao']     = $pauta['DtFinal'];
+                            $arrParametros['PRONAC']             = $pauta['PRONAC'];
+                            $arrParametros['NomeProjeto']        = $pauta['NomeProjeto'];
+                            $arrParametros['TipoParecer']        = $pauta['TipoParecer'];
+                            $arrParametros['parecerParecerista'] = $pauta['parecerista'];
+                            $arrParametros['parecerComponente']  = $pauta['componente'];
+                            $arrParametros['parecerCNIC']        = $pauta['Consolidacao'];
+                            $arrParametros['dtAssinatura']       = $dataAssinatura;
+                            $arrParametros['nomeSecretario']     = $this->nomeSecretario;
+                            $arrParametros['cargoSecretario']    = $this->nomeOrgao;
+
+                            echo $texto = $this->buscarTextoTermoDecisao()->buscarDadosTermoDecisao($pauta['PRONAC'],'251','AN','I',$arrParametros);
+                        ?>
+                    </div>
+                </div>
+                <br>
+            <?php } ?>
+            <!--========= FIM PROJETOS INDEFERIDOS SEFIC - APROVACAO INICIAL ==========-->
+            
+            <!--========= PROJETOS APROVADOS SEFIC - READEQUACAO ============-->
+            <?php
+            foreach ($this->pautaAprovadosReadequacao as $pauta) {
+            ?>
+                <div class="paginaa4">
+                    <div class="titulo"><img id="brasao" src="<?php echo $this->baseUrl() . "/public/img/minc_brasao.PNG" ?>"/></div>
+                    <div class="conteudo">
+                        <?php   
+                            $dia    = (int) date('d',strtotime($pauta['DtAssinatura']));
+                            $mes    = (int) date('m',strtotime($pauta['DtAssinatura']));
+                            $ano    = (int) date('Y',strtotime($pauta['DtAssinatura']));
+                            $dataAssinatura = $dia." de ".$this->mesPorExtenso[$mes]." ".$ano;
+                            
+                            $arrParametros = array();
+                            $arrParametros['numReuniao']         = $pauta['NrReuniao'];
+                            $arrParametros['diaInicioReuniao']   = $pauta['DtInicio'];
+                            $arrParametros['dtFinalReuniao']     = $pauta['DtFinal'];
+                            $arrParametros['PRONAC']             = $pauta['PRONAC'];
+                            $arrParametros['NomeProjeto']        = $pauta['NomeProjeto'];
+                            $arrParametros['TipoParecer']        = $pauta['TipoParecer'];
+                            $arrParametros['parecerParecerista'] = $pauta['parecerista'];
+                            $arrParametros['parecerComponente']  = $pauta['componente'];
+                            $arrParametros['parecerCNIC']        = $pauta['Consolidacao'];
+                            $arrParametros['dtAssinatura']       = $dataAssinatura;
+                            $arrParametros['nomeSecretario']     = $this->nomeSecretario;
+                            $arrParametros['cargoSecretario']    = $this->nomeOrgao;
+
+                            echo $texto = $this->buscarTextoTermoDecisao()->buscarDadosTermoDecisao($pauta['PRONAC'],'251','AR','A',$arrParametros);
+                        ?>
+                    </div>
+                </div>
+                <br>
+            <?php } ?>
+            <!--========= FIM PROJETOS APROVADOS SEFIC - READEQUACAO ======-->
+            
+            <!--========= PROJETOS INDEFERIDOS SEFIC - READEQUACAO ========-->
+            <?php
+            foreach ($this->pautaIndeferidosReadequacao as $pauta) {
+            ?>
+                <div class="paginaa4">
+                    <div class="titulo"><img id="brasao" src="<?php echo $this->baseUrl() . "/public/img/minc_brasao.PNG" ?>"/></div>
+                    <div class="conteudo">
+                        <?php   
+                            $dia    = (int) date('d',strtotime($pauta['DtAssinatura']));
+                            $mes    = (int) date('m',strtotime($pauta['DtAssinatura']));
+                            $ano    = (int) date('Y',strtotime($pauta['DtAssinatura']));
+                            $dataAssinatura = $dia." de ".$this->mesPorExtenso[$mes]." ".$ano;
+                            
+                            $arrParametros = array();
+                            $arrParametros['numReuniao']         = $pauta['NrReuniao'];
+                            $arrParametros['diaInicioReuniao']   = $pauta['DtInicio'];
+                            $arrParametros['dtFinalReuniao']     = $pauta['DtFinal'];
+                            $arrParametros['PRONAC']             = $pauta['PRONAC'];
+                            $arrParametros['NomeProjeto']        = $pauta['NomeProjeto'];
+                            $arrParametros['TipoParecer']        = $pauta['TipoParecer'];
+                            $arrParametros['parecerParecerista'] = $pauta['parecerista'];
+                            $arrParametros['parecerComponente']  = $pauta['componente'];
+                            $arrParametros['parecerCNIC']        = $pauta['Consolidacao'];
+                            $arrParametros['dtAssinatura']       = $dataAssinatura;
+                            $arrParametros['nomeSecretario']     = $this->nomeSecretario;
+                            $arrParametros['cargoSecretario']    = $this->nomeOrgao;
+
+                            echo $texto = $this->buscarTextoTermoDecisao()->buscarDadosTermoDecisao($pauta['PRONAC'],'251','AR','I',$arrParametros);
+                        ?>
+                    </div>
+                </div>
+                <br>
+            <?php } ?>
+            <!--========= FIM PROJETOS INDEFERIDOS SEFIC - READEQUACAO ==========-->          
+    </body>
+</html>
+<SCRIPT LANGUAGE="JavaScript">
+    //window.print()
+</SCRIPT>

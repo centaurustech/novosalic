@@ -1,0 +1,52 @@
+<?php
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+<script>
+    $(document).ready(function(){
+        //ATUALIZA TITULO DA PAGINA
+        window.parent.$("#titulo").html("<div>Análise de Readequa&ccedil;&atilde;o</div>");
+        window.parent.$("#caminhoLocalAtual").html("Análise de Readequa&ccedil;&atilde;o");
+    });
+    function mostraOcultaElemento(elemento,idPedidoAlteracao)
+    {
+        $('.' + elemento).toggle();
+
+        if ($('#' + elemento).hasClass('btn_adicionar'))
+        {
+                $('#' + elemento).addClass('btn_remover');
+                $('#' + elemento).removeClass('btn_adicionar');
+        }
+        else
+        {
+                $('#' + elemento).addClass('btn_adicionar');
+                $('#' + elemento).removeClass('btn_remover');
+        }
+
+        //CARREGA TIPOS DE READEQUACOES SOLICITADAS
+        $("#resultTipoReadequacaoSolicitada").html('<br><center>Aguarde, carregando dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br>');
+        jqAjaxLinkSemLoading('<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'tipo-readequacao-solicitada')); ?><?php echo "?idPronac=".$this->idPronac;?>&idPedidoAlteracao='+idPedidoAlteracao, '', 'resultTipoReadequacaoSolicitada');
+
+    }
+</script>
+<?php $ct=1; if(is_object($this->dados) && count($this->dados)>0):
+        foreach($this->dados as $readequacao) : ?>
+        <table class="tabela">
+            <tr>
+                <td align="left">
+                    <input type="button" class="btn_adicionar" id="<?php echo $ct;?>" onclick="mostraOcultaElemento('<?php echo $ct;?>','<?php echo $readequacao->idPedidoAlteracao;?>');" />  <b><?php echo $ct."&ordf;";?> Readequa&ccedil&atilde;o</b>
+                </td>
+            </tr>
+            <tr class="<?php echo $ct;?> sumir" align="left">
+                <td>
+                    <div id="resultTipoReadequacaoSolicitada"></div>
+                </td>
+            </tr>
+        </table>
+        <?php $ct++; endforeach; ?>
+<?php else: ?>
+    <table class="tabela">
+        <tr>
+            <td align="center"><em>Dados n&atilde;o informados!</em></td>
+        </tr>
+    </table>
+<?php endif; ?>

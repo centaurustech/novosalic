@@ -1,0 +1,13 @@
+<?php
+if(strlen($this->error) > 2){
+    echo '<div class="msgERROR"><div>'.utf8_encode($this->error).'</div></div>';
+}elseif(strlen($this->confirme) > 2){
+        echo '<div class="msgCONFIRM"><div>'.utf8_encode($this->confirme).'</div></div>';
+}elseif(strlen($this->alerta) > 2){
+        echo '<div class="msgALERT"><div>'.utf8_encode($this->alerta).'</div></div>';
+}
+?>
+<b>Observa&ccedil;&atilde;o</b><br />
+    <input type="hidden" name="idDistribuicao" value="<?php echo $this->dadosDistribuicao['idDistribuicao'] ?>" />
+    <textarea class="input_simples" cols="10" rows="5" name="dsObservacao" style="width: 360px; height: 130px"> <?php echo $this->dadosDistribuicao['dsObservacao'] ?> </textarea>
+

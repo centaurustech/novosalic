@@ -1,0 +1,142 @@
+<script type="text/javascript">
+<!--
+function sumiraqui(id)
+{
+	$('img[class='+id+']').toggle();
+	$('tr[class='+id+']').toggle();
+	
+}
+
+function pdf()
+{
+	$('#htmlpdf').val($('#imprimir').html());
+	$('#formpdf').submit();
+	
+}
+
+function xls()
+{
+	$('#htmlxls').val($('#imprimir').html());
+	$('#formxls').submit();
+}
+//-->
+</script>
+
+<?php
+
+
+require_once "inc/menu.inc.php"; // menu
+?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para p&aacute;gina inicial">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'index')); ?>" title="Ir para Tramitar documentos">Tramitar documentos</a></li>
+        <li class="last">Guias de tramita&ccedil;&atilde;o</li>
+    </ul>
+</div>
+<!-- ========== FIM BRADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Guias de tramita&ccedil;&atilde;o <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+<form id="formpdf" action="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'gerarpdf'),'',true); ?>" method="post">
+	<input type="hidden" name="html" value="" id="htmlpdf" />
+	<input type="hidden" name="nomearquivo" value="Guias de Tramitação" id="nomearquivo" />
+</form>
+<form id="formxls" action="<?php echo $this->url(array(' controller' => 'tramitardocumentos', 'action' => 'gerarxls')); ?>" method="post">
+	<input type="hidden" name="html" value="" id="htmlxls" />
+	<input type="hidden" name="nomearquivo" value="Guias de Tramitação" id="nomearquivo" />
+</form>
+
+<!--  habilitar  em versao superior 1.5 do UC
+<table class="tabela">
+	<tr>
+		<td width="5%" align="center"><input type="button" class="btn_localizar" name="btn_localizar" value="" onclick="location.href ='<?php echo $this->baseUrl(); ?>/tramitardocumentos/guias'" /></td>
+		<td align="center">
+			<input type="button" class="btn_pdf" name="btn_pdf" value="" style="width: 44px;" onclick="pdf();" />
+			<input type="button" class="btn_xls" name="btn_xls" value="" style="width: 44px;" onclick="xls();" />
+			<input type="button" class="btn_imprimir" name="btn_imprimir" value="" onclick="print();" />
+		</td>
+		<td width="5%" align="right">&nbsp;</td>
+	</tr>
+</table>
+ -->
+<?php $x = 0;?>
+<fieldset>
+<div id="imprimir">
+<?php if($this->dados){?>
+	<?php foreach($this->dados as $lote): ?>
+	<?php $docs = TramitarDocumentosDAO::buscarDocumentosEnviados($this->idUsuarioLogado, $lote->idLote, 1, 2); ?>
+	<?php if($docs) {?>
+	<?php $x = 1;?>
+ 	<table class="tabela">
+ 		<tr class="fundo_linha2">
+ 			<td colspan="6" align="left">
+ 				<img src="<?php echo $this->baseUrl(); ?>/public/img/icn_menos.gif" class="<?php echo $lote->idLote; ?>" style="cursor:pointer;" onclick="sumiraqui('<?php echo $lote->idLote; ?>');" />
+ 				<img src="<?php echo $this->baseUrl(); ?>/public/img/icn_mais.gif" class="<?php echo $lote->idLote; ?>" style="cursor:pointer; display:none;" onclick="sumiraqui('<?php echo $lote->idLote; ?>');" />
+ 			 &nbsp;&nbsp;&nbsp;&nbsp;	<strong>Lote Nr:</strong> <?php echo $lote->idLote; ?> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+ 			 							<strong>Data de Envio:</strong> <?php echo $lote->dtEnvio; ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ 			 							<strong>Destino:</strong> <?php echo $lote->Destino; ?> &nbsp;&nbsp;|&nbsp;&nbsp; 
+ 			 <a href="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'imprimirguia')); ?>?idLote=<?php echo $lote->idLote; ?>">imprimir </a>
+ 			</td>
+ 		</tr>
+ 		<tr class="<?php echo $lote->idLote; ?>">
+ 			<th width="140">Processo</th>
+ 			<th width="80">PRONAC</th>
+ 			<th width="200">Nome do Projeto</th>
+ 			<th width="150">Documento</th>
+ 			<th width="100">Data</th>
+ 			<th>Arquivo</th> 			
+ 		</tr>
+ 			<?php foreach($docs as $doc): ?>
+ 		<tr class="<?php echo $lote->idLote; ?>">
+ 			<td align="center"><?php echo '&nbsp;'.$doc->Processo.'&nbsp;'; ?></td>
+ 			<td align="center"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')); ?>?idPronac=<?php echo $doc->idPronac; ?>" title="Consultar dados do projeto" target="_blank"><?php echo $doc->Pronac; ?></a></td>
+ 			<td align="center"><?php echo $doc->NomeProjeto; ?></td>
+ 			<td align="center"><?php echo $doc->dsTipoDocumento; ?></td>
+ 			<td align="center"><?php echo $doc->dtDocumentoBR; ?></td>
+ 			<td align="center"><a href="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'abrir')); ?>/id/<?php echo $doc->idDocumento; ?>"><?php echo $doc->NoArquivo; ?></a></td>
+ 		</tr>
+ 			<?php endforeach; ?> 		
+ 	</table>
+ 	<?php }?>
+ 	<?php endforeach; ?>
+<?php }?>
+<?php if($x == 0) :?>
+	<table class="tabela">
+		<tr>
+			<td class="centro">
+				Não há guias de tramitação!
+			</td>
+		</tr>
+	</table>
+<?php endif;?> 
+ </div>	
+</fieldset>
+
+<!-- ============ PAGINAÇÃO ============ -->		   
+<?php if ($this->qtdDocumentos > 5) { echo $this->dados; } ?>
+<!-- ========== FIM PAGINAÇÃO ========== -->
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="imagemRodape"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

@@ -1,0 +1,247 @@
+<script type="text/javascript">
+    function retirarAcento(text) {
+        var varString = text;
+        var stringAcentos = new String('‡‚ÍÙ˚„ı·ÈÌÛ˙Á¸¿¬ ‘€√’¡…Õ”⁄«‹');
+        var stringSemAcento = new String('aaeouaoaeioucuAAEOUAOAEIOUCU');
+
+        var i = new Number();
+        var j = new Number();
+        var cString = new String();
+        var varRes = '';
+
+        for (i = 0; i < varString.length; i++) {
+            cString = varString.substring(i, i + 1);
+            for (j = 0; j < stringAcentos.length; j++) {
+                if (stringAcentos.substring(j, j + 1) == cString){
+                    cString = stringSemAcento.substring(j, j + 1);
+                }
+            }
+            varRes += cString;
+        }
+        return varRes;
+    }
+
+    $(document).ready(function(){
+
+        $("#btn_pesquisar").click(function(){
+            if($('#nomeProposta').val() != ''){
+                var texto = retirarAcento( $('#nomeProposta').val() );
+                $('#nomeProposta').val(texto);
+            }
+            if($('#nomeProponente').val() != ''){
+                var textoProponente = retirarAcento( $('#nomeProponente').val() );
+                $('#nomeProponente').val(textoProponente);
+            }
+            $("#frmRelatorio").submit();
+        });
+
+        $('#area').change(function() {
+            $('#segmento').html('<option value=""> - Carregando - </option>');
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo $this->url(array('controller' => 'segmento', 'action' => 'combo')); ?>',
+                data: {
+                    id: $('#area').val()
+                },
+                success: function(dados) {
+                    $('#segmento').find('option').remove();
+                    $('#segmento').append(dados);
+                }
+            });
+        });
+
+        $("#proposta").keyup(function(){
+            if($(this).val() != ""){
+                $(".cmpDesabilitar").attr("disabled", "disabled").val("");
+            }else{
+                $(".cmpDesabilitar").attr("disabled", "");
+            }
+        });
+ 
+        $(".cmpNumerico").numeric().attr("maxlength", "12");
+
+        $('#uf').change(function(){
+            if($(this).val() == 0){
+                $("#municipio").find('option').remove();
+                $("#municipio").append('<option value=""> - Selecione - </option>');
+            }
+            else{
+                $.ajax({
+                    url : '<?php echo $this->url(array('controller' => 'ajax', 'action' => 'municipio')); ?>',
+                    type: "POST",
+                    data :{
+                        iduf : $(this).val()
+                    },
+                    success: function(valor){
+                        $("#municipio").find('option').remove();
+                        $("#municipio").append('<option value=""> - Selecione - </option>');
+
+                        for(a in valor){
+                            $("#municipio").append('<option value="'+valor[a].idmun+'">'+valor[a].descmun+'</option>');
+                        }
+                    },
+                    type : 'post'
+                    , dataType : 'json'
+                });
+            }
+        });
+    });
+
+    function comparaValores(){
+        var vl1 = '';
+        var vl2 = '';
+
+        vl1 = parseFloat($('#valor').val().replace( /[^0-9]/g, '' ));
+        vl2 = parseFloat($('#valor2').val().replace(/[^0-9]/g, ''));
+
+        if (vl1 != '' && vl2 != ''){
+            if (vl1 > vl2) {
+                $("#alerta").dialog("destroy");
+                $("#alerta").html('O valor um tem que ser menor que o valor dois!');
+                $("#alerta").dialog({
+                    resizable: false,
+                    title: 'Alerta!',
+                    width: 360,
+                    height: 160,
+                    modal: true,
+                    buttons : {
+                        'OK' : function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+                $('.ui-dialog-titlebar-close').remove();
+                return false;
+            }
+        }
+    }
+
+</script>
+
+<!-- ========== INÕCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''), '', true); ?>" title="Ir para P·gina Inicial">InÌcio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'relatorio', 'action' => ''), '', true); ?>" title="Ir para Relatorio">Gerar RelatÛrio An·lise</a></li>
+        <li class="last">Proposta</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INÕCIO TÕTULO ========== -->
+<div id="titulo">
+    <div>Consulta de proposta cultural<span class="voltar"><a href="javascript:voltar()">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÕTULO ========== -->
+
+<div id="conteudo" align="center">
+    <form action="<?php echo $this->url(array('controller' => 'relatorio', 'action' => 'resultado-proposta')); ?>" method="get" name="frmRelatorio" id="frmRelatorio">
+        <table class="tabela">
+            <tbody>
+                <tr>
+                    <th colspan="3">Selecionar campos para pesquisa</th>
+                </tr>
+                <tr>
+                    <td width="120" class="destacar bold">N&uacute;mero da Proposta</td>
+                    <td align="left" colspan="2">
+                        <input type="text" name="proposta" id="proposta" class="input_simples w150 cmpNumerico">
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120" class="destacar bold">Nome da Proposta</td>
+                    <td align="left" colspan="2">
+                        <input type="text" name="nomeProposta" id="nomeProposta" class="input_simples w300" maxlength="50">
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120" class="destacar bold">Nome do Proponente</td>
+                    <td align="left" colspan="2">
+                        <input type="text" name="nomeProponente" id="nomeProponente" class="input_simples w300" maxlength="50">
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120" class="destacar bold">CPF/ CNPJ</td>
+                    <td align="left" colspan="2">
+                        <input maxlength="18" onkeydown="mascaraCnpjCpf(this);" onkeypress="mascaraCnpjCpf(this);" onkeyup="mascaraCnpjCpf(this);" class="input_simples w150" type="text" name="cpfcnpj" id="cpfcnpj"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120" class="destacar bold">&Aacute;rea</td>
+                    <td align="left" colspan="2">
+                    <select name="area" id="area" style="width: 200px;" class="input_simples cmpDesabilitar">
+                        <option value="">- Selecione -</option>
+                        <?php foreach($this->areas as $area):?>
+                        <option value="<?php echo $area->Codigo; ?>"><?php echo $area->Descricao; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120" class="destacar bold">Segmento</td>
+                    <td align="left" colspan="2">
+                        <select name="segmento" id="segmento" style="min-width: 200px;" class="input_simples cmpDesabilitar">
+                            <option selected="selected" value=""> - Selecione - </option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="destacar bold">UF</td>
+                    <td align="left" colspan="2">
+                        <select name="uf" id="uf" style="width: 200px;" class="input_simples cmpDesabilitar">
+                            <option value="">- Selecione -</option>
+                            <?php foreach($this->ufs as $uf):?>
+                            <option value="<?php echo $uf->idUF; ?>"><?php echo $uf->Sigla; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="destacar bold">MunicÌpio</td>
+                    <td align="left" colspan="2">
+                        <select name="municipio" id="municipio" style="width: 200px;" class="input_simples cmpDesabilitar">
+                            <option value="">- Selecione -</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="destacar bold">Valor</td>
+                    <td width="220" align="center">Entre dois valores</td>
+                    <td align="left">
+                        <input type="text" class="input_simples w150" name="valor" id="valor" onkeyup="mascara(this,format_moeda)" onblur="comparaValores();"> e 
+                        <input type="text" class="input_simples w150" name="valor2" id="valor2" onkeyup="mascara(this,format_moeda)" onblur="comparaValores();">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="destacar bold">Estado da Proposta</td>
+                    <td align="left" colspan="2">
+                        <select name="estado" style="width: 200px;" class="input_simples cmpDesabilitar">
+                            <option value="">- Selecione -</option>
+                            <option value="enviada">Enviada ao MinC p/ avaliaÁ„o</option>
+                            <option value="construcao">Proposta em construÁ„o</option>
+                            <option value="diligenciada">Proposta diligenciada</option>
+                            <option value="respondida">DiligÍncia respondida</option>
+                            <option value="arquivada">Proposta arquivada</option>
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="tabela">
+            <tr>
+                <td align="center">
+                    <input type="button" class="btn_pesquisar" id="btn_pesquisar"/>
+                    <input type="reset" class="btn_limpar" id="btn_limpar" value=""/>
+                </td>
+            </tr>
+        </table>
+    </form>
+    <div id="alerta" class="sumir"></div>
+
+</div>
+<!-- ========== FIM CONTE⁄DO ========== -->
+
+
+<!-- ========== INÕCIO RODAP… DO CONTE⁄DO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAP… DO CONTE⁄DO ========== -->
+<br clear="all" />

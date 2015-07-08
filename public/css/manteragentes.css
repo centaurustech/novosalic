@@ -1,0 +1,132 @@
+#basic-modal-content {display:none;}
+
+/* Overlay */
+#modal-overlay {background-color:#000; cursor:wait;}
+
+
+.modal{height: 400px; width: 900px; background-color: #FFFFFF; border: white 3px solid;}
+.modal #title{height: 25px; line-height: 25px; font-weight: bold; background-color: #a8ca65; padding: 2px; cursor: move;}
+.modal #Close {cursor: pointer;}
+
+
+.spanError{
+	color:red;
+}
+
+#menuAgentes {
+	list-style:none;
+	margin:20px auto 0 auto;
+	padding:0;
+	width:97%;
+	height:32px;
+	border:1px solid #ccc;
+}
+#menuAgentes li {
+	margin:1px;
+	float:left;
+}
+#menuAgentes li a {
+	display:block;
+	text-decoration:none;
+	text-align:center;
+	width:120px;
+	height:25px;
+	padding-top:5px;
+	background:#e8e8e8 url(../img/bg-celulas2.gif);
+	color:#000;
+}
+#menuAgentes li a:hover {
+	display:block;
+	text-decoration:none;
+	width:120px;
+	background:#A8CA65;
+	color:#fff;
+}
+
+.btn_add{width:25px; cursor:pointer; background:url(../img/btn_add.gif) center center no-repeat; }
+.btn_excluir{width:25px; cursor:pointer;  background:url(../img/btn_excluir.gif) center center no-repeat; }
+
+
+
+
+/*********************************************************************************
+ * Formatando elementos do formulário
+ *********************************************************************************/
+
+.formAgentes label, .formAgentes-textarea label {
+	clear:both;
+	font-weight:bold;
+	padding:0 0 5px 0;
+	cursor:text;
+	color:#666;
+}
+
+.formAgentes input {
+	padding:3px;
+	color:#333;
+	border-top:1px solid #ccc;
+	border-bottom:1px solid #ccc;
+	font-family:"Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+	font-size:12px;
+}
+
+.formAgentes select {
+	padding:3px;
+	color:#333;	
+	border:1px solid #ccc;
+	font-family:"Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+	font-size:12px;
+}
+
+.formAgentes input { 
+	background:url(../img/input-bg.gif) repeat-x #fff; 	
+	float:left;
+}
+
+.formAgentes .left { 
+	background:url(../img/input-borda-left.gif) no-repeat;
+	width:5px;
+	height:26px;
+	float:left; 
+}
+
+.formAgentes .right { 
+	background:url(../img/input-borda-right.gif) no-repeat;
+	width:5px;
+	height:26px;
+	float:left; 
+}
+
+.formAgentes select { 
+	background:#fff; 
+	padding:2px; 
+}
+
+.formAgentes-textarea textarea {
+	padding:3px;
+	color:#333;
+	border:1px solid #ccc;
+	border-left:none;
+	font-family:"Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+	font-size:12px;	
+}
+
+.formAgentes-textarea textarea { 
+	background:url(../img/textarea-bg.gif) repeat-x #fff; 
+	width:500px; 
+	height:110px;
+}
+
+.formAgentes-textarea .left { 
+	background:url(../img/textarea-borda-left.gif) no-repeat;
+	width:5px;
+	height:118px;
+	float:left; 
+}
+.iframeDirigente {
+	 width:890px;
+	 height:590px;
+	 margin:0;
+	 padding:0;
+	 border:0;
+}

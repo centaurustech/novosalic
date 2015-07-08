@@ -1,0 +1,130 @@
+<script>
+
+    $(document).ready( function() {
+
+        $("#inicial").validate({
+		// Define as regras
+		rules:{
+                        cpf:{
+				// campoNome será obrigatório (required) e terá tamanho mínimo (minLength)
+				required: true, minlength: 14
+			},
+			senha:{
+				// campoSenha será obrigatório (required) 
+				required: true, minlength: 2
+			}
+
+		},
+		// Define as mensagens de erro para cada regra
+		messages:{
+                        cpf:{
+				required: "Digite o seu cpf",
+				minLength: "O seu nome deve conter, no mínimo, 11 caracteres"
+			},
+			senha:{
+				required: "Digite a sua senha",
+				minLength: "O seu nome deve conter, no mínimo, 2 caracteres"
+			}
+		}
+	});
+});
+
+
+</script>
+
+<body>
+
+<!-- ========== INÍCIO TOPO ========== -->
+<div id="topo">
+
+	<div id="barraSuperior"><strong>&nbsp&nbsp&nbsp</strong></div>
+
+	<!-- início: logotipo #logo -->
+	<div id="logo">
+		<h1><a href="#">Salic</a></h1>
+		<span>Sistema de Apoio às Leis de Incentivo à Cultura</span>
+	</div>
+	<!-- final: logotipo #logo -->
+
+</div>
+<!-- ========== FIM TOPO ========== -->
+
+
+
+
+
+<!--<div id="breadcrumb">
+
+<ul>
+<li class="last">Login</li>
+</ul>
+
+</div>-->
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INï¿½CIO Tï¿½TULO ========== -->
+
+<div id="titulo">
+<div>Bem Vindo<span></span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+
+</div>
+<!-- ========== FIM Tï¿½TULO ========== -->
+
+
+
+<!-- ========== INï¿½CIO CONTEï¿½DO ========== -->
+
+	<div id="conteudo">
+
+<fieldset><legend>Login</legend>
+            <form name="inicial" id="inicial" method="POST" action="<?php echo $this->url(array('controller' => 'manterlogin', 'action' => 'login')); ?>" >
+            <table border="1" style="margin-bottom: 50px; margin-top: 20px;">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">Ministério da Cultura
+                                    Apresentação de Proposta Cultural via Web
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Cpf *</td>
+                                    <td><input maxlength="14" onkeydown="mascaraCnpjCpf(this);" onkeypress="mascaraCnpjCpf(this);" onkeyup="mascaraCnpjCpf(this);" class="input_simples" type="text" name="cpf" id="cpf"  /> </td>
+                                </tr>
+                                <tr>
+                                    <td>Senha</td>
+                                    <td><input class="input_simples" type="password" name="senha" id="senha"  /> </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" align="center"><a href="/NovoSalic/manterlogin/cadastrarusuario">Não sou cadastrado</a>&nbsp;&nbsp;&nbsp;
+                                    <a href="/NovoSalic/manterlogin/solicitarsenha">Esqueci a senha</a></td>
+                                </tr>
+                                <tr>
+                                    <td align="center" colspan="2">
+                                        <input id='btConfirmar' type='submit' value='' class='btn_confirmar enviar' style="width: 88px;" />
+                                    <input id='btCancelar' type='button' value='' class='btn_cancelar enviar' onClick="history.go(-1)" onkeypress=" " />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </fieldset>
+            </div>
+            <br/>
+
+
+
+<!-- ========== FIM CONTEï¿½DO ========== -->
+
+
+
+<!-- ========== INï¿½CIO RODAPï¿½ DO CONTEï¿½DO ========== -->
+	<div id="rodapeConteudo"><span></span></div>
+
+<!-- ========== FIM RODAPï¿½ DO CONTEï¿½DO ========== -->
+			<br clear="all" />
+
+</body>
+</html>
+

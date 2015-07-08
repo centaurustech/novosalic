@@ -1,0 +1,292 @@
+<?php include_once 'inc/menu-item-custo-coord.inc.php'; ?>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li>Acompanhamento</li>
+        <li class="last">Verificar readequa&ccedil;&atilde;o de projeto</li>
+    </ul>
+</div>
+
+<div id="titulo">
+    <div>READEQUAÇÃO: PRODUTOS
+        <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span>
+    </div>
+</div>
+
+<style type="text/css">
+    .pvermelho { color: red; font-weight: bold; }
+    .pverde { color: green; font-weight: bold; }
+    .pazul { color: blue; font-weight: bold; }
+    .ppreto { color: black; font-weight: bold; }
+</style>
+
+<script type="text/javascript">
+    function mostraOcultaElemento(elemento)
+    {
+        $('.' + elemento).toggle();
+
+        if ($('#' + elemento).hasClass('btn_adicionar'))
+        {
+            $('#' + elemento).addClass('btn_remover');
+            $('#' + elemento).removeClass('btn_adicionar');
+        }
+        else
+        {
+            $('#' + elemento).addClass('btn_adicionar');
+            $('#' + elemento).removeClass('btn_remover');
+        }
+    }
+</script>
+
+<div id="conteudo">
+
+    <table class="tabela">
+        <thead>
+            <tr>
+                <th align="center">Nº PRONAC:</th>
+                <th align="center">Nome do Projeto:</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="linha">
+                <td align="center"><?php echo $this->dadosTopo['Pronac']; ?></td>
+                <td align="center"><?php echo $this->dadosTopo['NomeProjeto']; ?></td>
+            </tr>
+        </tbody>
+        <tr>
+            <th align="center">CNPJ/CPF:</th>
+            <th align="center">Proponente:</th>
+        </tr>
+        <tbody>
+            <tr class="linha">
+
+                <td align="center"><?php echo $this->dadosTopo['CNPJCPF']; ?></td>
+                <td align="center"><?php echo $this->dadosTopo['NomeProponente']; ?></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <?php if(is_array($this->dados) && count($this->dados)>0):
+        $i = 0;
+        foreach ($this->dados as $key => $value) {
+        ?>
+        <table class="tabela">
+            <tr>
+                <td align="left">
+                    <input type="button" class="btn_adicionar" style="display: inline;" id="<?php echo $value[$i]->idProduto; ?>" onclick="mostraOcultaElemento('<?php echo $value[$i]->idProduto; ?>');" />
+                    <b style="font-size: 12px;" class="
+                        <?php
+                        foreach ($this->produtosTpAcao as $tipo => $valor) {
+                            if($tipo == $value[$i]->idProduto){
+                                if ($valor == "A") {
+                                    echo "pazul";
+                                } elseif ($valor == "I") {
+                                    echo "pverde";
+                                } elseif ($valor == "E") {
+                                    echo "pvermelho";
+                                } elseif ($valor == "N") {
+                                    echo "ppreto";
+                                }
+                            }
+                        }
+                        ?>"><?php echo $key; ?>
+                    </b>
+                </td>
+            </tr>
+            <tr class="<?php echo $value[$i]->idProduto; ?> sumir" align="left">
+                <td>
+                    <?php foreach ($value as $dados) { ?>
+                    <table class="tabela">
+                        <tr>
+                            <td align="left">
+                                <input type="button" class="btn_adicionar" style="display: inline;" id="planoNum<?php echo $dados->idPlano;?>" onclick="mostraOcultaElemento('planoNum<?php echo $dados->idPlano;?>');" />
+                                <b>
+                                    <?php
+                                        if($dados->tpPlanoDistribuicao == 'AP'){
+                                            echo "APROVADO";
+                                        } elseif($dados->tpPlanoDistribuicao == 'SR'){
+                                            echo "SOLICITAÇÃO DE READEQUAÇÃO";
+                                        } elseif($dados->tpPlanoDistribuicao == 'AT'){
+                                            echo "ANÁLISE TÉCNICA";
+                                        } elseif($dados->tpPlanoDistribuicao == 'CO'){
+                                            echo "COMPONENTE DA COMISSÃO";
+                                        }
+                                    ?>
+                                </b>
+                            </td>
+                        </tr>
+                        <tr class="planoNum<?php echo $dados->idPlano;?> sumir" align="left">
+                            <td>
+                                <table class="tabela">
+                                    <tr>
+                                        <td align='center' width="20%" class="destacar"><b>Nome do Evento / Produto</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <table class='tabela'>
+                                                <tr>
+                                                    <td>
+                                                        <b>Produto</b><br>
+                                                        <?php echo $dados->Produto;?>
+                                                    </td>
+                                                    <td>
+                                                        <b>Produto Principal?</b><br>
+                                                        <?php if ($dados->PrdotudoPrincpal == 0) {
+                                                                  echo "Não";
+                                                              } else {
+                                                                  echo "Sim";
+                                                              }
+                                                          ?>
+                                                    </td>
+                                                    <td>
+                                                        <b>Área</b><br>
+                                                        <?php echo $dados->Area; ?>
+                                                    </td>
+                                                    <td>
+                                                        <b>Segmento</b><br>
+                                                        <?php echo $dados->Segmento; ?>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align='center' width="20%" class="destacar"><b>Logomarca</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td align='center' width="80%"><?php echo $dados->Posicao;?></td>
+                                    </tr>
+                                    <tr>
+                                        <td align= 'center' style='padding:0;'>
+                                            <table class='tabela'>
+                                                <tr class="destacar">
+                                                    <td align="center"><b>Distribui&ccedil;&atilde;o Gratuita (Qtde)</b></td>
+                                                    <td align="center"><b>Total para Venda (Qtde)</b></td>
+                                                    <td align="center"><b>Quantidade</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <table class='tabela'>
+                                                            <tr>
+                                                                <td>
+                                                                    <b>Patrocinador</b><br>
+                                                                    <?php echo $dados->Patrocinador;?>
+                                                                </td>
+                                                                <td>
+                                                                    <b>Divulga&ccedil;&atilde;o</b><br>
+                                                                    <?php echo $dados->Divulgacao;?>
+                                                                </td>
+                                                                <td>
+                                                                    <b>Benefici&aacute;rios</b><br>
+                                                                    <?php echo $dados->Beneficiarios;?>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                    <td>
+                                                        <table class='tabela'>
+                                                            <tr>
+                                                                <td>
+                                                                    <b>Normal</b><br>
+                                                                    <?php echo $dados->NormalTV;?>
+                                                                </td>
+                                                                <td>
+                                                                    <b>Promocional</b><br>
+                                                                    <?php echo $dados->PromocionalTV;?>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                    <td>
+                                                        <table class='tabela'>
+                                                            <tr>
+                                                                <td>
+                                                                    <b>N de Exemplares/Ingressos</b><br>
+                                                                   <?php echo ($dados->Patrocinador + $dados->Divulgacao + $dados->Beneficiarios + $dados->NormalTV + $dados->PromocionalTV);?>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                <tr class="destacar">
+                                                    <td align="center"><b>Pre&ccedil;o Unit&aacute;rio (R$)</b></td>
+                                                    <td align="center"><b>Receita Prevista (R$)</b></td>
+                                                    <td align="center"><b>Total Receita Prevista (R$)</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <table class='tabela'>
+                                                            <tr>
+                                                                <td>
+                                                                    <b>Normal</b><br>
+                                                                   <?php echo number_format($dados->NormalPU, 2, ',', '.');?>
+                                                                </td>
+                                                                <td>
+                                                                    <b>Promocional</b><br>
+                                                                    <?php echo number_format($dados->PromocionalPU, 2, ',', '.');?>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                    <td>
+                                                        <table class='tabela'>
+                                                            <tr>
+                                                                <td>
+                                                                    <b>Normal</b><br>
+                                                                    <?php echo number_format(($dados->NormalPU * $dados->NormalTV), 2, ',', '.');?>
+                                                                </td>
+                                                                <td>
+                                                                    <b>Promocional</b><br>
+                                                                    <?php echo number_format(($dados->PromocionalPU * $dados->PromocionalTV), 2, ',', '.');?>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                    <td>
+                                                        <table class='tabela' >
+                                                            <tr>
+                                                                <td>
+                                                                    <b>Total Receita Prevista (R$)</b><br>
+                                                                    <?php echo number_format(($dados->NormalPU * $dados->NormalTV) + ($dados->PromocionalPU * $dados->PromocionalTV), 2, ',', '.');?>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <?php if(!empty($dados->JustificativaProponente)){ ?>
+                                    <tr>
+                                        <td align='center' width="20%" class="destacar"><b>Justificativa</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td width="80%"><?php echo $dados->JustificativaProponente;?></td>
+                                    </tr>
+                                    <?php } ?>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                    <?php } ?>
+                </td>
+            </tr>
+        </table>
+
+    <?php } ?>
+<?php else: ?>
+    <table class="tabela">
+        <tr>
+            <td align="center"><em>Dados n&atilde;o informados!</em></td>
+        </tr>
+    </table>
+<?php endif; ?>
+
+
+</div>
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

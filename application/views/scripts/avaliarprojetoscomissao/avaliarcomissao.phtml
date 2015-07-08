@@ -1,0 +1,26 @@
+<script>
+	jqAjaxLink('<?php echo $this->url(array('controller' => 'avaliarprojetoscomissao', 'action' => 'listarprojetos')); ?>','','gridProjetos');
+</script>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''), '', true); ?>" title="Ir para Página Inicial">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'avaliarprojetoscomissao', 'action' => 'avaliarcomissao'), '', true); ?>" title="Ir para Avaliar Projeto Comissao">Avaliar Projeto Comissao</a></li>
+		<li class="last">Avaliar Projeto Comissao</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+<div id="titulo">
+    <div>Avaliar projeto comiss&atilde;o<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+
+<div id="conteudo">
+<div id='gridProjetos'></div>
+<!-- ========== FIM PAGINAÇÃO ========== -->	
+
+</div>
+<!-- ========== FIM CONTEï¿½DO ========== -->
+<!-- ========== INï¿½CIO RODAPï¿½ DO CONTEï¿½DO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPï¿½ DO CONTEï¿½DO ========== -->
+<br clear="all" />

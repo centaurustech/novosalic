@@ -1,0 +1,131 @@
+<?php include_once 'scripts/admissibilidade/inc/menu.inc.php';     ?>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second">Admissibilidade</li>
+        <li class="last">Admissibilidade de propostas - Lista de propostas em analise final</li>
+    </ul>
+</div>
+<div id="titulo">
+    <div>Admissibilidade de propostas - Lista de propostas em analise final <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<style type="text/css">
+<!--
+.mensagem {
+    padding: 8px;
+    border: darkgreen;
+    background: #e3e3c7;
+}
+-->
+</style>
+<script type="text/javascript">
+<!--
+$(document).ready(function(){
+    
+});
+
+/*
+ * Função responsável pela exibição ou ocultamento de conteúdo,
+ * mudando a imagem.
+ **/
+function abrirDinamico(elemento, obj) {
+    if($(elemento).css('display') == 'none') {
+        $(elemento).fadeIn('fast', function() {
+            $('img', $(obj)).attr('src','<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png');
+        });
+    } else {
+        $(elemento).fadeOut('fast', function() {
+            $('img', $(obj)).attr('src','<?php echo $this->baseUrl(); ?>/public/img/navigation-baixo.PNG');
+        });
+    }
+}
+function toogleAjax(id, url){
+    if(!url) {
+        $('#'+id).toggle('slow');
+    } else {
+        elemento = '#'+id;
+        if($(elemento).css('display') == 'none') {
+            $(elemento).html('<img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /> ');
+            $(elemento).fadeIn('fast');
+            $.ajax({
+                type: "POST",
+                data: {
+                    teste: 'testando'
+                },
+                url: url,
+                success: function(data) {
+                    $(elemento).html(data);
+                }
+            });
+        } else {
+            $(elemento).fadeOut('fast');
+        }
+    }
+};
+//-->
+</script>
+<form action="<?php echo $this->urlPDF; ?>" name="frmPDF" id="frmPDF" method="post" style="display: none;">
+    <textarea name="htmlpdf" id="htmlpdf"></textarea>
+</form>
+<div id="conteudo">
+<form action="<?php echo $this->urlResumo; ?>" method="post" name="frmResumo" id="frmResumo">
+    <div id="conteudoImprimivel">
+    <table class="tabela">
+        <tr>
+            <th>
+                Proposta em análise final
+            </th>
+        </tr>
+        <?php $ultimoRegistro = null; $ct = 1; ?>
+        <?php if(!empty($this->tecnicosPropostas)): ?>
+        <?php //foreach($this->tecnicos as $idOrgaoGeral=>$tecnico): ?>
+        <?php foreach($this->tecnicosPropostas as $tecnico=>$propostas): $qtd = count($this->tecnicosPropostas[$tecnico]);?>
+        <tr onclick="abrirDinamico('#analista_<?php echo $ct; ?>', $(this))" style="cursor:pointer">
+            <td align="center">
+                <input type='hidden' name='<?php echo $tecnico;?>' value='<?php echo $qtd;?>'/>
+                <img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png" id="imgDinamica" align="left"/>
+                Analista : <?php echo $tecnico ?>
+            </td>
+        </tr>
+        <tr id="analista_<?php echo $ct; ?>">
+            <td>
+                <table class="tabela">
+                    <tr>
+                        <th width="10%">Nr. Proposta</th>
+                        <th width="75%">Nome da Proposta</th>
+                        <th width="15%">Dt. Movimentação</th>
+                    </tr>
+                    <?php foreach($propostas as $proposta): ?>
+                    <tr>
+                        <td class="centro"><a href="<?php echo $this->baseUrl(); ?>/admissibilidade/exibirpropostacultural?idPreProjeto=<?php echo $proposta->idPreProjeto; ?>" title="Abrir proposta"><?php echo $proposta->idPreProjeto; ?></a></td>
+                        <td><?php echo $proposta->NomeProjeto; ?></td>
+                        <td class="centro"><?php echo str_replace(" ", " às ", data::dataBrasileira($proposta->DtMovimentacao)); ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </table>
+            </td>
+        </tr>
+        <?php $ct++; ?>
+        <?php endforeach; ?>
+        <?php else: ?>
+        <tr>
+            <td align="center">Nenhum registro encontrado.</td>
+        </tr>
+        <?php endif; ?>
+    </table>
+    </div>
+    <table class="tabela">
+    	<tr>
+    		<td class="centro">
+		        <input type="button" name="imprimir" class="btn_imprimir" onclick="window.location='<?php echo $this->urlPDF; ?>'" title="Imprimir p&aacute;gina" />
+		        <input type="button" name="xls" class="btn_xls" style="width: 43px" onclick="window.location='<?php echo $this->urlXLS; ?>'" title="Gerar arquivo do excel" />
+		        <input type="button" class="btn_resumo" id="btn_resumo" onclick="$('#frmResumo').submit();" title="Ir para resumo" />
+			</td>
+    </table>
+</form>
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

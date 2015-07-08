@@ -1,0 +1,202 @@
+<?php include_once 'scripts/admissibilidade/inc/menu.inc.php'; ?>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second">Admissibilidade</li>
+        <li class="last">Admissibilidade de propostas - Gerenciamento de propostas</li>
+    </ul>
+</div>
+<div id="titulo">
+    <div>Admissibilidade de propostas - Gerenciamento de propostas <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<style type="text/css">
+<!--
+.mensagem {
+    padding: 8px;
+    border: darkgreen;
+    background: #e3e3c7;
+}
+-->
+</style>
+<script type="text/javascript">
+<!--
+/*
+ * Função responsável pela exibição ou ocultamento de conteúdo,
+ * mudando a imagem.
+ **/
+function abrirDinamico(elemento, obj) {
+    if($(elemento).css('display') == 'none') {
+        $(elemento).fadeIn('fast', function() {
+            $('img', $(obj)).attr('src','<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png');
+        });
+    } else {
+        $(elemento).fadeOut('fast', function() {
+            $('img', $(obj)).attr('src','<?php echo $this->baseUrl(); ?>/public/img/navigation-baixo.PNG');
+        });
+    }
+}
+function toogleAjax(id, url){
+    if(!url) {
+        $('#'+id).toggle('slow');
+    } else {
+        elemento = '#'+id;
+        if($(elemento).css('display') == 'none') {
+            $(elemento).html('<img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /> ');
+            $(elemento).fadeIn('fast');
+            $.ajax({
+                type: "POST",
+                data: {
+                    teste: 'testando'
+                },
+                url: url,
+                success: function(data) {
+                    $(elemento).html(data);
+                }
+            });
+        } else {
+            $(elemento).fadeOut('fast');
+        }
+    }
+};
+function imprimir()
+{
+    $("#conteudoImprimir").val($(".conteudoPdf").html());
+    $("#formGerarPdf").submit();
+}
+//-->
+</script>
+<div id="conteudo">
+<form method="POST" id="formGerarPdf" action="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'gerarpdf')); ?>" style="display:none">
+    <textarea name="html" id="conteudoImprimir"></textarea>
+</form>
+<form action="<?php echo $this->urlResumo; ?>" method="post" name="frmResumo" id="frmResumo">
+    <table class="tabela">
+        <tr>
+            <td align="center">
+                <input type="button" title="Localizar" name="localizar" class="btn_localizar" onclick="window.location='<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'localizar-gerenciamento-proposta')); ?>'">
+                <input type="button" title="Imprimir" name="imprimir" class="btn_imprimir" onclick='$("#conteudoImprimir").val($(".conteudoPdf").html()); $("#formGerarPdf").submit();'>
+                <input type="button" title="Resumo" style="width: 88px" class="btn_resumo" id="btn_resumo" onclick="$('#frmResumo').submit();" />
+            </td>
+        </tr>
+    </table>
+    <div class="conteudoPdf">
+    <table class="tabela">
+        <?php
+        $html = '';
+        if($this->mensagem) {
+            $html .= "<tr><th>{$this->mensagem}</th></tr>";
+        }
+        if ($this->analistas) {
+            $i = 0;
+            $html = "
+                 <tr>
+                    <th>Gerenciamento de Propostas</th>
+                 </tr>
+            ";
+            foreach ($this->analistas as $nomeAnalista => $projetos) {
+                $qtd   = count($this->analistas[$nomeAnalista]);
+                $html .= "
+                         <tr onclick=\"abrirDinamico('#tr_{$i}', $(this))\" style=\"cursor:pointer\">
+                         <td align=\"center\">
+                             <img src=\"{$this->baseUrl()}/public/img/navigation-right.png\" id=\"imgDinamica\" align=\"left\"/>
+                             Analista : {$nomeAnalista} ( {$qtd} )
+                             <input type='hidden' name='{$nomeAnalista}' value='{$qtd}'/>
+                         </td>
+                     </tr>
+                     <tr id='tr_{$i}' style='display:none'><td>";
+                    $html .= '<table class="tabela" id="tabelaGerenciamento_' . $i . '">
+                                <tr>
+                                    <th>Nr. Proposta</th>
+                                    <th>Nome da Proposta</th>
+                                    <th>CNPJ/CPF</th>
+                                    <th>Admissibilidade</th>
+                                    <th>Dias</th>
+                                    <th>Plano Anual</th>
+                                    <th>Detalhes</th>
+                                    <th>Outras</th>
+                                    <th>Devolver</th>
+                                    <th>Despachos</th>
+                                </tr>';
+                    foreach ($projetos as $idProjeto => $projeto) {
+                        if($projeto['stPlanoAnual']){
+                            $stPlano = 'Sim';
+                        } else {
+                            $stPlano = 'Não';
+                        }
+                        $html.= '<tr>
+                                <td align="center">
+                                    <a href="' . $this->baseUrl() . '/admissibilidade/exibirpropostacultural?idPreProjeto=' . $idProjeto . '">
+                                    ' . $idProjeto . '
+                                    </a>
+                                </td>
+                                <td>
+                                    ' . $projeto['NomeProposta'] . '
+                                </td>
+                                <td align="center">';
+                        if(strlen($projeto['CNPJCPF']) > 11)
+                        {   
+                            $html .= aplicaMascara($projeto['CNPJCPF'], "99.999.999/9999-99");
+                                    
+                        }else{
+                            $html .= aplicaMascara($projeto['CNPJCPF'], "999.999.999-99");
+                        }
+                        $html .= '
+                                </td>
+                                <td align="center">
+                                    ' . $projeto['DtAdmissibilidade'] . '
+                                </td>
+                                <td align="center">
+                                    ' . $projeto['dias'] . '
+                                </td>
+                                <td align="center">
+                                    ' . $stPlano . '
+                                </td>
+                                <td align="center">
+                                    <a href="' . $this->baseUrl() . '/admissibilidade/exibirpropostacultural?idPreProjeto=' . $idProjeto . '" title="Exibir proposta cultural">
+                                        <img src="' . $this->baseUrl() . '/public/img/ico/eye.png" alt="Exibir proposta cultural" />
+                                    </a>
+                                </td>
+                                <td align="center">
+                                    <a href="' . $this->baseUrl() . '/admissibilidade/proposta-por-proponente?agente=' . $projeto['idAgente'] . '" title="Visualizar outras propostas deste proponente">
+                                        <img src="' . $this->baseUrl() . '/public/img/buttons/ver.gif" alt="Visualizar outras propostas deste proponente" />
+                                    </a>
+                                </td>
+                                <td align="center">
+                                    <a href="' . $this->baseUrl() . '/admissibilidade/devolverproposta?idPreProjeto=' . $idProjeto . '" title="Devolver proposta">
+                                        <img src="' . $this->baseUrl() . '/public/img/voltar.png" alt="Devolver proposta" />
+                                    </a>
+                                </td>
+                                <td align="center">
+                                    <a href="' . $this->baseUrl() . '/admissibilidade/despacharproposta?idPreProjeto=' . $idProjeto . '" title="Visualizar despachos">
+                                        <img src="' . $this->baseUrl() . '/public/img/ico/despacho.png" alt="Visualizar despachos" />
+                                    </a>
+                                </td>
+                            </tr>';
+                    }
+                    $html .='</table>';
+                    echo '<script>setTimeout(\'$("#tabelaGerenciamento_' . $i . '").tablesorter()\',700);</script>';
+                $html .= '</td></tr>';
+                $i++;
+            }
+        }
+        echo $html;
+        ?>
+        
+    </table>
+    </div><!-- div de impressao -->
+    <table class="tabela">
+    	<tr>
+            <td align="center">
+                <input type="button" title="Localizar" name="localizar" class="btn_localizar" onclick="window.location='<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'localizar-gerenciamento-proposta')); ?>'">
+                <input type="button" title="Imprimir" name="imprimir" class="btn_imprimir" onclick='$("#conteudoImprimir").val($(".conteudoPdf").html()); $("#formGerarPdf").submit();'>
+                <input type="button" title="Resumo" style="width: 88px" class="btn_resumo" id="btn_resumo" onclick="$('#frmResumo').submit();" />
+            </td>
+        </tr>
+    </table>
+</form>
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

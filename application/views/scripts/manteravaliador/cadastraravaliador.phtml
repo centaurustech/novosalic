@@ -1,0 +1,106 @@
+<script>
+
+function TirarMarcara(cpf){
+	cpf2 = cpf.replace(".", "");
+	cpf2 = cpf2.replace(".", "");
+	cpf2 = cpf2.replace(".", "");
+	cpf2 = cpf2.replace("-", "");
+	
+	$("#cpf").val(cpf2);
+}
+
+$(document).ready(function(){
+	$('#btn_confirmar').click(function(){
+		cpf = $("#cpf").val();
+		recebe = $('#orgaoERROR');
+		var numeros, digitos, soma, i, resultado, digitos_iguais;
+	    digitos_iguais = 1;
+	    if (cpf.length == 0){ 
+	    	recebe.html('Digite o CPF!');
+	    	recebe.css("color", "red");
+	          return false;
+	    }
+	    if (cpf.length < 11){ 
+	    	recebe.html('CPF Inválido.');
+	    	recebe.css("color", "red");
+	          return false;
+	    }
+	    for (i = 0; i < cpf.length - 1; i++)
+	          if (cpf.charAt(i) != cpf.charAt(i + 1))
+	                {
+	                digitos_iguais = 0;
+	                break;
+	                }
+	    if (!digitos_iguais)
+	          {
+	          numeros = cpf.substring(0,9);
+	          digitos = cpf.substring(9);
+	          soma = 0;
+	          for (i = 10; i > 1; i--)
+	                soma += numeros.charAt(10 - i) * i;
+	          resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+	          if (resultado != digitos.charAt(0)){
+	        	  recebe.html('CPF Inválido.');
+	        	  recebe.css("color", "red");
+	                return false;
+	          }
+	          numeros = cpf.substring(0,10);
+	          soma = 0;
+	          for (i = 11; i > 1; i--)
+	                soma += numeros.charAt(11 - i) * i;
+	          resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+	          if (resultado != digitos.charAt(1)){ 
+	        	  recebe.html('CPF Inválido.');
+	        	  recebe.css("color", "red");
+	                return false;}
+	          return true;
+	          }
+	    else
+	    	recebe.html('CPF Inválido.');
+	    	recebe.css("color", "red");
+	          return false;
+	});
+});
+</script>
+<div id="breadcrumb">
+
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index')); ?>">In&iacute;cio</a></li>
+        <li class="last">Cadastrar avaliador</li>
+    </ul>
+
+</div>
+<div id="titulo">
+    <div>Vincular Editais<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+
+<div id="conteudo">
+    <br />
+    <form id="frmImprimir" name="frmImprimir" action="<?php echo $this->url(array('controller' => 'manteravaliador', 'action' => 'manteravaliador'));?>" method="post">
+    <table class="tabela w400">
+        <tr>
+            <th align="center">CPF do Avaliador</th>
+        </tr>
+        <tr>
+            <td align="center">
+                <b>CPF: </b>
+                <input type="text" name="cpf1" id="cpf1" size="14" maxlength="14" class="input_simples" onBlur="TirarMarcara(this.value);" onkeydown="mascaraCnpjCpf(this);" onkeypress="mascaraCnpjCpf(this);" onkeyup="mascaraCnpjCpf(this);" value=""/>
+               	<div id="orgaoERROR" align="center" style="float:right margin-right: 10px;">&nbsp;</div>
+            </td>
+        </tr>
+        <tr>
+            <td align="center">
+                &nbsp;&nbsp;&nbsp;<input type="submit" name="confirmar" class="btn_confirmar" id="btn_confirmar" value=""  style="width: 88px">
+            </td>
+
+        </tr>
+    </table>
+    <input type="hidden" name="cpf" id="cpf" />
+    </form>
+    <br><br>
+</div>
+<!-- ========== FIM CONTEï¿½DO ========== -->
+<!-- ========== INï¿½CIO RODAPï¿½ DO CONTEï¿½DO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPï¿½ DO CONTEï¿½DO ========== -->
+<br clear="all" />

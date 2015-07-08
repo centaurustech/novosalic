@@ -1,0 +1,621 @@
+<?php
+/**
+ * Emiss?o de Parecer
+ * @author Equipe RUP - Politec
+ * @since 12/05/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.views.scripts.execucaofisicaprojeto
+ * @copyright ? 2010 - Minist?rio da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+require_once "inc/menu.inc.php"; // menu
+?>
+
+<script type="text/javascript">
+    function openIFF(cont) // abre os incentivos fiscais
+    {
+        $('#icn_mais' + cont).fadeIn("slow");
+        $('#icn_menos' +  cont + ', .' + cont).fadeOut("slow");
+    }
+    function closeIFF(cont) // fecha os incentivos fiscais
+    {
+        $('#icn_menos' +  cont + ', .' + cont).fadeIn("slow");
+        $('#icn_mais' + cont).fadeOut("slow");
+    }
+
+    function alerta(functionsim, functionnao){
+        $("#alert").dialog({
+            title: "Alerta!",
+            resizable: false,
+            width:400,
+            height:200,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'Nao':  functionnao
+                ,
+                'Sim':  functionsim
+            }
+        });
+    };
+
+    function salvar(tiposalvar,mostrarMsg){
+        var parecer = '';
+        if(tiposalvar == null){
+            parecer = <?php echo $this->nrparecerfavoravel; ?>;
+        }
+        else  if(tiposalvar == 'IC' ){
+            parecer = 1;
+        }
+        else if(tiposalvar == 'AC' ){
+            parecer = 2;
+        }
+        if($("#justificativa").val().length >= 20){
+            $.ajax({
+                async: true,
+                type: "POST",
+                url: "<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'emitirparecer')); ?>",
+                data:{
+                    idpronac: $("#idPronac").val(),
+                    //justificativa : CKEDITOR.instances['justificativa'].getData(),
+                    justificativa : $("#justificativa").val(),
+                    usu_codigo : <?php echo $this->usu_codigo; ?> ,
+                    valorreal : <?php echo isset($this->totalsugerido) ? $this->totalsugerido : 0; ?>,
+                    plenariaatual: <?php echo $this->plenariaatual; ?>,
+                    tipoplanilha : '<?php echo $this->tipoagente; ?>',
+                    parecer : parecer
+                },
+                success: function(data)
+                {
+                    if(!data.error){
+                        if(mostrarMsg != 0){
+                            $('#confirm').dialog('open');
+                            $('#confirm').html('Parecer salvo com Sucesso!');
+                            $('#alert').dialog('close');
+                        }
+                    }else{
+                        if(mostrarMsg != 0){
+                            $('#confirm').dialog('open');
+                            $('#confirm').html('<font color="red">Erro! N&atilde;o foi poss&iacute;vel salvar o Parecer. \n ' + data.descricao + '</font>');
+                            $('#alert').dialog('close');
+                        }
+                    }
+                }
+                ,dataType : 'json'
+            });
+        }else{
+            $('#alert').dialog('close');
+            $("#erro").html("Campos Obrigat&oacute;rios n&atilde;o preenchidos ou justificativa com menos de 20 caracteres!");
+            $("#erro").dialog('open');
+        }
+    }
+
+    $(document).ready(function(){
+
+        $("#confirm").dialog({
+            title: "Alerta!",
+            resizable: false,
+            width:400,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'OK':  function(){
+                    $('html').css('overflow', 'auto');
+                    $(this).dialog('close');
+                }
+            }
+        });
+
+        $("#erro").dialog({
+            title: "Erro",
+            resizable: false,
+            width:400,
+            height:180,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'OK': function() {
+                    $('html').css('overflow', 'auto');
+                    $(this).dialog('close');
+                }
+            }
+        });
+
+        $("#finalizarparecer").click(function()
+        {
+            $('html').css('overflow', 'hidden');
+            //atualiza no banco de dados o parecer digitado pelo componente
+            salvar(null,0);
+            
+            var tipoPlanilha = '<?php echo $this->tipoplanilha; ?>';
+            if(tipoPlanilha == 'CO')
+            {
+                if (document.getElementById('verificarParecerFavoravel').value != 'sim')
+                {
+                    document.getElementById('desAprovar').disabled = true;
+                }
+
+                $("#formEnviar").each(function(){
+                    this.reset();
+                });
+                //if(CKEDITOR.instances['justificativa'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'').length <= 20){
+                if($("#justificativa").val().length <= 20){
+                    $("#erro").html("Campos Obrigat&oacute;rios n&atilde;o preenchidos ou justificativa com menos de 20 caracteres!");
+                    $("#erro").dialog('open');
+                }
+                else{
+
+                    $("#tela").dialog({
+                        title: "Finalizar An&aacute;lise",
+                        resizable: false,
+                        width:800,
+                        height:550,
+                        modal: true,
+                        autoOpen:false,
+                        buttons: {
+                            'Cancelar': function() {
+                                $('#formEnviar').each(function(){
+                                    this.reset();
+                                })
+                                $(this).dialog('close');
+                                $('html').css('overflow', 'auto');
+                            },
+                            'OK': function() {
+                                clearInterval(verificarReuniao);
+                                //verifica = false;
+                                /*$("input[type='radio']").each(function(){
+                                    if($(this).attr('checked')){
+                                        verifica = true;
+                                    }
+                                });*/
+                                //if(verifica == false){
+                                var n = $("input:radio[name='decisao']:checked").length;
+                                if(n <=0 ){
+                                    $("#erro").html("Campos Obrig&oacute;torios n&atilde;o preenchidos!");
+                                    $("#erro").dialog('open');
+                                }
+                                else
+                                {
+                                    salvar($("input:radio[name='decisao']:checked").val(),0);
+
+                                    if($('#desIndeferir').attr("checked"))
+                                    {
+                                        if($('#situacao').val()==''){
+                                            $("#erro").html("Campos Obrig&oacute;torios n&atilde;o preenchidos!");
+                                            $("#erro").dialog('open');
+                                        }
+                                        else{
+                                            //$('#pareceratualizado').val($('#justificativa').val());
+                                            $("#formEnviar").submit();
+                                            $("#tela").html("<br><br><br><br><br><center>Salvando informações, aguarde...<br><img src='<?php echo $this->baseUrl(); ?>/public/img/ajax.gif' /></center><br>");
+                                        }
+                                    }
+                                    else{
+                                        //$('#pareceratualizado').val($('#justificativa').val());
+                                        $("#formEnviar").submit();
+                                        $("#tela").html("<br><br><br><br><br><center>Salvando informações, aguarde...<br><img src='<?php echo $this->baseUrl(); ?>/public/img/ajax.gif' /></center><br>");
+                                    }
+                                }
+                                $('html').css('overflow', 'auto');
+                            }
+                        }
+                    });
+                    $("#tela").dialog('open');
+
+                    //recupera o parecer atual, caso ele tenha sido alterado para atualiza-lo na finalizacao da analise
+                    //var parecer = CKEDITOR.instances['justificativa'].getData();
+                    var parecer = $('#justificativa').val();
+                    //document.getElementById('pareceratualizado').value = parecer;
+                    $('#pareceratualizado').val(parecer);
+
+                }
+            }
+            else{
+                //var justificativa =  CKEDITOR.instances['justificativa'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+                var justificativa =  $('#justificativa').val();
+                if (document.getElementById('verificarParecerFavoravel').value != 'sim')
+                {
+                    //$("#erro").html("Aten&ccedil;&atilde;o! Para finalizar a an&aacute;lise &eacute; necess&aacute;rio realizar os ajustes solicitados pela decis&atilde;o da plen&aacute;ria!");
+                    $("#erro").html("Aten&ccedil;&atilde;o! &Eacute; preciso realizar os ajustes necess&aacute;rios para finalizar a an&aacute;lise do projeto. Verifique se o corte no projeto n&atilde;o foi superior a 50%.");
+                    $("#erro").dialog('open');
+                    return false;
+                }
+                if($.trim(justificativa).length == 0){
+                    $("#erro").html("Campos Obrig&aacute;torios n&atilde;o preenchidos!");
+                    $("#erro").dialog('open');
+                }
+                else{
+                    alerta(
+                    function(){
+                        salvar();
+                        $("#idpronac").val(<?php echo $this->idpronac; ?>);
+                        $("#formread").submit();
+                    },
+                    function(){ $("#alert").dialog('close');}
+                );
+                }
+                $("#alert").html("O projeto j&aacute; foi aprovado pela CNIC. Deseja salvar as readequa&ccedil;&atilde;es e o parecer final do projeto?");
+                $("#alert").dialog('open');
+                $('html').css('overflow', 'auto');
+            }
+        });
+
+        $("#load").dialog({
+            resizable: false,
+            width:300,
+            height:160,
+            modal: true,
+            autoOpen:false
+        });
+
+
+        $("input[name='decisao']").click(function(){
+            if($('#stEnvioPlenaria').attr('checked') == false){
+                $('#stEnvioPlenaria').removeAttr("disabled","disabled");
+                $('#stPlanoAnual').removeAttr("disabled","disabled");
+            }
+        });
+
+        $('#stEnvioPlenaria').click(function(){
+            if($(this).attr('checked')== true){
+                $('#justificativaenvioplenaria').css('display','');
+            }
+            else{
+                $('#justificativaenvioplenaria').css('display','none');
+
+            }
+        });
+
+        $('#desAprovar').click(function(){
+            $('#situacao').val('');
+            $('#situacao').css('display','none');
+        });
+
+        $('#desIndeferir').click(function(){
+            $('#situacao').css('display','');
+        });
+
+        $("#salvarparecer").click(function()
+        {
+            $("#alert").html('Deseja salvar o seu parecer consolidado?');
+            
+            alerta(function(){
+                salvar();
+                    $("#alert").html('Aguarde, salvando informa&ccedil;&otilde;es...');
+                    //$('#confirm').html('Parecer Salvo com Sucesso!');
+                },
+                function(){
+                    $(this).dialog('close');
+                }
+            );
+            $("#alert").dialog('open');
+        });
+
+    });
+</script>
+
+<!-- ========== IN?CIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->baseUrl(); ?>" title="Ir para In&iacute;cio">Incio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'areadetrabalho', 'action' => 'index')); ?>" title="Ir para An&aacute;lise do Membro da Comiss&atilde;o">An&aacute;lise do Membro da Comiss&atilde;o</a></li>
+        <li class="last">Emitir Parecer</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== IN?CIO T?TULO ========== -->
+<div id="titulo">
+    <div>Emitir Parecer <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM T?TULO ========== -->
+
+
+<!-- ========== IN?CIO CONTE?DO ========== -->
+<div id="conteudo">
+    <div id="alert"></div>
+    <div id="confirm"></div>
+
+    <div id="tela" style="display:none;">
+        <form id="formEnviar" action="<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'emitirparecer')); ?>" method="post">
+            <input type="hidden" name="idPronac" id="idPronac" value="<?php echo $this->idpronac; ?>" />
+            <div style="color:red; text-align: justify; font-weight: 600;">
+                Aten&ccedil;&atilde;o! A decis&atilde;o da aprova&ccedil;&atilde;o ou indeferimento neste quadro &eacute; sua! Caso necessite consultar a decis&atilde;o do parecerista consulte a aba 'PARECER T&Eacute;CNICO CONSOLIDADO'
+            </div>
+            <div style="margin-top: 2.8em ;margin-left: 3em;">
+                <p style="font-weight: 600; font-size:1.3em; float: left; ">Tipo de Decis&atilde;o:</p>
+                <p style="font-weight: 600; text-align: center; font-size: 1.1em; text-align: left; margin-left: 15em;"><input type="radio" id="desAprovar" name="decisao" value="AC"/><label for="desAprovar"> Aprovar</label></p>
+                <p style="font-weight: 600; font-size: 1.1em; margin-left: 15em"><input type="radio" id="desIndeferir" name="decisao" value="IC"/><label for="desIndeferir"> Indeferir</label></p>
+                <p style="font-weight: 600; text-align: center;">
+                    <select class="input_simples" name="situacao" id="situacao" style="display: none;">
+                        <option value="">Selecione</option>
+                        <?php
+                        foreach ($this->indeferidos as $indeferidos) {
+                            echo "<option value='" . $indeferidos->Codigo . "'>" . $indeferidos->Descricao . "</option>";
+                        }
+                        ?>
+                    </select>
+                </p>
+            </div>
+            <input id="reuniaoaberta" type="hidden" value="<?php echo $this->plenariaatual; ?>"/>
+            <div style="margin-left: 13.5em; margin-top: 1.5em; margin-bottom: 1.5em;">
+                <input id="stEnvioPlenaria" type="checkbox" name="stEnvioPlenaria" disabled="disabled" value="S" />
+                <label for="stEnvioPlenaria"> Submeter &agrave; Plen&aacute;ria?</label>
+            </div>
+            <div id="justificativaenvioplenaria" style="display: none; width: 99%" class="esquerda">
+                <div style="margin-left: 3em; margin-top: 1.5em; margin-bottom: 1.5em;">
+                    <div style="margin-left: 10.6em; margin-top: 1.5em; margin-bottom: 1.5em;">
+                        <label for="stPlanoAnual"> Plano anual?</label>&nbsp;
+                        <input type="radio" name="stPlanoAnual" value="1" <?php if($this->stPlanoAnual == '1') echo "checked='checked'";?>> Sim &nbsp;<input type="radio" name="stPlanoAnual" value="0" <?php if($this->stPlanoAnual != '1') echo "checked='checked'";?>> N&atilde;o
+                    </div>
+                    <p style="font-weight: 600; width: 100%">Justificativa de Envio para Plen&aacute;ria</p>
+                    <textarea class="input_simples" style="width: 42em; height: 10em; width:99%;" name="justificativaenvioplenaria" id="justificativaenvioplenaria"></textarea>
+                </div>
+            </div>
+            <textarea class="input_simples" style="display: none; width: 42em; height: 10em;" name="pareceratualizado" id="pareceratualizado"></textarea>
+        </form>
+    </div>
+    <div id="erro" style="display:none; text-align: center; color: red;"></div>
+    <?php require_once "inc/menu_abas.inc.php"; // menu   ?>
+
+        <!-- ========== FIM T?TULO P?GINA ========== -->
+        <!-- ========== IN?CIO Parecer Consolidado ========== -->
+        <!-- ========== Div para aparecer a div ========== -->
+        <div id="icn_maisIFF" class="sumir">
+            <a  onclick="closeIFF('IFF');" >
+                <div class="icn_mais" style="width:90%">
+                    <span>
+                        Dados Finais Consolidados
+                    </span>
+                </div>
+            </a>
+        </div>
+        <!--fim div aparecer -->
+        <div id="icn_menosIFF">
+            <a  onclick="openIFF('IFF');">
+                <div class="icn_menos" style="width:90%">
+                    <span>
+                        Dados Finais Consolidados
+                    </span>
+                </div>
+            </a>
+        </div>
+        <div class="IFF" style="padding-top: 4em;">
+
+            <!-- ========== Inicio Parecer Consolidado ========== -->
+
+            <table class="tabela">
+                <tr>
+                    <th>PRONAC</th>
+                    <th colspan="2">Nome do Projeto</th>
+                </tr>
+                <tr>
+                <tr>
+                    <td><?php echo $this->escape($this->ResultRealizarAnaliseProjeto[0]->pronac); ?></td>
+                    <td colspan="2"><?php echo $this->escape($this->ResultRealizarAnaliseProjeto[0]->NomeProjeto); ?></td>
+                </tr>
+                </tr>
+                <tr>
+                    <th>Enquadramento</th>
+                    <th>Parecer Favor&aacute;vel?</th>
+                    <th>Sugerido</th>
+                </tr>
+                <tr>
+                    <td><?php echo $this->escape($this->enquadramento); ?></td>
+                    <td>
+                        <?php echo $this->escape($this->parecerfavoravel); ?>
+                        <input type="hidden" name="verificarParecerFavoravel" id="verificarParecerFavoravel" value="<?php echo trim(strtolower($this->parecerfavoravel)); ?>" />
+                    </td>
+                    <td>
+                    <?php
+                        if (isset($this->totalsugerido)) {
+                            echo $this->escape($this->formatarReal($this->totalsugerido));
+                        }
+                        else
+                            echo 'R$ 0,00';
+                        ;
+                    ?>
+                    </td>
+                </tr>
+            </table>
+            <table class="tabela">
+                <tr>
+                    <th colspan="2">Mem&oacute;ria de C&aacute;lculo</th>
+                </tr>
+                <tr>
+                    <td>Valor Solicitado(A)</td>
+                    <td>
+                    <?php
+                        if (isset($this->fontesincentivo)) {
+                            echo $this->escape($this->formatarReal($this->fontesincentivo));
+                        }
+                        else
+                            echo 'R$ 0,00';
+                        ;
+                    ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Valor de outras fontes(B)</td>
+                    <td>
+                    <?php
+                        if (isset($this->outrasfontes)) {
+                            echo $this->escape($this->formatarReal($this->outrasfontes));
+                        }
+                        else
+                            echo 'R$ 0,00';
+                        ; ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Valor da Proposta(C=A+B)</td>
+                    <td>
+                    <?php
+                        if (isset($this->valorproposta)) {
+                            echo $this->escape($this->formatarReal($this->valorproposta));
+                        }
+                        else
+                            echo 'R$ 0,00';
+                        ;
+                    ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Valor do componente da comiss&atilde;o</td>
+                    <td>
+                    <?php
+                        if (isset($this->totalsugerido)) {
+                            echo $this->escape($this->formatarReal($this->totalsugerido));
+                        }
+                        else
+                            echo 'R$ 0,00';
+                        ;
+                    ?>
+                    </td>
+                </tr>
+            </table>
+            <table class="tabela">
+                <tr>
+                    <th colspan="6">Outras Informa&ccedil;&otilde;es</th>
+                </tr>
+                <tr>
+                    <th>Produto</th>
+                    <th>Enquadramento</th>
+                    <th>Artigo 27 - Inciso I </th>
+                    <th>Artigo 27 - II</th>
+                    <th>Artigo 27 - III</th>
+                    <th>Artigo 27 - IV</th>
+                </tr>
+                <?php foreach ($this->ResultProduto as $produto) { ?>
+                    <tr>
+                        <td>
+                            <?php echo $this->escape($produto->produto); ?>
+                        </td>
+                        <td>
+                            <?php if($produto->stArtigo18 == '1') echo 'Artigo 18'; if($produto->stArtigo26 == '1') echo 'Artigo 26';?>
+                        </td>
+                        <?php if ($produto->stArtigo27 == 1) : ?>
+                            <td>
+                                <?php echo ($produto->stIncisoArtigo27_I == '1') ? 'Sim' : 'N&atilde;o'; ?>
+                            </td>
+                            <td>
+                                <?php echo ($produto->stIncisoArtigo27_II == '1') ? 'Sim' : 'N&atilde;o'; ?>
+                            </td>
+                            <td>
+                                <?php echo ($produto->stIncisoArtigo27_III == '1') ? 'Sim' : 'N&atilde;o'; ?>
+                            </td>
+                            <td>
+                                <?php echo ($produto->stIncisoArtigo27_IV == '1') ? 'Sim' : 'N&atilde;o'; ?>
+                            </td>
+                        <?php else: ?>
+                            <td>N&atilde;o</td>
+                            <td>N&atilde;o</td>
+                            <td>N&atilde;o</td>
+                            <td>N&atilde;o</td>
+                        <?php endif; ?>
+                </tr>
+                <?php } ?>
+                </table>
+                <!-- ========== Fim Parecer Consolidado ========== -->
+            </div>
+            <br><br>
+    <?php
+    if ($this->tipoplanilha == 'SE') {
+        echo "<div style=\"color:red; text-align: center; font-size: 16pt;  padding-bottom: 2em;\">Projeto j&aacute; aprovado pela CNIC. Aberto para ajustes do Componente.</div>";
+    } ?>
+    <?php  /*if (($this->verifica15porcento != 0 || $this->totaldivulgacao == "true" || $this->totalcaptacaorecurso == "true") && $this->parecerfavoravel != 'NAO') { ?>
+            <div style="color:red; text-align: center; font-size: 16pt;  padding-bottom: 2em;">Aten&ccedil;&atilde;o! </div>
+            <?php if($this->verifica15porcento != 0 ){ ?>
+                <div style="color:red; text-align: center; font-size: 16pt;  padding-bottom: 2em;">O valor dos custos administrativos do projeto est&aacute;: <?php echo $this->formatarReal($this->verifica15porcento); ?> acima do permitido pela IN n&ordm; 1 de 05/10/2010 Artigo 24 Inciso V.<br /><br />Favor readequar para finalizar sua an&aacute;lise.</div><br>
+            <?php }?>
+            <?php if($this->totaldivulgacao == "true"){ ?>
+                <div style="color:red; text-align: center; font-size: 16pt;  padding-bottom: 2em;">Custo de Divulgação/Comercialização superior a 20% do valor total do projeto.<br><br>Favor readequar os custos em <?php echo $this->formatarReal($this->valorReadequar20porcento); ?> para finalizar sua an&aacute;lise.</div>
+            <?php }?>
+            <?php if($this->totalcaptacaorecurso == "true"){ ?>
+                <div style="color:red; text-align: center; font-size: 16pt;  padding-bottom: 2em;">O Item "Remuneração para captação de recursos" está superior a 10% do valor total do projeto ou acima de R$100.000,00.<br><br>Favor readequar os custos em <?php echo $this->formatarReal($this->valorReadequar10porcento); ?> para finalizar sua an&aacute;lise.</div>
+            <?php }?>
+    <?php //} elseif ( $this->totaldivulgacao == "true" and $this->parecerfavoravel != 'NAO') { ?>
+          <!--  <div style="color:red; text-align: center; font-size: 16pt;  padding-bottom: 2em;">Aten&ccedil;&atilde;o! Custo de Divulgação/Comercialização superior a 20% do valor total do projeto.<br><br>Favor readequar os custos em <?php echo $this->formatarReal($this->valorReadequar20porcento); ?> para finalizar sua an&aacute;lise.</div> -->
+    <?php } else {*/ ?>
+            <br>
+            <!--<table class="w1000" style="margin:auto;">-->
+            <table class="tabela">
+                <tr>
+                    <th>Justificativa do Enquadramento</th>
+                </tr>
+                <tr>
+                    <td>
+                        <textarea name="justificativa" id="justificativa" rows="15" class="input_simples" style="width: 99%"><?php echo isset($this->valorJustificativa) ? strip_tags(trim($this->valorJustificativa)) : ''; ?></textarea>
+                        <!--<script>
+                            //CKEDITOR.replace('justificativa', {	fullPage : true });
+                        </script>-->
+                        <form id="formread" action="<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'emitirparecer')); ?>" method="post">
+                            <input type="hidden" name="idpronac" id="idpronac"/>
+                        </form>
+                        <br />
+                    </td>
+                </tr>
+            </table>
+
+            <table class="tabela">
+                <tr align="center">
+                    <td class="destacar bold" colspan="2">Verificação de Limites Orçamentários</td>
+                </tr>
+                <?php foreach ($this->resultadoCheckList as $dsResultado) { ?>
+                <tr>
+                    <td width="1">
+                        <?php if($dsResultado->Observacao == 'OK'){ ?>
+                        <img src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png" alt="" />
+                        <?php } else { ?>
+                        <img src="<?php echo $this->baseUrl(); ?>/public/img/delete_16x16.png" alt="" />
+                        <?php } ?>
+                    </td>
+                    <td>
+                        <?php echo $dsResultado->Descricao;
+                        echo ($dsResultado->vlDiferenca != 0) ? ' '. @number_format(($dsResultado->vlDiferenca), 2, ",", ".") : '';
+                        ?>
+                    </td>
+                </tr>
+                <?php } ?>
+            </table>
+
+            <div class="centro">
+                <br />
+                <p>
+                    <input type="button" class="btn" value=" Salvar " id="salvarparecer"/>
+                    <?php if($this->qtdErrosCheckList==0) { ?>
+                    <input type="button" class="btn" value=" Finalizar " id="finalizarparecer"/>
+                    <?php } ?>
+                </p>
+                <br />
+            </div>
+
+            <!--
+            <br />
+            <p class="centro" style="margin-right:10px;">
+                <input type="button" class="btn_p_anterior" value="" id="voltar"/>
+                <input type="button" class="btn_imprimir" value=" " onclick="imprimir();" onkeypress="imprimir();"  />
+            </p>
+            <br />
+            -->
+
+<?php //} ?>
+
+    <!-- ========== FIM FORMUL?RIO ========== -->
+
+
+
+</div>
+<!-- ========== FIM CONTE?DO ========== -->
+
+
+
+<!-- ========== IN?CIO RODAP? DO CONTE?DO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAP? DO CONTE?DO ========== -->
+
+<br clear="all" />

@@ -1,0 +1,40 @@
+<?php header('Content-Type: text/plain; charset=ISO-8859-1'); ?>
+
+<table class="tabela" style="width: 1150px;">
+    <?php $x=1; $idPlanilhaAnterior=0; $vlTotal=0; if(count($this->relacaoPagamentos) > 0) { ?>
+    <tr class="centro">
+<!--        <td width="1" class="destacar bold">Seq.</td>
+        <td width="1" class="destacar bold">Item</td>-->
+        <td width="1" class="destacar bold">CNPJ/CPF</td>
+        <td width="1" class="destacar bold">Fornecedor</td>
+        <td width="1" class="destacar bold">Dt.<br />Comprova&ccedil;&atilde;o</td>
+        <td width="1" class="destacar bold">Documento</td>
+        <td width="1" class="destacar bold">N&ordm; Comprovante</td>
+        <td width="1" class="destacar bold">Dt.<br />Pagamento</td>
+        <td width="1" class="destacar bold">Forma de Pagamento</td>
+        <td width="1" class="destacar bold">N&ordm; Doc. Pagamento</td>
+        <td width="1" class="destacar bold">Arquivo</td>
+        <td width="1" class="destacar bold">Vl. Pagamento</td>
+    </tr>
+    <?php foreach ($this->relacaoPagamentos as $relPagamentos) { ?>
+    <tr>
+<!--        <td><?php //echo $x; ?></td>
+        <td class="bold"><?php //echo ($relPagamentos->idPlanilhaAprovacao!=$idPlanilhaAnterior)? $relPagamentos->Item : ''; ?></td>-->
+        <td><?php echo Validacao::mascaraCPFCNPJ($relPagamentos->CNPJCPF); ?></td>
+        <td><?php echo $relPagamentos->Fornecedor; ?></td>
+        <td align="center"><?php echo Data::tratarDataZend($relPagamentos->DtComprovacao, 'Brasileira'); ?></td>
+        <td><?php echo $relPagamentos->tbDocumento; ?></td>
+        <td><?php echo $relPagamentos->nrComprovante; ?></td>
+        <td align="center"><?php echo Data::tratarDataZend($relPagamentos->DtPagamento, 'Brasileira'); ?></td>
+        <td><?php echo $relPagamentos->tpFormaDePagamento; ?></td>
+        <td><?php echo $relPagamentos->nrDocumentoDePagamento; ?></td>
+        <td><a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id=<?php echo $relPagamentos->idArquivo; ?>"><?php echo $relPagamentos->nmArquivo; ?></a></td>
+        <td align="right"><?php echo number_format($relPagamentos->vlPagamento, 2, ",", "."); ?></td>
+    </tr>
+    <?php $x++; $idPlanilhaAnterior=$relPagamentos->idPlanilhaAprovacao; $vlTotal=$vlTotal+$relPagamentos->vlPagamento; } ?>
+    <?php } else { ?>
+    <tr>
+        <td align="center">Nenhum registro encontrado.</td>
+    </tr>
+    <?php } ?>
+</table>

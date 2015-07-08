@@ -1,0 +1,97 @@
+<script type="text/javascript">
+    $(document).ready(function() {
+        CKEDITOR.replace( 'obs', { toolbar: [] } );
+    });
+
+    function confirmaConcluir() {
+        $("#msgmodal").html("Deseja Concluir o Produto?");
+        $("#modalConfirm").dialog("destroy");
+        $("#modalConfirm").dialog({
+            title :'Confirmação.',
+            resizable: false,
+            width:400,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'Não': function() {
+                    $(this).dialog('close');
+                },
+                'Sim': function() {
+                    $('#txtConcluir').html('Aguarde...');
+                    $(this).dialog('close');
+                    $('#form').submit();
+                }
+            }
+        });
+        $("#modalConfirm").dialog('open');
+    }
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'index'),'',true); ?>" title="Ir para Início">Início</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'listaprojetos'),'',true); ?>" title="Localizar Parecer">Gerenciar Pareceres</a></li>
+        <li class="last">Concluir</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Concluir <?php echo $this->dadosProjeto[0]->stPrincipal == 1 ? 'Produto Principal':'Produto Secundário';?><span class="voltar"><a href="javascript:voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <div id="modalConfirm" style="display: none;"><label id="msgmodal"></label></div>
+    <form id="form" name="form" action="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'concluiu')); ?>" method="POST">
+        <input name="idpronac" type="hidden" value="<?php echo $this->idpronac; ?>" />
+        <input name="idDistribuirParecer" type="hidden" value="<?php echo $this->idDistribuirParecer; ?>" />
+        <table class="tabela">
+            <tr>
+                <th colspan="3" style="font-family: sans-serif; font-size: 13px;">Dados do Projeto</th>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="left">PRONAC</td>
+                <td class="destacar bold" align="left">Nome do Projeto</td>
+                <td class="destacar bold" align="left">Produto</td>
+            </tr>
+            <tr>
+                <td align="left"><?php echo $this->dadosProjeto[0]->NrProjeto;?></td>
+                <td align="left"><?php echo $this->dadosProjeto[0]->NomeProjeto;?></td>
+                <td align="left"><?php echo $this->dadosProjeto[0]->Produto;?></td>
+            </tr>
+        </table>
+        
+        <table class="tabela">
+            <tr>
+                <th width="150">Justificativa</th>
+            </tr>
+            <tr>
+                <td>
+                    <textarea name="obs" rows="5" cols="100" class="input_simples"></textarea>
+                </td>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <td align="center" id="txtConcluir">
+                    <input type="button" value=" " class="btn_enviar" onclick="confirmaConcluir();" />
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

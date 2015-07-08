@@ -1,0 +1,418 @@
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''),'',true); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'index'),'',true); ?>" title="Gerenciar Pareceres">Gerenciar Pareceres T&eacute;cnicos</a></li>
+        <li class="last">Visualizar Parecer T&eacute;cnico Consolidado</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Visualizar Parecer T&eacute;cnico Consolidado</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <script type="text/javascript">
+
+        function abrirFechar(div){
+            $('#'+div).toggle();
+        }
+
+        function diligencias(){
+            
+            $('#diligencias').toggle();
+            
+            if( $('#diligencias').is(':visible') ) {
+                $('#b4').removeClass('btn_adicionar').addClass('btn_remover');
+            }else{
+                $('#b4').removeClass('btn_remover').addClass('btn_adicionar');
+            }
+        }
+
+        function planilha(){
+            $('#planilha').toggle();
+            
+            if( $('#planilha').is(':visible') ) {
+                $('#b3').removeClass('btn_adicionar').addClass('btn_remover');
+            }else{
+                $('#b3').removeClass('btn_remover').addClass('btn_adicionar');
+            }
+            
+            var divMsg = $('#divMsg2');
+            
+            if(divMsg.html() != ""){
+                return false;
+            }
+            $('#planilha').hide();
+
+            divMsg.html('<img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /><br />Carregando...').css('color','').fadeIn(1000);
+            var idpronac = $('#idpronac').val();
+
+            $('#resultado').css('display','none');
+
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'planilhadecustos')); ?>',
+                data:{
+                    idpronac: idpronac
+                },
+                success: function(data){
+                    divMsg.hide();
+                    $('#planilha').show();
+                    $('#planilha').html(data);
+                },
+                error: function (data){
+                    divMsg.html("Falha na recupera&ccedil;&atilde;o dos dados.\nN&atilde;o foi poss&iacute;vel carregar a planilha!");
+                }
+            });
+        }
+
+        function dadosconsolidados(){
+            $('#dadosconsolidados').toggle();
+            
+            if( $('#dadosconsolidados').is(':visible') ) {
+                $('#b1').removeClass('btn_adicionar').addClass('btn_remover');
+            }else{
+                $('#b1').removeClass('btn_remover').addClass('btn_adicionar');
+            }
+
+            var divMsg = $('#divMsg1');
+            
+            if(divMsg.html() != ""){
+                return false;
+            }
+            $('#dadosconsolidados').hide();
+
+            divMsg.html('<img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /><br />Carregando...').css('color','').fadeIn(1000);
+            var idpronac = $('#idpronac').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'visualizarparecerconsolidado')); ?>',
+                data:{
+                    idpronac: idpronac
+                },
+                success: function(data){
+                    divMsg.hide();
+                    $('#dadosconsolidados').show();
+                    $('#dadosconsolidados').html(data);
+                },
+                error: function (data){
+                    divMsg.html("Falha na recupera&ccedil;&atilde;o dos dados.\nN&atilde;o foi poss&iacute;vel carregar agente!");
+                }
+            });
+        }
+
+        function parecertecnicos(){
+            $('#pareceres').toggle();
+            
+            if( $('#pareceres').is(':visible') ) {
+                $('#b2').removeClass('btn_adicionar').addClass('btn_remover');
+            }else{
+                $('#b2').removeClass('btn_remover').addClass('btn_adicionar');
+            }
+            
+            var divMsg = $('#divMsg3');
+
+            if(divMsg.html() != ""){
+                return false;
+            }
+            $('#pareceres').hide();
+            divMsg.html('<img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /><br />Carregando...').css('color','').fadeIn(1000);
+            var idpronac 	= $('#idpronac').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'dadosdopareceres')); ?>',
+                data:{
+                    idpronac: idpronac
+                },
+                success: function(data){
+                    divMsg.hide();
+                    $('#pareceres').show();
+                    $('#pareceres').html(data);
+                },
+                error: function (data){
+                    divMsg.html("Falha na recupera&ccedil;&atilde;o dos dados.\nN&atilde;o foi poss&iacute;vel carregar agente!");
+                }
+            });
+        }
+
+        function imprimeNomeParecerista(tipo){
+             var executa = true;
+
+            $(".cinput:checked").each(function(){
+                if(this.value == 2){
+                    executa = false;
+                    $("#msgmodal").html("Voc&ecirc; gostaria de incluir o nome do Parecerista?");
+                    $("#modalConfirm").dialog("destroy");
+                    $("#modalConfirm").dialog({
+                        title :'Gerar Relatorio',
+                        resizable: false,
+                        width:400,
+                        height:150,
+                        modal: true,
+                        autoOpen:false,
+                        buttons: {
+                            'Sim': function(){
+                                $(this).dialog('close');
+                                if(tipo == "pdf"){
+                                    pdf(true);
+                                }else{
+                                    xls(true);
+                                }
+                                return true;
+                            },
+                            'Nao': function(){
+                                $(this).dialog('close');
+                                if(tipo == "pdf"){
+                                    pdf(false);
+                                }else{
+                                    xls(false);
+                                }
+                                return false;
+                            }
+                        }
+                    });
+                    $("#modalConfirm").dialog('open');
+                }
+            });
+
+            if(executa == true){
+                if(tipo == "pdf"){
+                    pdf(true);
+                }else{
+                    xls(true);
+                }
+                return true;
+            }
+        }
+
+        function pdf(imprimirNomeParecerista){
+            var html = '';
+            $('#relatorioAnaliseConteudo').html($('#pareceres').html());
+            if(imprimirNomeParecerista == false){
+                $('#relatorioAnaliseConteudo').find('.classNomeParecerista').each(function(){
+                    $(this).remove();
+                });
+            }
+            var opcao1 = $('#dadosconsolidados').html();
+            var opcao2 = $('#relatorioAnaliseConteudo').html();
+            var opcao3 = $('#planilha').html();
+            var opcao4 = $('#diligencias').html();
+
+            $(".cinput:checked").each(function(){
+                if(this.value == 1){
+                    html += opcao1;
+                    html += '<br /><br />';
+                } else if(this.value == 2){
+                    html += opcao2;
+                    html += '<br /><br />';
+                } else if(this.value == 3) {
+                    html += opcao3;
+                    html += '<br /><br />';
+                } else if(this.value == 4) {
+                    html += opcao4;
+                    html += '<br /><br />';
+                }
+            });
+
+            if(html == ''){
+                $("#msgmodal").html("Selecione um quadro para gerar o PDF!");
+                $("#modalConfirm").dialog("destroy");
+                $("#modalConfirm").dialog({
+                    title :'Gerar PDF',
+                    resizable: false,
+                    width:400,
+                    height:150,
+                    modal: true,
+                    autoOpen:false,
+                    buttons: {
+                        'Fechar': function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+                $("#modalConfirm").dialog('open');
+            } else {
+                $('#htmlpdf').val(html);
+                $('#formpdf').submit();
+             }
+        }
+
+        function xls(imprimirNomeParecerista) {
+            var html = '';
+            $('#relatorioAnaliseConteudo').html($('#pareceres').html());
+            if(imprimirNomeParecerista == false){
+                $('#relatorioAnaliseConteudo').find('.classNomeParecerista').each(function(){
+                    $(this).remove();
+                });
+            }
+            var opcao1 = $('#dadosconsolidados').html();
+            //var opcao2 = $('#pareceres').html();
+            var opcao2 = $('#relatorioAnaliseConteudo').html();
+            var opcao3 = $('#planilha').html();
+            var opcao4 = $('#diligencias').html();
+
+            $(".cinput:checked").each(function(){
+                if(this.value == 1){
+                    html += opcao1;
+                    html += '<br /><br />';
+                } else if(this.value == 2) {
+                    html += opcao2;
+                    html += '<br /><br />';
+                } else if(this.value == 3) {
+                    html += opcao3;
+                    html += '<br /><br />';
+                } else if(this.value == 4) {
+                    html += opcao4;
+                    html += '<br /><br />';
+                }
+            });
+
+            if(html == '') {
+                $("#msgmodal").html("Selecione um quadro para gerar o XLS!");
+                $("#modalConfirm").dialog("destroy");
+                $("#modalConfirm").dialog({
+                    title :'Gerar XLS',
+                    resizable: false,
+                    width:400,
+                    height:150,
+                    modal: true,
+                    autoOpen:false,
+                    buttons: {
+                        'Fechar': function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+                $("#modalConfirm").dialog('open');
+            } else {
+                $('#htmlxls').val(html);
+                $('#formxls').submit();
+            }
+        }
+    </script>
+    
+    <form id="formpdf" name="formpdf" action="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'gerarpdf')); ?>" method="post">
+        <textarea name="html" id="htmlpdf" class="sumir"></textarea>
+    </form>
+    
+    <form id="formxls" name="formxls" action="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'gerarxls')); ?>" method="post">
+        <textarea name="html" id="htmlxls" class="sumir"></textarea>
+    </form>
+    
+    <div id="modalConfirm" style="display: none;"><label id="msgmodal"></label></div>
+
+    <input type="hidden" value="<?php echo $this->idpronac; ?>" id="idpronac" name="idpronac" />
+
+    <?php $ct=1; foreach($this->dados as $pc){ if($ct==1){ ?>
+    <table class="tabela">
+        <tr class="destacar">
+            <td align="center"><b>PRONAC</b></td>
+            <td align="center"><b>Nome do Projeto</b></td>
+        </tr>
+        <tr>
+            <td align="center"><?php echo $pc->PRONAC; ?></td>
+            <td align="center"><?php echo $pc->NomeProjeto; ?></td>
+        </tr>
+    </table>
+    <?php } $ct++; } ?>
+    
+    <table class="tabela">
+        <tr>
+            <th width="20">
+                <input type="checkbox" value="1" name="print[]" class="cinput" title="Marcar para Imprimir" onchange="if($('#dadosconsolidados').html() == ''){dadosconsolidados();}" />
+            <td width="300">
+                <input id="b1" type="button" class="btn_adicionar" value=" " onclick="dadosconsolidados();"/>
+			Parecer Técnico Consolidado
+            </td>
+            <td align="center"><div id="divMsg1"></div></td>
+        </tr>
+    </table>
+    <div id="dadosconsolidados" class="sumir"></div>
+    
+    <table class="tabela">
+        <tr>
+            <th width="20"><input type="checkbox" value="2" name="print[]" class="cinput" title="Marcar para Imprimir" onclick="if($('#pareceres').html() == ''){parecertecnicos();}"/> </th>
+            <td width="300">
+                <input id="b2" type="button" class="btn_adicionar" value=" " onclick="parecertecnicos();"/>
+			Análise de Conteúdo
+            </td>
+            <td align="center"><div id="divMsg3"></div></td>
+        </tr>
+    </table>
+    <div id="pareceres" class="sumir"></div>
+    
+    <table class="tabela">
+        <tr>
+            <th width="20"><input type="checkbox" value="3" name="print[]" class="cinput" title="Marcar para Imprimir" onclick="if($('#planilha').html() == ''){planilha();}"/> </th>
+            <td width="300">
+                <input id="b3" type="button" class="btn_adicionar" value=" " onclick="planilha();"/>
+			Análise Custo
+            </td>
+            <td align="center"><div id="divMsg2"></div></td>
+        </tr>
+    </table>
+    <div id="planilha" class="sumir"></div>
+    
+    <table class="tabela">
+        <tr>
+            <th width="20"><input type="checkbox" value="4" name="print[]" class="cinput" title="Marcar para Imprimir"  onclick="diligencias();"/> </th>
+            <td width="300">
+                <input id="b4" type="button" class="btn_adicionar" value=" " onclick="diligencias();"/>
+                Dilig&ecirc;ncias
+            </td>
+            <td align="center"><div id="divMsg4"></div></td>
+        </tr>
+    </table>
+    
+    <div id="diligencias" class="sumir">
+        <table class="tabela">
+            <?php foreach($this->diligencias as $item3){ ?>
+            <tr>
+                <th align="center">Data Solicitação</th>
+                <th align="center">Data Resposta</th>
+            </tr>
+            <tr>
+                <td align="center"><?php echo $item3->DtSolicitacao; ?>	</td>
+                <td align="center"><?php echo $item3->DtResposta?></td>
+            </tr>
+            <tr>
+                <th colspan="2">Solicitação</th>
+            </tr>
+            <tr>
+                <td colspan="2"><?php echo strip_tags($item3->Solicitacao);?></td>
+            </tr>
+            <tr>
+                <th colspan="2">Resposta</th>
+            </tr>
+            <tr>
+                <td colspan="2"><?php echo strip_tags($item3->Resposta);?></td>
+            </tr>
+            <?php } ?>
+        </table>
+    </div>
+    <br />
+    <p class="centro" style="margin-right:1%;">
+        <input type="button" class="btn_xls" value=" " onclick="imprimeNomeParecerista('xls');"  />
+    </p>
+    <br />
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<div id="relatorioAnaliseConteudo" style="display:none"></div>
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

@@ -1,0 +1,44 @@
+    .tituloprincipal {
+        font-size: 20px;
+        margin: 0px 5px 20px 5px;
+        text-align: center;
+        color: black;
+    }
+    .box{
+        border: 1px solid;
+        width: 80%;
+        margin: auto;
+        padding: 20px 40px 80px 5px;
+    }
+
+    div .titulo{
+        background-color: #DFDFDF;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 600;
+        width: auto;
+        padding: 2px 2px 2px 2px;
+    }
+
+    div .tabeladados{
+        margin: 10px 10px 30px 10px;
+        border:  1px #CFCFCF solid;
+        width: 90%;
+    }
+
+    .titudados{
+        text-transform: uppercase;
+        padding-left: 5%;
+        font-weight: 600;
+    }
+
+    .dados{
+        text-align: left;
+        padding-left: 5%;
+    }
+
+    textarea {
+        margin: 5px 1px 2% 2%;
+        width: 96%;
+    }
+

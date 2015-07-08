@@ -1,0 +1,120 @@
+<?php
+/**
+ * Solicitar Recurso da Decisão 
+ * @author Equipe RUP - Politec
+ * @since 21/07/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.solicitarrecursodedecisao
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+
+
+				
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+	<div id="breadcrumb">
+		<ul>
+			<li class="last">Solicitar Recurso da Decisão </li>
+		</ul>
+	</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+				
+				
+				
+				
+<!-- ========== INÍCIO TÍTULO ========== -->
+	<div id="titulo">
+		<div>Projeto Aprovado - Enquadramento <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+	</div>
+<!-- ========== FIM TÍTULO ========== -->
+				
+				
+				
+				
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+	<div id="conteudo">
+				
+		<table width="95%">
+  <tr>
+    <td colspan="4" class="titulo_tabela">DADOS DO RECURSO</td>
+  </tr>
+  <tr>
+    <td class="fundo_linha2 bold">Proponente</td>
+    <td class="fundo_linha2 bold">Pronac</td>
+    <td class="fundo_linha2 bold">Nome do Projeto</td>
+    <td class="fundo_linha2 bold">Situação</td>
+  </tr>
+ <?php foreach($this->proponente as $tbproponente): ?>
+<tr>
+    <td><?php echo $this->escape($tbproponente->nmproponente);?></td>
+    <td><?php echo $this->escape($tbproponente->pronac);?></td>
+    <td><?php echo $this->escape($tbproponente->nmprojeto);?></td>
+    <td><?php echo $this->escape($tbproponente->situacao);?></td>
+  </tr>
+  <?php endforeach;?> 
+</table>
+
+
+
+
+
+<table width="95%">
+<tr>
+<th>Recurso</th>
+
+
+
+
+
+<td>
+
+
+<div id="editor">
+<script type="text/javascript">
+$('#editor').de77_wysiwyg();
+</script>
+<input name="dsjustificativa" type="hidden" id="dsjustificativa" null="false"/>
+</div>
+
+</td>
+
+
+</table>
+
+
+
+
+
+
+<table width="95%">
+
+
+
+
+
+<td class="direita">
+												<input type="submit" title="Reintegrar" tabindex="6" class="btn_reintegrar" value="  " />
+																&nbsp;&nbsp;&nbsp;
+														<input type="submit" title=" Enviar " tabindex="7" class="btn_enviar" value=" " />
+																									&nbsp;&nbsp;&nbsp;
+														<input type="reset" title=" Cancelar " tabindex="8" class="btn_cancelar" value=" " />
+</td>
+</table>		
+			
+
+
+
+		
+				
+	</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+				
+				
+				
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+	<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

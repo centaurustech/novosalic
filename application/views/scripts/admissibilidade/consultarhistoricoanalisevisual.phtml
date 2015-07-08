@@ -1,0 +1,161 @@
+<?php include_once 'scripts/admissibilidade/inc/menu.inc.php'; ?>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.js"></script>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second">Admissibilidade</li>
+        <li class="last">Admissibilidade de Propostas - Consultar Histórico de Análise Visual</li>
+    </ul>
+</div>
+<div id="titulo">
+    <div>Admissibilidade de propostas - Consultar histórico de análise visual <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+
+<script type="text/javascript">
+<!--
+$(document).ready(function(){
+    $("#tipodata").change(function(){
+        $("#spanDtFinal").toggle();
+    });
+
+    $(function()
+    {
+        $.datepicker.regional['pt-BR'] = {
+            closeText: 'Fechar',
+            prevText: '&#x3c;Anterior',
+            nextText: 'Pr&oacute;ximo&#x3e;',
+            currentText: 'Hoje',
+            monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+            dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            weekHeader: 'Sm',
+            dateFormat: 'dd/mm/yy',
+            firstDay: 0,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: ''};
+        $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+        $("#dataPropostaInicial").datepicker($.datepicker.regional['pt-BR']);
+        $("#dataPropostaFinal").datepicker($.datepicker.regional['pt-BR']);
+    });
+
+   /* $("#situacao").click(function(){
+        $("#situacaoAUX").val("1");
+    }); */
+
+});
+
+function verificaPreenchimento(){
+
+    if($("#tecnico").val() == "" && $("#dataPropostaInicial").val() == "" && $("#situacao").val() != "0" && $("#situacao").val() != "9"){
+        $("#lblMsg").html("<font color='red'><b>Dados obrigat&oacute;rios n&atilde;o informados</b></font>");
+        return false;
+    }
+    if(JsTrataDatas()){
+        $("#frmBuscaHistorico").submit();
+    }
+}
+
+function JsTrataDatas(){
+        
+        var tipodata = $("#tipodata").val();
+        
+        if(tipodata == 'entre')
+        {
+            if($("#dataPropostaInicial").length > 0)
+            {
+                var dtInicio = $("#dataPropostaInicial").val();
+                var arrInicio = dtInicio.split("/");    
+                dtInicio = arrInicio[2]+arrInicio[1]+arrInicio[0];
+            }else{
+                var dtInicio = 0;
+            }
+
+            if($("#dataPropostaFinal").length > 0)
+            {
+                var dtFim = $("#dataPropostaFinal").val();
+                var arrFim = dtFim.split("/");
+                dtFim = arrFim[2]+arrFim[1]+arrFim[0];
+            }else{
+                var dtFim = 0;
+            }
+            
+            if(dtFim < dtInicio){
+                $("#DtERROR").html("<font color='red'><b>A Data Final deve ser maior ou igual a Data de In&iacute;cio<b></font>");
+                return false;
+            }else{
+                $("#DtERROR").html("");
+                return true;
+            }
+        }else{
+            return true;
+        }
+    }
+//-->
+</script>
+<div id="conteudo">
+    <form name="frmBuscaHistorico" id="frmBuscaHistorico" action="<?php echo $this->urlForm; ?>" method="get" onsubmit="">
+        <input type="hidden" name="busca" value="1"/>
+    <table class="tabela">
+        <tr>
+            <th colspan="2">Histórico de Análise Visual</th>
+        </tr>
+        <tr>
+            <td>
+                Técnico:
+            </td>
+            <td>
+                <select class="select_simples required_group" name="tecnico" id="tecnico">
+                    <option value="">Selecione</option>
+                    <?php foreach($this->tecnicos as $tecnico): ?>
+                    <option value="<?php echo $tecnico->idTecnico; ?>"><?php echo $tecnico->Tecnico; ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Data:
+            </td>
+            <td>
+                <select name="tipodata" id="tipodata" class="select_simples">
+                    <option value="igual">Exatamente Igual</option>
+                    <option value="entre">Entre dois valores</option>
+                </select>
+                <input name="dataPropostaInicial" id="dataPropostaInicial" value="" class="input_simples required_group" />
+                <span id="spanDtFinal" style="display: none;">&nbsp;e&nbsp;<input name="dataPropostaFinal" id="dataPropostaFinal" value="" class="input_simples" /></span>
+                <span id="DtERROR"></span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Situação:
+            </td>
+            <td>
+                <input type="hidden" name="situacaoAUX" id="situacaoAUX" value="" style="display: none;" />
+                Enviado ao MinC
+                <input type="radio" name="situacao" id="situacao" value="9" />
+                Em Diligência
+                <input type="radio" name="situacao" id="situacao" value="0" />
+            </td>
+        </tr>
+     </table>
+     <table class="tabela">
+        <tr>
+            <td class="centro">
+                <input type="button" onclick="verificaPreenchimento();" name="localizar" id="localizar" value=" " class="btn_localizar" title="Localizar" />
+                <input type="reset" name="reset" id="reset" value=" " class="btn_limpar" title="Limpar" onclick="$('#DtERROR').html('');"/>
+            </td>
+        </tr>
+    </table>
+    </form>
+<div id="lblMsg" align="center"></div>
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

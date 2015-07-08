@@ -1,0 +1,125 @@
+<?php
+/**
+ * Formulário para Cadastro de Conselheiro
+ * @author Equipe RUP - Politec
+ * @since 29/03/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.views.scripts.conselheiro.inc
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+
+
+
+<!-- ========== FORMULÁRIO FONE ========== -->
+<table id="tabFone" width="800" align="center">
+
+	<tr class="titulo_tabela">
+		<th colspan="6">ADICIONE TELEFONES ATRAVÉS DO FORMULÁRIO ABAIXO!</th>
+	</tr>
+
+	<tr>
+		<td>
+			<label for="tipoFone">Tipo *</label> 
+			<br />
+			<select name="tipoFone" id="tipoFone">
+				<option value=""> - Selecione - </option>
+
+				<?php foreach ($this->combotipostelefones as $combotipotelefone){ ?>
+				<option value="<?php echo $combotipotelefone->id; ?>"><?php echo $combotipotelefone->descricao; ?></option>
+				<?php } ?>
+
+			</select>
+		</td>
+		<td>
+			<label for="ufFone">UF *</label> 
+			<br />
+			<select name="ufFone" id="ufFone" 
+				onchange="carregar_combo(this.value, 
+					'dddFone', 
+					'../ddd/combo');">
+				<option value=""> -- </option>
+
+				<?php foreach ($this->comboestados as $combouffone){ ?>
+				<option value="<?php echo $combouffone->id; ?>"><?php echo $combouffone->descricao; ?></option>
+				<?php } ?>
+
+			</select>
+		</td>
+		<td>
+			<label for="dddFone">DDD *</label> 
+			<br />
+			<select name="dddFone" id="dddFone">
+				<option value=""> -- </option>
+			</select>
+		</td>
+		<td>
+			<label for="fone">Telefone *</label> 
+			<br />
+			<input type="text" name="fone" id="fone" maxlength="9" 
+				onkeyup="mascara(this, format_tel);" />
+		</td>
+		<td>
+			<label>Divulgar? *</label> 
+			<br /> 
+			<input type="radio" name="divulgarFone" id="divulgarFoneS" value="1" class="checkradio" /> 
+			<label for="divulgarFoneS">Sim</label> 
+			<input type="radio" name="divulgarFone" id="divulgarFoneN" value="0" class="checkradio" checked="checked" /> 
+			<label for="divulgarFoneN">Não</label>
+		</td>
+		<td class="center" width="30">
+			<input id="btnAddFone" type="button" title="Adicionar Telefone" class="btn_add" 
+				value=" " onclick="adicionar_fone_agente();" />
+		</td>
+	</tr>
+
+</table>
+
+<!-- ========== BUSCA FONES ADICIONADOS ========== -->
+<table id="tabBuscarFone" width="800" align="center">
+	<tr class="titulo_tabela">
+		<th>TIPO</th>
+		<th>UF</th>
+		<th>DDD</th>
+		<th>TELEFONE</th>
+		<th>DIVULGAR?</th>
+		<th width="60">AÇÃO</th>
+	</tr>
+
+	<?php if (isset($this->Fones)): ?>
+		<?php for ($i = 0; $i < count($this->Fones); $i++): ?>
+		<tr id="fone<?php echo $i; ?>">
+			<td>
+				<?php foreach ($this->combotipostelefones as $combotipotelefone){ ?>
+				<?php echo $this->tipoFones[$i] == $combotipotelefone->id ? $combotipotelefone->descricao : ''; ?>
+				<?php } ?>
+				<input type="hidden" name="tipoFones[]" id="tipoFones[]" value="<?php echo $this->tipoFones[$i]?>" />
+			</td>
+			<td class="center">
+				<?php foreach ($this->comboestados as $combouffone){ ?>
+				<?php echo $this->ufFones[$i] == $combouffone->id ?  $combouffone->descricao: ''; ?>
+				<?php } ?>
+				<input type="hidden" name="ufFones[]" id="ufFones[]" value="<?php echo $this->ufFones[$i]?>" />
+			</td>
+			<td class="center">
+				<?php echo $this->dddFones[$i] ?>
+				<input type="hidden" name="dddFones[]" id="dddFones[]" value="<?php echo $this->dddFones[$i]?>" />
+			</td>
+			<td class="center">
+				<?php echo $this->Fones[$i] ?>
+				<input type="hidden" name="Fones[]" id="Fones[]" value="<?php echo $this->Fones[$i] ?>" />
+			</td>
+			<td class="center">
+				<?php echo $this->divulgarFones[$i] == 1 ? 'Sim' : 'Não'; ?>
+				<input type="hidden" name="divulgarFones[]" id="divulgarFones[]" value="<?php echo $this->divulgarFones[$i]?>" />
+			</td>
+			<td class="center">
+				<input type="button" title=" Excluir Fone " class="btn_excluir" onclick="$('#fone<?php echo $i; ?>').remove();" />
+			</td>
+		</tr>
+		<?php endfor; ?>
+	<?php endif; ?>
+
+</table>

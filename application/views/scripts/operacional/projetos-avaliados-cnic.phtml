@@ -1,0 +1,186 @@
+<script>
+    $(document).ready(function(){
+        $(".btn_pesquisar").click(function(){
+            $(".colorpicker").html("");
+            //jqAjaxLink("<?php echo $this->baseUrl()?>/operacional/tabelas?consulta="+$("#consulta").val(), null, "resultadoConsulta");
+            $("#resultadoConsulta").html("");
+            jqAjaxForm(document.getElementById("frmExtratoPauta"), "resultadoConsulta");
+        });
+
+        $(".cmpNumerico").numeric().attr("maxlength", "9");
+        $(".cmpNome").attr("maxlength", "50");
+
+        $("#area").change(function(){
+            carregar_combo(this.value, 'segmento', '<?php echo $this->url(array('controller' => 'segmentocultural', 'action' => 'combo-z')); ?>', ' - Selecione uma &Aacute;rea Cultural - ');
+        });
+
+    });
+</script>
+
+<?php include("scripts/operacional/inc/menu.inc.php"); ?>
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Projetos avaliados na CNIC</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="conteudo" align="center">
+
+    <fieldset>
+        <legend> Filtros de pesquisa </legend>
+        <form action="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-projetos-avaliados-cnic')); ?>" method="post" name="frmExtratoPauta" id="frmExtratoPauta">
+               <table class="tabela" style="width:90%">
+                <tbody>
+                <tr>
+                    <th colspan="3">Selecionar campos para pesquisa</th>
+                </tr>
+                <tr>
+                        <td align="left" width="120">Nr. Reuni&atilde;o</td>
+                        <td align="left" colspan="2">
+                            <div style="float: left; width: 140px" >Exatamente igual &nbsp;</div>
+                            <select name="nrReuniao" id="nrReuniao" style="width: 200px;" class="input_simples">
+                                <option value="">Selecione</option>
+                                <?php foreach($this->reunioes as $item):?>
+                                <option value="<?php echo $item->idNrReuniao; ?>"><?php echo $item->NrReuniao; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+                </tr>
+                <tr>
+                        <td align="left"  width="120">PRONAC</td>
+                        <td align="left" colspan="2">
+                            <div style="float: left; width: 140px" >Exatamente igual &nbsp;</div>
+                            <input class="input_simples cmpNumerico" name="pronac" id="pronac" maxlength="10" type="text">
+                        </td>
+                </tr>
+                <tr>
+                        <td align="left" >Nome do Projeto</td>
+                        <td align="left" colspan="2">
+                            <select name="tipoPesqNomeProjeto" id="tipoPesqNomeProjeto" style="width: 140px;" class="input_simples">
+                                <option value="QC">Que contenha</option>
+                                <option value="EIG">Exatamente igual</option>
+                                <option value="IIG">In&iacute;cio igual</option>
+                            </select>
+                            <input type="text" name="nomeProjeto" id="nomeProjeto" class="input_simples w200 cmpNome" />
+                        </td>
+                </tr>
+                <tr>
+                        <td align="left" >&Aacute;rea Cultural</td>
+                        <td align="left" colspan="2">
+                            <select name="tipoPesqArea" id="tipoPesqArea" style="width: 140px;" class="input_simples">
+                                <option value="EIG">Exatamente igual</option>
+                                <option value="DI">Diferente</option>
+                            </select>
+                            <select name="area" id="area" style="width: 200px;" class="input_simples">
+                                <option value="">Selecione</option>
+                                <?php foreach($this->areas as $area):?>
+                                <option value="<?php echo $area->Codigo; ?>"><?php echo $area->Descricao; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+                </tr>
+                <tr>
+                    <td align="left"  width="120">Segmento Cultural</td>
+                    <td align="left" colspan="2">
+                        <div style="float: left; width: 140px" >Exatamente igual &nbsp;</div>
+                        <select name="segmento" id="segmento" style="width: 200px;" class="input_simples">
+                            <option selected="selected" value=""> - Selecione uma &Aacute;rea Cultural - </option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                        <td align="left" >Situa&ccedil;&atilde;o</td>
+                        <td align="left" colspan="2">
+                            <div style="float: left; width: 140px" >Exatamente igual &nbsp;</div>
+                            <select name="situacao" id="situacao" style="width: 200px;" class="input_simples">
+                                <option value="">Selecione</option>
+                                <?php foreach($this->situacoes as $situacao):?>
+                                <option value="<?php echo $situacao->Codigo; ?>"><?php echo $situacao->Descricao; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+                </tr>
+                <tr>
+                        <td align="left" >Resultado da Avalia&ccedil;&atilde;o</td>
+                        <td align="left" colspan="2">
+                            <div style="float: left; width: 140px" >Exatamente igual &nbsp;</div>
+                            <select name="resultadoAvaliacao" id="resultadoAvaliacao" style="width: 200px;" class="input_simples">
+                                <option value="">Selecione</option>
+                                <option value="AC">Aprovado-Componente</option>
+                                <option value="AS">Aprovado-Plen&aacute;ria</option>
+                                <option value="IC">Indeferido-Componente</option>
+                                <option value="IS">Indeferido-Plen&aacute;ria</option>
+                            </select>
+                        </td>
+                </tr>
+                <tr>
+                        <td align="left" >Proponente</td>
+                        <td align="left" colspan="2">
+                            <select name="tipoPesqProponente" id="tipoPesqProponente" style="width: 140px;" class="input_simples">
+                                <option value="QC">Que contenha</option>
+                                <option value="EIG">Exatamente igual</option>
+                                <option value="IIG">In&iacute;cio igual</option>
+                            </select>
+                            <input type="text" name="proponente" id="proponente" class="input_simples w200 cmpNome" />
+                        </td>
+                </tr>
+                <tr>
+                        <td align="left" >Componente da Comiss&atilde;o</td>
+                        <td align="left" colspan="2">
+                            <select name="tipoPesqComponente" id="tipoPesqComponente" style="width: 140px;" class="input_simples">
+                                <option value="EIG">Exatamente igual</option>
+                                <option value="DI">Diferente</option>
+                            </select>
+                            <select name="componente" id="componente" style="width: 200px;" class="input_simples">
+                                <option value="">Selecione</option>
+                                <?php foreach($this->agentes as $item):?>
+                                <option value="<?php echo $item->idAgente; ?>"><?php echo $item->nomeConselheiro; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+                </tr>
+                <tr>
+                        <td align="left" >Entidade Vinculada</td>
+                        <td align="left" colspan="2">
+                            <select name="tipoPesqEntidade" id="tipoPesqEntidade" style="width: 140px;" class="input_simples">
+                                <option value="EIG">Exatamente igual</option>
+                                <option value="DI">Diferente</option>
+                            </select>
+                            <select name="orgao" id="orgao" style="width: 200px;" class="input_simples">
+                                <option value="">Selecione</option>
+                                <?php foreach($this->orgaos as $item):?>
+                                <option value="<?php echo $item->Codigo; ?>"><?php echo $item->Sigla; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+                </tr>
+                <tr>
+                    <td colspan="3">&nbsp;</td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="tabela" style="width: 90%">
+            <tr>
+                <td align="center">
+                    <input type="button" style="width: 88px" class="btn_pesquisar" id="btn_pesquisar"/>
+                    <input type="reset" style="width: 88px" class="btn_limpar" id="btn_limpar" value="" onclick="$('#resultadoConsulta').html(''); $('.colorpicker').html(''); "/>
+                    <!--<input type="button" style="width: 88px" class="btn_voltar" id="btn_voltar"/>-->
+                </td>
+            </tr>
+        </table>
+        </form>
+</fieldset>
+
+<div id="resultadoConsulta"></div>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

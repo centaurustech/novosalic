@@ -1,0 +1,107 @@
+<?php
+    $DetalharHref   =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'detalharlicitacao')) . '?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $AlterarHref    =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'alterarlicitacao')) . '?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $ExcluirHref    =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'excluirlicitacao')) . '?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $FinalizarHref  =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'finalizarlicitacao')) . '?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $incluirHref    =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'alterarlicitacao')) . '?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac ;
+    $anteriorHref          =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'pagamento')) . '?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    include_once 'scripts/comprovarexecucaofinanceira/inc/menu.inc.php';
+?>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principalproponente', 'action' => ''), null, true); ?>" title="Ir para p&aacute;gina inicial" onclick="carregandoModal();">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')) . '?idPronac=' . Seguranca::encrypt($this->idpronac); ?>" title="Ir para In&iacute;cio">Consultar dados do Projeto</a></li>
+        <li>Comprovar Execu&ccedil;&atilde;o Financeira</li>
+        <li class="last">Licita&ccedil;&atilde;o</li>
+    </ul>
+</div> <!-- final: #breadcrumb -->
+
+<div id="titulo">
+    <div>Licita&ccedil;&atilde;o<span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+
+<div id="conteudo" align="center">
+    <div id="licitacaoAjax">
+        <table class="tabela">
+            <tr>
+                <th>PRONAC</th>
+                <th>NOME DO PROJETO</th>
+            </tr>
+            <tr>
+                <td><?php echo $this->pronac;?></td>
+                <td><?php echo $this->nomeProjeto;?></td>
+            </tr>
+        </table>
+
+        <br />
+
+        <table class="tabela">
+            <tr>
+                <th>N&uacute;mero da Licita&ccedil;&atilde;o</th>
+                <th>Modalidade</th>
+                <th>Data de Publica&ccedil;&atilde;o</th>
+                <th>Detalhar</th>
+                <th>Alterar</th>
+                <!-- th>Excluir</th -->
+            </tr>
+            <?php foreach ($this->listaLicitacao as $linha) : ?>
+                <tr id="linha<?php echo $linha['idlicitacao'];?>" class="centro">
+                    <td><?php echo $linha['nrLicitacao'];?></td>
+                    <td class="esquerda"><?php echo $linha['Modalidade'];?></td>
+                    <td><?php echo $linha['dataPublicacao'];?></td>
+                    <td class="centro">
+                        <a href="<?php echo $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'detalharlicitacao')) . '?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac . '&idlicitacao=' . $linha['idlicitacao'] ;?>" idlicitacao="<?php echo $linha['idlicitacao'];?>" ><img border="0" width="18" title="Detalhar" src="<?php echo $this->baseUrl(); ?>/public/img/ico/kdict.png"></a>
+                    </td>
+                    <td class="centro">
+                        <?php
+                        if(!$linha['finalizado']){
+                        ?>
+                            <?php if(!$this->vrSituacao) { ?>
+                            <a href="<?php echo $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'alterarlicitacao')) . '?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac . '&idlicitacao=' . $linha['idlicitacao'] ;?>" class="finaliza" idlicitacao="<?php echo $linha['idlicitacao'];?>" ><img border="0" width="18" title="Alterar" src="<?php echo $this->baseUrl(); ?>/public/img/ico/edit.png"></a>
+                                <?php } else { ?>
+                                    -
+                                <?php } ?>
+                        <?php
+                        }
+                        ?>
+                    </td>
+                    <?php /*td class="centro">
+                        <a href="<?php echo $this->url(array(
+                                'controller' => 'comprovarexecucaofinanceira', 
+                                'action' => 'deletar-licitacao',
+                                'idusuario' => $this->idusuario,
+                                'idpronac' => $this->idpronac,
+                                'idlicitacao' => $linha['idlicitacao'],
+                            )); ?>" idlicitacao="<?php echo $linha['idlicitacao'];?>" >
+                            <img border="0" width="18" title="Detalhar" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/excluir-p.gif">
+                        </a>
+                    </td*/ ?>
+                </tr>
+            <?php
+                endforeach;
+                if (empty($this->listaLicitacao)) :
+                    echo '<tr><td colspan="6" class="centro">Nenhuma licita&ccedil;&atilde;o cadastrada at&eacute; o momento.</td></tr>';
+                endif;
+            ?>
+        </table>
+        <div style="text-align: center;">
+            <?php
+                if(!$this->vrSituacao) :
+                    echo "<a href='{$incluirHref}' style='text-decoration:none;'><input type='button' class='btn_novo' /></a>";
+                endif;
+            ?>
+        </div>
+    </div>
+    <br clear="left" />
+</div>
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        
+    });
+</script>

@@ -1,0 +1,171 @@
+<?php
+/**
+ * Solicitar Recurso da Decisão 
+ * @author Equipe RUP - Politec
+ * @since 21/07/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.solicitarrecursodedecisao
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+
+
+				
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+	<div id="breadcrumb">
+		<ul>
+			<li class="last">Solicitar Recurso da Decisão </li>
+		</ul>
+	</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+				
+				
+				
+				
+<!-- ========== INÍCIO TÍTULO ========== -->
+	<div id="titulo">
+		<div>Proponentes - Projetos <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+	</div>
+<!-- ========== FIM TÍTULO ========== -->
+				
+				
+				
+				
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+	<div id="conteudo">
+				
+
+<table class="tabela">
+          <tr><td tabindex="67">
+          <input type="button" id="abrir_fechar1" class="btn_adicionar" />Projetos Aprovados
+         </div>
+          </td></tr>
+          </table>
+          <div id="div_teste1" style="display:none;" >
+  <table class="tabela">
+        <tr>
+    		<td class="fundo_linha2 bold">Pronac</td>
+    		<td class="fundo_linha2 bold">Proponente</td>
+    		<td class="fundo_linha2 bold">Nome do Projeto</td>
+    		<td class="fundo_linha2 bold">Situação</td>
+               
+               
+        </tr>
+          <tr>
+        <?php foreach($this->projetoaprovado as $buscaprojetoaprovado):      ?>
+       
+       
+     		<td><a href="<?php echo $this->url(array('controller' => 'solicitarrecursodecisao', 'action' => 'projetoaprovado')); ?>?idpronac=<?php echo $this->escape($buscaprojetoaprovado->IdPRONAC);?>"><?php echo $this->escape($buscaprojetoaprovado->nrpronac);?></td>
+        	<td><?php echo $this->escape($buscaprojetoaprovado->nmproponente);?></td>
+			<td><?php echo $this->escape($buscaprojetoaprovado->nmprojeto);?></td>
+			<td><?php echo $this->escape($buscaprojetoaprovado->situacao);?></td>
+        </tr>
+       
+        <?php
+        endforeach;?>
+
+         </table>
+         </div>
+         
+         
+         
+         
+         
+         
+<table class="tabela">
+
+          <tr><td >
+          <input type="button" id="abrir_fechar2" class="btn_adicionar" />Projetos não Aprovados
+         </div>
+          </td></tr>
+          </table>
+          <div id="div_teste2" style="display:none;" >
+<table class="tabela">
+        <tr>
+			  	<td class="fundo_linha2 bold">Pronac</td>
+			  	<td class="fundo_linha2 bold">Proponente</td>
+			    <td class="fundo_linha2 bold">Nome do Projeto</td>
+			    <td class="fundo_linha2 bold">Situação</td>
+               
+        </tr>
+          <tr >
+				<?php foreach($this->projetonaoaprovado as $buscaprojetonaoaprovado): ?>
+				
+				
+			
+		    <td><a href="<?php echo $this->url(array('controller' => 'solicitarrecursodecisao', 'action' => 'projetonaoaprovado')); ?>?idpronac=<?php echo $this->escape($buscaprojetonaoaprovado->IdPRONAC);?>"><?php echo $this->escape($buscaprojetonaoaprovado->nrpronac);?></td>
+		    <td><?php echo $this->escape($buscaprojetonaoaprovado->nmproponente);?></td>
+		    <td><?php echo $this->escape($buscaprojetonaoaprovado->nmprojeto);?></td>
+		    <td><?php echo $this->escape($buscaprojetonaoaprovado->situacao);?></td>
+		        
+        
+        </tr>
+       
+        <?php       endforeach;?>
+
+         </table>
+         </div>
+       
+
+
+
+
+
+<script>
+
+$('#abrir_fechar1').click(function(){
+
+  
+
+   $('#div_teste1').toggle('slow');
+});
+</script>
+<script>
+
+$('#abrir_fechar2').click(function(){
+
+  
+
+   $('#div_teste2').toggle('slow');
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+				
+				
+				
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+	<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

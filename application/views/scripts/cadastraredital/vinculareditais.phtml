@@ -1,0 +1,167 @@
+<?php include_once 'inc/funcoes.inc.php';?>
+<?php include_once 'inc/menu.inc.php';?>
+
+<script>
+
+function incluir(){
+
+    document.getElementById("vincular").title = "Confirmação";
+
+	// modal com os ddos do dirigente
+	$("#vincular").dialog("destroy");
+	$("#vincular").dialog
+	({
+		width:350,
+		height:150,
+		EscClose:false,
+		modal:true
+		,buttons:
+		{
+			'Fechar':function()
+			{
+				$(this).dialog('close'); // fecha a modal
+			},
+			'Vincular':function()
+			{
+				$("#formIncluir").submit(); // submete o formulario
+			}
+		}
+	});
+	return false;
+	$('.ui-dialog-titlebar-close').remove();
+}
+
+function excluir(idEdital, idAgente, cpf){
+
+	$("#idEdit").val(idEdital);
+	$("#idAgen").val(idAgente);
+	$("#cpf2").val(cpf);
+    document.getElementById("excluir").title = "Confirmação";
+
+    $("#excluir").dialog("destroy");
+    $("#excluir").dialog
+    ({
+        width:350,
+        height:150,
+        EscClose:false,
+        modal:true
+        ,
+        buttons:
+        {
+            'Não':function()
+            {
+                $(this).dialog('close');
+                //return false;
+            },
+            'Sim':function()
+            {
+            	document.forms["frm2"].submit();
+            }
+        }
+    });
+	return false;
+    $("#excluir").dialog('open');
+    $('.ui-dialog-titlebar-close').remove();
+}
+
+</script>
+<div id="vincular" title="Confirma&ccedil;&atilde;o" style="display: none">Tem certeza que deseja vincular o Edital?</div>
+<div id="excluir" title="Confirma&ccedil;&atilde;o" style="display: none">Tem certeza que deseja desvincular o Edital?</div>
+<form id="formIncluir" name="formIncluir" method="post">
+<input type="hidden" name="cpf2" id="cpf2" value="<?php echo $_GET['cpf'];?>" />
+</form>
+<div id="menu">
+    <!-- início: conteúdo principal #container -->
+    <div id="container">
+        <?php include_once 'inc/menu.inc.php';?>
+        <!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+        <div id="breadcrumb">
+            <ul>
+                <li class="first"><a href="index.html" title="Ir para Início">Início</a></li>
+                <?php if (isset($_GET['idEdital'])) : ?>
+                    <li><a href="<?php echo $this->url(array('controller' => 'cadastraredital', 'action' => 'consultaralterareditais')); ?>">Consultar/Alterar Edital</a></li>
+                <?php endif; ?>
+                <li class="last">Forma de pagamento</li>
+            </ul>
+        </div>
+        <!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+        <!-- ========== BUTTON VOLTAR ========== -->
+        <div id="titulo">
+            <div>Vincular avaliador - Edital <?php echo '"'.$this->nmEdital .   '" - Avaliador: ' . $this->nomeAvaliador; ?> <span class="voltar"><a href="javascript:voltar()">Voltar</a></span></div>
+        </div>
+<div id="conteudo" align="center">
+<table class="tabela">
+	    	<tr>
+    			<th align="left" colspan="2"><input type="button" class="btn_incluir" onclick="incluir();" style="width: 88px"> &nbsp;&nbsp;&nbsp; Vincular Avaliador</th>
+    		</tr>
+    	</table>
+   	<?php if($this->editais){?>
+	        <?php $i = 0; foreach($this->editais as $editais){?>
+		        <?php $dadosEdital = ManterAvaliadorDAO::buscaDadosEdital($editais->idEdital);
+		        //xd($dadosEdital);
+		        
+		        	foreach ($dadosEdital as $nomeEdital){
+		        		$idEdital = $nomeEdital->idEdital;
+		        		$nrEdital = $nomeEdital->NrEdital;
+		        		$idOrgao = $nomeEdital->idOrgao;
+		        		$usuario = $nomeEdital->Logon;
+		        		
+		        		$nomeEdital = ListareditaisDAO::buscaNomeEdital($idEdital, $idOrgao, $nrEdital, $usuario);
+		        		if($nomeEdital){
+		        		$teste[$i] = Array('idEdital'=> $nomeEdital[0]->idEdital, 'NrEdital'=> $nomeEdital[0]->NrEdital, 'nomeEdital'=> $nomeEdital[0]->nomeEdital);
+		        		$i++;
+		        		}
+		        	}
+	        }?>
+	    <form id="frm2" name="frm2" action="" method="post">
+	    <input type="hidden" name="cpf" id="cpf" value="<?php echo $this->cpf ?>"></input>
+	    
+	    <table class="tabela">
+	    <tr>
+            <th align="left" colspan="2">Editais Vinculados</th>
+        </tr>
+        <?php 
+        $t = array();
+        if($teste){
+	        foreach ($teste as $bla){
+	        	$t[] = $bla['NrEdital'];
+	        	
+	        }        
+	        array_multisort($t, $teste); //Metodo de Ordenação
+	        //xd($teste);
+	        if($teste){
+		       	foreach ($teste as $bla){?>
+			        <tr>
+			            <td align="left" width="90%">
+			                <p><?php echo $bla['NrEdital']." - ".$bla['nomeEdital']; ?></p>
+			            </td>
+			            <td align="center">
+			                &nbsp;&nbsp;&nbsp;
+			                <input type="button" class="btn_exclusao" onclick="excluir(<?php echo $bla['idEdital']; ?>, <?php echo $this->dadosAvaliador[0]->idAgente; ?>, <?php echo "'".$this->cpf."'"; ?>)" />
+			            </td>
+			        </tr>
+		        <?php }?>
+	       <?php }?>
+	 <?php }?>
+	 <?php } else {?>
+	 <tr>
+			<br />
+				<div class="center" align="center">Não há Editais vinculados para <?php echo $this->nomeAvaliador; ?></div>
+			<br />	
+			<br />
+	</tr>	
+	 <?php }?>
+    </table>
+    <input type="hidden" value="" name="idEdit" id="idEdit"/>
+    <input type="hidden" value="" name="idAgen" id="idAgen"/>
+    <input type="hidden" value="" name="cpf2" id="cpf2"/>
+    </form>
+   	</div>
+</div>
+        <!-- ========== FIM CONTEÚDO ========== -->
+        <!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+        <div id="rodapeConteudo"><span></span></div>
+        <!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+        <br clear="all" />
+</div>

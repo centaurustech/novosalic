@@ -1,0 +1,149 @@
+<?php
+/**
+ * Exemplo de Utilização do Layout
+ * @author Tarcísio Angelo - XTI
+ * @since 11/01/2012
+ * @version 1.0
+ * @package application
+ * @subpackage application.views.scripts.comunicados
+ * @link http://salic.cultura.gov.br
+ * @copyright © 2011 - Ministério da Cultura - Todos os direitos reservados.
+ */
+
+require_once "inc/menu.inc.phtml"; // menu lateral
+?>
+
+<script type="text/javascript">
+<!--
+	/**
+	 * Funções que são chamadas após a página ser carregada
+	 */
+	$(document).ready(function()
+	{
+		// máscaras dos campos
+		$("#periodo1, #periodo2").keyup(function()
+		{
+			mascara(this, format_data); // data
+		});
+
+		// calendário
+		$.datepicker.regional['pt-BR'] = 
+		{
+			closeText: 'Fechar',
+			prevText: '&#x3c;Anterior',
+			nextText: 'Pr&oacute;ximo&#x3e;',
+			currentText: 'Hoje',
+			monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+			monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+			dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','S&aacute;bado'],
+			dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+			dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+			weekHeader: 'Sm',
+			dateFormat: 'dd/mm/yy',
+			firstDay: 0,
+			isRTL: false,
+			showMonthAfterYear: false,
+			yearSuffix: ''
+		};
+		$.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+
+		// id dos campos que utilizarão o calendário
+		$("#periodo1, #periodo2").datepicker($.datepicker.regional['pt-BR']);
+		
+		
+	}); // fim $(document).ready()
+	
+	
+	function localizar(){
+		
+		var formulario = document.getElementById('form');
+			
+		jqAjaxForm(formulario, 'resultadoConsulta');
+
+	}
+	
+	
+	
+	
+	//-->
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''), '', true); ?>" title="Ir para Página Inicial">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'comunicados', 'action' => 'index'), '', true); ?>" title="Ir para Página Comunicados">Comunicados</a></li>
+		<li class="last">Consultar</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>
+		Consultar
+		<span class="voltar"><a href="javascript:voltar();" title="Página Anterior">Voltar</a></span>
+	</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+	<form name="form" id="form" action="<?php echo $this->url(array('controller' => 'comunicados', 'action' => 'listar-comunicados')); ?>" method="POST">
+		<table class="tabela">
+			<tr>
+				<th align="left" width="200"><label>Período de vigência</label></th>
+				<td align="left">
+					<input type="text" name="periodo1" id="periodo1" maxlength="10" value="<?php echo $this->periodo1; ?>" class="input_simples btn_calendario" /> 
+					<label for="periodo2"> à </label> 
+					<input type="text" name="periodo2" id="periodo2" maxlength="10" value="<?php echo $this->periodo2; ?>" class="input_simples btn_calendario" />
+				</td>
+			</tr>
+			<tr>
+				<th align="left"><label>Situação</label></th>
+				<td align="left">
+					<label for="stEstado0">Desativado</label>&nbsp;
+					<input type="radio" name="stEstado" id="stEstado0" value="0" class="input_simples"  <?php if($this->situacao == '0'){echo 'checked="checked"';} ?> />
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<label for="stEstado1">Ativado</label>&nbsp;
+					<input type="radio" name="stEstado" id="stEstado1" value="1" class="input_simples" <?php if($this->situacao == '1'){echo 'checked="checked"';} ?> />
+				</td>
+			</tr>
+			<tr>
+				<th align="left"><label>Opção</label></th>
+				<td align="left">
+					<label for="stOpcao0">SALIC</label>&nbsp;
+					<input type="radio" name="stOpcao" id="stOpcao0" value="0" class="input_simples"  <?php if($this->stOpcao == '0'){echo 'checked="checked"';} ?> />
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<label for="stOpcao1">Proposta</label>&nbsp;
+					<input type="radio" name="stOpcao" id="stOpcao1" value="1" class="input_simples" <?php if($this->stOpcao == '1'){echo 'checked="checked"';} ?> />
+				</td>
+			</tr>
+			<tr>	
+				<td class="centro" colspan="2">
+					<input type="button" value=" " title="Localizar" class="btn_localizar" onclick="return localizar();" />
+					<input type="reset" value=" " title="Localizar" class="btn_limpar" />
+				</td>
+			</tr>
+		</table>
+	</form>
+	
+	<br />
+	
+	<div id="resultadoConsulta"></div>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

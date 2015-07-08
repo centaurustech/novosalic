@@ -1,0 +1,540 @@
+<?php $projeto = $this->projeto[0]; ?>
+<script>
+    var modalCadastroAberta = false;
+    function cadastrarAgente()
+    {
+        if (!modalCadastroAberta) {
+            var cpf = $("#cpf").val();
+            cpf = cpf.replace(".", "");
+            cpf = cpf.replace(".", "");
+            cpf = cpf.replace(".", "");
+            cpf = cpf.replace("-", "");
+            cpf = cpf.replace("/", "");
+
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo $this->url(array('controller' => 'agentes', 'action' => 'incluiragente')); ?>',
+                data: {
+                    modal: 'true',
+                    modulo: 'movimentacaobancaria',
+                    cpf: cpf
+                },
+                success: function(data) {
+                    $("#divDinamicaAgentes").html(data);
+                },
+                error: function()
+                {
+                    recebe.html("Falha na recupera&ccedil;&atilde;o dos dados!");
+                }
+            });
+
+            modalCadastroAberta = true;
+            $('#divDinamicaAgentes').dialog("destroy");
+            $("#divDinamicaAgentes").dialog('open');
+            $("#divDinamicaAgentes").dialog
+                    ({
+                        height: 600,
+                        width: 1150,
+                        modal: true,
+                        draggable: false,
+                        resizable: false,
+                        closeOnEscape: false,
+                        buttons: {
+                            'Ok': function()
+                            {
+                                $(this).dialog('close');
+                                modalCadastroAberta = false;
+                                TirarMarcara($("#cpf").val());
+                            }
+                        }
+                    });
+            $(".ui-dialog-titlebar-close").remove();
+
+        }
+    }
+    $(document).ready(function() {
+    	$("#valor").maskMoney({showSymbol: true, symbol: "R$", decimal: ",", thousands: "."});
+        $('#btn_salvar').click(function() {
+            var valida = true;
+
+            if (valida) {
+                if ($("#cpf").val() == '')
+                {
+                    recebe = $('#cpfERROR');
+                    recebe.html('');
+                    $("#msgCpf").html('<font color="red"><b>Informe o CNPJ/CPF do Incentivador!</b></font>');
+                    valida = false;
+                    return false;
+                } else {
+                    $("#msgCpf").html('');
+                }
+
+                if ($("#dt_recibo").val() == '')
+                {
+                    $("#msgRecibo").html('<font color="red"><b>Informe a data do Recibo!</b></font>');
+                    valida = false;
+                } else {
+                    if (!validarData($("#dt_recibo").val())) {
+                        $("#msgRecibo").html('<font color="red"><b>Data Inv&aacute;lida!</b></font>');
+                        valida = false;
+                    } else {
+                        $("#msgRecibo").html('');
+                    }
+                }
+
+                if ($("#dt_minc").val() == '')
+                {
+                    $("#msgMinc").html('<font color="red"><b>Informe a data de chegada no Minc!</b></font>');
+                    valida = false;
+                } else {
+                    if (!validarData($("#dt_minc").val())) {
+                        $("#msgMinc").html('<font color="red"><b>Data Inv&aacute;lida!</b></font>');
+                        valida = false;
+                    } else {
+                        $("#msgMinc").html('');
+                    }
+                }
+
+                if ($("#tpApoio").val() == '')
+                {
+                    $("#msgApoio").html('<font color="red"><b>Informe o tipo de Apoio!</b></font>');
+                    valida = false;
+                } else {
+                    $("#msgApoio").html('');
+                }
+
+                if ($("#valor").val() == '')
+                {
+                    $("#msgValor").html('<font color="red"><b>Informe o valor do Incentivo!</b></font>');
+                    valida = false;
+                }
+            }
+
+            if (valida) {
+                var vlCaptar = $.trim($("#aCaptar").val().replace('.', ''));
+                vlCaptar = vlCaptar.replace(',', '.');
+                vlCaptar = vlCaptar.replace("R$", "");
+                vlCaptar = parseInt(vlCaptar);
+
+                cpf = $("#cpf").val();
+                cpf = cpf.replace(".", "");
+                cpf = cpf.replace(".", "");
+                cpf = cpf.replace(".", "");
+                cpf = cpf.replace("-", "");
+                cpf = cpf.replace("/", "");
+                $("#cpf").val(cpf);
+
+                var valor = $("#valor").val();
+                valor = parseInt(valor);
+
+                if (valor > vlCaptar) {
+                    $('#alerta').dialog("destroy");
+                    $("#alerta").html('Valor maior que o valor dispon&iacute;vel para Captar!');
+                    $("#alerta").dialog('open');
+                    $("#alerta").dialog
+                            ({
+                                height: 180,
+                                width: 350,
+                                modal: true,
+                                draggable: false,
+                                resizable: false,
+                                closeOnEscape: false,
+                                buttons: {
+                                    'Ok': function()
+                                    {
+                                        $(this).dialog('close');
+                                    }
+                                }
+                            });
+                    $(".ui-dialog-titlebar-close").remove()
+                } else {
+                    $('#formulario').submit();
+                }
+
+            }
+
+        });
+
+        $("#incluir").css("display", "none");
+        $(".input").attr("readonly", readonly);
+        $(".input", this).attr("disabled", disabled);
+
+    });
+
+    function TirarMarcara(cpf) {
+        cpf2 = cpf.replace(".", "");
+        cpf2 = cpf2.replace(".", "");
+        cpf2 = cpf2.replace(".", "");
+        cpf2 = cpf2.replace("-", "");
+        cpf2 = cpf2.replace("/", "");
+
+        //VALIDA CPF
+        cpf = cpf2;
+        recebe = $('#cpfERROR');
+        var numeros, digitos, soma, i, resultado, digitos_iguais;
+        var cpfValido = true;
+        digitos_iguais = 1;
+        if (cpf.length == 0) {
+            cpfValido = false;
+        }
+        if (cpf.length < 11) {
+            cpfValido = false;
+        }
+        for (i = 0; i < cpf.length - 1; i++)
+            if (cpf.charAt(i) != cpf.charAt(i + 1))
+            {
+                digitos_iguais = 0;
+                break;
+            }
+        if (!digitos_iguais)
+        {
+            numeros = cpf.substring(0, 9);
+            digitos = cpf.substring(9);
+            soma = 0;
+            for (i = 10; i > 1; i--)
+                soma += numeros.charAt(10 - i) * i;
+            resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+            if (resultado != digitos.charAt(0)) {
+                cpfValido = false;
+            }
+            numeros = cpf.substring(0, 10);
+            soma = 0;
+            for (i = 11; i > 1; i--)
+                soma += numeros.charAt(11 - i) * i;
+            resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+            if (resultado != digitos.charAt(1)) {
+                cpfValido = false;
+            } else {
+                cpfValido = true;
+            }
+        }
+        else {
+            cpfValido = false;
+        }
+
+        //VALIDA CNPJ
+        if (!cpfValido) {
+            cnpj = $("#cpf").val();
+            cnpj = cnpj.replace(".", "");
+            cnpj = cnpj.replace(".", "");
+            cnpj = cnpj.replace(".", "");
+            cnpj = cnpj.replace("-", "");
+            cnpj = cnpj.replace("/", "");
+            var numeros, digitos, soma, i, resultado, pos, tamanho, digitos_iguais,
+                    digitos_iguais = 1;
+            var cnpjValido = true;
+            if (cnpj.length != 14)
+            {
+                cnpjValido = false;
+            }
+
+            for (i = 0; i < cnpj.length - 1; i++)
+                if (cnpj.charAt(i) != cnpj.charAt(i + 1))
+                {
+                    digitos_iguais = 0;
+                    break;
+                }
+            if (!digitos_iguais)
+            {
+                tamanho = cnpj.length - 2
+                numeros = cnpj.substring(0, tamanho);
+                digitos = cnpj.substring(tamanho);
+                soma = 0;
+                pos = tamanho - 7;
+                for (i = tamanho; i >= 1; i--)
+                {
+                    soma += numeros.charAt(tamanho - i) * pos--;
+                    if (pos < 2)
+                        pos = 9;
+                }
+                resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+                if (resultado != digitos.charAt(0))
+                {
+                    cnpjValido = false;
+                }
+
+                tamanho = tamanho + 1;
+                numeros = cnpj.substring(0, tamanho);
+                soma = 0;
+                pos = tamanho - 7;
+                for (i = tamanho; i >= 1; i--)
+                {
+                    soma += numeros.charAt(tamanho - i) * pos--;
+                    if (pos < 2)
+                        pos = 9;
+                }
+                resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+                if (resultado != digitos.charAt(1)) {
+                    cnpjValido = false;
+                }
+                else {
+                    cnpjValido = true;
+                }
+            }
+            else {
+                cnpjValido = false;
+            }
+        }
+        if ((!cpfValido) && (!cnpjValido)) {
+            $("#msgCpf").html('');
+            recebe.html('<b>CPF/CNPJ Inválido.</b>');
+            recebe.css("color", "red");
+            return false;
+        }
+        
+        if (((cpfValido) || (cnpjValido)) && !modalCadastroAberta) {
+            var url = "<?php echo $this->url(array('controller' => 'captacao', 'action' => 'localizar-interessado')); ?>?cpf=" + cpf2;
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                dataType: 'json',
+                data: {
+                    //idProduto: id
+                },
+                success: function(data) {
+                    recebe = $('#cpfERROR');
+                    if (data.resposta == "true") {
+                        for (i in data.conteudo)
+                        {
+                            $("#msgCpf").html('');
+                            recebe.html('<b>' + data.conteudo.Nome + '</b>');
+                            recebe.css("color", "black");
+                            $(".input").attr("readonly", false);
+                            $(".input").attr("disabled", false);
+                            $("#incluirBotao").css("display", "none");
+                        }
+                        $(function()
+                        {
+                            $.datepicker.regional['pt-BR'] = {
+                                closeText: 'Fechar',
+                                prevText: '&#x3c;Anterior',
+                                nextText: 'Pr&oacute;ximo&#x3e;',
+                                currentText: 'Hoje',
+                                monthNames: ['Janeiro', 'Fevereiro', 'Mar&ccedil;o', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                                monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                                dayNames: ['Domingo', 'Segunda-feira', 'Ter&ccedil;a-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sabado'],
+                                dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
+                                dayNamesMin: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
+                                weekHeader: 'Sm',
+                                dateFormat: 'dd/mm/yy',
+                                firstDay: 0,
+                                isRTL: false,
+                                showMonthAfterYear: false,
+                                yearSuffix: ''};
+                            $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+                            $("#dt_recibo").datepicker($.datepicker.regional['pt-BR']);
+                            $("#dt_minc").datepicker($.datepicker.regional['pt-BR']);
+                        });
+                    } else {
+                        $("#msgCpf").html('');
+                        recebe.html('<b>Interessado n&atilde;o cadastrado!</b>');
+                        recebe.css("color", "red");
+                        $(".input").attr("readonly", true);
+                        $(".input").attr("disabled", true);
+
+                        var cpf = $("#cpf").val();
+                        cpf = cpf.replace(".", "");
+                        cpf = cpf.replace(".", "");
+                        cpf = cpf.replace(".", "");
+                        cpf = cpf.replace("-", "");
+                        cpf = cpf.replace("/", "");
+
+                        $("#confirm").dialog("destroy");
+                        $("#confirm").dialog
+                                ({
+                                    width: 360,
+                                    height: 180,
+                                    EscClose: false,
+                                    modal: true,
+                                    buttons:
+                                            {
+                                                'Não': function()
+                                                {
+                                                    $(this).dialog('close'); // fecha a modal
+                                                },
+                                                'Sim': function()
+                                                {
+                                                    $(this).dialog('close');
+                                                    cadastrarAgente();
+                                                }
+                                            }
+                                });
+
+                        $("#confirm").dialog('open');
+
+                        $("#cpf").val();
+                    }
+                },
+                error: function(data)
+                {
+                    alert(data);
+                    recebe.html("Falha na recupera&ccedil;&atilde;o dos dados1!");
+                }
+            });
+        }
+
+    }
+
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'), '', true); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'liberarcontabancaria', 'action' => 'index'), '', true); ?>" title="Ir para In&iacute;cio">Movimenta&ccedil;&atilde;o banc&aacute;ria</a></li>
+        <li class="last">Registrar Capta&ccedil;&atilde;o</li>
+    </ul>
+</div>
+<!-- ========== FIM BRADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Registrar Capta&ccedil;&atilde;o <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="divDinamicaAgentes"></div>
+<div id="alerta"></div>
+<div id="confirm" title="Confirma&ccedil;&atilde;o" style="display: none">Interessado não cadastrado. <br>Deseja cadastrá-lo?</div>
+<div id="conteudo">
+    <fieldset><legend>Dados do Projeto</legend>
+        <table class="tabela">
+            <tr>
+                <th class="centro" width="10%"><label>PRONAC</label></th>
+                <th class="centro" width="90%" colspan="5">Nome do Projeto</th>
+            </tr>
+            <tr>
+                <td class="centro"><?php echo $projeto->pronac; ?></td>
+                <td class="centro" colspan="5"><?php echo $projeto->NomeProjeto; ?></td>
+            </tr>
+            <tr>
+                <th class="centro" width="10%">UF</th>
+                <th class="centro" width="10%">&Aacute;rea</th>
+                <th class="centro" width="10%">Segmento</th>
+                <th class="centro" width="10%">Mecanismo</th>
+                <th class="centro" width="30%">Processo</th>
+                <th class="centro" width="30%">CNPJ/CPF</th>
+            </tr>
+            <tr>
+                <td class="centro"><?php echo $projeto->UfProjeto; ?></td>
+                <td class="centro"><?php echo $projeto->Area; ?></td>
+                <td class="centro"><?php echo $projeto->Segmento; ?></td>
+                <td class="centro"><?php echo $projeto->Mecanismo; ?></td>
+                <td class="centro"><?php echo Mascara::addMaskProcesso($projeto->Processo); ?></td>
+                <td class="centro"><?php echo Validacao::mascaraCPFCNPJ($projeto->CgcCpf); ?></td>
+            </tr>
+
+        </table>
+    </fieldset>
+    <fieldset><legend>Dados da Capta&ccedil;&atilde;o</legend>
+        <form name="formulario" id="formulario" action="<?php echo $this->url(array('controller' => 'captacao', 'action' => 'realizar-captacao')); ?>" method="post">
+            <input type="hidden" name="anoProjeto" id="anoProjeto" value="<?php echo $projeto->AnoProjeto; ?>"/>
+            <input type="hidden" name="sequencial" id="sequencial" value="<?php echo $projeto->Sequencial; ?>"/>
+            <input type="hidden" name="logon" id="logon" value="<?php echo $this->usuario->usu_codigo; ?>"/>
+            <input type="hidden" name="calendario" id="calendario" value=""/>
+            <table class="tabela">
+                <tr>
+                    <td colspan="0" align="center" width="10%"><label>CNPJ/CPF:</label></td>
+                    <td colspan="0" width="20%">
+                        <input type="text" name="cpf" id="cpf" value="" size="20" maxlength="18" class="input_simples required" onblur="TirarMarcara(this.value);" onkeydown="mascaraCnpjCpf(this);" onkeypress="mascaraCnpjCpf(this);" onkeyup="mascaraCnpjCpf(this);" onmouseout="mascaraCnpjCpf(this);"/>
+                        <div id="msgCpf"></div>
+                    </td> 
+                    <td>
+                        <div id="cpfERROR" align="left" style="float:right margin-right: 10px;"></div>
+                    </td> 
+                </tr>
+                <tr>
+                    <td colspan="0" align="center" width="10%"><label for="isBemServico">BEM / SERVIÇO</label></td>
+                    <td colspan="0" width="20%">
+                       	<input type="checkbox" name="isBemServico" id="isBemServico" value="1" class="input_simples" />
+                    </td> 
+                    <td>
+                        <div id="tipoCaptacaoERROR" align="left" style="float:right margin-right: 10px;"></div>
+                    </td> 
+                </tr>
+            </table>
+            <fieldset style="float: left; width: 25%"><legend>Datas</legend>
+                <table class="tabela">
+                    <tr>
+                        <td colspan="0" align="center" width="20%"><label>DATA DO RECIBO:</label></td>
+                        <td colspan="0">
+                            <input name='dt_recibo' id='dt_recibo' readonly="readonly" maxlength="10" type='text' class='input_simples w200 focus input required' onkeyup="mascara(this, format_data);"/>
+                            <div id="msgRecibo"></div>
+                        </td>
+                    </tr>   
+                    <tr>
+                        <td colspan="0" align="center" width="20%"><label>CHEGADA AO MINC:</label></td>
+                        <td colspan="0">
+                            <input name='dt_minc' id='dt_minc' readonly="readonly" maxlength="10" type='text' class='input_simples w200 focus input required' onkeyup="mascara(this, format_data);"/>
+                            <div id="msgMinc"></div>
+                        </td>
+                    </tr>   
+                </table> 
+            </fieldset>  
+            <fieldset style="float: left; width: 30%"><legend>Apoio/Incentivo</legend>
+                <table class="tabela">       
+                    <tr>
+                        <td colspan="0" align="center" width="20%"><label>TIPO DE APOIO:</label></td>
+                        <td colspan="0">
+                            <select name='tpApoio' id='tpApoio' class='select_simples focus w200 required'>
+                                <option value='' selected="selected">--Selecione--</option>
+                                <option value='1'>DOA&Ccedil;&Atilde;O</option>
+                                <option value='2'>PATROC&Iacute;NIO</option>
+                            </select>
+                            <div id="msgApoio"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="0" align="center" width="20%"><label>VALOR:</label></td>
+                        <td colspan="0">
+                            <input name="valor" id="valor" readonly="readonly" type='text' class='input_simples w200 valor input required'/>
+                            <div id="msgValor"></div>
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+            <fieldset style="float: left; width: 30%"><legend>Saldo do Projeto</legend>
+                <table class="tabela">
+                    <tr>
+                        <td align="center" width="20%"><label>APROVADO:</label></td>
+                        <td colspan="0">
+                            <input name='aprovado' id='aprovado' disabled = "disabled" readonly="readonly"  type='text' class='input_simples w200 focus' value="<?php echo $this->formatarReal($projeto->AprovadoReal); ?>"/>
+                        </td>
+                    </tr>
+                    <?php
+                    $busca = new CaptacaoDAO();
+                    $captado = $busca->buscarCaptacao($projeto->pronac);
+                    $aCaptar = $projeto->AprovadoReal - $captado[0]->captado;
+                    ?>
+                    <tr>
+                        <td align="center" width="20%"><label>CAPTADO:</label></td>
+                        <td colspan="0">
+                            <input name='captado' disabled = "disabled" readonly="readonly"  value="<?php echo $this->formatarReal($captado[0]->captado); ?>" type='text' class='input_simples w200 focus'/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" width="20%"><label>A CAPTAR:</label></td>
+                        <td colspan="0">
+                            <input name='aCaptar' id='aCaptar' disabled = "disabled" readonly="readonly" value="<?php echo $this->formatarReal($aCaptar); ?>" type='text' class='input_simples w200 focus'/>
+                        </td>
+                    </tr>               
+                </table>
+            </fieldset>
+            <table class="tabela" border="0" cellpadding="0" cellspacing="1" style="margin-top: 10px;">
+                <tr>
+                    <td colspan="0" class="centro">
+                        <input class="btn_salvar" id="btn_salvar" name="btn_salvar" value="" type="button"/>
+                        <input class="btn_cancelar" id="btn_cancelar" value="" type="button" onclick="javascript:voltar();"/>
+                    </td>
+                </tr>
+            </table>
+        </form>     
+    </fieldset>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

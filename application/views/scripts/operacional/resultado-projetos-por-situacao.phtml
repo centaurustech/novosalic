@@ -1,0 +1,14 @@
+<table class="tabela" style="width: 100%">
+    <tbody>
+        <tr>
+            <th valign="middle" align="center" bgcolor="#abda5d">PRONAC</th>
+            <th valign="middle" align="center" bgcolor="#abda5d">Nome do Projeto</th>
+        </tr>
+        <?php foreach($this->dados as $dado): ?>
+        <tr>
+            <td valign="middle" align="left"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')); ?>?idPronac=<?php echo $dado->IdPRONAC; ?>"><?php echo $dado->AnoProjeto.$dado->Sequencial?></a></td>
+            <td valign="middle" align="left"><?php echo $dado->NomeProjeto?></td>
+        </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>

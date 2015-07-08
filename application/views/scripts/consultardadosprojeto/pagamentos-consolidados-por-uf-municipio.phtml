@@ -1,0 +1,58 @@
+<?php header('Content-Type: text/plain; charset=ISO-8859-1'); ?>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        //ATUALIZA TITULO DA PAGINA
+        window.parent.$("#titulo").html("<div>Pagamentos Consolidados por UF / Munic&iacute;pio</div>");
+        window.parent.$("#caminhoLocalAtual").html("Pagamentos Consolidados por UF / Munic&iacute;pio");
+    });
+</script>
+
+<table class="tabela">
+    <tr class="destacar">
+        <td align="center"><b>PRONAC</b></td>
+        <td align="center"><b>Nome do Projeto</b></td>
+    </tr>
+    <tr class="linha">
+        <td align="center"><?php echo $this->DadosProjeto->pronac; ?></td>
+        <td align="center"><?php echo $this->DadosProjeto->nomeProjeto; ?></td>
+    </tr>
+</table>
+
+<table class="tabela">
+    <?php
+        $x=1;
+        $vlTotal=0;
+    if(count($this->pagamentos) > 0) { ?>
+    <tr class="centro">
+        <td width="1px" class="destacar bold">Seq.</td>
+        <td class="destacar bold">UF Fornecedor</td>
+        <td class="destacar bold">Munic&iacute;pio Fornecedor</td>
+        <td class="destacar bold">Vl. Pagamento</td>
+    </tr>
+    <?php foreach ($this->pagamentos as $p) { ?>
+    <tr>
+        <td><?php echo $x; ?></td>
+        <td><?php echo $p->UFFornecedor; ?></td>
+        <td><?php echo $p->MunicipioFornecedor; ?></td>
+        <td align="right"><?php echo number_format($p->vlPagamento, 2, ",", "."); ?></td>
+    </tr>
+    <?php 
+        $x++;
+        $UFFornecedor = $p->UFFornecedor;
+        $MunicipioFornecedor = $p->MunicipioFornecedor;
+        $vlTotal=$vlTotal+$p->vlPagamento; } ?>
+    <?php } else { ?>
+    <tr>
+        <td align="center">Nenhum relatório cadastrado.</td>
+    </tr>
+    <?php } ?>
+</table>
+<br clear="all" />
+
+<table class="tabela">
+    <tr>
+        <td align="right" style="font-size: 16px; color: #333; font-weight: bold;">Total dos Pagamentos</td>
+        <td align="right" width="140px" style="font-size: 14px; color: #333; font-weight: bold;" nowrap id="vlTotal"><?php echo number_format($vlTotal, 2, ",", "."); ?></td>
+    </tr>
+</table>

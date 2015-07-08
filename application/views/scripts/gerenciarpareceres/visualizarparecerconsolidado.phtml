@@ -1,0 +1,87 @@
+<?php if($this->dados):?>
+
+<?php foreach($this->dados as $pc): ?>
+<table class="tabela">
+	<tr>
+		<th align="center" colspan="6">Identifica&ccedil;&atilde;o</th>
+	</tr>	
+	<tr>
+		<td align="left" colspan="3"><b>PRONAC	 	</b><br /><?php echo $pc->PRONAC?>				</td>
+		<td align="left" colspan="3"><b>Nome do Projeto </b><br /><?php echo utf8_decode(htmlentities($pc->NomeProjeto));?>			</td>
+	</tr>	
+	<tr>	
+		<td align="left"><b>Enquadramento               </b><br /><b style="color:red;"><?php echo $pc->Enquadramento?></b></td>
+                <td align="left"><b>Tipo do Parecer		</b><br /><?php echo utf8_decode(htmlentities($pc->TipoParecer));?></td>
+                <td align="left"><b>Parecer Favor&aacute;vel?	</b><br /><?php echo utf8_decode(htmlentities($pc->ParecerFavoravel));?></td>
+		<td align="left"><b>Dt.Parecer	 		</b><br /><?php echo $pc->DtConsolidacao?></td>
+		<td align="right" colspan="2"><b>Sugerido Real	</b><br /><?php echo $this->formatarReal($pc->SugeridoReal); ?></td>		
+	</tr>	
+	<tr>	
+		<th align="right">Valor Solicitado (A)								</th>
+		<td align="right" colspan="5" style="color:green;"><?php echo $this->formatarReal($pc->ValorSolicitado); ?></td>
+	</tr>
+	<tr>
+		<th align="right">Valor de Outras Fontes (B)						</th>
+		<td align="right" colspan="5" style="color:red;"><?php echo $this->formatarReal($pc->OutrasFontes); ?></td>
+	</tr>
+	<tr>
+		<th align="right">Valor do Projeto (C = A + B)						</th>
+		<td align="right" colspan="5" style="color:blue;"><?php echo $this->formatarReal($pc->ValorProposta); ?></td>
+	</tr>
+	<tr>
+		<th align="right">Valor do Parecer T&eacute;cnico (D)						</th>
+		<td align="right" colspan="5"><?php echo $this->formatarReal($pc->ValorParecer); ?>		</td>
+	</tr>
+	<tr>
+		<th align="right">Valor de Elabora&ccedil;&atilde;o e Agenciamento (E)			</th>
+		<td align="right" colspan="5"><?php echo $this->formatarReal($pc->Elaboracao); ?>		</td>
+	</tr>
+	<tr>
+		<th align="right">Valor Sugerido para Aprova&ccedil;&atilde;o (F = D + E)			</th>
+		<td align="right" colspan="5" style="color:black;"><b><?php echo $this->formatarReal($pc->ValorSugerido); ?></b></td>
+	</tr>
+
+
+<?php if($this->dados2):?>
+
+	<tr>
+		<td colspan="6" align="center"><b>Outras Informa&ccedil;&otilde;es</b></td>
+	</tr>
+	<tr>
+		<th align="left">Produto		</th>
+		<th align="left">Enquadramento na Lei 8313/91	</th>
+		<th align="left">Inciso I		</th>
+		<th align="left">Inciso II		</th>
+		<th align="left">Inciso III		</th>
+		<th align="left">Inciso IV		</th>
+	</tr>
+	<?php foreach($this->dados2 as $pc2): ?>
+	<tr>
+		<td><?php echo utf8_decode(htmlentities($pc2->Produto)); ?>			</td>
+		<td><?php echo utf8_decode(htmlentities($pc2->Enquadramento)); ?>		</td>
+		<td><?php echo utf8_decode(htmlentities($pc2->IncisoArtigo27_I)); ?>	</td>
+		<td><?php echo utf8_decode(htmlentities($pc2->IncisoArtigo27_II)); ?>	</td>
+		<td><?php echo utf8_decode(htmlentities($pc2->IncisoArtigo27_III)); ?>	</td>
+		<td><?php echo utf8_decode(htmlentities($pc2->IncisoArtigo27_IV)); ?>	</td>
+	</tr>
+	<?php endforeach; ?>
+
+<?php endif; ?>
+
+	<tr>
+		<th colspan="6">An&aacute;lise de Conte&uacute;do</th>
+	</tr>
+	<tr>
+		<td colspan="6"><?php echo utf8_decode(htmlentities($pc->ResumoParecer)); ?></td>
+	</tr>
+</table>
+
+<?php endforeach; ?>
+
+<?php else:?>
+	<table class="tabela">
+		<tr>
+			<td align="center" style="color: red; font:sans-serif 13px bold;">Nenhum Registro encontrado</td>
+		</tr>
+	</table>	
+<?php endif;?>	

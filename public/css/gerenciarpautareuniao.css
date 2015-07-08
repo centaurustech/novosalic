@@ -1,0 +1,46 @@
+/* 
+    Document   : gerenciarpautareuniao
+    Created on : 20/07/2010, 16:51:57
+    Author     : 01129075125
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+
+
+/* 
+   TODO customize this sample style
+   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+
+    #menuGerenciar {
+        list-style:none;
+        margin:0px auto 0 auto;
+        padding:0;
+        width:121px;
+        height:32px;
+        border:1px solid #ccc;
+    }
+    #menuGerenciar li {
+        margin:1px;
+        float:left;
+    }
+    #menuGerenciar li a {
+        display:block;
+        text-decoration:none;
+        text-align:center;
+        width:120px;
+        height:25px;
+        padding-top:5px;
+        background:#e8e8e8;
+        color:#000;
+    }
+    #menuGerenciar li a:hover {
+        display:block;
+        text-decoration:none;
+        width:120px;
+        background:#A8CA65;
+        color:#fff;
+    }
+
+

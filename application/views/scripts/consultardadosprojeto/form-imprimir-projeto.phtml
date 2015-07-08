@@ -1,0 +1,140 @@
+<?php header('Content-Type: text/plain; charset=ISO-8859-1');
+$GrupoAtivo = new Zend_Session_Namespace('GrupoAtivo'); // cria a sessão com o grupo ativo
+$this->idPerfil = $GrupoAtivo->codGrupo;
+?>
+
+<script type="text/javascript">
+    function JSCountChecked(){
+        var limite = 7;
+        var n = $("input:checked").not('.checksDiligencia').length;
+        if(n == limite){
+            $('input[type=checkbox]').not(':checked, .checksDiligencia').each(function(){
+                $(this).attr("disabled","true");
+            });
+        } else {
+            $('input[type=checkbox]').not(':checked, .checksDiligencia').each(function(){
+                $(this).removeAttr("disabled");
+            });
+        }
+    }
+    JSCountChecked();
+    $(":checkbox").click(JSCountChecked);
+
+    $(document).ready(function(){
+        $('#checkDiligencia').change(function(){
+            if( $(this).attr("checked") ){
+                $('#opcoesDiligencias').removeClass('sumir');
+                $('#diligenciasProposta').attr('checked', 'checked');
+                $('#diligenciasProjeto').attr('checked', 'checked');
+            } else {
+                $('#opcoesDiligencias').addClass('sumir');
+            }
+        });
+
+        $('.checksDiligencia').change(function(){
+            var x = 0;
+            $('.checksDiligencia').each(function(){
+                if($(this).attr("checked")){
+                    x++;
+                }
+            });
+            if(x == 0){
+                $('#checkDiligencia').attr("checked", false);
+                $('#checkDiligencia').change();
+                $('#opcoesDiligencias').addClass('sumir');
+                $('input[type=checkbox]').not(':checked, .checksDiligencia').each(function(){
+                    $(this).removeAttr("disabled");
+                });
+            }
+        });
+    });
+</script>
+
+<style type="text/css">
+    .label-font {
+        font-weight: normal;
+    }
+</style>
+
+<form method="POST" target="_blank" name="frmOpcoesImpressao" id="frmOpcoesImpressao" action="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'imprimir-projeto')); ?>">
+    <input type="hidden" name="idPronac" id="idPronac" value="<?php echo $this->idPronac;?>">
+    <span id="msgErroImpressao"></span>
+<table class="tabela">
+    <tr>
+        <th colspan="2">Marque as informações que deseja imprimir.<span style="text-transform: lowercase; font-size: 8pt; font-weight: normal;"><br>(s&oacute; &eacute; permitido imprimir 7 (sete) informa&ccedil;&otilde;es por vez)</span><br></th>
+    </tr>
+    <tr>
+        <td width="50%"><label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="resumo" align="middle"> Resumo (informações básicas)</label></td>
+        <td width="50%"><label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="dadoscomplementares"> Dados complementares</label></td>
+    </tr>
+    <tr>
+        <td><label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="localrealizacao_deslocamento"> Local de realiza&ccedil;&atilde;o / Deslocamento</label></td>
+        <td><label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="planodivulgacao"> Plano de Divulga&ccedil;&atilde;o</label></td>
+    </tr>
+    <tr>
+        <td><label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="planodistribuicao"> Plano de Distribui&ccedil;&atilde;o</label></td>
+        <td><label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="regularidadeproponente"> Regularidade Proponente</label></td>
+    </tr>
+    <tr>
+        <td><label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="documentosanexados"> Documentos anexados</label></td>
+        <td><label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="diligencias" id="checkDiligencia"> Dilig&ecirc;ncias</label>
+            <span style="float: right;" id="opcoesDiligencias" class="sumir">
+                <label class="label-font"><input type="checkbox" class="checksDiligencia" name="diligenciasProposta" id="diligenciasProposta" value="diligenciasProposta" checked="checked"> Proposta</label>
+                <label class="label-font"><input type="checkbox" class="checksDiligencia" name="diligenciasProjeto" id="diligenciasProjeto" value="diligenciasProjeto" checked="checked"> Projeto</label>
+            </span>
+        </td>
+    </tr>
+    <tr>
+        <td><label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="tramitacao"> Tramita&ccedil;&atilde;o</label></td>
+        <td><label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="providenciatomada"> Provid&ecirc;ncia tomada</label></td>
+    </tr>
+    <tr>
+        <td><label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="certidoes"> Certid&otilde;es Negativas</label></td>
+        <td>
+            <?php if( ($this->idPerfil != 1111) || ($this->idPerfil == 1111 && !in_array($this->Situacao, array('B11','B14','C10','C20','C30'))) ){ ?>
+            <label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="planilhaorcamentaria"> Planilha or&ccedil;ament&aacute;ria</label>
+            <?php } ?>
+        </td>
+    </tr>
+    
+    <?php if( ($this->idPerfil != 1111) || ($this->idPerfil == 1111 && !in_array($this->Situacao, array('B11','B14','C10','C20','C30'))) ){ ?>
+    <tr>
+        <td><label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="parecer-consolidado"> Parecer Consolidado</label></td>
+        <td><!--<label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="regularidadeproponente"> - </label>--></td>
+    </tr>
+    <?php } ?>
+    
+    <?php if($this->idPerfil != 1111 && in_array($this->intFaseProjeto,array('2','3')) && $this->intFaseProjeto != '4'): ?>
+    <tr>
+        <td><label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="recursos"> Recursos</label></td>
+        <td><label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="aprovacao"> Aprova&ccedil;&atilde;o</label></td>
+    </tr>
+    <tr>
+        <td><label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="analiseprojeto"> Análise do projeto</label></td>
+        <td><label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="dadosbancarios"> Dados Bancários</label></td>
+    </tr>
+    <tr>
+        <td><label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="relatoriostrimestrais"> Relatórios trimestrais</label></td>
+        <td>&nbsp;</td>
+    </tr>
+    <?php endif; //fecha if fase 2 e 3?>
+    <?php if(in_array($this->intFaseProjeto,array('4'))): ?>
+    <tr>
+        <td><label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="recursos"> Recursos</label></td>
+        <td><label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="aprovacao"> Aprova&ccedil;&atilde;o</label></td>
+    </tr>
+    <tr>
+        <td><label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="analiseprojeto"> Análise do projeto</label></td>
+        <td><label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="dadosbancarios"> Dados Bancários</label></td>
+    </tr>
+    <tr>
+        <td><label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="relatoriostrimestrais"> Relatórios trimestrais</label></td>
+        <td><label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="relatoriofinal"> Relatório final</label></td>
+    </tr>
+    <tr>
+        <td><label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="dadosfiscalizacao"> Dados da Fiscalização</label></td>
+        <td><label class="label-font"><input type="checkbox" name="conteudoImpressao[]" value="pretacaocontas"> Prestação de contas</label></td>
+    </tr>
+    <?php endif; //fecha if fase 4 ?>
+</table>
+</form>

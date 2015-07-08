@@ -1,0 +1,203 @@
+<!-- ========== INÍCIO AJUSTE DO LAYOUT PARA ACOPLAR MENU LATERAL ========== -->
+<script type="text/javascript">
+<!--
+function layout_fluido()
+{
+	var janela         = $(window).width();
+	var fluidNavGlobal = janela - 245;
+	var fluidConteudo  = janela - 253;
+	var fluidTitulo    = janela - 252;
+	var fluidRodape    = janela - 19;
+	$("#navglobal").css("width", fluidNavGlobal);
+	$("#conteudo").css("width", fluidConteudo);
+	$("#titulo").css("width", fluidTitulo);
+	$("#rodapeConteudo").css("width", fluidConteudo);
+	$("#imagemRodape").css("width", fluidConteudo);
+	$("#rodape").css("width", fluidRodape);
+	$("#conteudo").css("min-height", $('#menuContexto').height()); // altura minima do conteudo
+	$("#rodapeConteudo").css("margin-left", "225px");
+} // fecha função layout_fluido()
+//-->
+</script>
+<!-- ========== FIM AJUSTE DO LAYOUT PARA ACOPLAR MENU LATERAL ========== -->
+<div style="float: left;"><br />
+<!--<iframe  style="width:200px; height:280px; margin: -8px 0px 0px 10px; overflow:hidden; background: #fff;" scrolling="no" frameborder="0" src="<?php echo $this->baseUrl(); ?>/checarregularidade?CgcCpf=<?php echo $this->resultConsulta['CgcCpf']; ?>"></iframe>-->
+    <div id="UC27" style="width:200px; height:280px; margin: 1.2em 0em 0em 2em; overflow:hidden; background: #fff;"></div>
+    <script>abrir_pag('<?php echo $this->url(array('controller' => 'checarregularidade', 'action' => 'index')); ?>?CgcCpf=<?php echo $this->resultConsulta['CgcCpf']; ?>', 'UC27');</script>
+</div>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->baseUrl(); ?>" title="Início">Início</a></li>
+        <li class="last">Acompanhamento</li>
+        <li class="last">Verificar Readequação de Projeto</li>
+    </ul>
+</div>
+<div id="mostra"></div>
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>READEQUAÇÃO: FICHA TÉCNICA
+        <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span>
+        <span style="vertical-align: middle;">
+            <?php
+            $status_itemPedido = array("AP", "IN");
+            if (in_array($this->dados->stAvaliacaoItemPedidoAlteracao, $status_itemPedido)) {
+            ?>
+            <select name="status" disabled="disabled" id="status" style="float: right; width: 12em" class="select_simples" onchange="stAnalise(<?php echo $this->stResult[0]->idAvaliacaoItemPedidoAlteracao; ?>,<?php echo $this->escape($this->idpedidoalteracao) ?>,this ,'solaltfictec')" >
+                <?php
+                if ($this->dados->stAvaliacaoItemPedidoAlteracao == "AG") {
+                    echo "<option value='0' selected='selected'>Aguardando Análise</option>
+                          <option value='1'>Em Análise</option>";
+                } else if ($this->dados->stAvaliacaoItemPedidoAlteracao == "EA") {
+                    echo "<option value='1' selected='selected'>Em Análise</option>
+                            <option value='2'>Aprovado</option>
+                            <option value='3'>Indeferido</option>";
+                } else if ($this->dados->stAvaliacaoItemPedidoAlteracao == "AP") {
+                    echo "<option value='2' selected='selected'>Aprovado</option>
+                            <option value='3'>Indeferido</option>";
+                } else if ($this->dados->stAvaliacaoItemPedidoAlteracao == "IN") {
+                    echo "<option value='2'>Aprovado</option>
+                            <option value='3' selected='selected'>Indeferido</option>";
+                }
+                ?>
+                <?php } ?>
+            </select></span>
+    </div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+<div id="conteudo">
+    <script type='text/javascript' src='<?php echo $this->baseUrl(); ?>/public/js/projetosGerenciar.js'></script>
+
+
+
+        <form name="formfinalizar" action="<?php echo $this->url(array('controller' => 'verificaralteracaotecnico', 'action' => 'finalizaprop')); ?>" method="post" >
+                <table class="tabela">
+                    <thead>
+                        <tr>
+                            <th align="center">Nº PRONAC:</th>
+                            <th align="center">Nome do Projeto:</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="linha">
+                            <td align="center"><?php echo $this->escape($this->resultConsulta['pronac']); ?></td>
+                            <td align="center"><?php echo $this->escape($this->resultConsulta['NomeProjeto']); ?></td>
+                        </tr>
+                    </tbody>
+                    <tr>
+                        <th align="center">CNPJ/CPF:</th>
+                        <th align="center">Proponente:</th>
+                    </tr>
+                    <tbody>
+                        <tr class="linha">
+
+                            <td align="center"><?php echo $this->escape(VerificaralteracaotecnicoController::VerificarCpfCnpj($this->resultConsulta['CgcCpf'])); ?></td>
+                            <td align="center"><?php echo $this->escape($this->resultConsulta['proponente']); ?></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            <table class="tabela">
+                <tr>
+                    <th colspan="2">
+                        Ficha Técnica Atual
+                    </th>
+                </tr>
+                <tr>
+                    <td colspan="2" class="destacar bold">FICHA TÉCNICA:</td>
+                </tr>
+                <tr>
+                    <td align="center" colspan="2">
+                        <textarea class="textarea_simples" style="width: 99%" readonly="readonly" cols="" rows="10"><?php echo strip_tags($this->fichaTecnica->FichaTecnica) ?></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="2">
+                       Solicitação de Alteração de Ficha Técnica
+                    </th>
+                </tr>
+                <tr class="titudados">
+                    <td colspan="2" class="destacar bold">NOVA FICHA TÉCNICA:</td>
+                </tr>
+                <tr>
+                    <td align="center" colspan="2">
+                        <textarea class="textarea_simples" style="width: 99%" readonly="readonly" cols="" rows="10"><?php echo strip_tags($this->resultAlteracaoFichaTecnica['dsFichaTecnica']) ?></textarea>
+                    </td>
+                </tr>
+                <tr class="titudados">
+                    <td colspan="2" class="destacar bold">JUSTIFICATIVA:</td>
+                </tr>
+                <tr>
+                    <td align="center" colspan="2">
+                        <textarea class="textarea_simples" style="width: 99%" readonly="readonly" cols="" rows="10"><?php echo strip_tags($this->resultAlteracaoFichaTecnica['dsJustificativa']); ?></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2"> Anexos:</td>
+                </tr>
+                <?php
+                if($this->resultArquivo){
+                    foreach ($this->resultArquivo as $arquivo){
+                ?>
+                <tr>
+                    <td style="width: 25%; padding-left: 5%; text-decoration: underline;" colspan="2"><a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id=<?php echo $arquivo->idArquivo; ?>"><?php echo $arquivo->nmarquivo ?></a></td>
+                </tr>
+                <?php } } else { echo '<tr><td><span style="color: red;">Não há arquivos anexados!</span></td></tr>'; } ?>
+
+                <?php if ($this->resultParecerTecnico) { ?>
+                <tr>
+                    <th colspan="2">
+                        Parecer do Técnico
+                    </th>
+                </tr>
+                <tr>
+                    <td colspan="2">Comentários:</td>
+                </tr>
+                <?php
+                $justificativa = "";
+                if ($this->resultParecerTecnico) {
+                    foreach ($this->resultParecerTecnico as $parecerTecnico) {
+                        $justificativa .= "<tr><td colspan=\"2\" >" . Data::tratarDataZend($parecerTecnico->dtparecertecnico, 'brasileiro') . " - " . $parecerTecnico->nometecnico . " <br /> " . $parecerTecnico->dsparecertecnico . "</td></tr>";
+                    }
+                }
+                echo $justificativa;
+                ?>
+                <?php } ?>
+            </table>
+            <br/>
+        </form>
+
+</div>
+
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+<!-- MODAL DILIGENCIAR -->
+<div style="display:none;" id="diligencia" title="Diligenciar" >
+    <form name="formdiligencia" id="formdiligencia" method="post" action="<?php echo $this->baseUrl(); ?>/verificaralteracaotecnico/solaltnomproj">
+        <table>
+            <tr>
+                <td>PRONAC</td>
+                <td>Nome do Projeto</td>
+            </tr>
+            <tr>
+                <td><?php echo $this->dados->IdPRONAC; ?></td>
+                <td><?php echo $this->resultConsulta['NomeProjeto']; ?></td>
+            </tr>
+        </table>
+        <br /><label for="solicitacao">Solicitação:</label><br />
+        <textarea name="solicitacao" id="solicitacao" rows="6" cols="50" style="width:100%;"></textarea>
+        <input type="hidden" name="IdPronac" value="<?php echo $this->dados->IdPRONAC; ?>" />
+        <p align="left" style="margin-top:1%;">
+            <input id="btn_enviar" type="submit" value="diligenciar" name="diligenciar" class="btn_enviar" />
+        </p>
+    </form>
+</div>
+<!-- FIM DO MODAL DILIGENCIAR -->
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

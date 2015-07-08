@@ -1,0 +1,71 @@
+<?php header('Content-Type: text/plain; charset=ISO-8859-1'); ?> 
+<?php if($this->dadoscount > 0):?>
+<table class="tabela">
+	<tr>
+	    <td colspan="4" class="titulo_tabela"><?php echo $this->dadoscount; ?> RESPONSÁVEIS ENCONTRADOS</td>
+	</tr>
+	<tr>
+	    <th width="300">Nome</th>
+	    <th>CPF</th>
+	    <th>Status</th>
+	    <th width="200"></th>
+	</tr>
+	<?php 
+	foreach ($this->dados as $d):
+	
+	$status = 'Não vinculado';
+	
+	if($d->idAgenteProponente == $this->idAgenteProponente)
+	{
+		
+		if($d->siVinculo == null)
+		{
+			$status = 'Não vinculado';
+		}
+		elseif($d->siVinculo == 0)
+		{
+			$status = 'Solicitado';
+		}
+		elseif($d->siVinculo == 1)
+		{
+			$status = 'Vinculo Rejeitado';
+		}
+		elseif($d->siVinculo == 2)
+		{
+			$status = 'Vinculado';
+		}
+		elseif($d->siVinculo == 3)
+		{
+			$status = 'Desvinculado';
+		}
+		
+	}
+	
+	//if(($d->idAgenteProponente == null) || ($d->idAgenteProponente == $this->idAgenteProponente)):
+	?>
+	<tr>
+        <td><?php echo $d->NomeResponsavel; ?></td>
+        <td align="center"><?php echo Mascara::addMaskCPF($d->CpfResponsavel); ?></td>
+        <?php if(($d->UsuarioVinculo) == null): ?>
+            <td align="center"><?php echo $status; ?></td>
+	        <td align="center">
+	        <?php if(($d->siVinculo == null) || ($d->siVinculo == 3) || ($d->siVinculo == 1)): ?>
+	        	<input type="button" value=" " class="btn_vincular" style="width: 87px;" onclick="confirmarovinculo('<?php echo $d->idResponsavel; ?>');" />
+	        <?php endif; ?>
+	        </td>
+	    <?php else: ?>
+	        <td colspan="2" align="center">Servidor do Ministério da Cultura não pode ser Responsável!</td>
+	    <?php endif;?>    
+	</tr>
+	<?php //endif; ?>
+	<?php endforeach; ?>
+</table>
+<?php else:?>
+<table class="tabela">
+  <tr>
+    <td align="center">NENHUM RESPONSÁVEL ENCONTRADO!</td>
+  </tr>
+</table>
+
+<?php endif;?>
+

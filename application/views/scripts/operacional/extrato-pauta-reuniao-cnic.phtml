@@ -1,0 +1,264 @@
+<script>
+    $(document).ready(function(){
+        $(".btn_pesquisar").click(function(){
+            //jqAjaxLink("<?php echo $this->baseUrl()?>/operacional/tabelas?consulta="+$("#consulta").val(), null, "resultadoConsulta");
+            $("#resultadoConsulta").html("");
+            selecionarOptions();
+            jqAjaxForm(document.getElementById("frmExtratoPauta"), "resultadoConsulta");
+        });
+
+        $(".cmpNumerico").numeric().attr("maxlength", "9");
+
+    });
+
+    function addTodos() // adiciona todos os options da esquerda para direita
+    {
+        visao       = document.getElementById("visao"); // select de origem
+        visaoAgente = document.getElementById("visaoAgente"); // select de destino
+        for (i = 0; i < visao.length; i++) // varre todo o option de origem
+        {
+            var novoOption = document.createElement("option"); // cria um novo option
+            novoOption.text  = visao.options[i].text; // texto do option
+            novoOption.value = visao.options[i].value; // valor do option
+            visaoAgente.options.add(novoOption); // adiciona o novo option no select de destino
+            visao.remove(i); // remove o option do select de origem
+            i--;
+        }
+    } // fecha funç?o addTodos()
+
+
+    function delTodos() // deleta todos os options da direita
+    {
+        visao       = document.getElementById("visao"); // select de origem
+        visaoAgente = document.getElementById("visaoAgente"); // select de destino
+        for (i = 0; i < visaoAgente.length; i++) // varre todo o option de origem
+        {
+            if (visaoAgente.options[i].value != "144")
+            {
+                var novoOption = document.createElement("option"); // cria um novo option
+                novoOption.text  = visaoAgente.options[i].text; // texto do option
+                novoOption.value = visaoAgente.options[i].value; // valor do option
+                visao.options.add(novoOption); // adiciona o novo option no select de destino
+                visaoAgente.remove(i); // remove o option do select de origem
+                i--;
+            }
+        }
+    } // fecha funç?o delTodos()
+
+
+    function addSelecionado() // adiciona o option selecionado da esquerda para direita
+    {
+        visao       = document.getElementById("visao"); // select de origem
+        visaoAgente = document.getElementById("visaoAgente"); // select de destino
+        for (i = 0; i < visao.length; i++) // varre todo o option de origem
+        {
+            if (visao.options[i].selected == true) // caso o option esteja selecionado
+            {
+                var novoOption = document.createElement("option"); // cria um novo option
+                novoOption.text  = visao.options[i].text; // texto do option
+                novoOption.value = visao.options[i].value; // valor do option
+                visaoAgente.options.add(novoOption); // adiciona o novo option no select de destino
+                visao.remove(i); // remove o option do select de origem
+                i--;
+            }
+        }
+    } // fecha funç?o addSelecionado()
+
+
+    function delSelecionado() // deleta o option selecionado da direita
+    {
+        visao       = document.getElementById("visao"); // select de origem
+        visaoAgente = document.getElementById("visaoAgente"); // select de destino
+        for (i = 0; i < visaoAgente.length; i++) // varre todo o option de origem
+        {
+            if (visaoAgente.options[i].selected == true && visaoAgente.options[i].value != "144") // caso o option esteja selecionado
+            {
+                var novoOption = document.createElement("option"); // cria um novo option
+                novoOption.text  = visaoAgente.options[i].text; // texto do option
+                novoOption.value = visaoAgente.options[i].value; // valor do option
+                visao.options.add(novoOption); // adiciona o novo option no select de destino
+                visaoAgente.remove(i); // remove o option do select de origem
+                i--;
+            }
+        }
+    } // fecha funç?o delSelecionado()
+
+
+    function selecionarOptions() // funç?o para selecionar todos os options antes do envio do formulário
+    {
+        visaoAgente = document.getElementById("visaoAgente"); // select de destino
+        for (i = 0; i < visaoAgente.length; i++) // varre todo o option de origem
+        {
+            visaoAgente.options[i].selected = true; // adiciona o novo option no select de destino
+        }
+    } // fecha funç?o selecionarOptions()
+
+    function abrirModal(conteudo){
+        $("body").append("<div id='divDinamica'></div>");
+        $("#divDinamica").html(conteudo);
+        $("#divDinamica").dialog({
+            resizable: true,
+            width:$(window).width() - 100,
+            height:$(window).height() - 200,
+            modal: true,
+            autoOpen:true,
+            draggable:false,
+            buttons: {
+                'OK': function() {
+                    $("#divDinamica").remove();
+                    $(this).dialog('close');
+                }
+            }
+        });
+    }
+</script>
+
+<?php include("scripts/operacional/inc/menu.inc.php"); ?>
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Extrato de Pauta de Reuni&atilde;o da CNIC<span class="voltar"><a href="javascript:voltar()">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="conteudo" align="center">
+
+    <fieldset>
+        <legend> Filtros de pesquisa </legend>
+        <form action="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-extrato-pauta-reuniao-cnic')); ?>" method="post" name="frmExtratoPauta" id="frmExtratoPauta">
+               <table class="tabela" style="width:90%">
+                <tbody><tr>
+                    <th colspan="3">Selecionar campos para pesquisa</th>
+                </tr>
+                <tr>
+                        <td width="120">Nr Reuni&atilde;o</td>
+                        <td align="left"><input class="input_simples cmpNumerico" name="nrReuniao" id="nrReuniao" maxlength="10" type="text"></td>
+                </tr>
+                <tr>
+                        <td>Org&atilde;o</td>
+                        <td align="left">
+                            <select name="orgao" id="orgao" style="width: 200px;" class="input_simples">
+                                <option value="">Selecione</option>
+                                <?php foreach($this->orgaos as $orgao):?>
+                                <option value="<?php echo $orgao->Codigo; ?>"><?php echo $orgao->Sigla; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+                </tr>
+                <tr>
+                        <td>Tipo de parecer</td>
+
+                        <td align="left">
+                            <select name="tipoParecer" id="tipoParecer" style="width: 200px;" class="input_simples">
+                                <option value="">Selecione</option>
+                                <option value="1">Aprova&ccedil;&atilde;o</option>
+                                <option value="2">Complementa&ccedil;&atilde;o</option>
+                                <option value="3">Prorroga&ccedil;&atilde;o</option>
+                                <option value="4">Redu&ccedil;&atilde;o</option>
+                            </select>
+
+                        </td>
+                </tr>
+                <tr>
+                        <td>Área Cultural</td>
+                        <td align="left">
+                            <select name="area" id="area" style="width: 200px;" class="input_simples">
+                                <option value="">Selecione</option>
+                                <?php foreach($this->areas as $area):?>
+                                <option value="<?php echo $area->Codigo; ?>"><?php echo $area->Descricao; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+                </tr>
+                <tr>
+                        <td>Situa&ccedil;&atilde;o</td>
+
+                        <td align="left">
+                            <select name="situacao" id="situacao" style="width: 200px;" class="input_simples">
+                                <option value="">Selecione</option>
+                                <?php foreach($this->situacoes as $situacao):?>
+                                <option value="<?php echo $situacao->Codigo; ?>"><?php echo $situacao->Descricao; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+                </tr>
+                <tr>
+                    <td colspan="3">&nbsp;</td>
+                </tr>
+                <tr>
+
+                    <th colspan="3">Escolher campos da consulta</th>
+                </tr>
+                <tr>
+                    <td colspan="3" align="left">
+                        <table width="100%" align="left">
+                            <tbody>
+                            <tr>
+                                <th align="center">Não Mostrar</th>
+                                <th> </th>
+                                <th align="center">Mostrar</th>
+                            </tr>    
+                            <tr>    
+                                <td class="centro" valign="top">
+
+                                        <label for="visao"> </label>
+                                        <select class="select_simples" name="visao[]" id="visao" multiple="multiple" size="7"  style="width: 200px;">
+                                        </select>
+                                </td>
+                                <td class="centro" valign="middle" width="20px">
+                                        <p><input class="btn" value=" &gt;&gt; " style="width: 30px;" onkeypress=" " onclick="addTodos();" title="Adicionar todas as vis&otilde;es para o Agente" type="button"></p>
+                                        <p><input class="btn" value=" &gt; " style="width: 30px;" onkeypress=" " onclick="addSelecionado();" title="Adicionar a vis&atilde;o selecionada para o Agente" type="button"></p>
+                                        <p><input class="btn" value=" &lt; " style="width: 30px;" onkeypress=" " onclick="delSelecionado();" title="Remover a vis&atilde;o selecionada do Agente" type="button"></p>
+                                        <p><input class="btn" value=" &lt;&lt; " style="width: 30px;" onkeypress=" " onclick="delTodos();" title="Remover todas as vis&otilde;es do Agente" type="button"></p>
+                                </td>
+                                <td class="centro" valign="top">
+                                        <label for="visaoAgente"> </label>
+                                        <select class="select_simples" name="visaoAgente[]" id="visaoAgente" multiple="multiple" size="7"  style="width: 200px;">
+                                            <option value="cmpsOrd_p.AnoProjeto+p.Sequencial">PRONAC</option>
+                                            <option value="cmpsOrd_Nome">Proponente</option>
+                                            <option value="cmpsOrd_Enquadramento">Enquadramento</option>
+                                            <option value="cmpsOrd_#parecerfavoravel">Parecer</option>
+                                            <option value="cmpsOrd_SolicitadoReal">Solicitado</option>
+                                            <option value="cmpsOrd_SugeridoReal">Sugerido</option>
+                                            <option value="cmpsOrd_Processo">Processo</option>
+                                            <option value="cmpsOrd_o.Sigla">Órg&atilde;o</option>
+                                            <option value="cmpsOrd_#ResumoProjeto">Resumo do Projeto</option>
+                                            <option value="cmpsOrd_TipoParecer">Tipo de Parecer</option>
+                                            <option value="cmpsOrd_NumeroReuniao">Nr.Reuni&atilde;o</option>
+                                            <option value="cmpsOrd_#ResumoParecer">Parecer Técnico</option>
+                                            <option value="cmpsOrd_#cgccpf">CNPJ/CPF</option>
+                                            <option value="cmpsOrd_#Area">Área Cultural</option>
+                                            <option value="cmpsOrd_s.Descricao">Situa&ccedil;&atilde;o</option>
+                                            <option value="cmpsOrd_Cidade">Cidade</option>
+                                            <option value="cmpsOrd_Uf">UF do Projeto</option>
+                                        </select>
+                                </td>
+                        	</tr>
+                        </tbody></table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="tabela" style="width: 90%">
+            <tr>
+                <td align="center">
+                    <input type="button" style="width: 88px" class="btn_pesquisar" id="btn_pesquisar"/>
+                    <input type="reset" style="width: 88px" class="btn_limpar" id="btn_limpar" value=""/>
+                </td>
+            </tr>
+        </table>
+        </form>
+</fieldset>
+
+<div id="resultadoConsulta"></div>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

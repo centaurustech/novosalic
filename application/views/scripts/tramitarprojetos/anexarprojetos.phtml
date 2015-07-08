@@ -1,0 +1,97 @@
+<script type="text/javascript">
+<!--
+function sumiraqui(id)
+{
+	$('img[class='+id+']').toggle();
+	$('tr[class='+id+']').toggle();
+	
+}
+//-->
+</script>
+
+<?php
+require_once "inc/menu.inc.php"; // menu
+?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para p&aacute;gina inicial">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'tramitarprojetos', 'action' => 'index')); ?>" title="Ir para Tramitar projetos">Tramitar projetos</a></li>
+        <li class="last">Anexar documentos</li>
+    </ul>
+</div>
+<!-- ========== FIM BRADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Anexar documentos <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+
+<?php if($this->lotes):?>
+<fieldset><legend> Receber / Anexar documentos </legend>
+ 	<table class="tabela">
+		<?php foreach($this->lotes as $lote): ?>
+ 		<tr class="fundo_linha2">
+ 			<td colspan="7" align="left">
+ 				<img src="<?php echo $this->baseUrl(); ?>/public/img/icn_menos.gif" class="<?php echo $lote->idLote; ?>" style="cursor:pointer;" onclick="sumiraqui('<?php echo $lote->idLote; ?>');" />
+ 				<img src="<?php echo $this->baseUrl(); ?>/public/img/icn_mais.gif" class="<?php echo $lote->idLote; ?>" style="cursor:pointer; display:none;" onclick="sumiraqui('<?php echo $lote->idLote; ?>');" />
+ 			 &nbsp;&nbsp;&nbsp;&nbsp;	<strong>Lote Nr:</strong> <?php echo $lote->idLote; ?> - Destino: <?php echo $lote->Origem; ?> | 
+ 			 <a href="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'anexarlote')); ?>?idLote=<?php echo $lote->idLote; ?>">Anexar Lote </a>
+ 			</td>
+ 		</tr>
+ 		<tr class="<?php echo $lote->idLote; ?>">
+ 			<th width="120">Processo</th>
+ 			<th width="50">PRONAC</th>
+ 			<th width="150">Nome do Projeto</th>
+ 			<th width="120">Documento</th>
+ 			<th width="70">Data</th>
+ 			<th>Arquivo</th> 			
+ 			<th width="50">Anexar</th> 			
+ 		</tr>
+ 			<?php $docs = TramitarDocumentosDAO::buscarDocumentosRecebidos($this->idUsuarioLogado,$lote->idLote); ?>
+ 			<?php foreach($docs as $doc): ?>
+ 		<tr class="<?php echo $lote->idLote; ?>">
+ 			<td align="center"><?php echo $doc->Processo; ?></td>
+ 			<td align="center"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')); ?>?idPronac=<?php echo $doc->idPronac; ?>" title="Consultar dados do projeto" target="_blank"><?php echo $doc->Pronac; ?></a></td>
+ 			<td align="center"><?php echo $doc->NomeProjeto; ?></td>
+ 			<td align="center"><?php echo $doc->dsTipoDocumento; ?></td>
+ 			<td align="center"><?php echo $doc->dtDocumentoBR; ?></td>
+ 			<td align="center"><a href="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'abrir')); ?>?id=<?php echo $doc->idDocumento; ?>"><?php echo $doc->noArquivo; ?></a></td>
+ 			<td align="center"> <img src="<?php echo $this->baseUrl(); ?>/public/img/ico/copy.gif" style="cursor:pointer;" onclick="location.href='<?php echo $this->baseUrl(); ?>/tramitardocumentos/anexardocumento?idDocumento=<?php echo $doc->idDocumento;; ?>'""  /> </td>
+ 		</tr>
+ 			<?php endforeach; ?> 		
+ 		<?php endforeach; ?> 		
+ 		
+ 	</table>
+</fieldset>
+<?php else:?>
+	<table class="tabela">
+		<tr>
+			<td class="centro">
+				Não há Documento para Receber!
+			</td>
+		</tr>
+	</table>
+<?php endif;?>   		   
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

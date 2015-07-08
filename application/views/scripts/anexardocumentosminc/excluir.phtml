@@ -1,0 +1,195 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#campoPesquisa').focusout(function(){
+            var pronac = $('#campoPesquisa').val();
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo $this->url(array('controller' => 'anexardocumentosminc', 'action' => 'buscar-projetos-anexos')); ?>',
+                data: {
+                    pronac: pronac
+                },
+                success: function(data){
+                    var lista = $('#listaArquivos'),
+                        contador = 1,
+                        link = '',
+                        botaoExcluir = '',
+                        tipos = new Array();
+                        tipos[0] = 1;
+                        tipos[1] = 2;
+                        tipos[2] = 3;
+                    if(data.resposta){
+                        $('#listaArquivos').removeClass('sumir');
+                        $('#nomeProjeto').html(data.conteudo.NomeProjeto);
+                        $('#Pronac').val(pronac);
+                        console.debug(data.conteudo.Anexos[0]);
+                        for ( i in data.conteudo.Anexos){
+                            botaoExcluir = '';
+                            if(in_array(data.conteudo.Anexos[i].Anexado, tipos)){
+                                link = '<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'abrir-documentos-anexados')); ?>?id='+data.conteudo.Anexos[i].idDocumentosAgentes+'&tipo='+data.conteudo.Anexos[i].AgenteDoc+'&idPronac='+data.conteudo.Anexos[i].idPronac;
+                            } else {
+                                link = '<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id='+data.conteudo.Anexos[i].idDocumentosAgentes;
+                                if(data.conteudo.Anexos[i].Anexado == 5){
+                                    botaoExcluir = '<input type="button" class="btn_exclusao excluirArquivo" tpArquivo="'+data.conteudo.Anexos[i].Anexado+'" idArquivo="'+data.conteudo.Anexos[i].idDocumentosAgentes+'" />';
+                                }
+                            }
+                            var Descricao = data.conteudo.Anexos[i].Descricao;
+                            if(data.conteudo.Anexos[i].Descricao == null){
+                                Descricao = '';
+                            }
+
+                            var classificacao = '';
+                            if(data.conteudo.Anexos[i].Anexado == 1) {
+                                classificacao = 'Documento do Proponente';
+                            } else if(data.conteudo.Anexos[i].Anexado == 2) {
+                                classificacao = 'Documento da Proposta';
+                            } else if(data.conteudo.Anexos[i].Anexado == 3) {
+                                classificacao = 'Documento do Projeto Anexado no Minc';
+                            } else if(data.conteudo.Anexos[i].Anexado == 4) {
+                                classificacao = 'Documento do Projeto';
+                            } else if(data.conteudo.Anexos[i].Anexado == 5) {
+                                classificacao = 'Documento do Projeto';
+                            }
+
+                            lista.append('<tr class="linhasAdd"><td align="center">'+contador+'</td><td>'+classificacao+'</td><td align="center" width="150px">'+data.conteudo.Anexos[i].Data+'</td><td>'+ Descricao +'</td><td><a href="'+link+'">'+data.conteudo.Anexos[i].NoArquivo+'</a></td><td align="center" width="1px">'+botaoExcluir+'</td></tr>');
+                            contador++;
+                        }
+                        //console.debug(data.conteudo.Anexos);
+                    } else {
+                        $('#listaArquivos').addClass('sumir');
+                        $('#nomeProjeto').html(data.conteudo.msg);
+                        $('#Pronac').val('');
+                    }
+                },
+                dataType : 'json'
+            });
+        });
+
+        $('#campoPesquisa').focus(function(){
+            $('#listaArquivos').addClass('sumir');
+            $('.linhasAdd').remove();
+            $('#nomeProjeto').html('');
+            $('#Pronac').val('');
+        });
+
+        $("#campoPesquisa").keypress(function(event) {
+            if ( event.which == 13 ) {
+                $('#campoPesquisa').focusout();
+                $('#listaArquivos').addClass('sumir');
+                $('.linhasAdd').remove();
+                return false;
+            } else {
+                $('#nomeProjeto').html('');
+                $('#Pronac').val('');
+                $('#listaArquivos').addClass('sumir');
+                $('.linhasAdd').remove();
+            }
+        });
+
+        $('.excluirArquivo').live('click', function(){
+            var tpArquivo = $(this).attr('tpArquivo'),
+                idArquivo = $(this).attr('idArquivo'),
+                linha = $(this).parent().parent();
+
+            $("#divExcluirComprovantes").html("");
+            $('#divExcluirComprovantes').html('<br><center>Aguarde, atualizando dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br>');
+            $.ajax({
+                async: true,
+                type: "post",
+                url: "<?php echo $this->url(array('controller' => 'anexardocumentosminc', 'action' => 'excluir-arquivo')); ?>",
+                data:{
+                    id : idArquivo
+                },
+                success: function(data){
+                    if(data.resposta){
+                        $("#msgAlerta").dialog("destroy");
+                        $("#msgAlerta").html('<center>Exclusão feita com sucesso!<br /><br /><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" alt="carregando"><br />Por favor, aguarde!!</center>');
+                        $("#msgAlerta").dialog({
+                            resizable: false,
+                            title: 'Alerta!',
+                            width:300,
+                            height:150,
+                            modal: true
+                        });
+                        $('.ui-dialog-titlebar-close').remove();
+
+                        window.setInterval(function() {
+                            linha.remove();
+                            $("#msgAlerta").dialog("destroy");
+                        }, 2500);
+                    } else {
+                        message('Ocorreu um erro ao tentar excluir o arquivo! Contate o Gestor do Salic.', 'ERROR');
+                    }
+                },
+                error: function(data) {
+                    message('Ocorreu um erro ao tentar excluir o comprovante de pagamento.', 'ERROR');
+                },
+                complete: function(){
+                    
+                },
+                dataType : 'json'
+
+            });
+
+        });
+
+    });
+</script>
+
+<div id="msgAlerta" class="sumir"></div>
+<div id="camposObrigatorios" class="sumir"></div>
+<div id="divExcluirComprovantes" class="sumir"></div>
+
+<!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="index.html" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second">Acompanhamento</li>
+        <li class="last">Excluir Documentos</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<div id="titulo">
+    <div>Excluir Documentos</div>
+</div>
+
+
+<div id="conteudo">
+    <form id="formularioAnexo" action="<?php echo $this->url(array('controller' => 'anexardocumentosminc', 'action' => 'excluir-documento')); ?>" method="post">
+        <table class="tabela">
+            <tr>
+                <td class="destacar bold" width="150" align="right">Pronac<span style="color: red;">*</span></td>
+                <td>
+                    <input type="text" class="input_simples obrigatorio" id="campoPesquisa" maxlength="10" value="<?php echo $this->pronacProjeto;?>" />
+                    <input type="hidden" class="obrigatorio" value="" name="Pronac" id="Pronac" />
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" width="150" height="27px" align="right">Nome do Projeto<span style="color: red;">*</span></td>
+                <td><span id="nomeProjeto" class="bold"></span></td>
+            </tr>
+        </table>
+    </form>
+    <br clear="all" />
+
+    <table class="tabela sumir" id="listaArquivos">
+        <tr>
+            <th colspan="6">Arquivos Anexados</th>
+        </tr>
+        <tr>
+            <td class="destacar bold centro" width="1">N&ordm;</td>
+            <td class="destacar bold">Classifica&ccedil;&atilde;o</td>
+            <td class="destacar bold centro" width="100">Data</td>
+            <td class="destacar bold">Tipo de Documento</td>
+            <td class="destacar bold">Documento</td>
+            <td class="destacar bold centro">Ação</td>
+        </tr>
+    </table>
+    <br clear="all" />
+</div>
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

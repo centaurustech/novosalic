@@ -1,0 +1,311 @@
+<?php
+require_once "inc/menu.inc.php"; // menu
+?>
+<script type="text/javascript">
+    $(document).ready(function(){
+
+        $(".abrir1").click(function () {
+
+            $(".cancelar").slideToggle("slow");
+
+        });
+
+        $(".abrir2").click(function () {
+
+            $(".desarquivar").slideToggle("slow");
+
+        });
+
+        $('.salvarjustificativa').click(function(){
+
+            if($('#justificativa').val()=='Digite a justificativa...')
+            {
+                $("#confirm3").dialog("destroy");
+                $("#confirm3").dialog
+                ({
+                    width:350,
+                    height:150,
+                    EscClose:false,
+                    modal:true
+                    ,
+                    buttons:
+                        {
+                        'Ok':function()
+                        {
+                            $(this).dialog('close');
+                            return false;
+                        }
+                    }
+                });
+                return false;
+
+            }
+            else{
+
+                if($("#idHistorico").val()=='')
+                {
+                    $("#confirm").dialog("destroy");
+                    $("#confirm").dialog
+                    ({
+                        width:350,
+                        height:180,
+                        EscClose:false,
+                        modal:true
+                        ,
+                        buttons:
+                            {
+                            'Não':function()
+                            {
+                                $(this).dialog('close');
+                                return false;
+                            },
+                            'Sim':function()
+                            {
+                                document.forms["formencaminhar"].submit();
+                            }
+                        }
+                    });
+                    return false;
+                }
+                else
+                {
+                    $("#confirm2").dialog("destroy");
+                    $("#confirm2").dialog
+                    ({
+                        width:350,
+                        height:180,
+                        EscClose:false,
+                        modal:true
+                        ,
+                        buttons:
+                            {
+                            'Não':function()
+                            {
+                                $(this).dialog('close');
+                                return false;
+                            },
+                            'Sim':function()
+                            {
+                                document.forms["formencaminhar"].submit();
+                            }
+                        }
+                    });
+                    return false;
+                }
+
+                return false;
+                //$("#confirm").dialog('open');
+            }
+        });
+    });
+
+    function sumiraqui(id)
+    {
+        $('img[class='+id+']').toggle();
+        $('tr[class='+id+']').toggle();
+    }
+
+    function cancelar(idPronac, idDestino, idDocumento, Pro, nome){
+
+        $("#Pro").html(Pro);
+        $("#nome").html(nome);
+        $("#idPronac").val(idPronac);
+        $("#idUnidade").val(idDestino);
+        $("#idDocumento").val(idDocumento);
+
+
+        document.getElementById("modalJustificativa").title = "Justificativa para solicitação de cancelamento";
+
+        // modal com os ddos do dirigente
+        $("#modalJustificativa").dialog("destroy");
+        $("#modalJustificativa").dialog
+        ({
+            width:500,
+            height:500,
+            EscClose:false,
+            modal:true
+            ,buttons:
+                {
+                'Fechar':function()
+                {
+                    $(this).dialog('close'); // fecha a modal
+                }
+            }
+        });
+        return false;
+    }
+
+    function recusar(idHistorico, Pro, nome){
+        $("#Pro").html(Pro);
+        $("#nome").html(nome);
+        $("#idHistorico").val(idHistorico);
+
+        document.getElementById("modalJustificativa").title = "Justificativa para solicitação de cancelamento";
+
+        // modal com os ddos do dirigente
+        $("#modalJustificativa").dialog("destroy");
+        $("#modalJustificativa").dialog
+        ({
+            width:500,
+            height:500,
+            EscClose:false,
+            modal:true
+            ,buttons:
+                {
+                'Fechar':function()
+                {
+                    $(this).dialog('close'); // fecha a modal
+                }
+            }
+        });
+        return false;
+    }
+
+    function Caracteres(objeto){
+        var limite = 300;
+        var erro = "Você ultrapassou o limite de caracteres.";
+
+        tamanho = objeto.value.length;
+        if (tamanho>limite) {
+            objeto.value = objeto.value.substring(0,limite);
+            alert(erro);
+        } else {
+            document.getElementById('restantes').innerHTML = (limite-objeto.value.length);
+        }
+    }
+</script>
+
+<div id="confirm" title="Confirma&ccedil;&atilde;o" style="display: none">Tem certeza que deseja cancelar o Envio do Projeto?</div>
+<div id="confirm2" title="Confirma&ccedil;&atilde;o" style="display: none">Tem certeza que deseja recusar a Solicitação?</div>
+<div id="confirm3" title="Confirma&ccedil;&atilde;o" style="display: none">Dados obrigatórios não informados!</div>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para p&aacute;gina inicial">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'index')); ?>" title="Ir para Tramitar documentos">Tramitar documentos</a></li>
+        <li class="last">Solicita&ccedil;&otilde;es</li>
+    </ul>
+</div>
+<!-- ========== FIM BRADCRUMB (LINKS TOPO) ========== -->
+
+<div style="display:none;" id="modalJustificativa" title="Justificativa de Recusa do Projeto" >
+    <form name="formencaminhar" id="" method="post">
+        <table class="tabela">
+            <tr>
+                <th width="50%">PRONAC</th>
+                <th width="50%">Nome do Projeto</th>
+            </tr>
+            <tr>
+                <td id="Pro"></td>
+                <td id="nome"></td>
+            </tr>
+       	</table>
+
+       	* Por favor informe uma justificativa para a solicitação de cancelamento:
+       	<br />	<br><label for="justificativa">Justificativa</label><br>
+
+       	<textarea name="justificativa" id="justificativa" rows="6" cols="50" style="width:100%;" onclick="limpar_campo(this, 'Digite a justificativa...');" onkeypress=" "
+                  onblur="restaurar_campo(this, 'Digite a justificativa...');" onkeydown=Caracteres(this) onkeyup=Caracteres(this)>Digite a justificativa...</textarea>
+        <font>Limite: 300 • Restantes: </font>
+        <span id="restantes" style="estilos...">300</span>
+       	<br />
+       	<br />
+        <br />
+        <table class="tabela">
+            <tr>
+                <td class="esquerda">
+                    <input type="submit"  value=" " class="btn_salvar salvarjustificativa"  value=" " />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type="reset"  value=" " class="btn_limpar" />
+                    <input type="hidden" name="idPronac" id="idPronac"/>
+                    <input type="hidden" name="idUnidade" id="idUnidade"/>
+                    <input type="hidden" name="idDocumento" id="idDocumento"/>
+                    <input type="hidden" name="idHistorico" id="idHistorico"/>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Solicita&ccedil;&otilde;es <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="conteudo">
+
+    <div style="display: on" class="cancelar">
+        <?php if($this->cancel) { ?>
+
+        <fieldset><legend> Solicitações pendentes </legend>
+            <form name="form" method="post">
+                <table class="tabela">
+                    <?php foreach ($this->cancelOrgao as $destino){ ?>
+                    <tr class="fundo_linha2">
+                        <td colspan="9" align="left">
+                            <img src="<?php echo $this->baseUrl(); ?>/public/img/icn_menos.gif" class="<?php echo $destino->idDestino; ?>" style="cursor:pointer;" onclick="sumiraqui('<?php echo $destino->idDestino; ?>');" />
+                            <img src="<?php echo $this->baseUrl(); ?>/public/img/icn_mais.gif" class="<?php echo $destino->idDestino; ?>" style="cursor:pointer; display:none;" onclick="sumiraqui('<?php  echo $destino->idDestino; ?>');" />
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <strong>Lote Nr:</strong> &nbsp;<?php echo $destino->idLote; ?> &nbsp;-&nbsp;
+                            <strong>Destino:</strong> &nbsp;<?php echo $destino->Destino; ?>
+                        </td>
+                    </tr>
+                    <tr class="<?php echo $destino->idDestino; ?>">
+                        <th width="5">Cancelar Envio</th>
+                        <th width="5">Recusar Solicitação</th>
+                        <th width="20">Processo</th>
+                        <th width="10">PRONAC</th>
+                        <th width="150">Nome do Projeto</th>
+                        <th width="70">Data Envio</th>
+                        <th width="50">Situa&ccedil;&atilde;o</th>
+                        <th width="70">Usu&aacute;rio</th>
+                        <th width="100">Justificativa</th>
+                    </tr>
+                    <?php foreach ($this->cancel as $despacho){ ?>
+                        <?php if($despacho->idLote == $destino->idLote){ ?>
+                        <tr class="<?php echo $destino->idDestino; ?>">
+                            <td align="center">
+                                <?php if($despacho->Acao == 2){ ?>
+                                <img src="<?php echo $this->baseUrl(); ?>/public/img/btn_excluir.gif" style="cursor:pointer;" onclick="cancelar('<?php echo $despacho->idPronac?>', '<?php echo $despacho->idUnidade?>', '<?php echo $despacho->idDocumento?>', '<?php echo $despacho->pronac?>', '<?php echo $despacho->NomeProjeto?>');" /></td>
+                                <?php } ?>
+                            <td align="center">
+                                <?php if($despacho->Acao == 4){ ?>
+                                <img src="<?php echo $this->baseUrl(); ?>/public/img/btn_excluir.gif" style="cursor:pointer;" onclick="recusar('<?php echo $despacho->idHistorico?>','<?php echo $despacho->pronac?>', '<?php echo $despacho->NomeProjeto?>');" /></td>
+                                <?php } ?>
+                            <td align="center"><?php echo $despacho->Processo; ?></td>
+                            <td align="center"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')); ?>?idPronac=<?php echo $despacho->idPronac; ?>" title="Consultar dados do projeto" target="_blank"><?php echo $despacho->pronac; ?></a></td>
+                            <td align="center"><?php echo $despacho->NomeProjeto; ?></td>
+                            <td align="center" ><?php echo $despacho->dtTramitacaoEnvio ?></td>
+                            <td align="center" ><?php echo $despacho->Situacao ?></td>
+                            <td align="center" ><?php echo $despacho->Emissor ?></td>
+                            <td align="center" ><?php echo $despacho->dsJustificativa ?></td>
+                        </tr>
+                        <?php }?>
+                    <?php } ?>
+                <?php } ?>
+
+                </table>
+            </form>
+        </fieldset>
+
+            <?php }else {?>
+        <table class="tabela">
+            <tr>
+                <td class="centro">
+				Não existem Solicitações!
+                </td>
+            </tr>
+        </table>
+            <?php } ?>
+    </div>
+
+</div>
+
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<div id="rodapeConteudo"><span></span></div>
+<br clear="all" />

@@ -1,0 +1,189 @@
+<script>
+    $(document).ready( function() {
+		/*$("#btn_pdf").click(function(){
+	        $(".noPDF").hide();
+	        var html = $("#info").html();
+	        $("#html").val(html);
+	        $(".noPDF").show();
+	
+	        document.permissoes.submit();
+	
+	    });*/
+		$("#btn_imprimir").click(function(){
+			$("#frmPaginacao").attr('target', '_blank');
+            $("#frmPaginacao").submit(); 
+        });
+	});
+
+    function excluir(uso_codigo, uog_orgao, gru_codigo, pag)
+    {
+    	$("#confirm").dialog("destroy");
+        $("#confirm").dialog
+        ({
+            width:350,
+            height:150,
+            EscClose:false,
+            modal:true,
+            buttons:
+            {
+                'Cancelar':function()
+                {
+                    $(this).dialog('close'); // fecha a modal
+                },
+                'Confirmar':function()
+                {
+                	window.location.href = "<?php echo $this->url(array('controller'=>'manterusuario', 'action'=>'excluir-permissao')); ?>?usuario="+uso_codigo+"&orgao="+uog_orgao+"&grupo="+gru_codigo+"&pag="+pag+"";
+                }
+            }
+        });
+
+        $("#confirm").dialog('open');
+    }
+
+</script>
+<div id="confirm" title="Confirma&ccedil;&atilde;o"	style="display: none">Tem certeza que deseja excluir o registro?</div>
+<!-- ========== INï¿½CIO BREADCRUMB (LINKS TOPO) ========== -->
+<div style="display: none" id="confirm">Por favor, informe seu email!</div>
+<div style="display: none" id="dialog-alert2"></div>
+<div style="display: none" id="confirmInforma">Por favor, digite seu email corretamente!</div>
+<div id="breadcrumb">
+
+<ul>
+	<li class="first"><a
+		href="<?php echo $this->url(array('controller' => 'manterusuario', 'action' => 'cadastrarusuarioexterno')); ?>">In&iacute;cio</a></li>
+	<li class="last">Cadastrar Usuário</li>
+</ul>
+
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INï¿½CIO Tï¿½TULO ========== -->
+
+<div id="titulo">
+<div>Permiss&otilde;es do SalicWeb<span></span> <span class="voltar"><a
+	href="javascript:voltar();">Voltar</a></span></div>
+
+</div>
+<!-- ========== FIM Tï¿½TULO ========== -->
+
+
+
+<!-- ========== INï¿½CIO CONTEï¿½DO ========== -->
+
+<div id="conteudo" align="center">
+<fieldset><legend>Informações</legend>
+
+<form method="POST" action="<?php echo $this->url(array('controller' => 'manterusuario', 'action' => 'gerar-pdf')); ?>"	target="_blank" name="permissoes" id="permissoes">
+	<div id="info">
+		<?php if   ( empty ( $this->resultadoOrgaoUsuario ) ||  empty ( $this->perfisNomes) ){?>
+		<table border="1">
+			<thead>
+				<tr>
+					<td colspan="6">Nenhum registro encontrado.</td>
+				</tr>
+			</thead>
+		</table>
+		<?php } else {?>
+		<table class="tabela">
+			<thead>
+				<tr>
+					<th colspan="7">Perfis/Usuários do Sistema</th>
+				</tr>
+			</thead>
+		
+			<?php foreach ($this->perfis as $gru_codigo=>$perfil) {?>
+			<tr>
+				<td colspan="7">Perfil: <?php echo $this->perfisNomes[$gru_codigo]?></td>
+			</tr>
+			<tr>
+				<th>CPF</th>
+				<th>Nome</th>
+				<th>Lota&ccedil;&atilde;o</th>
+				<th>Telefone</th>
+				<th>Unidade Autorizada</th>
+				<th>Status</th>
+				<th class="noPDF">A&ccedil;&atilde;o</th>
+			</tr>
+			<?php foreach ($perfil as $resultadoOrgaoUsuario) { //xd($resultadoOrgaoUsuario); ?>
+			<tr>
+				<td><?php echo $resultadoOrgaoUsuario['usu_identificacao']?></td>
+				<td><a
+					href="<?php echo $this->url(array('controller' => 'manterusuario', 'action' => 'perfissalicweb')); ?>?id=<?php echo $resultadoOrgaoUsuario['usu_codigo']?>&perfil=<?php echo $resultadoOrgaoUsuario['gru_codigo']?>&estado=<?php echo $resultadoOrgaoUsuario['uog_status']?>&unidade=<?php echo $resultadoOrgaoUsuario['uog_orgao']?>"><?php echo $resultadoOrgaoUsuario['usu_nome']?>
+				</a></td>
+				<td><?php echo $resultadoOrgaoUsuario['usu_orgaolotacao']?></td>
+				<td><?php echo $resultadoOrgaoUsuario['usu_telefone']?></td>
+				<td><?php echo $resultadoOrgaoUsuario['org_siglaautorizado'] ?></td>
+		
+				<?php if ( $resultadoOrgaoUsuario['uog_status'] == 1 ) {?>
+		
+				<td><font color="green">Habilitado</font></td>
+				<?php } else {?>
+				<td><font color="red">Desabilitado</font></td>
+				<?php } ?>
+				<td align="center" class="noPDF"><input type="button"
+					title="Excluir Perfil/Usu&aacute;rio" class="btn_excluir" value=""
+					onclick="excluir('<?php echo $resultadoOrgaoUsuario['usu_codigo'] ?>','<?php echo $resultadoOrgaoUsuario['uog_orgao'] ?>','<?php echo $resultadoOrgaoUsuario['gru_codigo'] ?>','<?php echo $this->paginacao['pag']; ?>');" /></td>
+			</tr>
+			<?php } ?>
+			<?php } ?>
+			</tbody>
+		</table>
+	</div>
+	<input type="hidden" style="width: 88px" name="html" id="html" />
+</form>
+
+<!-- Form para envio da tela para gerar PDF com todos os registros -->
+<form action="<?php echo $this->url(array('controller' => 'manterusuario', 'action' => 'permissoessalic')); ?>" method="post" name="frmPaginacao" id="frmPaginacao">
+	<?php foreach($this->parametrosBusca as $name=>$value):?>
+	    <?php if(!is_array($value)): ?>
+	    <input type="hidden" name="<?php echo $name?>" id="<?php echo $name?>" value="<?php echo $value?>"/>
+	    <?php else: ?>
+	        <?php foreach($value as $valor):?>
+	            <input type="hidden" name="<?php echo $name?>[]" id="<?php echo $name?>" value="<?php echo $valor?>"/>
+	        <?php endforeach; ?>
+	    <?php endif; ?>
+	<?php endforeach; ?>
+	<input type='hidden' name='imprimirResumo' id='imprimirResumo' value='html'>
+</form>
+<!-- Fim form -->
+
+<table class="tabela" style="width: 80%;" border="0" cellpadding="0"
+	cellspacing="0">
+	<tr>
+		<td align="center"><input type="button" style="width: 88px"
+			class="btn_novo" id="btn_novo"
+			onclick="window.location.href='<?php echo $this->baseUrl(); ?>/manterusuario/perfissalicweb';" />
+		<input type="button" style="width: 88px" class="btn_inicio"
+			id="btn_inicio"
+			onclick="window.location.href='<?php echo $this->baseUrl(); ?>/manterusuario/permissoessalic?pag=1'" />
+		<input type="button" style="width: 88px" class="btn_p_anterior"
+			id="btn_p_anterior"
+			onclick="window.location.href='<?php echo $this->baseUrl(); ?>/manterusuario/permissoessalic?pag=<?php echo ($this->paginacao['pag'] > 1)?$this->paginacao['pag']-1:1; ?>'" />
+		<select name="pagina" id="pagina" class="input_simples"
+			onchange="window.location.href='<?php echo $this->baseUrl(); ?>/manterusuario/permissoessalic?pag='+this.value">
+			<?php for($i=1; $i<$this->paginacao['totalPag']+1; $i++): ?>
+			<option value="<?php echo $i; ?>"
+			<?php if($i == $this->paginacao['pag']){ echo " selected='selected' "; } ?>><?php echo $i; ?></option>
+			<?php endfor; ?>
+		</select> <input type="button" style="width: 88px"
+			class="btn_p_proximo" id="btn_p_proximo"
+			onclick="window.location.href='<?php echo $this->baseUrl(); ?>/manterusuario/permissoessalic?pag=<?php echo ($this->paginacao['pag'] < $this->paginacao['totalPag'])?$this->paginacao['pag']+1:$this->paginacao['totalPag']; ?>'" />
+		<input type="button" style="width: 88px" class="btn_ultimo"
+			id="btn_ultimo"
+			onclick="window.location.href='<?php echo $this->baseUrl(); ?>/manterusuario/permissoessalic?pag=<?php echo $this->paginacao['totalPag']; ?>'" />
+		<input type="button" style="width: 88px" class="btn_localizar"
+			id="btn_localizar"
+			onclick="window.location.href='<?php echo $this->baseUrl(); ?>/manterusuario/localizarperfis'" />
+		<input type="button" style="width: 44px" class="btn_pdf" id="btn_imprimir" />
+
+		</td>
+	</tr>
+</table>
+			<?php } ?></fieldset>
+</div>
+<!-- ========== FIM CONTEï¿½DO ========== -->
+<!-- ========== INï¿½CIO RODAPï¿½ DO CONTEï¿½DO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPï¿½ DO CONTEï¿½DO ========== -->
+<br clear="all" />

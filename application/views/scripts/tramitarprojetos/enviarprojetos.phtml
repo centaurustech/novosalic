@@ -1,0 +1,314 @@
+<script type="text/javascript">
+<!--
+$(document).ready(function () {
+    
+    $('#enviarPro').click(function(){
+        $('a[rel~=external]').attr('target','_blank');
+        setTimeout("javascript:location.reload();", 1000); 
+        
+     });
+});
+
+function sumiraqui(id)
+{
+	$('img[class='+id+']').toggle();
+	$('tr[class='+id+']').toggle();
+}
+
+$(document).ready(function(){
+
+	$(".abrir").click(function () {
+
+		$(".enviados").slideToggle("slow");
+
+      });
+
+    $('.salvarjustificativa').click(function(){
+
+        if($('#justificativa').val()=='Digite a justificativa...')
+        {
+        	$("#confirm1").dialog("destroy");
+            $("#confirm1").dialog
+            ({
+                width:350,
+                height:150,
+                EscClose:false,
+                modal:true
+                ,
+                buttons:
+                {
+                    'Ok':function()
+                    {
+                        $(this).dialog('close');
+                        return false;
+                    }
+                }
+            });
+            
+            return false;
+        }
+        else{
+  
+            document.forms["formencaminhar"].submit();
+			return false;
+            //$("#confirm").dialog('open');
+        }
+    });
+});
+
+function recusar_projeto(idPronac, idDestino, Pronac, NomeProjeto, idLote, idOrigem)
+{
+		$("#idPro").val(idPronac);
+		$("#idDes").val(idDestino);
+		$("#Pro").html(Pronac);
+		$("#nome").html(NomeProjeto);
+		$("#idLote").val(idLote);
+        $("#idOrigem").val(idOrigem);
+
+        document.getElementById("modalJustificativa").title = "Justificativa cancelamento de envio!";
+
+		// modal com os ddos do dirigente
+		$("#modalJustificativa").dialog("destroy");
+		$('#justificativa').val('Digite a justificativa...');
+		$("#modalJustificativa").dialog
+		({
+			width:480,
+			height:450,
+			EscClose:false,
+			modal:true
+			,buttons:
+			{
+				'Fechar':function()
+				{
+					$(this).dialog('close'); // fecha a modal
+				}
+			}
+		});
+		return false;
+		//$('.ui-dialog-titlebar-close').remove();
+}
+//-->
+</script>
+
+<?php
+require_once "inc/menu.inc.php"; // menu
+?>
+<div id="confirm1" title="Confirma&ccedil;&atilde;o" style="display: none">Dados obrigatórios não informados!</div>
+<div id="confirm2" title="Confirma&ccedil;&atilde;o" style="display: none">Tem certeza que deseja excluir o registro?</div>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para p&aacute;gina inicial">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'tramitarprojetos', 'action' => 'index')); ?>" title="Ir para Tramitar projetos">Tramitar projetos</a></li>
+        <li class="last">Enviar projetos cadastrados</li>
+    </ul>
+</div>
+<!-- ========== FIM BRADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Enviar projetos cadastrados <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div style="display:none;" id="modalJustificativa" title="Justificativa de Recusa do Projeto" >
+	<form name="formencaminhar" id="" method="post">
+		<table class="tabela">
+			<tr>
+            	<th width="50%">PRONAC</th>
+                <th width="50%">Nome do Projeto</th>
+            </tr>
+            <tr>
+            	<td id="Pro"></td>
+            	<td id="nome"></td>
+        	</tr>
+       	</table>
+
+       	* Por favor informe uma justificativa para o cancelamento de envio:
+       	<br />	<br /><label for="justificativa">Justificativa</label><br />
+
+       	<textarea name="justificativa" id="justificativa" rows="6" cols="50" style="width:100%;" onclick="limpar_campo(this, 'Digite a justificativa...');" onkeypress=" "
+             	onblur="restaurar_campo(this, 'Digite a justificativa...');">Digite a justificativa...</textarea>
+       	<br />
+       	<br />
+        <br />
+		<table class="tabela">
+			<tr>
+				<td class="esquerda">
+		        	<input type="submit" value=" " class="btn_salvar salvarjustificativa" value=" " />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		        	<input type="reset"  value=" " class="btn_limpar" />
+		        	<input type="hidden" name="idPro" id="idPro" />
+		        	<input type="hidden" name="idDes" id="idDes" />
+		        	<input type="hidden" name="idLote" id="idLote" />
+		            <input type="hidden" name="idOrigem" id="idOrigem" />
+				</td>
+			</tr>
+		</table>
+   	</form>
+</div>
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+
+<?php if ($this->Despacho){?>
+
+<?php 
+	if (isset($this->projetoEnviado) && $this->projetoEnviado == 'true'){
+		$historicodocumento = new HistoricoDocumento();
+?> 
+<fieldset>
+<legend> Projetos cadastrados </legend>
+<table class="tabela">
+	<?php
+	$x = 0;
+	$idAtual = 0;
+	$idAnterior = 1;
+	?>
+	<?php if($this->Destino){?>
+	<?php foreach($this->Destino as $destino):?>
+	<?php $Orgao = TramitarprojetosDAO::buscaOrgao ($destino->idDestino); foreach ($Orgao as $nomeOrgao){$nomeDestino = $nomeOrgao->Sigla; }?>
+	<?php if($x > 0){
+		$idAtual = $destino->idDestino; 
+	 }?>
+		<?php if($idAtual != $idAnterior){?>
+ 		<tr class="fundo_linha2">
+ 			<td colspan="9" align="left">
+ 				<img src="<?php echo $this->baseUrl(); ?>/public/img/icn_menos.gif" alt="Recolher" class="<?php echo $destino->idDestino; ?>" style="cursor:pointer;" onclick="sumiraqui('<?php echo $destino->idDestino; ?>');" />
+ 				<img src="<?php echo $this->baseUrl(); ?>/public/img/icn_mais.gif" alt="Expandir" class="<?php echo $destino->idDestino; ?>" style="cursor:pointer; display:none;" onclick="sumiraqui('<?php  echo $destino->idDestino; ?>');" />
+ 			 &nbsp;&nbsp;&nbsp;&nbsp; 
+ 			 <strong>Destino:</strong> &nbsp; <?php echo $nomeDestino; ?>&nbsp;&nbsp; | &nbsp;
+ 			 <a id="enviarPro" rel="external" href="<?php echo $this->url(array('controller' => 'tramitarprojetos', 'action' => 'despacharprojetos', 'Destino'=>$destino->idDestino)); ?>">Enviar Projetos</a>
+ 			</td>
+ 		</tr>
+ 		<tr class="<?php echo $destino->idDestino; ?>">
+ 			<th width="120">Processo</th>
+ 			<th width="50">PRONAC</th>
+ 			<th width="150">Nome do Projeto</th>
+ 			<th width="120">Despacho</th>
+ 			<th width="70">Situa&ccedil;&atilde;o</th>
+ 			<th width="70">Usu&aacute;rio</th>
+ 			<th width="70">Data</th> 			
+ 		</tr>
+ 		<?php foreach($this->Despacho as $despacho):?>
+		<?php if ($despacho->idDestino == $destino->idDestino){?>
+ 		<tr class="<?php echo $destino->idDestino; ?>">
+ 			<td align="center"><?php echo $despacho->Processo; ?></td>
+ 			<td align="center"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')); ?>?idPronac=<?php echo $despacho->idPronac; ?>" title="Consultar dados do projeto" target="_blank"><?php echo $despacho->Pronac; ?></a></td>
+ 			<td align="center"><?php echo $despacho->NomeProjeto; ?></td>
+ 			<td align="center"><?php echo $despacho->despacho; ?></td>
+ 			<td align="center" ><?php if ($despacho->Acao == 4) { echo "<b><font color='red'></font>"; } echo $despacho->Situacao;?></td>
+ 			<td align="center" ><?php echo $despacho->Emissor ?></td>
+ 			<td align="center" ><?php echo $despacho->dtEnvio ?></td> 
+ 		</tr>
+ 		<?php }?>
+ 		<?php $idAnterior = $destino->idDestino; ?>
+ 		<?php $x++;?>
+ 		<?php endforeach;?> <!-- FIM FOREACH DESPACHO -->
+ 		<?php }?>
+ 		<?php endforeach;?> <!-- FIM FOREACH DESTINO -->
+ 		<?php }
+ 		?>
+		
+ 		
+ </table>	
+<?php } else{?>
+ 
+	<table class="tabela">
+		<tr>
+			<td class="centro">Não há projetos para serem enviados!</td>
+		</tr>
+	</table>
+ 
+<?php 
+	}
+?>
+</fieldset>  
+ <?php }?>
+	
+<table class="tabela">
+	<tr>
+		<th class="fundo_linha2"><a href="#" class="abrir">Visualizar Projetos Enviados</a></th>
+	</tr>
+</table>
+
+<div style="display: none" class="enviados">
+<?php $historicodocumento = new HistoricoDocumento();?>
+<?php if (($this->Dest) && ($this->Desp)){
+$auth = Zend_Auth::getInstance(); // instancia da autenticação
+$idusuario = $auth->getIdentity()->usu_codigo; ?>
+<fieldset><legend> Projetos enviados </legend>
+ 	<table class="tabela">
+ 	<?php $x = 0;
+		$idAtual = 0;
+	 	$idAnterior = 1; ?>
+	<?php foreach($this->Dest as $destino):?>
+	<?php $Orgao = TramitarprojetosDAO::buscaOrgao ($destino->idDestino); foreach ($Orgao as $nomeOrgao){$nomeDestino = $nomeOrgao->Sigla; }?>
+	<?php if($x > 0){
+		$idAtual = $destino->idDestino; 
+	 }?>
+		<?php if($idAtual != $idAnterior){?>
+		<tr>
+ 			<td colspan="9" align="left" class="fundo_linha2">
+ 				<img src="<?php echo $this->baseUrl(); ?>/public/img/icn_menos.gif" class="<?php echo $destino->idDestino; ?>" style="cursor:pointer;" onclick="sumiraqui('<?php echo $destino->idDestino; ?>');" />
+ 				<img src="<?php echo $this->baseUrl(); ?>/public/img/icn_mais.gif" class="<?php echo $destino->idDestino; ?>" style="cursor:pointer; display:none;" onclick="sumiraqui('<?php  echo $destino->idDestino; ?>');" />
+ 			 &nbsp;&nbsp;&nbsp;&nbsp; 
+ 			 <strong>Lote Nr:</strong> &nbsp;<?php echo $destino->lote; ?> &nbsp;-&nbsp;
+ 			 <strong>Destino:</strong> &nbsp;<?php echo $nomeDestino; ?>&nbsp;&nbsp;
+ 			</td>
+ 		</tr>
+ 		<tr class="<?php echo $destino->idDestino; ?>">
+ 			<th width="80">Processo</th>
+ 			<th width="30">PRONAC</th>
+ 			<th width="150">Nome do Projeto</th>
+ 			<th width="120">Despacho</th>
+ 			<th width="70">Data Envio</th>
+ 			<th width="50">Situa&ccedil;&atilde;o</th>
+ 			<th width="70">Usu&aacute;rio</th>
+ 			<th width="100">Cancelar Envio</th>
+ 		</tr>
+ 		<?php foreach($this->Desp as $despacho):?>
+ 		<?php if($despacho->Acao == 2){?>
+ 		<?php if ($despacho->idDestino == $destino->idDestino){?>
+ 		<tr class="<?php echo $destino->idDestino; ?>">
+ 			<td align="center"><?php echo $despacho->Processo; ?></td>
+ 			<td align="center"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')); ?>?idPronac=<?php echo $despacho->idPronac; ?>" title="Consultar dados do projeto" target="_blank"><?php echo $despacho->Pronac; ?></a></td>
+ 			<td align="center"><?php echo $despacho->NomeProjeto; ?></td>
+ 			<td align="center"><?php echo $despacho->despacho; ?></td>
+ 			<td align="center"><?php echo  $despacho->dtEnvio;  ?></td>
+ 			<td align="center"><?php echo $despacho->Situacao ?></td>
+ 			<td align="center"><?php echo $despacho->Emissor ?></td>
+ 			<td align="center"><input type="button" class="btn_cancelar" onclick="recusar_projeto(<?php echo $despacho->idPronac ?>, <?php echo $destino->idDestino; ?>, '<?php echo $despacho->Pronac; ?>', '<?php echo $despacho->NomeProjeto; ?>', '<?php echo $despacho->idLote; ?>', '<?php echo $despacho->idOrigem; ?>')" />
+ 			</td> 
+ 		</tr>
+ 		<?php  }?>
+ 		<?php }?>
+ 		<?php $idAnterior = $destino->idDestino; ?>
+ 		<?php $x++;?>
+ 		<?php endforeach;?>  <!-- FIM FOREACH DESPACHO  --> 
+ 		<?php }?>
+ 		<?php endforeach;?>  <!-- FIM FOREACH DESTINO   -->
+ 						
+ 	</table>
+</fieldset> 
+<?php } else{?>
+
+	<table class="tabela">
+		<tr>
+			<td class="centro">Não há projetos enviados!</td>
+		</tr>
+	</table>
+
+<?php 
+}
+?>	   	
+</div>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCI RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

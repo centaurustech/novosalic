@@ -1,0 +1,267 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.btn_salvar').click(function(){
+            var validar = true;
+            $('.valida').each(function(){
+                if($(this).val() == ''){
+                    validar = false;
+                }
+            });
+            if(validar == false){
+                $("#error").dialog("destroy");
+                $('#error').html('Dados obrigatórios n&atilde;o informados.');
+                $("#error").dialog({
+                    modal: true,
+                    draggable: false,
+                    resizable: false,
+                    closeOnEscape: false,
+                    buttons: {
+                        'Ok': function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+                $('.ui-dialog-titlebar-close').remove();
+            }
+            if(erro) {
+                if (erro == 0){
+                    $("#confirm2").dialog("destroy");
+                    $("#confirm2").dialog({
+                        EscClose:false,
+                        modal:true,
+                        buttons:{
+                            'Ok':function(){
+                                $(this).dialog('close');
+                                return false;
+                            }
+                        }
+                    });
+                    return false;
+                } else {
+                    if (erro == 7){
+                        $("#confirm7").dialog("destroy");
+                        $("#confirm7").dialog({
+                            EscClose:false,
+                            modal:true,
+                            buttons: {
+                                'Ok':function(){
+                                    $(this).dialog('close');
+                                    return false;
+                                }
+                            }
+                        });
+                        return false;
+                    } else {
+                        if (erro == 8){
+                            $("#confirm8").dialog("destroy");
+                            $("#confirm8").dialog({
+                                EscClose:false,
+                                modal:true,
+                                buttons:{
+                                    'Ok':function(){
+                                        $(this).dialog('close');
+                                        return false;
+                                    }
+                                }
+                            });
+                            return false;
+                        } else {
+                            if($("#final").val() <= 0 || $("#inicial").val() <= 0){
+                                $("#confirm5").dialog("destroy");
+                                $("#confirm5").dialog({
+                                    EscClose:false,
+                                    modal:true,
+                                    buttons: {
+                                        'Ok':function(){
+                                            $(this).dialog('close');
+                                            return false;
+                                        }
+                                    }
+                                });
+                                return false;
+                            }
+
+                            if($("#final").val() < $("#inicial").val()){
+                                $("#confirm6").dialog("destroy");
+                                $("#confirm6").dialog({
+                                    EscClose:false,
+                                    modal:true,
+                                    buttons: {
+                                        'Ok':function(){
+                                            $(this).dialog('close');
+                                            return false;
+                                        }
+                                    }
+                                });
+                                return false;
+                            }
+
+                            $("#confirm4").dialog("destroy");
+                            $("#confirm4").dialog({
+                                EscClose:false,
+                                modal:true,
+                                buttons: {
+                                    'Cancelar':function(){
+                                        $(this).dialog('close');
+                                    },
+                                    'Confirmar':function(){
+                                        document.forms["form"].submit();
+                                    }
+                                }
+                            });
+                            return false;
+                        }
+                    }
+                }
+            }
+        });
+
+        $('.numero').keydown(function(event){
+            if((event.keyCode >= 96 && event.keyCode <= 105) || (event.keyCode >= 48 && event.keyCode <= 57) || event.keyCode == 8 || event.keyCode ==9 ){
+                return true;
+            } else {
+                return false;
+            }
+        });
+
+    });
+
+    function sumiraqui(id){
+        $('img[class='+id+']').toggle();
+        $('tr[class='+id+']').toggle();
+    }
+
+    function buscarProjeto2(v){
+        $.ajax({
+            url : '<?php echo $this->url(array('controller' => 'tramitarprojetos', 'action' => 'buscaprojetodesarquivado')); ?>',
+            data : {
+                pronac: v,
+                codOrgao: <?php echo $this->codOrgao; ?>,
+                msg : 'ok'
+            },
+            success: function(data){
+                recebe = $('#orgaoERROR');
+                if(data.resposta){
+                    for ( i in data.conteudo){
+                        recebe.html(data.conteudo.NomeProjeto+' - '+data.conteudo.Processo+' - '+data.conteudo.Sigla+' - '+data.conteudo.Orgao);
+                        recebe.css("color", "black");
+                        erro = 1;
+                    }
+                } else {
+                    recebe.html('Este projeto já se encontra arquivado');
+                    recebe.css("color", "red");
+                    erro = 0;
+                }
+            },
+            type : 'post'
+            ,dataType : 'json'
+        });
+    }
+
+    function buscarProjeto(v){
+        $.ajax({
+            url : '<?php echo $this->url(array('controller' => 'tramitarprojetos', 'action' => 'buscaprojetodespachar')); ?>',
+            data : {
+                pronac: v,
+                msg : 'ok'
+            },
+            success: function(data){
+                recebe = $('#orgaoERROR');
+                if(data.resposta){
+                    for ( i in data.conteudo){
+                        buscarProjeto2(v);
+                    }
+                } else {
+                    if($("#pronac").val().length < 6){
+                        $("#error").html('Pronac tem que ter no mínimo 7 caracteres!');
+                        $("#error").dialog('open');
+                        $("#error").dialog({
+                            modal: true,
+                            draggable: false,
+                            resizable: false,
+                            closeOnEscape: false,
+                            buttons: {
+                                'Ok': function(){
+                                    $(this).dialog('close');
+                                }
+                            }
+                        });
+                        $(".ui-dialog-titlebar-close").remove();
+                        erro = 8;
+                    } else {
+                        recebe.html('Pronac Inexistente.');
+                        recebe.css("color", "red");
+                        erro = 7;
+                    }
+                }
+            },
+            type : 'post'
+            ,dataType : 'json'
+        });
+    }
+</script>
+
+<?php require_once "inc/menu.inc.php"; // menu ?>
+<div id="confirm1" title="Alerta!" class="sumir">Dados obrigatórios não informados!</div>
+<div id="confirm2" title="Alerta!" class="sumir">Este projeto já se encontra Arquivado!</div>
+<div id="confirm4" title="Alerta!" class="sumir">Tem certeza que deseja arquivar este projeto?</div>
+<div id="confirm5" title="Alerta!" class="sumir">O número da caixa deve ser maior que 0.</div>
+<div id="confirm6" title="Alerta!" class="sumir">A caixa inicial não poder ser maior que a final!</div>
+<div id="confirm7" title="Alerta!" class="sumir">Pronac Inexistente</div>
+<div id="confirm8" title="Alerta!" class="sumir">Pronac tem que ter no mínimo 6 caracteres!</div>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para p&aacute;gina inicial">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'tramitarprojetos', 'action' => 'index')); ?>" title="Ir para Tramitar projetos">Tramitar projetos</a></li>
+        <li class="last">Arquivamento de projetos</li>
+    </ul>
+</div>
+<!-- ========== FIM BRADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Arquivamento de projetos <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+<div id="error" class="sumir" title="Alerta!"></div>
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <form name="form" id="form" method="post" >
+        <table class="tabela" width="50%" align="center">
+            <tr>
+                <td class="destacar bold" align="right" width="120"><label for="name">PRONAC <span style="color: red;">*</span></label></td>
+                <td colspan="3">
+                    <input type="text" class="input_simples valida numero" name="pronac" id="pronac" value="" size="10" maxlength="7" style="float:left"
+                           onchange="buscarProjeto(this.value);" />
+                    <div id="orgaoERROR" style="color:#FF0000; float:left; margin-left: 10px">&nbsp;</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right" width="120"><label for="name">Cx Inicial <span style="color: red;">*</span></label></td>
+                <td width="120">
+                    <input type="text" class="input_simples valida numero" name="inicial" id="inicial" value="" size="10" maxlength="6" />
+                </td>
+                <td class="destacar bold" align="right" width="120"><label for="name">Cx Final <span style="color: red;">*</span></label></td>
+                <td>
+                    <input type="text" class="input_simples valida numero" name="final" id="final" value="" size="10" maxlength="6" />
+                </td>
+            </tr>
+        </table>
+        <table class="tabela">
+            <tr>
+                <td align="center"><input type="button" class="btn_salvar" id="btn_salvar" title="Salvar" /></td>
+            </tr>
+        </table>
+    </form>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

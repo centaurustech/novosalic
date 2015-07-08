@@ -1,0 +1,76 @@
+<?php
+$nmArquivo = 'planilha de Custos';
+
+header("Content-type: application/vnd.ms-excel; name='excel'");
+header("Content-Disposition: filename=$nmArquivo.xls");
+header("Pragma: no-cache");
+header("Expires: 0");
+
+$output = '
+			<style>
+				th{
+					background:#ABDA5D;
+					color:#3A7300;
+					text-transform:uppercase;
+					font-size:14px;
+        			font-weight: bold;
+        			font-family: sans-serif;
+        			
+        			line-height: 16px;
+        		}
+        		td{
+        			color:#000;
+        			font-size:14px;
+        			font-family: sans-serif;
+        			
+        			line-height: 14px;	
+        		}
+        		.blue{
+        			color: blue;
+        		}
+        		.red{
+        			color: red;
+        		}
+        		.orange{
+        			color: orange;
+        		}
+        		.green{
+        			color: green;
+        		}
+        		
+        		.direita{
+        			text-align: left;
+        		}
+        		
+        		.centro{
+        			text-align: center;
+        		}
+        		
+			</style>';
+
+
+
+$output .= $_POST['html'];
+
+$patterns = array();
+$patterns[] = '/<table.*?>/is';
+$patterns[] = '/<thead>/is';
+$patterns[] = '/<\/thead>/is';
+$patterns[] = '/<tbody>/is';
+$patterns[] = '/<\/tbody>/is';
+$patterns[] = '/<col.*?>/is';
+$patterns[] = '/<a.*?>/is';
+
+$replaces = array();
+$replaces[] = '<table cellpadding="0" cellspacing="1" border="1" width="97%" align="center">';
+$replaces[] = '';
+$replaces[] = '';
+$replaces[] = '';
+$replaces[] = '';
+$replaces[] = '';
+$replaces[] = '';
+
+$output = preg_replace($patterns,$replaces,$output);
+
+echo $output;
+?>

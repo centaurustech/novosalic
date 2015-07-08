@@ -1,0 +1,179 @@
+<?php
+$resumoHref     =   $this->url(array('controller' => 'gerarrelatorioparecerista', 'action' => 'resumo'));
+$estahref       =   $this->url(array('controller' => 'gerarrelatorioparecerista', 'action' => 'resaguardandoparecer'));
+include_once 'inc/funcoes.inc.php';
+?>
+<div id="menu">
+    <!-- início: conteúdo principal #container -->
+    <div id="container">
+        <?php include_once 'inc/menu.inc.php';?>
+        <!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+        <div id="breadcrumb">
+            <ul>
+                <li class="first"><a href="index.phtml" title="Ir para Início">Início</a></li>
+
+                <li class="last">Principal</li>
+            </ul>
+        </div>
+        <!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+        <!-- ========== BUTTON VOLTAR ========== -->
+        <div id="titulo">
+            <div>Projeto aguardando distribuição<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+        </div>
+        <!-- ========== FIM TÍTULO ========== -->
+        <!-- ========== GRID NOME DA PROPOSTA ========== -->
+        <div id="conteudo" align="center">
+            <?php
+            if(count($this->tudo)>0){
+                ?>
+
+                <table class="tabela">
+                    <tr>
+                        <td align="center">
+                            <input type="button" class="btn_pdf" style="width: 40px;" />
+                            <input type="button" class="btn_xls" style="width: 40px;" />
+                            <input type="button" class="btn_resumo" style="width: 80px;" />
+                        </td>
+                    </tr>
+                </table>
+                <table class="tabela">
+                    <?php
+                    foreach ($this->tudo as $idOrgao => $orgao){
+                        $cParecerista = 1;
+                        foreach ($orgao['pareceristas'] as $idParecerista => $pareceristas){
+                            $cProjeto = 1;
+                            foreach($pareceristas['projetos'] as $pronac=>$Projetos){
+                                $cProduto = 1;
+                                foreach ($Projetos['Produtos'] as $idProdutos=>$produtos){
+                                    if($cProduto==1){
+                                        $cDistribuir = 1;
+                                        foreach ($produtos['distribuicao'] as $distribuicao) {
+                                            if($cDistribuir==1){
+                                                if($cProjeto==1){
+                                                    if($cParecerista == 1){
+                                                        ?>
+                                                        <tr>
+                                                            <td colspan="9">&Oacute;rg&atilde;o : <?php echo $orgao['nmOrgao']?></td>
+                                                        </tr>
+                                                        <?php
+                                                    }
+                                                    ?>
+                                                    <tr>
+                                                        <td colspan="9">Parecerista : <?php echo $pareceristas['nmParecerista'];?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th width="50">PRONAC</th>
+                                                        <th>Nome do Projeto</th>
+                                                        <th>Produto</th>
+                                                        <th width="80">Dt Envio</th>
+                                                        <th width="50">QTD de Dias para distribui&ccedil;&atilde;o</th>
+                                                        <th width="100">Dt Distribui&ccedil;&atilde;o</th>
+                                                    </tr>
+                                                    <?php
+                                                }
+                                                ?>
+                                                <tr>
+                                                    <td><a target="_blank" href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'))."?idPronac=".$Projetos['idPronac'];?>"><?php echo $Projetos['pronac'];?></a></td>
+                                                    <td><?php echo $Projetos['nmProjeto'];?></td>
+                                                    <td><?php echo $produtos['nmProduto'];?></td>
+                                                    <td align="center"><?php echo $distribuicao['dtEnvio'];?></td>
+                                                    <td align="center"><?php echo $distribuicao['qtDias'];?></td>
+                                                    <td align="center"><?php echo $distribuicao['dtDistribuicao'];?></td>
+                                                </tr>
+                                                <?php
+                                                $cDistribuir++;
+                                            }
+                                            //else{
+                                                ?>
+                                                <!-- <tr>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td align="center"><?php //echo $distribuicao['dtEnvio'];?></td>
+                                                    <td align="center"><?php //echo $distribuicao['qtDias'];?></td>
+                                                    <td align="center"><?php //echo $distribuicao['dtDistribuicao'];?></td>
+                                                </tr> -->
+                                                <?php
+                                            //}
+
+                                        }
+                                        $cProduto++;
+                                    }
+                                    else{
+                                        $cDistribuir = 1;
+                                        foreach ($produtos['distribuicao'] as $distribuicao) {
+                                            if($cDistribuir==1){
+                                                ?>
+                                                <tr>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td><?php echo $produtos['nmProduto'];?></td>
+                                                    <td align="center"><?php echo $distribuicao['dtEnvio'];?></td>
+                                                    <td align="center"><?php echo $distribuicao['qtDias'];?></td>
+                                                    <td align="center"><?php echo $distribuicao['dtDistribuicao'];?></td>
+                                                </tr>
+                                                <?php
+                                                $cDistribuir++;
+                                            }
+                                            //else{
+                                                ?>
+                                                <!-- <tr>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td align="center"><?php //echo $distribuicao['dtEnvio'];?></td>
+                                                    <td align="center"><?php //echo $distribuicao['qtDias'];?></td>
+                                                    <td align="center"><?php //echo $distribuicao['dtDistribuicao'];?></td>
+                                                </tr> -->
+                                                <?php
+                                            //}
+                                        }
+                                    }
+                                }
+                                $cProjeto++;
+                            }
+                            $cParecerista++;
+                        }
+                    }
+                    ?>
+                </table>
+                <form id="frResumo" action="<?php echo $resumoHref;?>" method="post">
+                    <?php
+                    foreach ($this->post as $key=>$info){
+                        ?>
+                        <input type="hidden" name="<?php echo $key;?>" value="<?php echo $info;?>"/>
+                        <?php
+                    }
+                    ?>
+                </form>
+                <?php
+                include_once 'inc/paginacao.inc.php';
+                include_once 'inc/geraranexo.inc.php';
+            }
+            else{
+                ?>
+                <table class="tabela">
+                    <tr>
+                        <th align="center">
+                            Dados n&atilde;o localizados!
+                        </th>
+                    </tr>
+                </table>
+                <?php
+            }
+            ?>
+        </div>
+        <!-- ========== FIM CONTEÚDO ========== -->
+        <!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+        <div id="rodapeConteudo"><span></span></div>
+        <!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+        <br clear="all" />
+    </div>
+</div>
+
+<script type="text/javascript">
+    $('.btn_resumo').click(function(){
+        $('#frResumo').submit();
+    });
+</script>

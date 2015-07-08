@@ -1,0 +1,563 @@
+<?php require_once "inc/menu.inc.php"; ?>
+<script type="text/javascript">
+
+function buscaragente(cpf)
+    {
+        $('#erroCpf').html('Aguarde!');
+
+        value = $("#cpf").val();
+
+        if (value == '')
+        {
+            $('#erroCpf').html('Informe o CPF/CNPJ!');
+        }
+        else if (value.length < 14)
+        {
+            $('#erroCpf').html('CPF Incompleto!');
+        }
+        else if (value.length != 14)
+        {
+            $('#erroCpf').html('CPF inválido!');
+        }
+        else
+        {
+            $('#erroCpf').html('');
+            // retira as máscaras do cpf/cnpj
+            value = value.replace(".","");
+            value = value.replace(".","");
+            value = value.replace("/","");
+            cpf = value.replace("-","");
+
+            // faz a verificação do agente via post
+            $.ajax({
+                type: "POST",
+                dataType: 'json',
+                data: {
+                    cpf: cpf
+                },
+                url: '<?php echo $this->url(array("controller" => "agentes", "action" => "agentecadastrado")); ?>',
+
+                success: function (data)
+                {
+                    if (data[0].msgCPF == 'cadastrado')
+                    {
+                        $('#novocadastro').hide();
+                        $('#carregando').show();
+                        window.location = '<?php echo $this->url(array("controller" => "agentes", "action" => "visualizadirigente", "id" => $this->id)); ?>/idDirigente/'+ data[0].idAgente;
+                    } 
+                    else if (data[0].msgCPF == 'invalido')
+                    {
+                        $('#erroCpf').html('CPF/CNPJ Inválido');
+                    }
+                    else if (data[0].msgCPF == 'novo') 
+                    {
+                        $('#novo').html('Preencha os dados abaixo!');
+                        $('.novo').show();
+                    } 
+                
+                },
+                error: function (data)
+                {
+                    alert("Falha na recuperação dos dados.\nNão foi possível carregar agente!");
+                }
+            }); 
+
+        } 
+    }
+
+    function buscarcep(cep)
+    {
+        // pega os dados a serem populados
+        logradouro     = document.getElementById("logradouro");
+        tipoLogradouro = document.getElementById("tipoLogradouro");
+        bairro         = document.getElementById("bairro");
+        cidade         = document.getElementById("cidade");
+        uf             = document.getElementById("uf");
+
+        ajax = xmlhttp(); // instancia ajax
+        ajax.open("GET", "<?php echo $this->url(array('controller' => 'cep', 'action' => 'cep')); ?>?cep=" + cep, true);
+        ajax.onreadystatechange = function()
+        {
+            if (cep.length != 10)
+            {
+                $('#erroCep').html("O CEP informado é inválido!");
+            }
+            else
+            {
+                $('#erroCep').html("");
+            }
+
+            // enquanto estiver processando bloqueia os campos
+            if (ajax.readyState > 0 && ajax.readyState <= 3 && cep.length == 10)
+            {
+            
+                $("#logradouro").attr("disabled" , "disabled");
+                $("#tipoLogradouro").attr("disabled" , "disabled");
+                $("#bairro").attr("disabled" , "disabled");
+                $("#cidade").attr("disabled" , "disabled");
+                $("#uf").attr("disabled" , "disabled");
+			
+                logradouro.value               = "carregando...";
+                tipoLogradouro.options[0].text = "carregando...";
+                bairro.value                   = "carregando...";
+                cidade.options[0].text         = "carregando...";
+                uf.options[0].text             = "...";
+            
+                $('#erroCep').html("<img src='/public/img/ajax.gif' alt='' /> Aguarde...");
+            }
+            if (ajax.readyState == 4 && ajax.status == 200 && cep.length == 10)
+            {
+                // divide a string para colocar cada uma em seu campo
+                var s = ajax.responseText;
+
+                if (s == "") // caso os dados retornem vazios ou o cep não exista
+                {
+                    logradouro.value               = " ";
+                    tipoLogradouro.options[0].text = " - Selecione - ";
+                    bairro.value                   = " ";
+                    cidade.options[0].text         = " - Selecione - ";
+                    uf.options[0].text             = " -- ";
+                    $('#erroCep').html("O CEP informado é inválido!");
+                }
+                else // caso o cep exista
+                {
+                    $('#erroCep').html("");
+                    txtLogradouro = s.substring(0, (i = s.indexOf(':')));
+                    s = s.substring(++i);
+                    txtTipoLogradouro = s.substring(0, (i = s.indexOf(':')));
+                    s = s.substring(++i);
+                    txtBairro = s.substring(0, (i = s.indexOf(':')));
+                    s = s.substring(++i);
+                    txtCodCidade = s.substring(0, (i = s.indexOf(':')));
+                    s = s.substring(++i);
+                    txtCidade = s.substring(0, (i = s.indexOf(':')));
+                    s = s.substring(++i);
+                    txtUF = s.substring(0, (i = s.indexOf(';')));
+
+                    // volta os textos dos combos
+                    tipoLogradouro.options[0].text = " - Selecione - ";
+                    cidade.options[0].text         = " - Selecione - ";
+                    uf.options[0].text             = " -- ";
+                    if (txtUF == "" && txtCidade == "")
+                    {
+                        cidade.options[0].text = " - Selecione primeiro o UF - ";
+                    }
+
+
+                    // logradouro
+                    logradouro.value = txtLogradouro;
+                    if (txtLogradouro == "")
+                    {
+                        logradouro.disabled = false; // habilita para preenchimento
+                    }
+
+
+                    // tipoLogradouro
+                    // seleciona o combo de acordo com a lista existente no formulário
+                    for (i = 0; i < tipoLogradouro.options.length; i++)
+                    {
+                        if (txtTipoLogradouro == tipoLogradouro.options[i].text)
+                        {
+                            // seleciona o ítem igual
+                            tipoLogradouro.options[i].selected = true;
+                        }
+                    }
+                    if (tipoLogradouro.options[tipoLogradouro.selectedIndex].value == "" ||
+                        tipoLogradouro.options[tipoLogradouro.selectedIndex].text != txtTipoLogradouro)
+                    {
+                        tipoLogradouro.options[0].selected = true; // seleciona o primeiro option
+                        tipoLogradouro.disabled = false; // habilita para preenchimento
+                    }
+
+
+                    // bairro
+                    bairro.value = txtBairro;
+
+                    if (txtBairro == "")
+                    {
+                        bairro.disabled = false; // habilita para preenchimento
+                    }
+
+
+                    // uf
+                    // seleciona o combo de acordo com a lista existente no formulário
+                    for (i = 0; i < uf.options.length; i++)
+                    {
+                        if (txtUF == uf.options[i].text)
+                        {
+                            // seleciona o ítem igual
+                            uf.options[i].selected = true;
+                        }
+                    }
+                    if (uf.options[uf.selectedIndex].value == "" ||
+                        uf.options[uf.selectedIndex].text != txtUF)
+                    {
+                        uf.options[0].selected = true; // seleciona o primeiro option
+                        uf.disabled = false; // habilita para preenchimento
+                    }
+
+
+                    // cidade
+                    // verifica se a cidade veio vazia
+                    if (txtCidade == "")
+                    {
+                        cidade.disabled = false; // habilita para preenchimento
+                    }
+                    // preenche o combo com a cidade
+                    else
+                    {
+                        // deixa apenas um elemento no combo, os outros são excluídos
+                        document.getElementById("cidade").options.length = 0;
+	
+                        // cria um novo option
+                        var novo   = document.createElement("option");
+                        novo.value = txtCodCidade; // atribui um valor ao option
+                        novo.text  = txtCidade; // atribui um texto ao option
+                        document.getElementById("cidade").options.add(novo);
+                    }
+                } // fecha if
+            
+            } // fecha else
+        
+        } // fecha onreadystatechange
+
+        ajax.send(null);
+    
+    } // fecha função buscar_cep()
+
+
+
+
+
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="#" title="Ir para Início">Início</a></li>
+        <li><a href="#" title="Tramitação de Documentos">Manter Agentes</a></li>
+        <li class="last">Principal</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div id="novo">Incluir Dirigente<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <div id="carregando" class="sumir">
+        <table class="tabela">
+            <tr>
+                <td align="center" style="font-size: 18px;">
+                    <img alt="" src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /><br /><br />
+                    Agente já cadastrado, aguarde...
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="novocadastro">
+        <form name="formCadAgentes" id="formCadAgentes" method="post" action="<?php echo $this->url(array('controller' => 'agentes', 'action' => 'salvadirigentegeral')); ?>">
+
+            <input type="hidden" name="grupologado" id="grupologado" class="input_simples" value="<?php echo $this->grupoativo; ?>" />	
+
+            <table id="tabDados" class="tabela">
+                <tr>
+                    <th colspan="6">DADOS PRINCIPAIS</th>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="cpf">CPF *</label>
+                        <br />
+                        <input class="input_simples" type="text" name="cpf" id="cpf" maxlength="14" 
+                               onkeyup="mascara(this, format_cpf);" 
+                               onclick="limpar_campo(this, ' ');" 
+                               onkeypress="limpar_campo(this, ' ');"
+                               onblur="buscaragente(this.value);" 
+                               onmouseout="restaurar_campo(this, ' ');" 
+                               value=""  />
+
+                        &nbsp; <span id="erroCpf" class="spanError"></span>
+                        <input type="hidden" id="idAgente" name="idAgente" />
+                    </td>
+                    <td>
+                        <label for="nome">Nome *</label>
+                        <br />
+                        <input class="input_simples" type="text" name="nome" id="nome" maxlength="70" size="50" 
+                               onclick="limpar_campo(this, ' ');" onkeypress="limpar_campo(this, ' ');"
+                               onblur="restaurar_campo(this, ' ');" onmouseout="restaurar_campo(this, ' ');" />
+
+                        &nbsp; <span id="erroNome" class="spanError"></span>
+                    </td>
+                    <td align="center">
+                        <label for="visao"> Informe a visão do Agente: </label>
+
+                        <select name="visao" id="visao" onchange="verificarVisao(this.value, <?php echo $this->grupoAtivo; ?>);" class="input_simples" style="width: 250px;">
+                            <option value="198" selected="selected">Dirigente de instituição</option>
+                        </select>
+                        &nbsp; <span id="erroVisao" class="spanError"></span>
+                        &nbsp; <span id="spanVisao"></span>
+                    </td>
+                </tr>
+            </table>
+
+
+            <!-- ========== INÍCIO FORMULÁRIO ENDERECO ========== -->
+            <table id="tabEndereco" class="tabela">
+                <tr>
+                    <th colspan="3">Novo Endereço</th>
+                </tr>
+                <tr>
+                    <td width="30%">
+                        <label for="cep">CEP *</label><br />
+                        <input class="input_simples"  type="text" name="cep" id="cep" maxlength="10" onkeyup="mascara(this, format_cep);" onblur="buscarcep(this.value);" 
+                               onclick="limpar_campo(this, ' ');" onkeypress="limpar_campo(this, ' ');"
+                               onblur="restaurar_campo(this, ' ');" onmouseout="restaurar_campo(this, ' ');" value=" " />
+
+                        &nbsp; <span id="erroCep" class="spanError"></span>
+                    </td>
+                    <td width="30%">
+                        <label for="uf">UF *</label> <br />
+                        <select name="uf" id="uf" disabled="disabled" class="input_simples" onchange="carregar_combo(this.value,'cidade','<?php echo $this->url(array('controller' => 'cidade', 'action' => 'combo')); ?>',' - Selecione primeiro o UF - ');"	>
+
+                            <?php if (!isset($this->uf) || empty($this->uf)) { ?>
+                                <option value="0"> -- </option>
+                            <?php } ?>
+
+                            <?php foreach ($this->comboestados as $comboestado): ?>
+                                <option value="<?php echo $comboestado->id; ?>"
+                                        <?php if ($this->uf == $comboestado->id) echo "selected=\"selected\""; ?> >
+                                            <?php echo $comboestado->descricao; ?>
+                                </option>
+                            <?php endforeach; ?>
+
+                        </select>
+                        <span id="erroUf" class="spanError"></span>
+                    </td>
+                    <td>
+                        <label for="cidade">Cidade *</label> <br />
+                        <select name="cidade" disabled="disabled" id="cidade" class="input_simples" style="width: 250px;">
+                            <option value="0"> - Selecione - </option>
+
+                            <?php foreach ($this->combocidades as $combocidade): ?>
+                                <option value="<?php echo $combocidade->id; ?>"
+                                        id="<?php echo $combocidade->idUF; ?>"
+                                        <?php if ($this->cidade == $combocidade->id) echo "selected=\"selected\""; ?>>
+                                            <?php echo $combocidade->descricao; ?>
+                                </option>
+                            <?php endforeach; ?>
+
+                        </select>
+                        <span id="erroCidade" class="spanError"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="tipoEndereco">Tipo de Endereço *</label> <br />
+                        <select name="tipoEndereco" id="tipoEndereco" class="input_simples" style="width: 250px;">
+
+                            <?php if (!isset($this->tipoEndereco) || empty($this->tipoEndereco)) { ?>
+                                <option value="0"> - Selecione - </option>
+                            <?php } ?>
+
+                            <?php foreach ($this->combotiposenderecos as $combotipoendereco): ?>
+                                <option value="<?php echo $combotipoendereco->id; ?>"
+                                        <?php if ($this->tipoEndereco == $combotipoendereco->id) echo "selected=\"selected\""; ?>>
+                                            <?php echo $combotipoendereco->descricao; ?>
+                                </option>
+                            <?php endforeach; ?>
+
+                        </select>
+                        <span id="erroTipoEndereco" class="spanError"></span>
+                    </td>
+                    <td>
+                        <label for="tipoLogradouro">Tipo de Logradouro *</label> <br />
+                        <select name="tipoLogradouro" id="tipoLogradouro" class="input_simples" style="width: 250px;">
+
+                            <?php if (!isset($this->tipoLogradouro) || empty($this->tipoLogradouro)) { ?>
+                                <option value="0"> - Selecione - </option>
+                            <?php } ?>
+
+                            <?php foreach ($this->combotiposlogradouros as $combotipologradouro): ?>
+                                <option value="<?php echo $combotipologradouro->id; ?>"
+                                        <?php if ($this->tipoLogradouro == $combotipologradouro->id) echo "selected=\"selected\""; ?>>
+                                            <?php echo $combotipologradouro->descricao; ?>
+                                </option>
+                            <?php endforeach; ?>
+
+                        </select>
+                        <span id="erroTipoLogradouro" class="spanError"></span>
+                    </td>
+                    <td>
+                        <label for="logradouro">Logradouro *</label> <br />
+                        <input class="input_simples" disabled="disabled" type="text" name="logradouro" id="logradouro" maxlength="50" size="50" />
+                        <span id="erroLogradouro" class="spanError"></span>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td>
+                        <label for="numero">Número *</label> <br />
+                        <input class="input_simples" type="text" name="numero" id="numero" maxlength="10" size="30" />
+                        <span id="erroNumero" class="spanError"></span>
+                    </td>
+                    <td>
+                        <label for="complemento">Complemento</label> <br />
+                        <input class="input_simples" type="text" name="complemento" id="complemento" maxlength="70" size="50" />
+                        <span id="erroComplemento" class="spanError"></span>
+                    </td>
+                    <td colspan="2">
+                        <label for="bairro">Bairro *</label> <br />
+                        <input class="input_simples" disabled="disabled" type="text" name="bairro" id="bairro" maxlength="70" size="50" />
+                        <span id="erroBairro" class="spanError"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <label>Autorizo divulgar o endereço</label>
+                        <input type="radio" name="divulgarEndereco" id="divulgarEnderecoS" value="1" class="checkradio"  style="background: none; border: 0%; float:none; clear:auto; display:inline;" />
+                        <label for="divulgarFoneS">Sim</label>
+                        <input type="radio" name="divulgarEndereco" id="divulgarEnderecoN" value="0" class="checkradio" checked="checked"  style="background: none; border: 0%; float:none; clear:auto; display:inline;" />
+                        <label for="divulgarFoneN">Não</label>
+                    </td>
+                </tr>
+            </table>
+            <!-- ========== FIM FORMULÁRIO ENDERECO ========== -->
+
+
+
+            <!-- ========== INÍCIO FORMULÁRIO FONE ========== -->
+            <table id="tabFone" class="tabela">
+                <tr>
+                    <th colspan="5">TELEFONE</th>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="tipoFone">Tipo *</label>
+                        <br />
+                        <select name="tipoFone" id="tipoFone" class="input_simples">
+                            <option value=""> - Selecione - </option>
+
+                            <?php foreach ($this->combotipostelefones as $combotipotelefone) { ?>
+                                <option value="<?php echo $combotipotelefone->id; ?>"><?php echo $combotipotelefone->descricao; ?></option>
+                            <?php } ?>
+
+                        </select>
+
+                        &nbsp; <span id="erroTipoFone" class="spanError"></span>
+                    </td>
+                    <td>
+                        <label for="ufFone">UF *</label>
+                        <br />
+                        <select name="ufFone" id="ufFone" class="input_simples" onchange="carregar_combo(this.value,'dddFone','<?php echo $this->url(array('controller' => 'ddd', 'action' => 'combo')); ?>');">
+                            <option value="0"> -- </option>
+
+                            <?php foreach ($this->comboestados as $combouffone) { ?>
+                                <option value="<?php echo $combouffone->id; ?>"><?php echo $combouffone->descricao; ?></option>
+                            <?php } ?>
+
+                        </select>
+
+                        &nbsp; <span id="erroUfFone" class="spanError"></span>
+                    </td>
+                    <td>
+                        <label for="dddFone">DDD *</label>
+                        <br />
+                        <select name="dddFone" id="dddFone" class="input_simples">
+                            <option value=""> -- </option>
+                        </select>
+
+                        &nbsp; <span id="erroDddFone" class="spanError"></span>
+                    </td>
+                    <td>
+                        <label for="fone">Telefone *</label>
+                        <br />
+                        <input type="text" name="fone" id="fone" maxlength="9" class="input_simples w100" onkeyup="mascara(this, format_tel);" 
+                               onclick="limpar_campo(this, ' ');" onkeypress="limpar_campo(this, ' ');" 
+                               onblur="restaurar_campo(this, ' ');" onmouseout="restaurar_campo(this, ' ');" value=" " />
+
+                        &nbsp; <span id="erroFone" class="spanError"></span>
+                    </td>
+                    <td>
+                        <label>Divulgar? *</label>
+                        <br />
+                        <input type="radio" name="divulgarFone" id="divulgarFoneS" value="1" class="checkradio"  style="background: none; border: 0%; float:none; clear:auto; display:inline;" /> 
+                        <label for="divulgarFoneS">Sim</label> 
+                        <input type="radio" name="divulgarFone" id="divulgarFoneN" value="0" class="checkradio" checked="checked"  style="background: none; border: 0%; float:none; clear:auto; display:inline;" /> 
+                        <label for="divulgarFoneN">Não</label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th colspan="5">E-MAIL</th>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="tipoEmail">Tipo *</label> 
+                        <br />
+                        <select name="tipoEmail" id="tipoEmail" class="input_simples">
+                            <option value="0">- Selecione - </option>
+
+                            <?php foreach ($this->combotiposemails as $combotipoemail) { ?>
+                                <option value="<?php echo $combotipoemail->id; ?>"><?php echo $combotipoemail->descricao; ?></option>
+                            <?php } ?>
+
+                        </select>
+
+                        &nbsp; <span id="erroTipoEmail" class="spanError"></span>
+                    </td>
+                    <td>
+                        <label for="email">E-mail *</label>
+                        <br />
+                        <input type="text" name="email" id="email" class="input_simples w200" size="50" maxlength="70" 
+                               onclick="limpar_campo(this, ' ');" 
+                               onkeypress="limpar_campo(this, ' ');" 
+                               onblur="restaurar_campo(this, ' ');" 
+                               onmouseout="restaurar_campo(this, ' ');" 
+                               value=" " />
+
+                        &nbsp; <span id="erroEmail" class="spanError"></span>	
+                    </td>
+                    <td colspan="3">
+                        <label>Posso Divulgar? *</label> 
+                        <br />
+                        <input type="radio" name="divulgarEmail" id="divulgarEmailS" value="1" style="background: none; border: 0%; float:none; clear:auto; display:inline;" /> 
+                        <label for="divulgarEmailS">Sim</label> 
+                        <input type="radio" name="divulgarEmail" id="divulgarEmailN" value="0" class="checkradio" checked="checked"   style="background: none; border: 0%; float:none; clear:auto; display:inline;"/> 
+                        <label for="divulgarEmailN">Não</label>
+                    </td>
+                </tr>
+                
+               
+            <!-- ========== FIM FORMULÁRIO E-MAIL ========== -->
+            
+            </table>
+            <table class="tabela">
+                <tr>
+                    <td class="centro"><input type="button" class="btn_salvar" value=" " onclick="validaDirigenteNovo();"  /></td>
+                </tr>
+            </table>
+
+        </form>
+
+    </div>		
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

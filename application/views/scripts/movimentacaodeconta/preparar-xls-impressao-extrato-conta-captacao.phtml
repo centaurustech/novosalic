@@ -1,0 +1,48 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#conteudoXLS').val($('#conteudoImprimivel').html());
+        <?php if($this->tipo == 'xls'): ?>
+                $('#formGerarXls').attr("action",'<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'gerar-xls')); ?>');
+        <?php else: ?>
+                $('#formGerarXls').attr("action",'<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'imprimir-extrato-captacao')); ?>');
+        <?php endif; ?>
+        $('#formGerarXls').submit();
+    });
+</script>
+<form method="POST" id="formGerarXls" name="formGerarXls" action="" style="display:none">
+    <textarea name="html" id="conteudoXLS"></textarea>
+</form>
+<div class="conteudoImprimivel" id="conteudoImprimivel" style="display:none">
+<table class="tabela" >
+     <tbody>
+    <tr>
+        <th width="10%" bgcolor="#D0D0D0">Pronac</th>
+        <th width="10%" bgcolor="#D0D0D0">CPF/CNPJ</th>
+        <th width="20%" bgcolor="#D0D0D0">Incentivador</th>
+        <th width="10%" bgcolor="#D0D0D0">N&ordm; do Lote</th>
+        <th width="10%" bgcolor="#D0D0D0">Dt. do Lote</th>
+        <th width="10%" bgcolor="#D0D0D0">Dt. Capta&ccedil;&atilde;o</th>
+        <th width="10%" bgcolor="#D0D0D0">Vl. Captado</th>
+    </tr>
+    <?php if(count($this->registros) > 0):?>
+    <?php foreach($this->registros as $projeto):?>
+    <tr>
+        <td class="centro"><?php echo $projeto->PRONAC; ?></td>
+        <td class="centro"><?php echo Validacao::mascaraCPFCNPJ($projeto->CgcCpfMecena); ?></td>
+        <td><?php echo $projeto->Incentivador; ?></td>
+        <td class="centro"><?php echo $projeto->NumeroRecibo; ?></td>
+        <td class="centro"><?php echo date("d/m/Y",strtotime($projeto->DtChegadaRecibo)); ?></td>
+        <td class="centro"><?php echo date("d/m/Y",strtotime($projeto->DtRecibo)); ?></td>
+        <td class="direita"><?php echo "R$ ".number_format($projeto->CaptacaoReal,'2',',','.'); ?></td>
+    </tr>
+    <?php endforeach; ?>
+    <?php else: ?>
+    <tr>
+        <td colspan="8" valign="top" class="centro">Nenhum Registro Encontrado</td>
+    </tr>
+    <?php endif; ?>
+    </tbody>
+</table>
+</div>
+
+

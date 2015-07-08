@@ -1,0 +1,159 @@
+<?php
+/**
+ * Substituição de comprovantes (Acesso: PROPONENTES)
+ * @author Equipe RUP - Politec
+ * @since 28/04/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.views.scripts.execucaofisicadoprojeto
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="last">Comprovação de Execução Física do Projeto</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Comprovação de Execução Física do Projeto <span class="voltar"><a href="#" onclick="redirecionar('<?php echo $this->url(array('controller' => 'execucaofisicadoprojeto', 'action' => 'buscardocumentos')); ?>?pronac=<?php echo $_GET['pronac']; ?>');">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+
+
+	<!-- ========== INÍCIO FORMULÁRIO DE SUBSTITUIÇÃO ========== -->
+	<form name="formSubstituir" id="formSubstituir" method="post" 
+		action="<?php echo $this->url(array('controller' => 'execucaofisicadoprojeto', 'action' => 'substituirdocumentos')); ?>?pronac=<?php echo $_GET['pronac']; ?>&doc=<?php echo $_GET['doc']; ?>" 
+		enctype="multipart/form-data">
+
+	<table class="tabela">
+		<tr>
+			<th colspan="2" class="titulo_tabela">EDITAR DOCUMENTO</th>
+		</tr>
+
+		<?php foreach ($this->buscarPronac as $p): ?>
+		<tr>
+			<td colspan="2" class="centro">
+				<p><strong>PRONAC: <?php echo $p->pronac; ?></strong></p>
+				<p><strong>PROJETO: <?php echo $p->NomeProjeto; ?></strong></p>
+				<input type="hidden" name="idPronac" id="idPronac" value="<?php echo $p->IdPRONAC; ?>" />
+				<input type="hidden" name="pronac" id="pronac" value="<?php echo $p->pronac; ?>" />
+			</td>
+		</tr>
+		<?php endforeach; ?>
+
+
+		<?php foreach ($this->buscarDoc as $doc): ?>
+		<tr>
+			<th width="20%"><label for="tipoDocumento">Tipo Documento</label></th>
+			<td>
+				<input type="hidden" name="idComprovante" id="idComprovante" value="<?php echo $doc->idComprovante; ?>" />
+				<input type="hidden" name="idArquivo" id="idArquivo" value="<?php echo $doc->idArquivo; ?>" />
+				<input type="hidden" name="idComprovanteAnterior" id="idComprovanteAnterior" value="<?php echo $doc->idComprovanteAnterior; ?>" />
+
+				<select class="select_simples w600" name="tipoDocumento" id="tipoDocumento">
+
+					<?php foreach ($this->combotipodocumento as $comboTipoDocumento) : ?>
+					<option value="<?php echo $comboTipoDocumento->idTipoDocumento ?>" <?php echo ($doc->idTipoDocumento == $comboTipoDocumento->idTipoDocumento) ? 'selected="selected"' : ''; ?>><?php echo $comboTipoDocumento->dsTipoDocumento ?></option>
+					<?php endforeach; ?>
+
+				</select>		
+			</td>
+		</tr>
+		<tr>
+			<th><label for="titulos">Título</label></th>
+			<td>
+				<input class="input_simples w600" type="text" name="titulo" id="titulos" maxlength="100" 
+					value="<?php echo isset($this->titulo) ? $this->titulo : $doc->nmComprovante; ?>" />
+			</td>
+		</tr>
+		<tr>
+			<th><label for="descricao">Descrição</label></th>
+			<td>
+				<textarea class="textarea_simples w600" type="text" name="descricao" id="descricao" cols="60" rows="4" <?php echo $this->contadorTextarea('form.descricao', 'form.exibirContadorTextarea', 500); ?>><?php echo isset($this->descricao) ? $this->descricao : $doc->dsComprovante; ?></textarea>
+				<?php echo $this->exibirContadorTextarea('exibirContadorTextarea', 3, 500, strlen($doc->dsComprovante)); ?>
+			</td>
+		</tr>
+	
+	
+		<tr>
+			<th><label for="justificativa">Justificativa</label></th>
+			<td>
+				<textarea class="textarea_simples w600" type="text" name="justificativa" 
+					onclick="limpar_campo(this, 'Digite a justificativa...');" 
+					onkeypress="limpar_campo(this, 'Digite a justificativa...');" 
+					onblur="restaurar_campo(this, 'Digite a justificativa...');"
+				id="justificativa" cols="60" rows="4" <?php echo $this->contadorTextarea('form.justificativa', 'form.exibirContadorTextareaJust', 500); ?>><?php echo isset($this->justificativa) ? $this->justificativa : $doc->dsJustificativaAlteracao; ?></textarea>
+				<?php echo $this->exibirContadorTextarea('exibirContadorTextareaJust', 3, 500, strlen($doc->dsJustificativaAlteracao)); ?>
+			</td>
+		</tr>
+
+
+		<tr>
+			<th><label for="">Parecer do MiC</label></th>
+			<td>
+				<input type="hidden" name="justificativaCoordenador" value="<?php echo isset($this->justificativaCoordenador) ? $this->justificativaCoordenador : $doc->dsJustificativaCoordenador; ?>" />
+				<?php echo isset($this->dsJustificativaCoordenador) ? $this->dsJustificativaCoordenador : $doc->dsJustificativaCoordenador; ?>
+			</td>
+		</tr>
+		<?php endforeach; ?>
+	
+	
+		<tr>
+			<th><label for="arquivo">Arquivo</label></th>
+			<td>
+				<input type="hidden" name="MAX_SIZE_FILE" value="10485760" />
+				<input class="input_simples w600" type="file" name="arquivo" id="arquivo" />
+			</td>
+		</tr>
+	</table>
+	
+	
+	
+	<!-- ========== BOTÕES DE CADASTRO E ETC ========== -->
+	<table class="tabela">
+		<tr>
+			<td>
+				<div class="float_left">
+					<input type="button" class="btn_voltar" title=" Página Anterior "
+						onkeypress=" " 
+						onclick="redirecionar('<?php echo $this->url(array('controller' => 'execucaofisicadoprojeto', 'action' => 'buscardocumentos')); ?>?pronac=<?php echo $_GET['pronac']; ?>');" />
+				</div>
+	
+				<div class="float_right">
+					<input type="submit" title="Salvar" class="btn_salvar" value=" " /> 
+				</div>
+			</td>
+		</tr>
+	</table>
+	
+	
+	
+	</form>
+	<!-- ========== FIM FORMULÁRIO DE SUBSTITUIÇÃO ========== -->
+
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

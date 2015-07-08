@@ -1,0 +1,105 @@
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->baseUrl(); ?>" title="Ir para Início">Início</a></li>
+        <li class="last">Manter Agentes</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Documentos Recebidos <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+
+<table cellspacing="0" cellpadding="0" border="0">
+
+
+    <tr>
+        <td valign="top">
+            <table cellspacing="0" cellpadding="0" bordercolor="" border="1" bgcolor="#cccccc" align="center" width="100%" id="apl_convwProjetoSeusDocumentos#?#1">
+                <tbody><tr bgcolor="#abda5d" align="center" id="tit_convwProjetoSeusDocumentos#?#1">
+                        <td bgcolor="#abda5d" align="left" valign="middle"><font size="2" face="Trebuchet MS, sans-serif" color="#3a7300"><b>
+                                    <a href="javascript:nm_gp_submit2('dsTipoDocumento')"><font color="#3a7300">Tipo</font></a>
+                                </b></font></td>
+                        <td bgcolor="#abda5d" align="center" valign="middle"><font size="2" face="Trebuchet MS, sans-serif" color="#3a7300"><b>
+                                    <a href="javascript:nm_gp_submit2('dtDocumento')"><font color="#3a7300">Data</font></a>
+                                </b></font></td>
+                        <td bgcolor="#abda5d" align="center" valign="middle"><font size="2" face="Trebuchet MS, sans-serif" color="#3a7300"><b>
+                                    <a href="javascript:nm_gp_submit2('dtJuntada')"><font color="#3a7300">Dt.Anexação</font></a>
+                                </b></font></td>
+                        <td bgcolor="#abda5d" align="left" valign="middle"><font size="2" face="Trebuchet MS, sans-serif" color="#3a7300"><b>Documento</b></font></td>
+                        <td bgcolor="#abda5d" align="left" valign="middle"><font size="2" face="Trebuchet MS, sans-serif" color="#3a7300"><b>Anexado por</b></font></td>
+                        <td bgcolor="#abda5d" align="left" valign="middle"><font size="2" face="Trebuchet MS, sans-serif" color="#3a7300"><b>
+                                    <a href="javascript:nm_gp_submit2('idLote')"><font color="#3a7300">Lote</font></a>
+                                </b></font></td>
+                        <td bgcolor="#abda5d" align="left" valign="middle"><font size="2" face="Trebuchet MS, sans-serif" color="#3a7300"><b>
+                                    <a href="javascript:nm_gp_submit2('Acao')"><font color="#3a7300">Estado</font></a>
+                                </b></font></td>
+                    </tr>
+                    <tr bgcolor="#ffffff" onclick="click_tr(this);" onmouseout="out_tr(this);" onmouseover="over_tr(this);" class="">
+                        <td bgcolor="" align="left" valign="top" rowspan="1"><font size="2" face="Trebuchet MS, sans-serif" color="#333333">Solicitação do Proponente</font></td>
+                        <td bgcolor="" align="center" valign="top" nowrap="nowrap" rowspan="1"><font size="2" face="Trebuchet MS, sans-serif" color="#333333">06/01/2010</font></td>
+                        <td bgcolor="" align="center" valign="top" nowrap="nowrap" rowspan="1"><font size="2" face="Trebuchet MS, sans-serif" color="#333333">07/01/2010</font></td>
+                        <td bgcolor="" align="left" valign="top" rowspan="1"><font size="2" face="Trebuchet MS, sans-serif" color="#333333"><a target="_self" href="javascript:nm_mostra_doc('documento_db', '000000052840_2010_01_06_14_30_25.pdf', 'convwProjetoSeusDocumentos', '/Salic/convwProjetoSeusDocumentos/convwProjetoSeusDocumentos_doc.php')"><font color="#8ba3b9">000000052840_2010_01_06_14_30_25.pdf</font></a></font></td>
+                        <td bgcolor="" align="left" valign="top" rowspan="1"><font size="2" face="Trebuchet MS, sans-serif" color="#333333">Edmar T. dos Santos</font></td>
+                        <td bgcolor="" align="left" valign="top" nowrap="nowrap" rowspan="1"><font size="2" face="Trebuchet MS, sans-serif" color="#333333">46.227</font></td>
+                        <td bgcolor="" align="left" valign="top" nowrap="nowrap" rowspan="1"><font size="2" face="Trebuchet MS, sans-serif" color="#333333">Anexado</font></td>
+                    </tr>
+                    <tr bgcolor="#f3f3f3" onclick="click_tr(this);" onmouseout="out_tr(this);" onmouseover="over_tr(this);" class="">
+                        <td bgcolor="" background="/Salic/_lib/img/bg-celulas.gif" align="left" valign="top" rowspan="1"><font size="2" face="Trebuchet MS, sans-serif" color="#333333">Solicitação do Proponente</font></td>
+                        <td bgcolor="" background="/Salic/_lib/img/bg-celulas.gif" align="center" valign="top" nowrap="nowrap" rowspan="1"><font size="2" face="Trebuchet MS, sans-serif" color="#333333">12/01/2010</font></td>
+                        <td bgcolor="" background="/Salic/_lib/img/bg-celulas.gif" align="center" valign="top" nowrap="nowrap" rowspan="1"><font size="2" face="Trebuchet MS, sans-serif" color="#333333">13/01/2010</font></td>
+                        <td bgcolor="" background="/Salic/_lib/img/bg-celulas.gif" align="left" valign="top" rowspan="1"><font size="2" face="Trebuchet MS, sans-serif" color="#333333"><a target="_self" href="javascript:nm_mostra_doc('documento_db', '000000055115_2010_01_12_14_21_26.pdf', 'convwProjetoSeusDocumentos', '/Salic/convwProjetoSeusDocumentos/convwProjetoSeusDocumentos_doc.php')"><font color="#8ba3b9">000000055115_2010_01_12_14_21_26.pdf</font></a></font></td>
+                        <td bgcolor="" background="/Salic/_lib/img/bg-celulas.gif" align="left" valign="top" rowspan="1"><font size="2" face="Trebuchet MS, sans-serif" color="#333333">Rodrigo C. Oliveira</font></td>
+                        <td bgcolor="" background="/Salic/_lib/img/bg-celulas.gif" align="left" valign="top" nowrap="nowrap" rowspan="1"><font size="2" face="Trebuchet MS, sans-serif" color="#333333">47.034</font></td>
+                        <td bgcolor="" background="/Salic/_lib/img/bg-celulas.gif" align="left" valign="top" nowrap="nowrap" rowspan="1"><font size="2" face="Trebuchet MS, sans-serif" color="#333333">Anexado</font></td>
+                    </tr>
+                    <tr bgcolor="#ffffff" onclick="click_tr(this);" onmouseout="out_tr(this);" onmouseover="over_tr(this);" class="">
+                        <td bgcolor="" align="left" valign="top" rowspan="1"><font size="2" face="Trebuchet MS, sans-serif" color="#333333">Solicitação do Proponente</font></td>
+                        <td bgcolor="" align="center" valign="top" nowrap="nowrap" rowspan="1"><font size="2" face="Trebuchet MS, sans-serif" color="#333333">27/05/2010</font></td>
+                        <td bgcolor="" align="center" valign="top" nowrap="nowrap" rowspan="1"><font size="2" face="Trebuchet MS, sans-serif" color="#333333">27/05/2010</font></td>
+                        <td bgcolor="" align="left" valign="top" rowspan="1"><font size="2" face="Trebuchet MS, sans-serif" color="#333333"><a target="_self" href="javascript:nm_mostra_doc('documento_db', '000000082679_2010_05_27_10_08_46.pdf', 'convwProjetoSeusDocumentos', '/Salic/convwProjetoSeusDocumentos/convwProjetoSeusDocumentos_doc.php')"><font color="#8ba3b9">000000082679_2010_05_27_10_08_46.pdf</font></a></font></td>
+                        <td bgcolor="" align="left" valign="top" rowspan="1"><font size="2" face="Trebuchet MS, sans-serif" color="#333333">Rômulo R. Santos</font></td>
+                        <td bgcolor="" align="left" valign="top" nowrap="nowrap" rowspan="1"><font size="2" face="Trebuchet MS, sans-serif" color="#333333">64.049</font></td>
+                        <td bgcolor="" align="left" valign="top" nowrap="nowrap" rowspan="1"><font size="2" face="Trebuchet MS, sans-serif" color="#333333">Anexado</font></td>
+                    </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+
+    <tr>
+        <td align="center">
+
+        <input id="btn_pdf" type="button" name="pdf" class="btn_pdf" style="width: 3.0em" />
+
+        <input id=" btn_imprimir " type="button" name="imprimir" class="btn_imprimir" onclick="return TipoImprimir();" />
+
+        <input id=" btn_sair " type="button" name="sair" class="btn_sair" />
+        </td>
+    </tr>
+
+
+</table>
+
+    </div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />
+

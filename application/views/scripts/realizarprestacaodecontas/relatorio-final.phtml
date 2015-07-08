@@ -1,0 +1,375 @@
+<?php
+    require_once"inc/menu.inc.php";
+?>
+<div id="breadcrumb">
+    <ul>
+	<li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''), '', true); ?>" title="Ir para p&aacute;gina inicial">Início</a></li>
+        <?php if($this->codGrupo == 132){ ?>
+            <li><a href="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'chefedivisaoprestacaocontas'));?>">Presta&ccedil;&atilde;o de contas</a></li>
+        <?php }else if($this->codGrupo == 124): ?>
+            <li><a href="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'tecnicoprestacaocontas'));?>">Presta&ccedil;&atilde;o de contas</a></li>
+        <?php else: ?>
+            <li><a href="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'coordenadorgeralprestacaocontas'));?>">Presta&ccedil;&atilde;o de contas</a></li>
+        <?php endif; ?>
+	<li class="last">Relatório de Comprovação do Objeto</li>
+    </ul>
+</div>
+<div id="titulo">
+    <div>Relatório de Comprovação do Objeto <span class="voltar" style="float:right;"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<div id="conteudo">
+<?php if(is_object($this->relatorio) && count($this->relatorio)>0): ?>
+    <table class="tabela" style="width: 90%;">
+        <tbody>
+            <tr>
+                <th colspan="4">Comprova&ccedil;&atilde;o da Execu&ccedil;&atilde;o do Objeto</th>
+            </tr>
+            <tr>
+                <td colspan="4" class="destacar" align="center"><b>Objetivos e Metas alcan&ccedil;adas em rela&ccedil;&atilde;o ao previsto</b></td>
+            </tr>
+            <tr>
+                <td colspan="4"><?php echo $this->relatorioConsolidado['dsObjetivosMetas']; ?></td>
+            </tr>
+            <tr>
+                <td colspan="4" class="destacar" align="center"><b>Estrat&eacute;gias de A&ccedil;&atilde;o</b></td>
+            </tr>
+            <tr>
+                <td colspan="4"><?php echo $this->relatorioConsolidado['dsEstrategiaAcao']; ?></td>
+            </tr>
+            <tr>
+                <td colspan="4" class="destacar" align="center"><b>Cronograma F&iacute;sico</b></td>
+            </tr>
+            <tr>
+                <td colspan="4"><?php echo $this->relatorioConsolidado['dsCronogramaFisico']; ?></td>
+            </tr>
+            <tr class="destacar" align="center">
+                <td colspan="4"><b>Valores em Real</b></td>
+            </tr>
+            <tr>
+                <td align="right" width="25%">Lei de Incentivo Fiscal</td>
+                <td>
+                    R$ <?php echo number_format($this->relatorioConsolidado['vlLeiIncentivoFiscal'],'2',',','.'); ?>
+                </td>
+                <td align="right" width="25%">Lei de Incentivo Estadual</td>
+                <td>
+                    R$ <?php echo number_format($this->relatorioConsolidado['vlLeiIncentivoEstadual'],'2',',','.'); ?>
+                </td>
+            </tr>
+            <tr>
+                <td align="right" width="25%">Lei de Incentivo Municipal</td>
+                <td>
+                    R$ <?php echo number_format($this->relatorioConsolidado['vlLeiIncentivoMunicipal'],'2',',','.'); ?>
+                </td>
+                <td align="right" width="25%">Recursos Pr&oacute;prios</td>
+                <td>
+                    R$ <?php echo number_format($this->relatorioConsolidado['vlRecursosProprios'],'2',',','.'); ?>
+                </td>
+            </tr>
+            <tr>
+                <td align="right" width="25%">Rendimentos de Aplica&ccedil;&otilde;es Financeiras</td>
+                <td colspan="3">
+                    R$ <?php echo number_format($this->relatorioConsolidado['vlRendimentoFinanceiro'],'2',',','.'); ?>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">Guia de FNC:&nbsp;
+                    <?php if(count($this->guiaFNC)){ ?>
+                    <a href="<?php echo $this->url(array('controller'=>'upload', 'action'=>'abrir')); ?>?id=<?php echo $this->guiaFNC[0]->idArquivo; ?>"><?php echo $this->guiaFNC[0]->nmArquivo; ?></a>
+                    <?php }else{ ?>
+                    <em>Dados n&atilde;o informados!</em>
+                    <?php } ?>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="tabela" style="width: 90%;">
+        <tbody>
+            <tr>
+                <th colspan="4">Bens M&oacute;veis Adquiridos</th>
+            </tr>
+            <tr>
+                <td colspan="1" width="10%">Produto</td>
+                <td colspan="3">
+                    <?php
+                        if(is_object($this->movel[0]))
+                            echo $this->movel[0]->Descricao;
+                        else
+                            echo '';
+                    ?>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1" width="10%">Comprovante&nbsp;de&nbsp;Cota&ccedil;&atilde;o&nbsp;</td>
+                <td colspan="3">
+                    <?php if(count($this->ComprovanteCotacao)){ ?>
+                    <a href="<?php echo $this->url(array('controller'=>'upload', 'action'=>'abrir')); ?>?id=<?php echo $this->ComprovanteCotacao[0]->idArquivo; ?>"><?php echo $this->ComprovanteCotacao[0]->nmArquivo; ?></a>
+                    <?php }else{ ?>
+                    <em>Dados n&atilde;o informados!</em>
+                    <?php } ?>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="tabela" style="width: 90%;">
+        <tbody>
+            <tr>
+                <th colspan="4">Bens Im&oacute;veis Adquiridos</th>
+            </tr>
+            <tr>
+                <td class="destacar" colspan="4" width="50%" align="center"><b>Im&oacute;vel:</b>&nbsp;
+            </tr>
+            <tr>
+                <td>
+                    <?php if(!empty($this->imovel)) {
+                            switch ($this->imovel->tpImovel){
+                                case 1: echo "Doado";
+                                break;
+                                case 2: echo "Comprado";
+                                break;
+                                case 3: echo "Ampliado";
+                                break;
+                                case 4: echo "Constru&iacute;do";
+                                break;
+                            }
+                        }
+                        ?>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar" colspan="4" width="50%" align="center"><b>Valor em real:</b></td>
+            </tr>
+            <tr>
+                <td colspan="4"><?php if(!empty($this->imovel)) { echo "R$".number_format($this->imovel->vlImovel,2, ",", "."); } ?></td>
+            </tr>
+            <tr>
+                <td class="destacar" colspan="4" align="center"><b>Especifica&ccedil;&atilde;o do Im&oacute;vel</b></td>
+            </tr>
+            <tr>
+                <td colspan="4"><?php if(!empty($this->imovel)) { echo $this->imovel->dsImovel; } ?></td>
+            </tr>
+            <tr>
+                <td class="destacar" colspan="4" align="center"><b>Nome do Cart&oacute;rio</b></td>
+            </tr>
+            <tr>
+                <td colspan="4"><?php if(!empty($this->imovel)) { echo $this->imovel->nmCartorio; } ?></td>
+            </tr>
+            <tr>
+                <td class="destacar" colspan="4" align="center"><b>N&uacute;mero do Registro:</b></td>
+            </tr>
+            <tr>
+                <td colspan="4"><?php if(!empty($this->imovel)) { echo $this->imovel->nrRegistro; } ?></td>
+            </tr>
+            <tr>
+                <td class="destacar" colspan="4" align="center"><b>Folha:</b></td>
+            </tr>
+            <tr>
+                <td colspan="4"><?php if(!empty($this->imovel)) { echo $this->imovel->nrFolha; } ?></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="tabela" style="width: 90%;">
+        <tr>
+            <th colspan="3">Comprovantes de Execu&ccedil;&atilde;o</th>
+        </tr>
+        <tr align="center" style="font-weight: bold;">
+            <td class="destacar" width="30%">Tipo de documento</td>
+            <td class="destacar" width="40%">Descri&ccedil;&atilde;o</td>
+            <td class="destacar" width="30%">Arquivo</td>
+        </tr>
+        <?php
+        if (isset($this->comprovantesExecucao)){
+            foreach($this->comprovantesExecucao as $comprovanteExecucao): ?>
+        <tr>
+            <td><?php echo $comprovanteExecucao->dsTipoDocumento?></td>
+            <td><?php echo $comprovanteExecucao->dsDocumento?></td>
+            <td>
+                <a href="<?php echo $this->url(array('controller'=>'upload', 'action'=>'abrir')); ?>?id=<?php echo $comprovanteExecucao->idArquivo; ?>"><?php echo $comprovanteExecucao->nmArquivo?></a>
+            </td>
+        </tr>
+        <?php endforeach; }?>
+    </table>
+
+    <table class="tabela" style="width: 90%;">
+        <tr>
+            <th colspan="2">Destina&ccedil;&atilde;o Cultural dos Bens Adquiridos, produzidos ou contru&iacute;dos</th>
+        </tr>
+        <tr>
+            <td class="destacar" colspan="2" align="center"><b>Destina&ccedil;&atilde;o do Bem</b></td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php if(is_object($this->movel[0])) echo $this->movel[0]->dsDestinacaoProduto; else echo '';?></td>
+        </tr>
+        <tr>
+            <td class="destacar" colspan="2" align="center"><b>Tem fins lucrativos</b></td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php if (is_object($this->movel[0]) && $this->movel[0]->stFinsLucrativos == 1) echo 'Sim'; else echo 'Não';?></td>
+        </tr>
+        <tr>
+            <td class="destacar" colspan="2" align="center"><b>Nome do Beneficiário</b></td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php if(!empty($this->beneficiario)){ echo $this->beneficiario->dsBeneficiario; } ?></td>
+        </tr>
+        <tr>
+            <td class="destacar" colspan="2" align="center"><b>CNPJ/CPF Favorecido</b></td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php if(!empty($this->beneficiario)){ echo ($this->beneficiario->nrCPF)? aplicaMascara($this->beneficiario->nrCPF,'999.999.999-99') : aplicaMascara($this->beneficiario->nrCNPJ,'99.999.999/9999-99'); }?></td>
+        </tr>
+        <tr>
+            <td class="destacar" colspan="2" align="center"><b>Quem vai receber o bem ao t&eacute;rmino do projeto:</b></td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php if(!empty($this->movel)) { echo $this->movel[0]->dsReceptorProduto; } ?></td>
+        </tr>
+    </table>
+
+    <table class="tabela" style="width: 90%;">
+        <tr>
+            <th>Medidas de Acessibilidade</th>
+        </tr>
+        <tr>
+            <td><?php echo $this->acessibilidade['dsAcesso']; ?></td>
+        </tr>
+        <tr>
+            <td class="destacar" align="center"><b>Quantas pessoas atingiram</b></td>
+        </tr>
+        <tr>
+            <td><?php echo $this->acessibilidade['qtPessoa']; ?></td>
+        </tr>
+        <tr>
+            <td class="destacar" align="center"><b>P&uacute;blico alvo</b></td>
+        </tr>
+        <tr>
+            <td><?php echo $this->acessibilidade['dsPublicoAlvo']; ?></td>
+        </tr>
+        <tr>
+            <td class="destacar" align="center"><b>Local</b></td>
+        </tr>
+        <tr>
+            <td><?php echo $this->acessibilidade['dsLocal']; ?></td>
+        </tr>
+        <tr>
+            <td class="destacar" align="center"><b>Estrutura / Solu&ccedil;&atilde;o adotada</b></td>
+        </tr>
+        <tr>
+            <td><?php echo $this->acessibilidade['dsEstruturaSolucao']; ?></td>
+        </tr>
+    </table>
+
+    <table class="tabela" style="width: 90%;">
+        <tr>
+            <th>Medidas de Democratiza&ccedil;&atilde;o</th>
+        </tr>
+        <tr>
+            <td><?php echo $this->democratizacao['dsAcesso']; ?></td>
+        </tr>
+        <tr>
+            <td class="destacar" align="center"><b>Quantas pessoas atingiram</b></td>
+        </tr>
+        <tr>
+            <td><?php echo $this->democratizacao['qtPessoa']; ?></td>
+        </tr>
+        <tr>
+            <td class="destacar" align="center"><b>P&uacute;blico alvo</b></td>
+        </tr>
+        <tr>
+            <td><?php echo $this->democratizacao['dsPublicoAlvo']; ?></td>
+        </tr>
+        <tr>
+            <td class="destacar" align="center"><b>Local</b></td>
+        </tr>
+        <tr>
+            <td><?php echo $this->democratizacao['dsLocal']; ?></td>
+        </tr>
+        <tr>
+            <td class="destacar" align="center"><b>Estrutura / Solu&ccedil;&atilde;o adotada</b></td>
+        </tr>
+        <tr>
+            <td><?php echo $this->democratizacao['dsEstruturaSolucao']; ?></td>
+        </tr>
+    </table>
+
+    <table class="tabela" style="width: 90%;">
+        <tr>
+            <th>Impacto Ambiental</th>
+        </tr>
+        <tr>
+            <td class="destacar" align="center"><b>Produto</b></td>
+        </tr>
+        <tr>
+            <td><?php echo $this->RelatorioConsolidado['dsProduto']; ?></td>
+        </tr>
+        <tr>
+            <td class="destacar" align="center"><b>Repercuss&atilde;o local, regional, nacional e internacional do projeto</b></td>
+        </tr>
+        <tr>
+            <td><?php echo $this->RelatorioConsolidado['dsRepercussao']; ?></td>
+        </tr>
+        <tr>
+            <td class="destacar" align="center"><b>Impacto ambiental</b></td>
+        </tr>
+        <tr>
+            <td><?php echo $this->RelatorioConsolidado['dsImpactoAmbiental']; ?></td>
+        </tr>
+        <tr>
+            <td class="destacar" align="center"><b>Impacto cultural</b></td>
+        </tr>
+        <tr>
+            <td><?php echo $this->RelatorioConsolidado['dsImpactoCultural']; ?></td>
+        </tr>
+        <tr>
+            <td class="destacar" align="center"><b>Impacto econ&ocirc;mico</b></td>
+        </tr>
+        <tr>
+            <td><?php echo $this->RelatorioConsolidado['dsImpactoEconomico']; ?></td>
+        </tr>
+        <tr>
+            <td class="destacar" align="center"><b>Impacto social</b></td>
+        </tr>
+        <tr>
+            <td><?php echo $this->RelatorioConsolidado['dsImpactoSocial']; ?></td>
+        </tr>
+    </table>
+
+    <table class="tabela" style="width: 90%;">
+        <tbody>
+            <tr>
+                <th>Termo de Aceita&ccedil;&atilde;o da obra</th>
+            </tr>
+            <tr>
+                <td class="destacar" align="center"><b>O projeto prev&ecirc; constru&ccedil;&atilde;o, reforma, restauro, cria&ccedil;&atilde;o de obras esculturais ou similares?</b></td>
+            </tr>
+            <tr>
+                <td>
+                    <?php
+                        if ($this->aceitedeobra['stPrevisaoProjeto'] == 1){
+                            echo 'Sim';}
+                        else {
+                            echo 'N&atilde;o';
+                        }
+                    ?>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar" align="center"><b>Descri&ccedil;&atilde;o do Termo</b></td>
+            </tr>
+            <tr>
+                <td><?php echo $this->relatorioConsolidado['dsTermoProjeto']; ?></td>
+            </tr>
+        </tbody>
+    </table>
+<?php else: ?>
+    <table class="tabela">
+        <tr>
+            <td align="center"><em>Dados n&atilde;o informados!</em></td>
+        </tr>
+    </table>
+<?php endif; ?>
+</div>
+<div id="rodapeConteudo"><span></span></div>
+<br clear="all" />

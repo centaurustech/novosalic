@@ -1,0 +1,245 @@
+<?php
+    include_once 'inc/funcoes.inc.php';
+    $this->headScript()->appendFile('public/js/edital/edital.js', 'text/javascript');
+?>
+
+<script>
+    
+    $(document).ready(function(){
+        
+        $('#tipoEdital').change( function(){
+            if($(this).val() == 0){
+                
+                $('input').attr('disabled','true');
+                
+                $('.lista_3').show();
+                $('.lista_4').show();
+                $('.lista_comp_6').show();
+                $('.lista_comp_7').show();
+                $('.lista_comp_8').show();
+                $('.lista_comp_9').show();
+                $('.lista_comp_10').show();
+                
+            } else if($(this).val() == 1){
+                
+                $('.lista_3').show();
+                $('.lista_4').show();
+                $('.lista_comp_6').show();
+                $('.lista_comp_7').show();
+                $('.lista_comp_8').show();
+                $('.lista_comp_9').show();
+                $('.lista_comp_10').show();
+                
+            } else if($(this).val() == 2){
+                
+                $('.lista_3').hide();
+                $('.lista_4').show();
+                $('.lista_comp_6').show();
+                $('.lista_comp_7').hide();
+                $('.lista_comp_8').show();
+                $('.lista_comp_9').show();
+                $('.lista_comp_10').hide();
+               
+                
+            } else if($(this).val() == 3){
+                
+                $('.lista_3').hide();
+                $('.lista_4').hide();
+                $('.lista_comp_6').hide();
+                $('.lista_comp_7').hide();
+                $('.lista_comp_8').hide();
+                $('.lista_comp_9').hide();
+                $('.lista_comp_10').hide();
+            
+            } else {
+                
+                $('input').removeAttr('disabled');
+                
+            }
+        });
+        
+        $('.marcatodos').click(function (){
+            var filhos = $(this).attr('data-filho');
+            if($(this).is(':checked')){
+                $('.filho_'+filhos).attr('checked','checked');
+            }else{
+                $('.filho_'+filhos).removeAttr('checked');
+            }
+        });
+        
+        $('.check').click(function (){
+            
+            var filhos = $(this).attr('data-filho');
+            
+            if($(this).is(':checked')){
+                
+                $('.pai_'+filhos).attr('checked','checked');
+                
+            }else{
+                
+                var check = 0;
+                
+                $('.filho_'+filhos).each(function () {
+                    if(this.checked) {
+                        check = 1;
+                    }
+                    
+                });
+                 
+                if(check == 0) {
+                    $('.pai_'+filhos).attr('checked','');
+                }
+
+            }
+        });
+        
+    });
+    
+</script>
+<style>
+    label.error{color:red;}
+</style>
+
+<div id="breadcrumb">
+
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>">In&iacute;cio</a></li>
+        <?php //if ( isset ($_GET['idEdital'] ) ) : ?>
+        <!-- <li><a href="<?php echo $this->url(array('controller' => 'cadastraredital', 'action' => 'consultaralterareditais')); ?>">Consultar/Alterar Edital</a></li> -->
+        <?php //endif; ?>
+        <li><a href="<?php echo $this->url(array('controller' => 'cadastraredital', 'action' => ''), '', true); ?>" title="Ir para Edital">Edital</a></li>
+        <li class="last"><?php echo isset($_GET['idEdital']) ? 'Dados do edital' : 'Criar edital'; ?></li>
+    </ul>
+
+</div>
+
+<div id="titulo">
+    <div><?php echo isset($_GET['idEdital']) ? 'Dados do edital' : 'Criar Edital'; ?><span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+
+<div id="conteudo">
+
+ <fieldset>
+        <legend> Passo 01 - Definir fluxo do Edital </legend>
+        <form id="formularioProcuracao" action="<?php echo $this->url(array('controller' => 'edital', 'action' => 'salvar-fluxo-edital')); ?>" method="post" enctype="multipart/form-data">
+            <div>    
+                <table class="tabela">
+                    <tr>
+                        <th colspan="2" colspan="2" style="font-size: 15px">Edital</th>
+                    <tr>
+                        <td class="destacar bold esquerdo w200">Reutilizar edital</td>
+                        <td><img src="<?php echo $this->baseUrl(); ?>/public/img/botaoReutilizar.png" style="cursor: pointer;" onclick="JSAddModulo()" /></td>
+                    </tr>
+                    <tr>
+                        <td class="destacar bold esquerdo">Tipo de Edital <span style="color: red;">*</span></td>
+                        <td>
+                            <select name="tipoEdital" id="tipoEdital" class="input_simples">
+                                <option value="0">- Selecione -</option>
+                                <?php foreach ($this->tipoedital as $tped) { ?>
+                                    <option value="<?php echo $tped['idTpEdital']; ?>"><?php echo $tped['dsTpEdital']; ?></option>
+                                <?php } ?> 
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div>
+                <div style="float: left; width: 50%">
+                    <table class="tabela">
+                        <tr>
+                            <th colspan="2" style="font-size: 15px">Fluxo do Edital</th>
+                        </tr>
+                        <tr>
+                            <td class="bold w200 esquerdo destacar">
+                                Defina o fluxo processual a ser percorrido pelo Edtial
+                            </td>
+                            <td colspan="3">
+                                <table class="tabela">
+                                    <?php $i = 0; ?>
+                                    <?php foreach ($this->fluxo as $fl): ?>
+                                        <tr>
+                                            <td class="w240 lista_<?php echo $fl['idFluxo']; ?>">
+                                                <input type="checkbox" name="fluxo[]" value="<?php echo $fl['idFluxo']; ?>" data-filho="<?php echo $fl['idFluxo']; ?>" class="marcatodos pai_<?php echo $fl['idFluxo']; ?>" style="vertical-align: middle;"/>&nbsp;<strong><?php echo $fl['dsFluxo']; ?></strong><br />
+                                                <div style="width: 200px; padding-left: 20px; ">
+                                                    <?php foreach ($this->tipoitemfluxo as $itfl): ?>
+                                                    
+                                                        <?php if(($fl['idFluxo'] == 3)): ?>
+                                                    
+                                                            <?php if($itfl['idItemFluxo'] == 4): ?>
+
+                                                                <input type="checkbox" name="fluxoFilho[]" value="<?php echo $fl['idFluxo'].','.$itfl['idItemFluxo']; ?>" data-filho="<?php echo $fl['idFluxo']; ?>" class="filho_<?php echo $fl['idFluxo']; ?> check" style="vertical-align: middle"/>
+                                                                &nbsp;<span style="font-size: 11px;"><?php echo $itfl['dsItemFluxo']; ?></span><br />
+
+                                                            <?php endif; ?>
+                                                                
+                                                        <?php else: ?>
+                                                    
+                                                            <?php if($itfl['idItemFluxo'] != 1): ?>
+
+                                                                <input type="checkbox" name="fluxoFilho[]" value="<?php echo $fl['idFluxo'].','.$itfl['idItemFluxo']; ?>" data-filho="<?php echo $fl['idFluxo']; ?>" class="filho_<?php echo $fl['idFluxo']; ?> check" style="vertical-align: middle"/>
+                                                                &nbsp;<span style="font-size: 11px;"><?php echo $itfl['dsItemFluxo']; ?></span><br />
+
+                                                            <?php endif; ?>
+                                                                
+                                                        <?php endif; ?>
+                                                            
+                                                            
+                                                    <?php endforeach; ?>    
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php $i++; ?>
+                                    <?php endforeach; ?>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="float: left; width: 50%">
+                    <table class="tabela">
+                        <tr>
+                            <th colspan="2" style="font-size: 15px">Composição do edital</th>
+                        </tr>
+                        <tr>
+                            <td class="bold w200 esquerdo destacar">
+                                Defina os itens que irão compor o edital
+                            </td>
+                            <td colspan="3">
+                                <table class="tabela">
+                                    <?php
+                                        foreach ($this->composicao as $comp) :
+                                            if (1 == $comp['idComposicao']) {
+                                                $attributes = 'data-filho="composicao" class="marcatodos" style="vertical-align: middle"';
+                                            } else {
+                                                $attributes = 'class="filho_composicao"';
+                                            }
+                                    ?>
+                                        <tr>
+                                            <td class="lista_comp_<?php echo $comp['idComposicao']; ?>">
+                                                <input type="checkbox" name="composicao[]" value="<?php echo $comp['idComposicao']; ?>" <?php echo $attributes; ?> />
+                                                <span style="font-size: 11px;"><?php echo $comp['dsComposicao']; ?></span>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+                <div style="width: 100%; float: left; margin-top: 30px; text-align: center;">
+                    <input type="submit" style="width: 88px; vertical-align: top" class="btn_p_proximo" id="btnProximo" value=" "/>
+                    <input type="reset" class="btn_limpar" value=" "/>
+                </div>
+            </div>
+            </form>
+ </fieldset>
+</div>
+
+<!-- ========== FIM TABELA DADOS ========== -->
+
+<!-- ========== INï¿½CIO RODAPï¿½ DO CONTEï¿½DO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+
+<!-- ========== FIM RODAPï¿½ DO CONTEï¿½DO ========== -->
+<br clear="all" />

@@ -1,0 +1,241 @@
+<?php header('Content-Type: text/plain; charset=ISO-8859-1'); ?>
+<script type="text/javascript">
+    $(document).ready(function(){
+        //ATUALIZA TITULO DA PAGINA
+        window.parent.$("#titulo").html("<div>Dados Proponente</div>");
+        window.parent.$("#caminhoLocalAtual").html("Dados Proponente");
+    });
+</script>
+
+<div id="proponente">
+    <fieldset>
+        <legend>Identifica&ccedil;&atilde;o</legend>
+        <table class="tabela">
+            <tr class="destacar">
+                <td align="center"><b>PRONAC</b></td>
+                <td align="center"><b>Nome do Projeto</b></td>
+            </tr>
+            <tr>
+                <td align="center"><?php echo $this->projeto->NrProjeto; ?></td>
+                <td align="center"><?php echo $this->projeto->NomeProjeto; ?></td>
+            </tr>
+        </table>
+        <br clear="all">
+
+        <?php if(isset($this->ProponenteInabilitado) && $this->ProponenteInabilitado){ ?>
+        <table class="tabela" style="background-color: red;">
+            <tr style="background-color: red;">
+                <td align="center" style="text-transform: uppercase; color: red;"><b>Proponente Inabilitado</b></td>
+            </tr>
+        </table>
+        <?php } ?>
+        <table class="tabela">
+            <tr class="destacar">
+                <td tabindex="1" align="center"><b>CNPJ/CPF</b></td>
+                <td tabindex="2" align="center"><b>Nome do proponente</b></td>
+                <td tabindex="3" align="center"><b>Tipo de Pessoa</b></td>
+            </tr>
+            <?php foreach ($this->dados as $tbdados){ ?>
+            <tr>
+                <td tabindex="4" align="center"><?php echo empty($tbdados->CNPJCPF) ? 'Dados n&atilde;o informados!' : Validacao::mascaraCPFCNPJ($tbdados->CNPJCPF); ?></td>
+                <td tabindex="5" align="center"><?php echo (empty($tbdados->Proponente) ? 'Dados n&atilde;o informados!' : $tbdados->Proponente); ?></td>
+                <td tabindex="6" align="center"><?php if(strlen($tbdados->CNPJCPF)==11){echo "Pessoa F&iacute;sica";}else{echo "Pessoa Jur&iacute;dica";}?>
+            </tr>
+            <?php } ?>
+        </table>
+    </fieldset>
+
+    <fieldset>
+        <legend>Endere&ccedil;o</legend>
+            <table class="tabela">
+                 <tr class="destacar">
+                     <td tabindex="12" class="centro"><b>Logradouro</b></td>
+                    <td tabindex="12" class="centro"><b>Cidade</b></td>
+                    <td tabindex="13" class="centro"><b>UF</b></td>
+                    <td tabindex="14" class="centro"><b>CEP</b></td>
+                </tr>
+                <?php if(count($this->dados)){ foreach ($this->dados as $tbdados){ ?>
+                <tr>
+                    <td tabindex="10" align="center"><?php echo (empty($tbdados->Endereco) ? 'Dados n&atilde;o informados!' : $tbdados->Endereco); ?></td>
+                    <td tabindex="15" align="center"><?php echo (empty($tbdados->Municipio) ? 'Dados n&atilde;o informados!' : $tbdados->Municipio); ?></td>
+                    <td tabindex="16" align="center"><?php echo empty($tbdados->UF) ? 'Dados n&atilde;o informados!' : $tbdados->UF; ?></td>
+                    <td tabindex="17" align="center"><?php echo empty($tbdados->Cep) ? 'Dados n&atilde;o informados!' : aplicaMascara($tbdados->Cep, "99.999-999"); ?></td>
+                </tr>
+                <?php } } ?>
+            </table>
+    </fieldset>
+
+    <fieldset>
+        <legend>Telefone</legend>
+        <table class="tabela">
+            <?php if ($this->telefone && count($this->telefone)>0) { ?>
+            <tr class="destacar">
+                <td tabindex="42" class="centro"><b>Tipo</b></td>
+                <td tabindex="43" class="centro"><b>UF</b></td>
+                <td tabindex="44" class="centro"><b>DDD</b></td>
+                <td tabindex="45" class="centro"><b>N&uacute;mero</b></td>
+                <td tabindex="46" class="centro"><b>Divulgar</b></td>
+            </tr>
+            <?php foreach ($this->telefone as $tbtelefone){ ?>
+            <?php $tbtelefone->NumeroTelefone = str_replace('-', '', $tbtelefone->NumeroTelefone); ?>
+            <tr>
+                <td tabindex="47" align="center"><?php echo $tbtelefone->TipoTelefone; ?></td>
+                <td tabindex="48" align="center"><?php echo ($tbtelefone->UF); ?></td>
+                <td tabindex="49" align="center"><?php echo ($tbtelefone->DDDTelefone); ?></td>
+                <td tabindex="50" align="center"><?php echo (Mascara::addMaskFone($tbtelefone->NumeroTelefone)); ?></td>
+                <td tabindex="51" align="center"><?php echo ($tbtelefone->Divulgar); ?></td>
+            </tr>
+            <?php } } else { ?>
+            <tr>
+                <td colspan="5" align="center"><em>N&atilde;o existem telefones cadastrados!</em></td>
+            </tr>
+            <?php } ?>
+        </table>
+    </fieldset>
+
+    <fieldset>
+        <legend>E-mail</legend>
+        <table class="tabela">
+            <tr class="destacar">
+                <td width="25%" align="center"><b>Tipo</b></td>
+                <td><b>E-mail</b></td>
+                <!--<td><b>Para correspond&ecirc;ncia?</b></td>
+                <td><b>Posso divulgar?</b></td>-->
+            </tr>
+            <?php if ($this->email && count($this->email)>0) { foreach ($this->email as $email){ ?>
+            <tr>
+                <td align="center"><?php echo empty($email->TipoInternet) ? '<em>Dados n&atilde;o informados!</em>' : $email->TipoInternet; ?></td>
+                <td align="left"><?php echo empty($email->Email) ? '<em>Dados n&atilde;o informados!</em>' : $email->Email; ?></td>
+                <!--<td><?php if($email->Divulgar == 1) echo "Sim"; else echo "N&atilde;o"; ?></td>
+                <td><?php if($email->Status == 1) echo "Sim"; else echo "N&atilde;o"; ?></td>-->
+            </tr>
+            <?php } } else { ?>
+            <tr>
+                <td colspan="2" align="center"><em>N&atilde;o existem emails cadastrados!</em></td>
+            </tr>
+            <?php } ?>
+        </table>
+    </fieldset>
+
+    <fieldset>
+        <legend>Natureza</legend>
+        <table class="tabela">
+            <tr class="destacar">
+                <td tabindex="19" class="centro"><b>Natureza</b></td>
+                <td tabindex="20" class="centro"><b>Esfera</b></td>
+                <td tabindex="21" class="centro"><b>Administra&ccedil;&atilde;o</b></td>
+                <td tabindex="22" class="centro"><b>Fins Lucrativos</b></td>
+            </tr>
+            <?php foreach ($this->dados as $tbdados){ ?>
+            <?php if (!empty($tbdados->Direito) || !empty($tbdados->Esfera) || !empty($tbdados->Administracao) || !empty($tbdados->Utilidade)) { ?>
+            <tr>
+                <td tabindex="23" align="center">
+                <?php if (isset($tbdados->Direito) && $tbdados->Direito == 1)
+                        echo "P&uacute;blico";
+                    else if (isset($tbdados->Direito) && ($tbdados->Direito == 2 || $tbdados->Direito == 35))
+                        echo "Privado";
+                    else
+                        echo "<em>Dados n&atilde;o informados!</em>";
+                ?>
+                </td>
+                <td tabindex="24" align="center">
+                    <?php if ($tbdados->Esfera == 3)
+                            echo "Municipal";
+                        else if ($tbdados->Esfera == 4)
+                            echo "Estadual";
+                        else if ($tbdados->Esfera == 5)
+                            echo "Federal";
+                        else
+                            echo "<em>Dados n&atilde;o informados!</em>";
+                    ?>
+                </td>
+                <td tabindex="25" align="center">
+                    <?php if ($tbdados->Administracao == 11)
+                            echo "Direta";
+                        else if ($tbdados->Administracao == 12)
+                            echo "Indireta";
+                        else
+                            echo "<em>Dados n&atilde;o informados!</em>";
+                    ?>
+                </td>
+                <td tabindex="26" align="center">
+                    <?php if ($tbdados->Utilidade == 1)
+                            echo 'Fins Lucrativos';
+                        else if ($tbdados->Utilidade == 2)
+                            echo 'Sem Fins Lucrativos';
+                        else
+                            echo '<em>Dados n&atilde;o informados!</em>';
+                    ?>
+                </td>
+            </tr>
+            <?php } else { ?>
+            <tr>
+                <td tabindex="27" align="center"><em>Dados n&atilde;o informados!</em></td>
+                <td tabindex="28" align="center"><em>Dados n&atilde;o informados!</em></td>
+                <td tabindex="29" align="center"><em>Dados n&atilde;o informados!</em></td>
+                <td tabindex="30" align="center"><em>Dados n&atilde;o informados!</em></td>
+            </tr>
+            <?php } ?>
+            <?php } ?>
+        </table>
+    </fieldset>
+
+
+    <fieldset>
+        <legend>Dirigente</legend>
+        <table class="tabela">
+            <?php if ($this->dirigentes && count($this->dirigentes)>0) { ?>
+                <tr class="destacar">
+                    <td width="20%" align="center"><b>CPF</b></td>
+                    <td align="center"><b>Nome</b></td>
+                </tr>
+                <?php foreach ($this->dirigentes as $tbdirigentes){ ?>
+                <?php if($tbdirigentes->CNPJCPFDirigente != '00000000000000'){ ?>
+                <tr>
+                    <td align="center"><?php echo empty($tbdirigentes->CNPJCPFDirigente) ? '<em>Dados n&atilde;o informados!</em>' : aplicaMascara($tbdirigentes->CNPJCPFDirigente, "999.999.999-99"); ?>
+                    <td align="left"><?php echo $tbdirigentes->NomeDirigente; ?></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <table class='tabela'>
+                            <tr class="destacar">
+                                <td class="centro" colspan="4">Mandatos</td>
+                            </tr>
+                            <?php if(isset($this->mandatos[$tbdirigentes->NomeDirigente]) && count($this->mandatos[$tbdirigentes->NomeDirigente]) > 0){
+                            foreach ($this->mandatos[$tbdirigentes->NomeDirigente] as $mandato){ ?>
+                            <tr>
+                                <td>
+                                    <b>Tipo de documento</b><br>
+                                    <?php echo $mandato->Descricao;?>
+                                </td>
+                                <td>
+                                    <b>Nº do documento</b><br>
+                                    <?php echo $mandato->dsNumeroDocumento;?>
+                                </td>
+                                <td>
+                                    <b>Per&iacute;odo de vig&ecirc;ncia</b><br>
+                                    <?php echo date('d/m/Y',strtotime($mandato->dtInicioMandato)).' à '.date('d/m/Y',strtotime($mandato->dtFimMandato)); ?>
+                                </td>
+                                <td>
+                                    <b>Arquivo</b><br>
+                                    <a href="<?php echo $this->url(array('controller'=>'upload','action'=>'abrir')); ?>?id=<?php echo $mandato->idArquivo; ?>"><?php echo $mandato->nmArquivo ?></a>
+                                </td>
+                            </tr>
+                            <?php } } else { ?>
+                            <tr>
+                                <td class="centro" colspan="4"><em>N&atilde;o existem mandatos cadastrados!</em></td>
+                            </tr>
+                           <?php } ?>
+                        </table>
+                    </td>
+                </tr>
+                <?php } } ?>
+            <?php } else { ?>
+            <tr>
+                <td colspan="2" align="center"><em>N&atilde;o existem Dirigentes cadastrados!</em></td>
+            </tr>
+            <?php } ?>
+        </table>
+    </fieldset>
+</div>

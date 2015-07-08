@@ -1,0 +1,114 @@
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<script type="text/javascript">
+   function TipoImprimir(){
+        window.print()
+   }
+ 
+</script>
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'index'),'',true); ?>" title="Ir para Início">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'index'),'',true); ?>" title="Gerenciar Pareceres">Gerenciar Pareceres</a></li>
+                <li><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'enviarpagamento'),'',true); ?>" title="Gerenciar Pareceres">Enviar pagamento</a></li>
+		<li class="last">Gerar Memorando</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Gerar Memorando<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+
+<table width="80%" align="center">
+    <tr>
+        <td align="center">
+            <img style="cursor:pointer;" title="Brasao" src="<?php echo $this->baseUrl(); ?>/public/img/brasaoArmas.jpg">
+          <br>
+            Ministerio da Cultura
+          <br>
+            Secretaria de Formento e Incentivo a Cultura
+         <br>
+            Gabinete/SEFIC
+        </td>
+    </tr>
+    <tr>
+        <td>Memorando n&deg; <?php echo $this->nrMemorando; ?>/<?php echo date("Y");?>/GAB/SEFIC/MinC</td>
+    </tr>
+    <tr>
+        <td align="right">Bras&iacute;lia, <?php echo date("d");?> de <?php echo $this->RetornaMes(date("m"));?> de <?php echo date("Y");?></td>
+    </tr>
+    <tr>
+        <td>&Agrave; Coordenação Geral de Execu&ccedil;&atilde;o Financeira</td>
+    </tr>
+    <tr>
+        <td> Encaminhamos a V.Sa., Rela&ccedil;&atilde;o de Pareceres emitidos pelo parecerista <b><?php echo $this->dadosParecerista['Nome']; ?>, </b><b>CPF: <?php echo $this->dadosParecerista['CPF']; ?>, </b>cujo valor perfaz o montante de <b><?php echo $this->formatarReal($this->dadosParecerista['ValorTotal']); ?> </b>.
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <table width="100%">
+                    <td width="10" align="center"><b>ITEM                </b>   </td>
+                    <td width="100" align="center"> <b>PRONAC  </b>  </td>
+                    <td width="100" align="center"> <b>OBJETO DO PARECER   </b>  </td>
+                    <td width="150" align="center"><b>VALOR PARECER      </b>   </td>
+                    <td width="90"  align="center"><b>DATA               </b>   </td>
+                    <td width="150" align="center"><b>NÚMERO DO PROCESSO </b>   </td>
+    </tr>
+                <?php $i = 1; ?>
+                <?php foreach($this->dadosProduto as $key => $obj): ?>
+    <tr>
+                    <td  align="center"><?php echo $i; ?>                       </td>
+                    <td  align="center"><?php echo $obj['PRONAC']; ?>            </td>
+                    <td  align="center"> <?php echo $obj['Objeto']; ?>                           </td>
+                    <td  align="center"><?php echo $this->formatarReal($obj['ValorParecer']); ?>  </td>
+                    <td  align="center"><?php echo $this->dataMemorando; ?> </td>
+                    <td align="center"><?php echo $obj['Processo']; ?>      </td>
+     </tr>
+                <?php $i++; ?>
+                <?php endforeach; ?>
+            </table>
+        </td>
+    </tr>
+    <td width="80%">
+        <br>
+        <tr>
+             <td>
+                 <p>Solicitamos que sejam tomadas as provid&ecirc;ncias necess&aacute;rias para efetuar o pagamento do valor acima citado, tendo em vista que os serviços foram devidamente realizados,
+                conforme atesto inscrito nos pr&oacute;prios pareceres emitidos e cosntantes da rela&ccedil;&atilde;o que foram inclu&iacute;dos como pe&ccedil;as dos respectivos processos, sendo pass&iacute;veis
+                de verifica&ccedil;&atilde;o a qualquer tempo..
+                 </p>
+                <p>
+                    Realizado o pagamento, o respectivo Recibo de Pagamento Aut&ocirc;nomo - RPA, ser&aacute; encaminhado para a Secretaria de Fomento e Incentivo &agrave; Cultura - SEFIC, para fins de registro e controle.
+                </p>
+            </td>
+        </tr>
+        <tr>
+             <td  width="50%">Atenciosamente,</td>
+        </tr>
+        <tr>
+             <td  align="center">
+                     <p><?php echo $this->nmCoordenador;?><br>
+                     <?php echo $this->cargoCoordenador;?></p>
+             </td>
+        </tr>
+        <tr>
+             <td align="center">
+                 <p><?php echo $this->nmSecretario;?><br>
+                <?php echo $this->cargoSecretario; ?></p>
+             </td>
+         </tr>
+    </td>
+    <table width="80%">
+        <tr>
+            <td align="center"> <input type="button" name="imprimir" class="btn_imprimir" onclick="return TipoImprimir();"></td>
+        </tr>
+    </table>
+</table>
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

@@ -1,0 +1,99 @@
+<?php
+include_once 'inc/funcoes.inc.php';
+$graficoresumoHref = $this->url(array('controller' => 'gerarrelatorioparecerista', 'action' => 'graficoresumo'));
+?>
+<div id="menu">
+    <!-- início: conteúdo principal #container -->
+    <div id="container">
+        <?php include_once 'inc/menu.inc.php';?>
+        <!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+        <div id="breadcrumb">
+            <ul>
+                <li class="first"><a href="index.phtml" title="Ir para Início">Início</a></li>
+
+                <li class="last">Principal</li>
+            </ul>
+        </div>
+        <!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+        <!-- ========== BUTTON VOLTAR ========== -->
+        <div id="titulo">
+            <div>Projeto aguardando parecer técnico<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+        </div>
+        <!-- ========== FIM TÍTULO ========== -->
+        <!-- ========== GRID NOME DA PROPOSTA ========== -->
+        <div id="conteudo" align="center">
+            <form action="<?php echo $graficoresumoHref;?>" method="post" name="frmGraficoResumo" id="frmGraficoResumo" target="_blank">
+                    <?php echo Grafico::formConfiguracao($this->baseUrl()) ; ?>
+                    <input type="hidden" name="idOrgao" id="idOrgao" value=""/>
+                    <?php
+                    foreach ($this->post as $key=>$info){
+                        ?>
+                        <input type="hidden" name="<?php echo $key;?>" value="<?php echo $info;?>"/>
+                        <?php
+                    }
+                    ?>
+            </form>
+
+            <table class="tabela apagar">
+                <tr>
+                    <td align="center">
+                        <input type="button" class="btn_pdf" style="width: 40px;" /> <input type="button" class="btn_xls" style="width: 40px;" /> <input type="button" idOrgao="" class="btn_gerar_grafico" style="width: 80px;" />
+                    </td>
+                </tr>
+            </table>
+
+            <table class="tabela apagar">
+                <tr align="center" bgcolor="#ABDA5D">
+                    <th align="left">Parecerista</th>
+                    <th align="right">An&aacute;lise&nbsp;&nbsp;
+                        <input type="button" idOrgao="" class="btn_gerar_grafico">
+                    </th>
+                </tr>
+                <?php
+                foreach ($this->tudo as $idOrgao=>$orgao) {
+                    ?>
+                    <tr align="right" bgcolor="#FFFFFF" valign="middle">
+                        <td align="left"><?php echo $orgao['nmOrgao']?></td>
+
+                        <td nowrap="nowrap"><?php echo $orgao['qt']?>&nbsp;&nbsp;<input type="button" idOrgao="<?php echo $idOrgao;?>" class="btn_gerar_grafico">
+                            </td>
+                    </tr>
+                    <?php
+                    foreach ($orgao['pareceristas'] as $idPareceristas=>$parecerista) {
+                        ?>
+                        <tr align="right" bgcolor="#f3f3f3" valign="middle">
+                            <td align="left" background="/scriptcase/app/E_SALICWEB/_lib/img/bg-celulas.gif">&nbsp; &nbsp; &nbsp;<?php echo $parecerista['nmParecerista']?></td>
+                            <td background="/scriptcase/app/E_SALICWEB/_lib/img/bg-celulas.gif" nowrap="nowrap"><?php echo $parecerista['qt']?></td>
+                        </tr>
+                        <?php
+                    }
+                }
+                ?>
+            </table>
+        </div>
+        <!-- ========== FIM CONTEÚDO ========== -->
+        <!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+        <div id="rodapeConteudo"><span></span></div>
+        <!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+        <br clear="all" />
+    </div>
+</div>
+<?php
+include_once 'inc/geraranexo.inc.php';
+?>
+<script type="text/javascript">
+$(function(){
+    $('.btn_gerar_grafico').click(function(){
+        $("#idOrgao").val($(this).attr('idOrgao'));
+        $('#confGrafico').toggle();
+        $('.apagar').toggle();
+        return false;
+    });
+    $('.btn_cancelar').click(function(){
+        $('.apagar').toggle();
+        return false;
+    });
+    $('.btn_salvar').css('display','none');
+});
+</script>

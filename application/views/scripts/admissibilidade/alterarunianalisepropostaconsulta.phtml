@@ -1,0 +1,66 @@
+<?php include_once 'scripts/admissibilidade/inc/menu.inc.php'; ?>
+<style type="text/css">
+<!--
+label.error{
+    color:red;
+}
+-->
+</style>
+<script type="text/javascript">
+<!--
+$(document).ready(function(){
+   $("#frmCon").validate({
+        rules: {
+            nrProposta: { required: true }
+        },
+        messages: {
+            nrProposta: { required: "Obrigatorio" }
+        },
+        submitHandler: function(form) {
+            $("#retorno").html("");
+            jqAjaxForm(form, "retorno");
+        }
+    });
+
+    $("#nrProposta").numeric();
+});
+//-->
+</script>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second">Admissibilidade</li>
+        <li class="last">Admissibilidade de propostas - Alterar a unidade de análise da proposta</li>
+    </ul>
+</div>
+<div id="titulo">
+    <div>Admissibilidade de propostas - Alterar a unidade de análise da proposta <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<div id="conteudo">
+    <form action="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'frmalterarunianaliseproposta')); ?>" method="post" name="frmCon" id="frmCon">
+    <table class="tabela">
+        <tr>
+            <th>Digite o n&uacute;mero da proposta</th>
+        </tr>
+        <tr>
+            <td align="center">
+                <label for="nrProposta">Nr. da Proposta</label> 
+                <input type="text" name="nrProposta" id="nrProposta" class="input_simples2" />
+            </td>
+        </tr>
+	</table>
+	<table class="tabela">
+        <tr>
+            <td class="centro">
+                <input type="submit" class="btn_confirmar" title="Confirmar" value=" " />
+            </td>
+        </tr>
+    </table>
+    </form>
+    <div id="retorno" align="center"></div>
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

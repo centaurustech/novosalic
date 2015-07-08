@@ -1,0 +1,88 @@
+<script>
+    $(function() {
+        $(".btn_adicionar").click(function() {
+            var elemento = '.item_' + $(this).attr('item');
+            if($(elemento).css('display') == 'none') {
+                $(elemento).fadeIn('fast');
+            } else {
+                $(elemento).fadeOut('fast');
+            }
+        });
+        $.datepicker.regional['pt-BR'] = {
+            closeText: 'Fechar',
+            prevText: '&#x3c;Anterior',
+            nextText: 'Pr&oacute;ximo&#x3e;',
+            currentText: 'Hoje',
+            monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+            dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            weekHeader: 'Sm',
+            dateFormat: 'dd/mm/yy',
+            firstDay: 0,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: ''};
+        $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+        $("#datainicio").datepicker($.datepicker.regional['pt-BR']);
+        $("#datafim").datepicker($.datepicker.regional['pt-BR']);
+    });
+
+    function datas(valor) {
+        if(valor == 1) {
+            $("#datafim").val('');
+            $("#datafim").hide();
+            $("#ldata").hide();
+        } else {
+            $("#datafim").show();
+            $("#ldata").show();
+        }
+    }
+</script>
+<div id="titulo">
+    <div>Resultado da consulta<span></span> <span class="voltar"><a href="javascript:history.go(-2);">Voltar</a></span></div>
+</div>
+<?php $x = 1;?>
+<div id="conteudo" align="center">
+    <br />
+    <table class="tabela" style="text-align: left;">
+        <tr>
+            <td><label id="Pronac">PRONAC:</label> <?php echo $this->PRONAC; ?></td>
+            <td><label id="NomeProjeto">PROJETO:</label> <?php echo $this->nomeProjeto; ?></td>
+        </tr>
+    </table>
+    <table class="tabela" style="text-align: left;">
+        <tr class="">
+            <td colspan="6">
+                <table class="tabela">
+                    <tr class="">
+                    	<th style="text-align: left; width: 140px;">Qtd Vezes</th>
+                        <th style="text-align: left; width: 140px;">Data Encaminhamento</th>
+                        <th style="text-align: left; width: 100px;">Unidade</th>
+                        <th style="text-align: left; width: 250px;">Parecerista</th>
+                        <th style="text-align: left; width: 250px;">Remetente</th>
+                        <th>Observações</th>
+                    </tr>
+                    <?php
+                    foreach($this->Historico as $valores) {
+                    ?>
+                        <tr>
+                        	<td width="140"><?php echo $x++; ?></td>
+                            <td width="140"><?php echo $valores->DtEnvioPT; ?></td>
+                            <td width="100"><?php echo $valores->Unidade; ?></td>
+                            <td width="250"><?php echo $valores->Parecerista; ?></td>
+                            <td width="250"><?php echo $valores->Remetente; ?></td>
+                            <td><?php echo $valores->Observacao; ?></td>
+                        </tr>
+                    <?php
+                    }
+                    ?>
+                </table>
+            </td> <!-- Faz um count para varrer as linhas e dar um  rowspan=" count " -->
+        </tr>
+    </table>
+    <br />
+</div>
+<span id="rodapeConteudo" style="width: 1347px; "><span></span></span>
+<br clear="all" />

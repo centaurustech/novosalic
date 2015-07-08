@@ -1,0 +1,128 @@
+<?php header('Content-Type: text/plain; charset=ISO-8859-1'); ?>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        //ATUALIZA TITULO DA PAGINA
+        window.parent.$("#titulo").html("<div>Aprova&ccedil;&atilde;o</div>");
+        window.parent.$("#caminhoLocalAtual").html("Aprova&ccedil;&atilde;o");
+    });
+    function mostraOcultaElemento(elemento)
+    {
+            $('.' + elemento).toggle();
+
+            if ($('#' + elemento).hasClass('btn_adicionar'))
+            {
+                    $('#' + elemento).addClass('btn_remover');
+                    $('#' + elemento).removeClass('btn_adicionar');
+            }
+            else
+            {
+                    $('#' + elemento).addClass('btn_adicionar');
+                    $('#' + elemento).removeClass('btn_remover');
+            }
+    }
+</script>
+
+<table class="tabela">
+    <tr class="destacar">
+        <td align="center"><b>PRONAC</b></td>
+        <td align="center"><b>Nome do Projeto</b></td>
+    </tr>
+    <tr>
+        <td align="center"><?php echo $this->projeto->AnoProjeto.$this->projeto->Sequencial; ?></td>
+        <td align="center"><?php echo $this->projeto->NomeProjeto; ?></td>
+    </tr>
+</table>
+
+<?php $ct=1; if(is_object($this->dados) && count($this->dados)>0):
+        foreach($this->dados as $aprovacao) : ?>
+    <table class="tabela">
+        <tr>
+            <td align="left">
+                <input type="button" class="btn_adicionar" id="<?php echo $ct;?>" onclick="mostraOcultaElemento('<?php echo $ct;?>');" />  <?php echo '<b>'.$aprovacao->TipoAprovacao.'</b>'; echo ($aprovacao->CodTipoAprovacao == 8) ? ' - '.$aprovacao->dsReadequacao : ''; ?></b>
+            </td>
+        </tr>
+        <tr class="<?php echo $ct;?> sumir" align="left">
+            <td>
+                <table class='tabela'>
+                    <tr class="destacar">
+                        <td align="center" colspan="2"><b>Identifica&ccedil;&atilde;o</b></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div style="width: 30%; float: left;"><b>Nr. Projeto</b><br><?php echo $aprovacao->Pronac;?></div>
+                            <div style="width: 70%"><b>Projeto</b><br><?php echo $aprovacao->NomeProjeto;?></div>
+                        </td>
+                    </tr>
+                    <tr class="destacar">
+                        <td align="center" width="60%"><b>Portaria / Datas</b></td>
+                        <td align="center" width="40%"><b>Per&iacute;odo de Capta&ccedil;&atilde;o</b></td>
+                    </tr>
+                    <tr>
+                        <td align= 'center' style='padding:0;'>
+                            <table class='tabela'>
+                                <tr align="left">
+                                    <td valign="top">
+                                        <b>Tipo</b><br>
+                                        <?php echo $aprovacao->TipoAprovacao;?>
+                                    </td>
+                                    <td valign="top">
+                                        <b>Dt. Aprova&ccedil;&atilde;o</b><br>
+                                        <?php echo ConverteData($aprovacao->DtAprovacao,5);?>
+                                    </td>
+                                    <td valign="top">
+                                        <b>Portaria</b><br>
+                                        <?php $portaria = trim($aprovacao->PortariaAprovacao); echo (empty($portaria)) ? "<em>Sem informa&ccedil;&atilde;o</em>" : $aprovacao->PortariaAprovacao;?>
+                                    </td>
+                                    <td valign="top">
+                                        <b>Dt. Portaria</b><br>
+                                        <?php echo (empty($aprovacao->DtPortariaAprovacao)) ? "<em>Sem informa&ccedil;&atilde;o</em>" : ConverteData($aprovacao->DtPortariaAprovacao,5);?>
+                                    </td>
+                                    <td valign="top">
+                                        <b>Dt. Publica&ccedil;&atilde;o</b><br>
+                                        <?php echo (empty($aprovacao->DtPublicacaoAprovacao)) ? "<em>Sem informa&ccedil;&atilde;o</em>" : ConverteData($aprovacao->DtPublicacaoAprovacao,5);?>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td align= 'center' style='padding:0;'>
+                            <table class='tabela'>
+                                <tr align="left">
+                                    <td valign="top">
+                                        <b>Dt In&iacute;cio</b><br>
+                                        <?php echo ConverteData($aprovacao->DtInicioCaptacao,5);?>
+                                    </td>
+                                    <td valign="top">
+                                        <b>Dt. Fim</b><br>
+                                        <?php echo ConverteData($aprovacao->DtFimCaptacao,5);?>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr class="destacar">
+                        <td align="center" colspan="2"><b>S&iacute;ntese Aprova&ccedil;&atilde;o</b></td>
+                    </tr>
+                    <tr>
+                        <td align="left" colspan="2" style="padding: 1em;"><?php echo (trim(strip_tags($aprovacao->ResumoAprovacao)) != "")?strip_tags($aprovacao->ResumoAprovacao,"<b></b><ul></ul><li></li><strong></strong><i></i><p></p><br>"):"N&atilde;o informado.";  ?></td>
+                    </tr>
+                    <?php if($aprovacao->CodTipoAprovacao != '3' && $aprovacao->CodTipoAprovacao != '8'): ?>
+                    <tr class="destacar">
+                        <td align="center" colspan="2"><b><?php echo strip_tags($aprovacao->Mecanismo);?></b></td>
+                    </tr>
+                    <tr>
+                        <td align="right" colspan="2" style="font-size: 10pt;"><b>Vl. Aprova&ccedil;&atilde;o<br> R$ <?php echo number_format($aprovacao->AprovadoReal, 2, ',', '.');?></b></td>
+                    </tr>
+                    <?php endif;?>
+                </table>
+                </td>
+            </tr>
+        </table>
+        <?php $ct++; endforeach; ?>
+<?php else: ?>
+    <table class="tabela">
+        <tr>
+            <td align="center"><em>Dados n&atilde;o informados!</em></td>
+        </tr>
+    </table>
+<?php endif; ?>

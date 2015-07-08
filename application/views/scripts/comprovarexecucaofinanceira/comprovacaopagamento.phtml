@@ -1,0 +1,872 @@
+<style type="text/css">
+    label.error{ display:block; }
+    #bodyTabelaComprovante, #bodyTabelaComprovanteInternacional { display: none; }
+    #bodyTabelaComprovante:target, #bodyTabelaComprovanteInternacional:target { display: table-row-group; }
+</style>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#vlComprovado').priceFormat({limit: 8});
+    });
+</script>
+
+<?php
+    $buscarFornecedorHref = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'buscarfornecedor')).'?idusuario='.$this->idusuario;
+
+    $urlArray = array(
+        'controller' => 'comprovarexecucaofinanceira', 
+            'action' => 'pagamento', 
+            'idusuario' => $this->idusuario,
+            'idpronac' => $this->idpronac,
+        );
+    $voltarHref = $this->url(\array_merge($urlArray, array('action' => 'pagamento')));
+    $carregarSelectHref = $this->url(\array_merge($urlArray, array('action' => 'carregaselectajax')));
+
+
+    echo $this->headScript()
+        ->appendFile("{$this->baseUrl()}/public/js/jquery/jquery.formatCurrency-1.4.0.min.js")
+        ->appendFile("{$this->baseUrl()}/public/js/jquery/jquery.formatCurrency.pt-BR.js")
+        ->appendScript(
+            "var planilhaItem = {$this->itemPlanilhaAprovacao->idPlanilhaAprovacao}"
+        )
+    ;
+
+    if (!$this->vrSituacao) {
+        include_once 'scripts/comprovarexecucaofinanceira/inc/menu.inc.php';
+    }
+
+    # tratamento para liberar edicao de comprovante
+    $formUrl = $this->url(array_merge(
+        $urlArray,
+        array('action' => 'cadastrarcomprovacaopagamento', 'itemId' => $this->itemPlanilhaAprovacao->idPlanilhaAprovacao)
+    ));
+    if ($this->idComprovantePagamento) {
+        $formUrl = $this->url(array_merge(
+            $urlArray,
+            array('action' => 'atualizarcomprovacaopagamento', 'itemId' => $this->itemPlanilhaAprovacao->idPlanilhaAprovacao)
+        ));
+    }
+?>
+
+<div id="divPerguntaFornecedor" class="sumir"></div>
+<div id="divExcluirComprovantes" class="sumir"></div>
+<div id="msgAlerta" class="sumir"></div>
+<?php if (!$this->vrSituacao) : ?>
+    <div id="breadcrumb">
+        <ul>
+            <li class="first"><a href="<?php echo $this->url(array('controller' => 'principalproponente', 'action' => ''), null, true); ?>" title="Ir para p&aacute;gina inicial" onclick="carregandoModal();">In&iacute;cio</a></li>
+            <li class="second"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')) . '?idPronac=' . Seguranca::encrypt($this->idpronac); ?>" title="Ir para In&iacute;cio">Consultar dados do Projeto</a></li>
+            <li>Comprovar Execu&ccedil;&atilde;o Financeira</li>
+            <li><a href="<?php echo $pagamentoHref; ?>" title="Pagamento" onclick="carregandoModal();">Pagamento</a></li>
+            <li class="last">Comprovar Pagamento</li>
+        </ul>
+    </div>
+<?php endif; ?>
+
+<div id="titulo">
+    <div>Comprovar Pagamento
+        <?php if (!$this->vrSituacao || !$this->pagCompRecusado) : ?>
+        <span class="voltar"><a href="<?php echo $voltarHref; ?>" title="Ir para p&aacute;gina anterior">Voltar</a></span>
+        <?php endif; ?>
+    </div>
+</div>
+
+<div id="conteudo" align="center">
+    <!--<fieldset><legend>Comprova&ccedil;&atilde;o de Pagamento</legend>-->
+        <div id="incluircomprovacaoAjax">
+            <form
+                action="<?php echo $formUrl;?>"
+                id="frComprovarPagamento"
+                name="frComprovarPagamento"
+                enctype="multipart/form-data"
+                method="post"
+                >
+                <input type='hidden' name='idComprovantePagamento' id='idComprovantePagamento' value='<?php echo $this->idComprovantePagamento; ?>' />
+                <input type='hidden' name='idpronac' id='idpronac' value='<?php echo $this->idpronac; ?>' />
+
+                <table class="tabela">
+                    <tr>
+                        <th colspan="3">Vincular Item de Custo</th>
+                    </tr>
+                </table>
+
+                <table id="tabelaItem" class="tabela">
+                    <thead>
+                    <tr>
+                        <td class="destacar"><b>Produto</b></td>
+                        <td class="destacar"><b>Etapa</b></td>
+                        <td class="destacar"><b>Itens de Custo</b></td>
+                        <td class="destacar"><b>Valor Aprovado</b></td>
+                        <td class="destacar"><b>Valor Comprovado</b></td>
+                        <td class="destacar"><b>Valor do Item</b></td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><?php echo $this->produto->Sintese; ?></td>
+                        <td><?php echo $this->etapa->Descricao; ?></td>
+                        <td><?php echo $this->item->Descricao; ?></td>
+                        <td><?php echo $this->currency($this->itemPlanilhaAprovacao->valorAprovado); ?></td>
+                        <td><?php echo $this->currency($this->itemPlanilhaAprovacao->valorComprovado ? $this->itemPlanilhaAprovacao->valorComprovado : '0'); ?></td>
+                        <td>
+                            <input type="text" name="vlComprovado" size="10" id="vlComprovado"
+                                value="<?php echo $this->vlComprovado; ?>" />
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <table id="tabelaComprovante" class="tabela">
+                    <tbody>
+                        <tr>
+                            <th colspan="6" align="center" class="fundo_linha3">Identifica&ccedil;&atilde;o do Contratado
+                                <input type="hidden" name="idAgente" id="idAgente" value="<?php echo $this->idAgente; ?>"/>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td class="destacar" align="right">
+                                <b>Nacionalidade do Fornecedor<span style='color:red'>*</span></b>
+                            </td>
+                            <td class="w150" colspan="5">
+                                <select
+                                    id="pais"
+                                    name="pais"
+                                    class="select_simples"
+                                    onchange="toggleTabelaComprovacaoPagamentoInvoice();">
+                                <?php foreach ($this->paises as $pais) : ?>
+                                <option
+                                    value="<?php echo $pais->Descricao; ?>"
+                                    <?php echo 'Brasil' == $pais->Descricao ? 'selected="selected"' : ''; ?>
+                                    >
+                                    <?php echo $pais->Descricao; ?>
+                                </option>
+                                <?php endforeach; ?>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody id="bodyTabelaComprovante">
+                        <tr>
+                            <td class="destacar" align="right"><b>Tipo do Fornecedor<span style='color:red'>*</span></b></td>
+                            <td class="w150" colspan="5">
+                                <input
+                                    type="radio"
+                                    id="tpFornecedorCpf"
+                                    name="tpFornecedor"
+                                    class="tpFornecedor"
+                                    value="cpf"
+                                    null="false"
+                                    <?php echo $this->fornecedor && $this->fornecedor->usaCnpj ? '' : 'checked="checked"'; ?>
+                                    />
+                                <label for="tpFornecedorCpf">CPF</label>
+                                <input
+                                    type="radio"
+                                    id="tpFornecedorCnpj"
+                                    name="tpFornecedor"
+                                    class="tpFornecedor"
+                                    value="cnpj"
+                                    <?php echo $this->fornecedor && $this->fornecedor->usaCnpj ? 'checked="checked"' : ''; ?>
+                                    />
+                                <label for="tpFornecedorCnpj">CNPJ</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="destacar" align="right"><b>CNPJ/CPF<span style='color:red'>*</span></b></td>
+                            <td>
+                                <input
+                                    type="text"
+                                    autocomplete="off"
+                                    name="CNPJCPF"
+                                    id="CNPJCPF"
+                                    idAgente="idAgente"
+                                    idDescricao="Descricao"
+                                    cnpjcpf="true"
+                                    classaux="tpFornecedor"
+                                    null="false"
+                                    value="<?php echo $this->CNPJCPF; ?>"
+                                    />
+                            </td>
+                            <td class="destacar" align="right"><b>Nome/Raz&atilde;o Social<span style='color:red'>*</span></b></td>
+                            <td colspan="3">
+                                <input
+                                    type="text"
+                                    style="width: 400px;"
+                                    name="Descricao"
+                                    id="Descricao"
+                                    null="false"
+                                    value="<?php echo $this->Descricao; ?>"
+                                    <?php echo $this->CNPJCPF ? 'readonly="readonly"' : ''; ?>
+                                    />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th colspan="6" align="center" class="fundo_linha3">Dados da Comprova&ccedil;&atilde;o de Pagamento</th>
+                        </tr>
+                        <tr>
+                            <td class="destacar" align="right" style="width: 125px;"><b>Comprovante<span style='color:red'>*</span></b></td>
+                            <td style="width: 175px;">
+                                <select name="tpDocumento" id="tpDocumento">
+                                    <?php
+                                        foreach ($this->tipoDocumentoConteudo as $key => $value) :
+                                            $selected = $this->tpDocumento == $key ? 'selected="selected"' : null;
+                                            echo "<option value='{$key}' {$selected}>{$value}</option>";
+                                        endforeach
+                                    ?>
+                                </select>
+                            </td>
+                            <td class="destacar" align="right" style="width: 125px;"><b>Número<span style='color:red'>*</span></b></td>
+                            <td>
+                                <input type="text" name="nrComprovante" id="nrComprovante" maxlength="50" null="false" class="w300"
+                                    value="<?php echo $this->nrComprovante; ?>"/>
+                            </td>
+                            <td class="destacar" align="right"><b id="nmSerieTxt">S&eacute;rie</b></td>
+                            <td>
+                                <input type="text" name="nrSerie" id="nrSerie" maxlength="8" style="width: 80px;" null="true"
+                                    value="<?php echo $this->nrSerie; ?>"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="destacar" align="right"><b>Dt. do Documento<span style='color:red'>*</span></b></td>
+                            <td>
+                                <input type="text" name="dtEmissao" id="dtEmissao" null="false" data="true" 
+                                    value="<?php echo $this->dtEmissao; ?>"/>
+                            </td>
+                            <td class="destacar" align="right"><b>Forma de Pagamento<span style='color:red'>*</span></b></td>
+                            <td>
+                                <select name="tpFormaDePagamento" id="tpFormaDePagamento" style="width: 180px;">
+                                    <?php
+                                        $selected1 = $this->tpFormaDePagamento == 1 ? 'selected="selected"' : null;
+                                        $selected2 = $this->tpFormaDePagamento == 2 ? 'selected="selected"' : null;
+                                        $selected3 = $this->tpFormaDePagamento == 3 ? 'selected="selected"' : null;
+                                    ?>
+                                    <option value="0"> - Selecione - </option>
+                                    <option value="1" <?php echo $selected1; ?>>Cheque</option>
+                                    <option value="2" <?php echo $selected2; ?>>Transferência Bancária</option>
+                                    <option value="3" <?php echo $selected3; ?>>Saque/Dinheiro</option>
+                                </select>
+                            </td>
+                            <td class="destacar" align="right" style="width: 155px;">
+                               <b>N&ordm; Documento Pagamento<span style='color:red'>*</span></b>
+                           </td>
+                            <td>
+                                <input type="text" name="nrDocumentoDePagamento" id="nrDocumentoDePagamento" maxlength="8"
+                                    style="width: 80px;" null="false" sonumero="true"
+                                    value="<?php echo $this->nrDocumentoDePagamento; ?>"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="destacar" align="right"><b>Anexar Documentos<span style='color:red'>*</span></b></td>
+                            <td colspan="2">
+                                <input type="file" name="arquivo" id="arquivo" value=""/>
+                            </td>
+                            <td colspan="3">
+                                <a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir'), '', true); ?>?id=<?php echo $this->idArquivo; ?>"><?php echo $this->nomeArquivo; ?></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="destacar" align="right"><b>
+                                <?php 
+                                    $auth = Zend_Auth::getInstance();
+                                    if(isset($auth->getIdentity()->usu_codigo)){
+                                        echo 'Justificativa do Proponente';
+                                    } else {
+                                        echo 'Justificativa';
+                                    } 
+                                ?>
+                            </b>
+                            </td>
+                            <td colspan="5">
+                                <textarea rows="5" style="width: 99%;" name="dsJustificativa"
+                                    id="dsJustificativa" ><?php echo $this->dsJustificativa; ?></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="destacar" align="right"><b>Ocorrência do Técnico</b></td>
+                            <td colspan="5"><?php echo $this->JustificativaTecnico; ?></td>
+                        </tr>
+                    </tbody>
+
+                    <tbody id="bodyTabelaComprovanteInternacional">
+                        <tr>
+                            <td class="destacar" align="right"><b>Nome da Empresa<span style='color:red'>*</span></b></td>
+                            <td colspan="5">
+                                <input
+                                    type="text"
+                                    id="nomeRazaoSocialInternacional"
+                                    style="width: 400px;"
+                                    name="nomeRazaoSocialInternacional"
+                                    null="false"
+                                    />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="destacar" align="right">
+                                <b>Endereço</b></td>
+                            <td colspan="5">
+                                <input
+                                    type="text"
+                                    id="enderecoInternacional"
+                                    style="width: 400px;"
+                                    name="enderecoInternacional"
+                                    />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th colspan="6" align="center" class="fundo_linha3">Dados da Comprova&ccedil;&atilde;o de Pagamento</th>
+                        </tr>
+                        <tr>
+                            <td class="destacar" align="right" style="width: 125px;"><b>Número do documento<span style='color:red'>*</span></b></td>
+                            <td colspan="3">
+                                <input type="text" id="nif" name="nif" null="false" value="<?php echo $this->nif; ?>"/>
+                            </td>
+                            <td class="destacar" align="right"><b id="nmSerieTxt" colspan="3">Tipo de Documento</b></td>
+                            <td>
+                            	<label for="tipo_documento_invoice">Invoice
+	                                <input type="radio" name="nrSerieInternacional" id="tipo_documento_invoice" value="6"
+	                                	<?php
+	                                		if (1 == $this->nrSerie || !$this->nrSerie) :
+	                                			echo 'checked="checked"';
+	                                		endif;
+	                                	?>
+	                                />
+                            	</label>
+                            	<label for="tipo_documento_outros">Outros
+	                                <input type="radio" name="nrSerieInternacional" id="tipo_documento_outros" value="7"
+	                                	<?php
+	                                		if (1 == $this->nrSerie) :
+	                                			echo 'checked="checked"';
+	                                		endif;
+	                                	?>
+	                                />
+	                            </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="destacar" align="right"><b>Dt. do Documento<span style='color:red'>*</span></b></td>
+                            <td colspan="5">
+                                <input
+                                    type="text"
+                                    id="dtEmissaoInternacional"
+                                    name="dtEmissaoInternacional"
+                                    null="false"
+                                    data="true" 
+                                    value="<?php echo $this->dtEmissao; ?>"
+                                    />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="destacar" align="right"><b>Anexar Documentos<span style='color:red'>*</span></b></td>
+                            <td colspan="2">
+                                <input type="file" id="arquivoInternacional" name="arquivoInternacional" value=""/>
+                            </td>
+                            <td colspan="3">
+                                <a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir'), '', true); ?>?id=<?php echo $this->idArquivo; ?>"><?php echo $this->nomeArquivo; ?></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="destacar" align="right"><b>Justificativa</b></td>
+                            <td colspan="5">
+                                <textarea rows="5" style="width: 99%;" name="dsJustificativaInternacional"><?php echo $this->dsJustificativa; ?></textarea>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table id="tableItensCusto" class="tabela linhaMaior1 sumir">
+                    <tr>
+                        <td class="destacar"><b>Contrato</b></td>
+                        <td class="destacar"><b>Produto</b></td>
+                        <td class="destacar"><b>Etapa</b></td>
+                        <td class="destacar"><b>Item</b></td>
+                        <td class="destacar"><b>Valor do Item</b></td>
+                        <td class="destacar"><b>Desvincular</b></td>
+                    </tr>
+                </table>
+
+                <div style="text-align: center;">
+                    <?php if (!$this->vrSituacao || !$this->pagCompRecusado) : ?>
+                    <a href="<?php echo $voltarHref; ?>" id="btnVoltar" style="text-decoration:none;"><input type="button" class="btn_voltar" /></a>
+                    <?php endif; ?>
+                    <input type="submit" name="frComprovarPagamentoSubmit" id="frComprovarPagamentoSubmit" value="" class="btn_incluir" />
+                </div>
+            </form>
+
+            <?php if (!$this->vrSituacao) : ?>
+                <table id="tabelaComprovantePagamento" class="tabela">
+                    <thead>
+                        <tr class="centro">
+                            <td class="destacar bold">Produto</td>
+                            <td class="destacar bold">Etapa</td>
+                            <td class="destacar bold">Item</td>
+                            <td class="destacar bold">CPF/CNPJ</td>
+                            <td class="destacar bold">N&uacute;mero</td>
+                            <td class="destacar bold">Tipo do Doc.</td>
+                            <td class="destacar bold">Data Emiss&atilde;o</td>
+                            <td class="destacar bold">Documento</td>
+                            <td class="destacar bold">Valor Comprovado</td>
+                            <td class="destacar bold">A&ccedil;&atilde;o</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($this->comprovantes)) : ?>
+                        <tr><td class="centro" colspan="10">Nenhuma comprova&ccedil;&atilde;o de pagamento cadastrada.</td></tr>
+                        <?php
+                        else:
+                            foreach ($this->comprovantes as $comprovante) : ?>
+                        <tr>
+                            <td><?php echo $comprovante->produtonome; ?></td>
+                            <td><?php echo $comprovante->etapanome; ?></td>
+                            <td><?php echo $comprovante->itemnome; ?></td>
+                            <td nowrap><?php echo $comprovante->fornecedor->CNPJCPF; ?></td>
+                            <td><?php echo $comprovante->nrComprovante; ?></td>
+                            <td><?php echo $comprovante->tipoDocumentoNome; ?></td>
+                            <td><?php echo $comprovante->dtEmissao; ?></td>
+                            <td>
+                                <a
+                                    href="
+                                        <?php echo $this->url(
+                                                array(
+                                                    'controller' => 'upload',
+                                                    'action' => 'abrir',
+                                                    'id' => $comprovante->idArquivo,
+                                                    )
+                                                );
+                                        ?>
+                                    ">
+                                    <?php echo $comprovante->nmArquivo; ?>
+                                </a>
+                            </td>
+                            <td><?php echo $this->currency($comprovante->vlComprovacao); ?></td>
+                            <td>
+                                <a
+                                    href="
+                                        <?php echo $this->url(
+                                                array(
+                                                    'controller' => 'comprovar-pagamento',
+                                                    'action' => 'deletar',
+                                                    'comprovante' => $comprovante->idComprovantePagamento,
+                                                )
+                                            );
+                                        ?>"
+                                        >
+                                    <input type="button" value="" class="btn_exclusao" />
+                                </a>
+                            </td>
+                        </tr>
+                            <?php endforeach;
+                            endif; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
+        </div>
+        <br clear="left"/>
+     <!--</fieldset>-->
+
+    <div id="desc_item"></div>
+</div>
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />
+
+<iframe id="anexarArquivo" name="anexarArquivo" src="#" style="width: 300px;height: 300px;display: none;"></iframe>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        // tratamento comum
+        var form = '#incluircomprovacaoAjax';
+        $('input[type!=button][type!=submit]').addClass('input_simples');
+        $('textarea').addClass('textarea_simples');
+        $('select[id!=perfilXgrupo]').addClass('select_simples');
+        $(form).find('[data=true]').each(function(){
+            $(this).keyup(function(){
+                mascara(this,format_data);
+                var este = this;
+                setTimeout(function(){
+                    $(este).val($(este).val().substr(0,10));
+                },2);
+                if($(este).val().length == 10){
+                    validaDataCorreta(este,$(este).val().substr(6,4),$(este).val().substr(3,2),$(este).val().substr(0,2));
+                }
+            });
+            $(this).datepicker({
+                    showOn: 'button',
+                    buttonImage: '<?php echo $this->baseUrl(); ?>/public/img/ico/calendar.gif',
+                    buttonImageOnly: true,
+                    dateFormat:'dd/mm/yy'
+            });
+        });
+        $(form).find('[sonumero=true]').keyup(function(){
+            mascara(this,format_num);
+        });
+        $(form).find('[dinheiro=true]').keyup(function(){
+            mascara(this,format_moeda);
+        });
+
+        $(form).find('[cnpjcpf=true]').each(function(){
+            var este = this;
+            $('.'+$(este).attr('classaux')).click(function(){
+                mascaraCNPJCPF(este);
+                buscarFornecedor(este);
+            });
+            $('#'+$(este).attr('idDescricao')).attr('readonly',true);
+        });
+        $(form).find('[cnpjcpf=true]').keyup(function(){
+            mascaraCNPJCPF(this);
+            buscarFornecedor(this);
+        });
+        
+        function mascaraCNPJCPF(este){
+            var marcado = buscarRadioMarcado(este);
+            switch(marcado){
+                case 'cpf':
+                    $(este).val($(este).val().slice(0,14));
+                    $(este).attr('maxlength',14);
+                    mascara(este,format_cpf);
+                    break;
+                case 'cnpj':
+                    $(este).attr('maxlength',18);
+                    mascara(este,format_cnpj);
+                    break;
+                default:
+                    janelaAlerta('Selecione o Tipo do Fornecedor');
+                    $(este).val('');
+            }
+        }
+        
+        function buscarRadioMarcado(este){
+            var marcado = '';
+            $('.'+$(este).attr('classaux')).each(function(){
+                if($(this).attr('checked')){
+                    marcado = $(this).val();
+                }
+            });
+            return marcado;
+        }
+        
+        function buscarFornecedor(este){
+            if($(este).attr('idAgente') != undefined && $(este).attr('idAgente') && $(este).attr('idDescricao') != undefined && $(este).attr('idDescricao')){
+                var marcado = buscarRadioMarcado(este);
+                if((marcado == 'cpf' && $(este).val().length == 14) || (marcado == 'cnpj' && $(este).val().length == 18)){
+                    var fornecedor = buscarJson('<?php echo $buscarFornecedorHref;?>',{cnpjcpf:$(este).val()});
+                    if(fornecedor.retorno){
+                       $('#'+$(este).attr('idAgente')).val(fornecedor.idAgente);
+                       $('#'+$(este).attr('idDescricao')).val(fornecedor.descricao).attr('readonly',true);
+
+                    } else {
+                        $('html').css('overflow', 'hidden');
+                        $("body").append("<div id='divDinamicaAgentes'></div>");
+                        $("#divDinamicaAgentes").html("");
+                        $('#divDinamicaAgentes').html("<br><br><center>Carregando dados...</center>");
+                        $.ajax({
+                            url : '<?php echo $this->url(array('controller' => 'agentes', 'action' => 'incluirfornecedor')); ?>',
+                            data : {
+                                cpf : fornecedor.CNPJCPF,
+                                caminho: "",
+                                modal : "s"
+                            },
+                            success: function(data){
+                                if (data.error) {
+                                    $('#divDinamicaAgentes').html(data.msg);
+                                } else {
+                                    $('#divDinamicaAgentes').html(data);
+                                }
+                            },
+                            complete: function(){
+                                $("#resultadoFinalizar").html("");
+                            },
+                            type : 'post'
+
+                        });
+
+                        $("#divDinamicaAgentes").dialog({
+                            resizable: true,
+                            width:$(window).width() - 100,
+                            height:$(window).height() - 100,
+                            modal: true,
+                            autoOpen:true,
+                            draggable:false,
+                            title: 'Cadastrar Fornecedor',
+                            buttons: {
+                                'Fechar': function() {
+                                    $("#divDinamicaAgentes").remove();
+                                    $('#'+$(este).attr('idAgente')).val('');
+                                    $('#'+$(este).attr('idDescricao')).val('');
+                                    $(this).dialog('close');
+                                    $('html').css('overflow', 'auto');
+                                    outroFornecedor(este);
+                                }
+                            }
+                        });
+                        $('.ui-dialog-titlebar-close').remove();
+                   }
+                }
+                else{
+                   $('#'+$(este).attr('idAgente')).val('');
+                   $('#'+$(este).attr('idDescricao')).val('');
+               }
+            }
+            fornecedores();
+        }
+
+        function outroFornecedor(este){
+            $("#divPerguntaFornecedor").dialog('close');
+            $("#divPerguntaFornecedor").html('Deseja utilizar este fornecedor na comprovação do pagamento?');
+            $("#divPerguntaFornecedor").dialog('open');
+            $("#divPerguntaFornecedor").dialog({
+                resizable: false,
+                width: 320,
+                height: 180,
+                modal: true,
+                draggable:false,
+                title: 'Alerta!',
+                buttons: {
+                    'Não': function(){
+                        $('#'+$(este).attr('idAgente')).val('');
+                        $('#'+$(este).attr('idDescricao')).val('');
+                        $('#CNPJCPF').val('');
+                        $("#divPerguntaFornecedor").dialog('close');
+                    },
+                    'Sim': function() {
+                        $(this).dialog('close');
+                        buscarFornecedor(este);
+                    }
+                }
+            });
+            $('.ui-dialog-titlebar-close').remove();
+        }
+        
+        function fornecedores(){
+            var conteudo = '<option value="">Selecione</option>';
+            conteudo += montagem(1);
+            conteudo += montagem(2);
+            conteudo += montagem(3);
+            $('#fornecedor').html(conteudo);
+        }
+        
+        function montagem(nr){
+            var conteudo = '';
+            if($('#Descricao'+nr).val()!=undefined){
+                if($('#Descricao'+nr).val().replace(/\s+/g, '')){
+                    var idAgente = '';
+                    if($('#idAgente'+nr).val() == '')
+                        idAgente = '-'+nr;
+                    else
+                        idAgente = $('#idAgente'+nr).val();
+                    conteudo    +=  '<option value="'+idAgente+'">'+$('#Descricao'+nr).val()+'</option>';
+                    $('.fornecedor'+nr).each(function(){
+                        $(this).val(idAgente);
+                    });
+                    $('.td_fornecedor'+nr).each(function(){
+                        $(this).html($('#Descricao'+nr).val());
+                    });
+                }
+            }
+            return conteudo;
+        }
+
+        function buscarJson(pagina,dados){
+            var retorno = '';
+            var select = requisicaoAjaxObj();
+            select.executar({
+                pagina          :   pagina,
+                parametros      :   dados,
+                resposta        :   undefined,
+                async           :   false,
+                funcaoRetorno   :   function (resposta){
+                    retorno = resposta;
+                }
+                ,dataType        :   'json'
+            });
+            return retorno;
+        }
+        
+        function requisicaoAjaxObj(){
+            var ajaxObj={
+                pagina          :   '',                     
+                parametros      :   {},
+                type            :   'post',                
+                dataType        :   '',                     
+                resposta        :   '#conteudo',           
+                async           :   true,                   
+                funcaoRetorno   :   function (resposta){
+                    $(this.resposta).html(resposta);
+                }, 
+                executar        :   function(dados){
+                    this.refineParametrosObj(dados);
+                    var esteObj = this;
+                    if(this.resposta != undefined && this.resposta != '')
+                        $(this.resposta).html('<img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" alt="carregando"><br/><br/>Carregando...<br>Por Favor, aguarde!!');
+                    $.ajax({
+                        type      : esteObj.type,
+                        url       : esteObj.pagina,
+                        data      : esteObj.parametros,
+                        async     : esteObj.async,
+                        success   : function(resp){
+                            esteObj.funcaoRetorno(resp);
+                        }
+                        ,dataType  : esteObj.dataType
+                    });
+                },
+                refineParametrosObj : function(data){
+                    if(data!= undefined)
+                        for(var j in data){
+
+                            this[j]=data[j];
+                        }
+                }
+            }
+            return ajaxObj;
+        }
+
+        $('#itens').change(function (){
+            // Recupera o fornecedor e preenche os dados do mesmo.
+            $.ajax({
+                url: '<?php echo $this->baseUrl();?>/fornecedor/pesquisar-fornecedor-item/format/json',
+                type: 'get',
+                data : {'item': $(this).val()},
+                dataType: 'json',
+                success: function(result){
+                    if (undefined != result.fornecedor) {
+                        if (11 == result.fornecedor.CNPJCPF.length) {
+                            var mask = '999.999.999-99';
+                        } else {
+                            var mask = '99.999.999/9999-99';
+                        }
+                        $("#tabelaComprovante tbody:nth-child(1) tr:nth-child(2)").attr('style', 'display:none');
+                        $("#idAgente").val(result.fornecedor.idAgente);
+                        $("#CNPJCPF").val(result.fornecedor.CNPJCPF).mask(mask).attr('disabled', 'true');
+                        $("#Descricao").val(result.fornecedor.Fornecedor).attr('disabled', 'true');
+                    }
+                }
+            });
+        });
+
+        $("#frComprovarPagamentoSubmit").click(function() {
+            var msg = ';'
+            if (isInvoice()) {
+                msg = validarParametrosDeComprovacaoDePagamentoInvoice();
+            } else {
+                msg = validarParametrosDeComprovacaoDePagamento();
+            }
+
+            var valorItem = parseFloat($("#vlComprovado").val().replace(".", "").replace(".", "").replace(",", "."));
+            var valorAprovado = parseFloat($('#tabelaItem tbody td:nth-child(4)').html().replace(".", "").replace(".", "").replace(",", ".").replace("R$", ""));
+            var valorComprovado = parseFloat($('#tabelaItem tbody td:nth-child(5)').html().replace(".", "").replace(".", "").replace(",", ".").replace("R$", ""));
+            if (
+                (!$("#idComprovantePagamento").val() && ($("#vlComprovado").val() && (valorItem + valorComprovado) > valorAprovado))
+                ||
+                ($("#idComprovantePagamento").val() && ($("#vlComprovado").val() && valorItem > valorAprovado))
+            ) {
+                msg += 'Valor comprovado maior que o valor aprovado.<br />';
+            }
+            if ('' != msg) {
+                $("#msgAlerta").dialog("destroy");
+                $("#msgAlerta").html('<center><p>'+msg+'</p></center>');
+                $("#msgAlerta").dialog({
+                    resizable: false,
+                    title: 'Alerta!',
+                    width: 500,
+                    height: 300,
+                    modal: true,
+                    buttons : {
+                        'OK' : function(){ $(this).dialog('close'); }
+                    }
+                });
+                $('.ui-dialog-titlebar-close').remove();
+                return false;
+            }
+        });
+
+        function validarParametrosDeComprovacaoDePagamento() {
+            var msg = '';
+            if (!$("#vlComprovado").val()) { msg += 'Informe o valor do item.<br />'; }
+            if (!$("#idAgente").val()) { msg += 'Informe um fornecedor.<br />'; }
+            if (!$("#tpDocumento").val() || 0 == $("#tpDocumento").val()) { msg += 'Selecione o tipo de comprovante.<br />'; }
+            if (!$("#nrComprovante").val()) { msg += 'Informe o número do comprovante.<br />'; }
+            if (!$("#dtEmissao").val()) { msg += 'Informe a data de emissão do comprovante.<br />'; }
+            if (!$("#tpFormaDePagamento").val() || 0 == $("#tpFormaDePagamento").val()) { msg += 'Selecione a forma de pagamento.<br />'; }
+            if (!$("#nrDocumentoDePagamento").val()) { msg += 'Informe o número do Documento de pagamento.<br />'; }
+            if (!$("#arquivo").val()) { msg += 'Selecione um arquivo comprovante para envio.<br />'; }
+            return msg;
+        }
+
+        function validarParametrosDeComprovacaoDePagamentoInvoice() {
+            var msg = '';
+            if (!$("#vlComprovado").val()) { msg += 'Informe o valor do item.<br />'; }
+            if (!$("#nomeRazaoSocialInternacional").val()) { msg += 'Informe o Nome/Razão Social.<br />'; }
+            if (!$("#nif").val()) { msg += 'Informe o NIF.<br />'; }
+            if (!$("#dtEmissaoInternacional").val()) { msg += 'Informe a data de emissão do comprovante.<br />'; }
+            if (!$("#arquivoInternacional").val()) { msg += 'Selecione um arquivo comprovante para envio.<br />'; }
+            return msg;
+        }
+
+        $('#tabelaComprovantePagamento tbody tr td a .btn_exclusao').closest('a').each(function(){
+            $(this).unbind('click').click(function(event){
+                event.preventDefault();
+                $("#alerta").dialog("destroy");
+                $("#alerta").html('Deseja realmente excluir esse comprovante?');
+                $("#alerta").dialog({
+                    resizable: false,
+                    title: 'Alerta!',
+                    width:340,
+                    modal: true,
+                    buttons : {
+                        'OK' : function(){
+                            deletarItem($(event.target).parent());
+                            $(this).dialog('close');
+                        },
+                        'Cancelar' : function(){ $(this).dialog('close'); }
+                    }
+                });
+                $('.ui-dialog-titlebar-close').remove();
+            });
+        });
+
+        deletarItem = function(elementLink) {
+            $.ajax({
+                url: elementLink.attr('href')+'/format/json',
+                dataType: 'json',
+                success: function(result){
+                    // remove a linha
+                    elementLink.closest('tr').remove();
+                    // atualiza as informacoes do item
+                    $('#tabelaItem tbody tr td:nth-child(4)').html('000').toNumber().formatCurrency({region: 'pt-BR' });
+                    $('#tabelaItem tbody tr td:nth-child(5)').html('000').toNumber().formatCurrency({region: 'pt-BR' });
+                    // Recupera o item e preenche os valores aprovado e comprovado.
+                    $.ajax({
+                        url: '<?php echo $this->baseUrl();?>/planilha-item/pesquisar/format/json',
+                        type: 'get',
+                        data : {'item': planilhaItem},
+                        dataType: 'json',
+                        success: function(result){
+                            if (result.item) {
+                                planilhaItem = result.item;
+                                $('#tabelaItem tbody tr td:nth-child(4)').html(result.item.valorAprovado).toNumber().formatCurrency({region: 'pt-BR' });
+                                $('#tabelaItem tbody tr td:nth-child(5)').html(result.item.valorComprovado).toNumber().formatCurrency({region: 'pt-BR' });
+                            }
+                            message('Exclusão realizada com sucesso!', 'CONFIRM');
+                        }
+                    });
+                }
+            });
+        };
+    });
+
+    function toggleTabelaComprovacaoPagamentoInvoice() {
+        if (isInvoice()) {
+            $('#bodyTabelaComprovante').hide();
+            $('#bodyTabelaComprovanteInternacional').show();
+        } else {
+            $('#bodyTabelaComprovante').show();
+            $('#bodyTabelaComprovanteInternacional').hide();
+        }
+    }
+
+    function isInvoice() {
+        return 'Brasil' !== $('#pais').val();
+    }
+
+    toggleTabelaComprovacaoPagamentoInvoice();
+</script>

@@ -1,0 +1,293 @@
+<?php
+header('Content-Type: text/plain; charset=ISO-8859-1');
+$portaria = trim($this->projetos->PortariaAprovacao);
+?>
+<script>
+    $(document).ready(function(){
+        segmento(<?php echo $this->projetos->cdarea;?>,<?php echo $this->projetos->cdsegmento;?>);
+        jqAjaxLinkSemLoading('<?php echo $this->url(array('controller' => 'checarregularidade', 'action' => 'index')); ?>?CgcCpf=<?php echo retiraMascara($this->projetos->CgcCpf); ?>', '', 'regularidadeProponente');
+    });
+    $("#areacultural").change(function(){
+        var area = $(this).val();
+        segmento(area,null);
+    });
+    function segmento(cdarea, segmento){       
+        if(cdarea != ''){
+            $("#segmento").find('option').remove();
+            $("#segmento").append("<option value=''> carregando... </option>");
+        }else{
+            $("#segmento").find('option').remove();
+            $("#segmento").append("<option value=''> - Selecione uma área - </option>");
+            return false;
+        }
+        $.ajax({
+            async : true,
+            data:{
+                area : cdarea,
+                areacultura : 'ok'
+            },
+            url:'<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'recupera-area-cultural')); ?>',
+            type:'POST'
+            , success : function(valor)
+            {
+                $("#segmento").find('option').remove();
+                $("#segmento").append("<option value=''> - Selecione -</option>");
+                for(i in valor)
+                {
+                    if(segmento == valor[i].cdsegmento)
+                    {
+                        $("#segmento").append("<option value='"+valor[i].cdsegmento+"' selected='selected'>"+valor[i].descsegmento+"</option>");
+                    }
+                    else
+                    {
+                        $("#segmento").append("<option value='"+valor[i].cdsegmento+"'>"+valor[i].descsegmento+"</option>");
+                    }
+                }
+            }
+            ,dataType:'json'
+        });
+    }
+    
+    $('#dataCaptacaoIni').keyup(function(){
+        var data = $(this).val();
+        JSTratarDataInicioCaptacao(data);
+    });
+    
+    $('#dtfimexecucao').keyup(function(){
+        var data = $(this).val();
+        JSTratarDataFimCaptacao(data);
+    });
+    
+    function JSTratarDataInicioCaptacao(dtInicial){
+        
+        if(dtInicial.length >= 10)
+        {
+            var arrInicio = dtInicial.split("/");    
+            dtInicial = arrInicio[2]+arrInicio[1]+arrInicio[0];
+            var anoInicial = arrInicio[2];
+            
+            var dtFinal = $("#dataCaptacaoFim").val();
+            var arrFinal = dtFinal.split("/");    
+            dtFinal = arrFinal[2]+arrFinal[1]+arrFinal[0];
+            var anoFinal = arrFinal[2];
+            
+            if(anoInicial > anoFinal || dtInicial > dtFinal){
+                JSMostrarModalMensagem('ERROR','Datas equivocadas, favor ajustar.');
+                $('#dataCaptacaoIni').val('<?php echo (!empty($portaria)) ? Data::tratarDataZend($this->projetos->DtInicioCaptacaoGravada, "brasileiro") : Data::tratarDataZend($this->projetos->DtInicioCaptacao, "brasileiro") ?>');
+            }
+            
+            var anoAtual = '<?php echo date("Y");?>';
+            if(anoInicial < anoAtual){
+                JSMostrarModalMensagem('ERROR','Datas equivocadas, favor ajustar.');
+                $('#dataCaptacaoIni').val('<?php echo (!empty($portaria)) ? Data::tratarDataZend($this->projetos->DtInicioCaptacaoGravada, "brasileiro") : Data::tratarDataZend($this->projetos->DtInicioCaptacao, "brasileiro") ?>');
+            }
+            
+        }
+    }
+    
+    function JSTratarDataFimCaptacao(dtFimExecucao){
+        
+        if(dtFimExecucao.length >= 10)
+        {
+            var arrFimExecucao = dtFimExecucao.split("/");    
+            var dtFimExecucaoLimpa = arrFimExecucao[2]+arrFimExecucao[1]+arrFimExecucao[0];
+            var anoFimExecucao = arrFimExecucao[2];
+            
+            var dtInicioExecucao = $("#dtinicioexecucao").val();
+            var arrInicioExecucao = dtInicioExecucao.split("/");    
+            var dtInicioExecucao = arrInicioExecucao[2]+arrInicioExecucao[1]+arrInicioExecucao[0];
+            var anoInicioExecucao = arrInicioExecucao[2];
+            
+            var dtFinalCaptacao = $("#dataCaptacaoFim").val();
+            var arrFinalCaptacao = dtFinalCaptacao.split("/");    
+            dtFinalCaptacao = arrFinalCaptacao[2]+arrFinalCaptacao[1]+arrFinalCaptacao[0];
+            var anoFinalCaptacao = arrFinalCaptacao[2];
+            
+            var dtInicioCaptacao = $("#dataCaptacaoIni").val();
+            var arrInicioCaptacao = dtInicioCaptacao.split("/");    
+            dtInicioCaptacao = arrInicioCaptacao[2]+arrInicioCaptacao[1]+arrInicioCaptacao[0];
+            var anoInicioCaptacao = arrInicioCaptacao[2];
+            
+            var anoAtual = '<?php echo date("Y");?>';
+            
+            if(anoFimExecucao < anoAtual){
+                JSMostrarModalMensagem('ERROR','Datas equivocadas, favor ajustar');
+                $('#dtfimexecucao').val('<?php echo Data::tratarDataZend($this->projetos->DtFimExecucao, "brasileiro");?>');
+                $('#dataCaptacaoFim').val('<?php echo (!empty($portaria)) ? Data::tratarDataZend($this->projetos->DtFimCaptacaoGravada, "brasileiro") : Data::tratarDataZend($this->projetos->DtFimCaptacao, "brasileiro") ?>');
+            }else if(dtFimExecucaoLimpa < dtInicioExecucao){
+                JSMostrarModalMensagem('ERROR','Datas equivocadas, favor ajustar');
+                $('#dtfimexecucao').val('<?php echo Data::tratarDataZend($this->projetos->DtFimExecucao, "brasileiro");?>');
+                $('#dtinicioexecucao').val('<?php echo Data::tratarDataZend($this->projetos->DtInicioExecucao, "brasileiro");?>');
+                $('#dataCaptacaoFim').val('<?php echo (!empty($portaria)) ? Data::tratarDataZend($this->projetos->DtFimCaptacaoGravada, "brasileiro") : Data::tratarDataZend($this->projetos->DtFimCaptacao, "brasileiro") ?>');
+            }else if(dtFimExecucaoLimpa < dtInicioCaptacao){
+                JSMostrarModalMensagem('ERROR','Datas equivocadas, favor ajustar');
+                $('#dtfimexecucao').val('<?php echo Data::tratarDataZend($this->projetos->DtFimExecucao, "brasileiro");?>');
+                $('#dtinicioexecucao').val('<?php echo Data::tratarDataZend($this->projetos->DtInicioExecucao, "brasileiro");?>');
+                $('#dataCaptacaoFim').val('<?php echo (!empty($portaria)) ? Data::tratarDataZend($this->projetos->DtFimCaptacaoGravada, "brasileiro") : Data::tratarDataZend($this->projetos->DtFimCaptacao, "brasileiro") ?>');
+                $('#dataCaptacaoIni').val('<?php echo (!empty($portaria)) ? Data::tratarDataZend($this->projetos->DtInicioCaptacaoGravada, "brasileiro") : Data::tratarDataZend($this->projetos->DtInicioCaptacao, "brasileiro") ?>');
+            }else{
+                if(anoFimExecucao > anoAtual){
+                    var data = '31/12/'+anoAtual;
+                    $('#dataCaptacaoFim').val(data);
+                }else if(anoFimExecucao == anoFinalCaptacao){
+                    $('#dataCaptacaoFim').val(dtFimExecucao);
+                }else if(dtFinalCaptacao > dtFimExecucao){
+                    $('#dataCaptacaoFim').val(dtFimExecucao);
+                }else{
+                    $('#dataCaptacaoFim').val('<?php echo (!empty($portaria)) ? Data::tratarDataZend($this->projetos->DtFimCaptacaoGravada, "brasileiro") : Data::tratarDataZend($this->projetos->DtFimCaptacao, "brasileiro") ?>');
+                }
+            }
+        }
+    }
+</script>
+<!-- ====================================================================== --->
+<!-- ======================= INICIO - TELA EDITAR ========================= --->
+<!-- ====================================================================== --->
+<div>
+<form name="formulariofinalizar" id="formulariofinalizar" method="post" action="<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'gravar-finalizacao-analise')); ?>">
+    <input id="idpronac" name="idpronac" type="hidden" value="<?php echo $this->idpronac;?>"/>
+    <input name="idAprovacao" type="hidden" value="<?php echo $this->projetos->idAprovacao;?>"/>
+    <input id="grid" name="grid" type="hidden" value=""/>
+    <input id="dataCaptacaoIni_finalizar" name="dataCaptacaoIni_finalizar" type="hidden" value=""/>
+    <input id="dataCaptacaoFim_finalizar" name="dataCaptacaoFim_finalizar" type="hidden" value=""/>
+</form>
+<form name="formularioeditar" id="formularioeditar" method="post" action="<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'gravar-alteracao-projeto')); ?>">
+    <input name="gravar" type="hidden" value="ok"/>
+    <input name="idAprovacao" type="hidden" value="<?php echo $this->projetos->idAprovacao;?>"/>
+    <input id="idpronac" name="idpronac" type="hidden" value="<?php echo $this->idpronac;?>"/>
+    
+        <table class="tabela">
+            <tr>
+                <th colspan="3">Editar dados do Projeto</th>
+            </tr>
+            <tr>
+                <td class='destacarAAA' width="20%"><b>PRONAC</b>:</td>
+                <td width="80%" id="pronac"><?php echo $this->projetos->pronac;?></td>
+                <td rowspan="4" width="200px">
+                    <div id="regularidadeProponente" style="width:200px; height:280px; overflow:hidden;"><center>Verificando regularidade do proponente...</center></div>
+                </td>
+            </tr>
+            <tr>
+                <td class='destacarAAA' nowrap><b>Nome do projeto</b>:</td>
+                <td id="projeto"><input type="text" name="nomeProjeto" id="nomeProjeto" class="input_simples" style="width: 350px" value="<?php echo ($this->projetos->NomeProjeto);?>"></td>
+            </tr>
+            <tr>
+                <td class='destacarAAA'><b>CPF/CNPJ</b>:</td>
+                <td id="cpfcnpj"><?php echo Validacao::mascaraCPFCNPJ($this->projetos->CgcCpf);?></td>
+            </tr>
+            <tr>
+                <td class='destacarAAA'><b>Proponente</b>:</td>
+                <td id="proponente"><?php echo ($this->projetos->nome);?></td>
+            </tr>
+        </table>
+        <table class="tabela">
+            <tr>
+                <th colspan="2">Área/Segmento</th>
+            </tr>
+            <tr>
+                <td class="destacar" width="50%"><label for="areacultural">Área Cultural:</label></td>
+                <td class="destacar" width="50%">Segmento</td>
+            </tr>
+            <tr>
+                <td>
+                    <select name="areacultural" id="areacultural" class="input_simples">
+                        <option value=""> - Selecione - </option>
+                        <?php
+                        foreach ($this->BuscarAreaCultura as $area) {
+                            if(isset($this->projetos->cdarea) && $this->projetos->cdarea == $area->Codigo)
+                                echo "<option value='" . $area->Codigo . "' selected>" . $area->Descricao . "</option>";
+                            else
+                                echo "<option value='" . $area->Codigo . "'>" . $area->Descricao . "</option>";
+                        }
+                        ?>
+                    </select>
+                </td>
+                <td>
+                    <select name="segmento" id="segmento" class="input_simples">
+                        <option value="">- Selecione uma área -</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <table class="tabela">
+            <tr>
+                <th colspan="2">Enquadramento</th>
+            </tr>
+            <tr>
+                <td width="30%">
+                    <label for="enq">Artigo:</label>
+                </td>
+                <td width="70%">
+                    <input type="hidden" id="enqAtual" value="<?php echo $this->projetos->nrenq;?>"/>
+                    <select id="enq" name="enquadramento"  class="input_simples">
+                        <option> - Selecione - </option>
+                        <option value="1" <?php if($this->projetos->nrenq == '1') echo "selected";?> >Artigo 26</option>
+                        <option value="2" <?php if($this->projetos->nrenq == '2') echo "selected";?> >Artigo 18</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label for="dsjustificativa">Justificativa:</label><br>
+                    <?php $justificativa = strip_tags(($this->projetos->Observacao));?>
+                    <textarea id="dsjustificativa" class="input_simples" style="width: 97%; height: 150px" name="dsjustificativa"><?php echo strip_tags($justificativa);?></textarea>
+                </td>
+            </tr>
+        </table>
+        <table class="tabela">
+            <tr>
+                <th colspan="3">Período de Captação</th>
+            </tr>
+            <tr>
+                <td class="destacar">Data Início</td>
+                <td class="destacar">Data Fim</td>
+                <td class="destacar">Nº Portaria</td>
+            </tr>
+            <tr>
+                <td><input id="dataCaptacaoIni" onkeyup="mascara(this, format_data);" maxlength="10" class="input_simples" name="dataCaptacaoIni" <?php echo (!empty($portaria)) ? "readonly" : "" ?> value="<?php echo (!empty($portaria)) ? Data::tratarDataZend($this->projetos->DtInicioCaptacaoGravada, "brasileiro") : Data::tratarDataZend($this->projetos->DtInicioCaptacao, "brasileiro") ?>"></td>
+                <td><input id="dataCaptacaoFim" onkeyup="mascara(this, format_data);" maxlength="10" class="input_simples" name="dataCaptacaoFim" readonly value="<?php echo (!empty($portaria)) ? Data::tratarDataZend($this->projetos->DtFimCaptacaoGravada, "brasileiro") : Data::tratarDataZend($this->projetos->DtFimCaptacao, "brasileiro") ?>"></td>
+                <td class="centro"><?php echo (!empty($portaria)) ? $portaria : '-';?></td>
+            </tr>
+        </table>
+        <table class="tabela">
+            <tr>
+                <th colspan="2">Período de Execução</th>
+            </tr>
+            <tr>
+                <td class="destacar">Data Início</td>
+                <td class="destacar">Data Fim</td>
+            </tr>
+            <tr>
+                <td><input class="input_simples" type="text" name="dtinicioexecucao" id="dtinicioexecucao" onkeyup="mascara(this, format_data);" maxlength="10" value="<?php echo Data::tratarDataZend($this->projetos->DtInicioExecucao, "brasileiro");?>" /></td>
+                <td><input class="input_simples" type="text" name="dtfimexecucao" id="dtfimexecucao" onkeyup="mascara(this, format_data);" maxlength="10" value="<?php echo Data::tratarDataZend($this->projetos->DtFimExecucao, "brasileiro");?>"/></td>
+            </tr>
+        </table>
+        <table class="tabela">
+            <tr>
+                <th colspan="2">Resumo do Projeto</th>
+            </tr>
+            <tr>
+                <td>
+                    <textarea class="input_simples" style="width: 97%; height: 150px" name="resumoProjeto" id="resumoProjeto"><?php echo strip_tags(($this->projetos->ResumoProjeto));?></textarea>
+                </td>
+            </tr>
+        </table>
+        <table class="tabela">
+            <tr>
+                <th width="40%">Valor aprovado(R$):</th>
+                <td id="valoraprovado" class="centro">
+                    <?php echo number_format($this->projetos->AprovadoReal,'2',',','.');?>
+                </td>
+            </tr>
+            <?php if(isset($this->dadosReadequacao['ReadCompl']) && !empty($this->dadosReadequacao['ReadCompl']) && $this->dadosReadequacao['ReadCompl'] > 0): ?>
+            <tr id="readComp">
+                <th id="TipoAprovacao"><?php echo ($this->dadosReadequacao->Tipo);?></th>
+                <td id="readcompl" class="centro"><?php echo $this->dadosReadequacao->ReadCompl;?></td>
+            </tr>
+            <?php endif;?>
+        </table>
+</form>
+</div>
+<!-- ====================================================================== --->
+<!-- ======================= FIM - TELA EDITAR ============================ --->
+<!-- ====================================================================== --->

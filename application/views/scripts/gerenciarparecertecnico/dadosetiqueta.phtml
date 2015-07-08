@@ -1,0 +1,1400 @@
+<script language="javascript" type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        window.print();
+    });
+</script>
+
+<style type="text/css">
+    body {
+        margin:0;
+        font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+        color:#666;
+        line-height:14pt;
+    }
+    a:link, a:active, a:visited {
+        text-decoration:underline;
+    }
+    a:hover {
+        text-decoration:none;
+    }
+    .tabela { /* tamanho de tabelas com registros */
+        margin:10px auto;
+        width:97%;
+        font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+        border: 1px #CCC solid;
+    }
+    table td {
+        background:#fff;
+        padding:4px;
+        color:auto;
+        font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+        border: 1px solid #bbb;
+    }
+    table tr.destacar td, table td.destacar {
+        background:#e2e2e2;
+        font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+    }
+    table th {
+        background:#cccccc;
+        padding:4px;
+        text-transform:uppercase;
+        font-size:11px;
+        border: 1px solid #bbb;
+    }
+    #brasao{
+        width : 85px;
+        height: 86px;
+    }
+    legend{
+        font-size:13px;
+        font-weight: bold;
+    }
+    .btn_imprimir{
+        border-top:1px solid #efefef;
+        border-left:1px solid #efefef;
+        border-right:1px solid #aaa;
+        border-bottom:1px solid #aaa;
+        margin:0 5px 0 0;
+        width:20px;
+        height:21px;
+        text-align:center;
+        cursor:pointer;
+        background:url('<?php echo $this->baseUrl(); ?>/public/img/buttons/imprimir.gif') center center no-repeat;
+    }
+    .btn_imprimir:hover{
+        background-color:#fff;
+        border-top:1px solid #aaa;
+        border-left:1px solid #aaa;
+        border-right:1px solid #efefef;
+        border-bottom:1px solid #efefef;
+    }
+    .paginaA4{
+        width:auto;
+        margin: 1.111cm 1cm 1cm 1.005cm;
+        page-break-after: always;
+        /*min-height: 3508px;*/
+    }
+
+    .tag_pre {
+	overflow-x:auto;
+	white-space:-moz-pre-wrap !important;
+	white-space:-pre-wrap;
+	white-space:-o-pre-wrap;
+	white-space:pre-wrap;
+	word-wrap: break-word;
+    }
+</style>
+
+<div class="conteudoImprimivel" id="conteudoImprimivel">
+
+    <div class="paginaA4">
+        <?php foreach($this->DadosEtiqueta as $dadosEtiqueta) {
+            $pronac = $dadosEtiqueta->NrProjeto;
+            if($this->edital) {
+                $texto = 'Edital';
+            } else {
+                $texto = 'Incentivo Fiscal';
+            }
+        ?>
+
+        <table class="tabela">
+            <tr>
+                <td align="center">
+                    <div style="font-size: 9px; clear: both;"><?php echo $texto; ?></div>
+                    <img src="<?php echo $this->caminho; ?>" />
+                    <br clear="all" />
+                </td>
+            </tr>
+            <tr>
+                <td align="center"><b>Processo:</b> <?php echo $dadosEtiqueta->Processo; ?><br></td>
+            </tr>
+            <tr>
+                <td align="center"><b>Proponente:</b> <?php echo $dadosEtiqueta->Proponente; ?></td>
+            </tr>
+            <tr>
+                <td align="center"><b>Projeto:</b> <?php echo $dadosEtiqueta->NomeProjeto; ?></td>
+            </tr>
+        </table>
+        <?php } ?>
+    </div>
+    
+    <div class="paginaA4">&nbsp;</div>
+    
+    <?php $html = ''; ?>
+    <?php if($this->etiquetaApenas != "sim") { ?>
+    <div class="paginaA4">
+
+            <?php if($this->edital){ ?>
+
+        <table class="tabelas">
+            <tr>
+                <th colspan="9">Proponente</th>
+            </tr>
+            <tr>
+                <th colspan="9">Identifica&ccedil;&atilde;o</th>
+            </tr>
+            <tr>
+                <td colspan="4" class="esquerda destacar"><b>CNPJ / CPF</b></td>
+                <td colspan="5" class="esquerda destacar"><b>Proponente</b></td>
+            </tr>
+            <tr>
+                <td colspan="4" class="esquerda"><?php echo ((strlen($this->itensGeral[0]->CNPJCPF) > 11) ? aplicaMascara($this->itensGeral[0]->CNPJCPF, "99.999.999/9999-99") : aplicaMascara($this->itensGeral[0]->CNPJCPF, "999.999.999-99")); ?></td>
+                <td colspan="5" class="esquerda">{$this->itensGeral[0]->NomeAgente}</td>
+            </tr>
+            <tr>
+                <th  colspan="9">Endere&ccedil;o</th>
+            </tr>
+            <tr class="destacar">
+                <td class="centro"><b>Tipo de Endereço</b></td>
+                <td class="centro"><b>Tipo do Logradouro</b></td>
+                <td class="centro"><b>Logradouro</b></td>
+                <td class="centro"><b>Número</b></td>
+                <td class="centro"><b>Complemento</b></td>
+                <td class="centro"><b>Bairro</b></td>
+                <td class="centro"><b>Cidade</b></td>
+                <td class="centro"><b>UF</b></td>
+                <td class="centro"><b>CEP</b></td>
+            </tr>
+            <?php
+                $auxEndCEP = "";
+                $auxEndLogra = "";
+            ?>
+                                
+            <?php if(is_array($this->itensGeral) and count($this->itensGeral)>0){ ?>
+                <?php foreach($this->itensGeral as $endereco){ ?>
+                    <?php if($endereco->CEP != $auxEndCEP || $endereco->Logradouro != $auxEndLogra){ ?>
+                    <tr>
+                        <td><?php echo $endereco->endereco; ?></td>
+                        <td><?php echo $endereco->logradouro; ?></td>
+                        <td><?php echo $endereco->Logradouro; ?></td>
+                        <td><?php echo $endereco->Numero; ?></td>
+                        <td><?php echo $endereco->Complemento; ?></td>
+                        <td><?php echo $endereco->Bairro; ?></td>
+                        <td><?php echo $endereco->NomeCidade; ?></td>
+                        <td><?php echo $endereco->SiglaUf; ?></td>
+                        <td><?php echo aplicaMascara($endereco->CEP, "99999-999"); ?></td>
+                    </tr>
+                    <?php } $auxEndCEP = $endereco->CEP; $auxEndLogra = $endereco->Logradouro; ?>
+                <?php } ?>
+            <?php } ?>
+                    <tr>
+                        <th colspan="9">Telefones</th>
+                    </tr>
+                    <tr class="destacar">
+                        <td colspan="2"><b>Tipo</b></td>
+                        <td colspan="1"><b>UF</b></td>
+                        <td colspan="2"><b>DDD</b></td>
+                        <td colspan="2"><b>Número</b></td>
+                        <td colspan="2"><b>Divulgar</b></td>
+                    </tr>
+                         <?php if(is_array($this->itensTelefone) and count($this->itensTelefone)>0){
+                                         foreach($this->itensTelefone as $telefone){
+                                            $html .= "<tr>
+                                                <td colspan=\"2\">{$telefone->Descricao}</td>
+                                                <td colspan=\"1\">{$telefone->Sigla}</td>
+                                                <td colspan=\"2\">{$telefone->DDD}</td>
+                                                <td colspan=\"2\">{$telefone->Numero}</td>
+                                                <td colspan=\"2\">".(($telefone->Divulgar == 1)? "Sim" : "Nao")."</td>
+                                            </tr>";
+                                        }
+                                }
+                        $html .= "
+                                <tr>
+                                    <th  colspan=\"9\">
+                                    E-mail
+                                    </th>
+                                </tr>
+                                <tr class=\"destacar\">
+                                    <td colspan=\"2\"><b>Tipo</b></td>
+                                    <td colspan=\"3\"><b>E-mail</b></td>
+                                    <td colspan=\"2\"><b>Para correspond&ecirc;ncia?</b></td>
+                                    <td colspan=\"2\"><b>Posso divulgar?</b></td>
+                                </tr>";
+                                $auxEmail = array();
+                                $auxEmailTipo = array();
+                                foreach($this->itensGeral as $email){
+                                    if(!in_array($email->agente, $auxEmail) || !in_array($email->email, $auxEmailTipo)):
+                                            $html .= "<tr>
+                                                <td colspan=\"2\">{$email->email}</td>
+                                                <td colspan=\"3\">{$email->agente}</td>
+                                                <td colspan=\"2\">".(($email->divulgarEmail == 1)? "Sim": "Nao")."</td>
+                                                <td colspan=\"2\">".(($email->divulgarEmail == 1)? "Sim": "Nao")."</td>
+                                            </tr>";
+                                    endif;
+                                    $auxEmail[] = $email->agente;
+                                    $auxEmailTipo[] = $email->email;
+                                }
+                        $html .= "
+                                <tr>
+                                    <th  colspan=\"9\">
+                                    Natureza
+                                    </th>
+                                </tr>
+                                <tr class=\"destacar\">
+                                    <td colspan=\"2\"><b>Direito</b></td>
+                                    <td colspan=\"2\"><b>Esfera</b></td>
+                                    <td colspan=\"2\"><b>Poder</b></td>
+                                    <td colspan=\"3\"><b>Administra&ccedil;&atilde;o</b></td>
+                                </tr>
+                                <tr>";
+                                    if(!empty($this->itensGeral[0]->direito)){
+                                        $html .= "<td colspan=\"2\">{$this->itensGeral[0]->direito}</td>
+                                        <td colspan=\"2\">{$this->itensGeral[0]->esfera}</td>
+                                        <td colspan=\"2\">{$this->itensGeral[0]->poder}</td>
+                                        <td colspan=\"3\">{$this->itensGeral[0]->Admins}</td>";
+                                    }else{
+                                        $html .= "<td colspan=\"9\" align=\"center\">Natureza n&atilde;o informada</td>";
+                                    }
+                        $html .= "</tr>
+                                <tr>
+                                    <th colspan=\"9\">
+                                    Dirigente
+                                    </th>
+                                </tr>
+                                <tr>";
+                                if(!empty($this->itensGeral[0]->CNPJCPFdigirente)){
+                                    $html .= "<td colspan=\"2\" class=\"esquerda destacar\"><b>CPF</b></td>
+                                    <td  colspan=\"2\" class=\"esquerda\">".((strlen($this->itensGeral[0]->CNPJCPFdigirente) > 11)?aplicaMascara($this->itensGeral[0]->CNPJCPFdigirente, "99.999.999/9999-99"):  aplicaMascara($this->itensGeral[0]->CNPJCPFdigirente, "999.999.999-99"))."</td>
+                                    <td  colspan=\"2\" class=\"esquerda destacar\"><b>Nome</b></td>
+                                    <td   colspan=\"3\" class=\"esquerda\">{$this->itensGeral[0]->nomeAgente}</td>";
+                                }else{
+                                    $html .= "<td colspan=\"9\" align=\"center\">Dirigente n&atilde;o informado</td>";
+                                }
+                        $html .= "</tr>
+                                <tr>
+                                    <th  colspan=\"9\">
+                                    Usu&aacute;rio SalicWEB
+                                    </th>
+                                </tr>";
+                                if(is_array($this->itensGeral) and !empty($this->itensGeral[0]->nomeUsuario)){
+                                    $html .= "<tr>
+                                    <td colspan=\"2\" class=\"esquerda destacar\"><b>CPF</b></td>
+                                    <td colspan=\"2\" class=\"esquerda\">".aplicaMascara($this->itensGeral[0]->Cpf, "999.999.999-99")."</td>
+                                    <td colspan=\"2\" class=\"esquerda destacar\"><b>Nome</b></td>
+                                    <td colspan=\"3\" class=\"esquerda\">{$this->itensGeral[0]->nomeUsuario}</td>
+                                </tr>";
+                                }
+                        $html .= "
+                                <tr class=\"pagebreak\">
+                                    <th colspan=\"9\" align=\"center\">
+                                        Projeto cultural
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th colspan=\"9\">
+                                    Identifica&ccedil;&atilde;o
+                                    </th>
+                                </tr>";
+                                if(is_array($this->itensGeral) and count($this->itensGeral)>0){
+                        $html .= "<tr>
+                                            <td colspan=\"2\" class=\"destacar\"><b>PRONAC</b></td>
+                                            <td colspan=\"2\">{$pronac}</td>
+                                            <td colspan=\"2\" nowrap=\"nowrap\" class=\"destacar\"><b>Nome do Projeto</b></td>
+                                            <td colspan=\"3\">{$this->itensGeral[0]->NomeProjeto}</td>
+                                    </tr>";
+                                }
+                        $html .= "<tr>
+                                    <th colspan=\"9\">
+                                    Informaç&otilde;es Complementares
+                                    </th>
+                                </tr>
+                                <tr class=\"destacar\">
+                                    <td><b>&Eacute; proposta de audiovisual?</b></td>
+                                    <td colspan=\"3\"><b>Mecanismo</b></td>
+                                    <td><b>Ag&ecirc;ncia Banc&aacute;ria</b></td>
+                                    <td><b>Dt. In&iacute;cio Execuç&atilde;o</b></td>
+                                    <td><b>Dt. Final Execu&ccedil;&atilde;o</b></td>
+                                    <td><b>Dt. Fixa</b></td>
+                                    <td><b>Plano Atual</b></td>
+                                </tr>";
+                                if(is_array($this->itensGeral) and count($this->itensGeral)>0){
+                        $html .= "<tr>
+                                        <td>".(($this->itensGeral[0]->AreaAbrangencia == 1)? "Sim": "Nao")."</td>
+                                        <td colspan=\"3\">";
+                                            if ($this->edital){
+                                                $html .= "FNC";
+                                            } else {
+                                                $html .= ($this->itensGeral[0]->Mecanismo == 1) ? "Incentivo Fiscal Federal" : '';
+                                            }
+                        $html .="</td>
+                                    <td>{$this->itensGeral[0]->AgenciaBancaria}</td>
+                                    <td>".substr($this->itensGeral[0]->DtInicioDeExecucao,0,10)."</td>
+                                    <td>".substr($this->itensGeral[0]->DtFinalDeExecucao,0,10)."</td>
+                                    <td>".(($this->itensGeral[0]->stDataFixa == 1)? "Sim": "Nao")."</td>
+                                    <td>".(($this->itensGeral[0]->stPlanoAnual == 1)? "Sim": "Nao")."</td>
+                                </tr>";
+                                }
+                        $html .= "
+                                <tr>
+                                    <th colspan=\"9\">
+                                    Informaç&otilde;es sobre tombamento
+                                    </th>
+                                </tr>
+                                <tr class=\"destacar\">
+                                    <td colspan=\"3\"><b>N&ordm; Ato Tombamento</b></td>
+                                    <td colspan=\"3\"><b>Dt. Ato Tombamento</b></td>
+                                    <td colspan=\"3\"><b>Esfera Tombamento</b></td>
+                                </tr>";
+                                if(is_array($this->itensGeral) and count($this->itensGeral)>0){
+                        $html .= "<tr>
+                                    <td colspan=\"3\">{$this->itensGeral[0]->NrAtoTombamento}</td>
+                                    <td colspan=\"3\">{$this->itensGeral[0]->DtAtoTombamento}</td>";
+                                    $esferaTombamento = array('','Municipal','Estadual','Federal');
+                        $html .= "<td colspan=\"3\">{$esferaTombamento[$this->itensGeral[0]->EsferaTombamento]}</td>
+                                </tr>";
+                                }
+                        $html .= "
+                                <tr>
+                                    <th colspan=\"9\">
+                                    Resumo do Projeto
+                                    </th>
+                                </tr>";
+                                if(is_array($this->itensGeral) and count($this->itensGeral)>0){
+                                    $html .= "<tr>
+                                        <td colspan=\"9\">".(($this->itensGeral[0]->ResumoDoProjeto)? $this->itensGeral[0]->ResumoDoProjeto :"N&atilde;o informado.")."</td>
+                                    </tr>";
+                                }
+                        $html .= "
+                                <tr>
+                                    <th colspan=\"9\">
+                                        Local de Realiza&ccedil;&atilde;o / Deslocamento
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th colspan=\"9\">
+                                    Local de Realiza&ccedil;&atilde;o
+                                    </th>
+                                </tr>
+                                <tr class=\"destacar\">
+                                    <td colspan=\"3\" align=\"left\"><b>Pais</b></td>
+                                    <td colspan=\"3\" align=\"left\"><b>UF</b></td>
+                                    <td colspan=\"3\" align=\"left\"><b>Cidade</b></td>
+                                </tr>";
+
+                                   if(is_array($this->itensLocalRealiazacao) and count($this->itensLocalRealiazacao)>0){
+                                       foreach($this->itensLocalRealiazacao as $itensLocalRealizacao){
+
+                            $html .= "<tr>
+                                        <td colspan=\"3\">{$itensLocalRealizacao->Pais}</td>
+                                        <td colspan=\"3\">{$itensLocalRealizacao->UF}</td>
+                                        <td colspan=\"3\">{$itensLocalRealizacao->Cidade}</td>
+                                    </tr>";
+                                    }
+                               }else{
+                            $html .= "<tr><td colspan=\"9\" align=\"center\">N&atilde;o informado</td></tr>";
+                                   }
+                            $html .= "
+                                    <tr>
+                                        <th colspan=\"9\">
+                                            Documentos Anexados
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th colspan=\"9\">
+                                        Documentos Proponente
+                                        </th>
+                                    </tr>";
+                                if(is_array($this->itensDocumentoAgente) and count($this->itensDocumentoAgente)>0){
+                            $html .= "
+                                    <tr class=\"destacar\">
+                                        <td colspan=\"3\"><b>Tipo de Documento</b></td>
+                                        <td colspan=\"3\"><b>Nome do Documento</b></td>
+                                        <td colspan=\"3\"><b>Data</b></td>
+                                    </tr>";
+                                   foreach ($this->itensDocumentoAgente as $docAgente){
+                            $html .= "<tr>
+                                        <td colspan=\"3\" align=\"center\">{$docAgente->TipoArqui}</td>
+                                        <td colspan=\"3\" align=\"center\">{$docAgente->NomeArqui}</td>
+                                        <td colspan=\"3\" align=\"center\">{$docAgente->Data}</td>
+                                    </tr>";
+                                  }
+
+                              }else{
+                            $html .= "<tr>
+                                        <td colspan=\"9\" align=\"center\">N&atilde;o informado</td>
+                                    </tr>";
+                              }
+                            $html .= "
+                                    <tr>
+                                        <th colspan=\"9\">
+                                        Documentos Proposta
+                                        </th>
+                                    </tr>";
+                                if(is_array($this->itensDocumentoPreProjeto) and count($this->itensDocumentoPreProjeto)>0){
+                            $html .= "
+                                    <tr class=\"destacar\">
+                                        <td colspan=\"2\"><b>Tipo de Documento</b></td>
+                                        <td colspan=\"2\"><b>Nome do Documento</b></td>
+                                        <td colspan=\"2\"><b>Data</b></td>
+                                        <td colspan=\"3\"><b>Observa&ccedil;&atilde;o</b></td>
+                                    </tr>";
+                                   foreach ($this->itensDocumentoPreProjeto as $docPreProjeto){
+                            $html .= "<tr>
+                                        <td colspan=\"2\" align=\"left\">{$docPreProjeto->TipoDocumento}</td>
+                                        <td colspan=\"2\" align=\"left\">{$docPreProjeto->NoArquivo}</td>
+                                        <td colspan=\"2\" align=\"left\">".ConverteData($docPreProjeto->Data, 5)."</td>
+                                        <td colspan=\"3\" align=\"left\">{$docPreProjeto->dsDocumento}</td>
+                                    </tr>";
+                                  }
+                              }else{
+                            $html .= "<tr>
+                                        <td colspan=\"9\" align=\"center\">N&atilde;o informado</td>
+                                    </tr>";
+                              }
+                        $html .= "
+                            <tr>
+                                <th colspan=\"9\">
+                                    Histórico de Avalia&ccedil;&otilde;es
+                                </th>
+                            </tr>
+                            <tr class=\"destacar\">
+                                <td colspan=\"4\" align=\"left\"><b>Data</b></td>
+                                <td colspan=\"5\" align=\"left\"><b>Avalia&ccedil;&atilde;o</b></td>
+                            </tr>";
+                                if(is_array($this->itensHistorico) and count($this->itensHistorico)>0)
+                                    foreach ($this->itensHistorico as $historico){
+                                        $html .= "<tr>
+                                            <td colspan=\"4\" align=\"left\" nowrap=\"nowrap\">{$historico->DtAvaliacao}</td>
+                                            <td colspan=\"5\" align=\"left\">{$historico->Avaliacao}</td>
+                                        </tr>";
+                                    }
+                if(count($this->perguntas) > 0):
+                    $html .= "<tr>
+                        <th colspan=\"9\">
+                            Question&aacute;rio
+                        </th>
+                    </tr>";
+                    foreach($this->perguntas as $registro):
+                        $html .= "
+                                    <tr class=\"destacar\">
+                                        <td align=\"left\" colspan=\"9\"><b>{$registro["titulo"]}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan=\"4\" align=\"center\"><b>Pergunta</b></td>
+                                        <td colspan=\"5\" align=\"center\"><b>Resposta(s)</b></td>
+                                    </tr>";
+                                    foreach ($registro["pergunta"] as $pergunta):
+                                        $html .= "<tr>
+                                            <td colspan=\"4\" align=\"left\" nowrap=\"nowrap\">{$pergunta["dsPergunta"]}</td>
+                                            <td colspan=\"5\" align=\"left\">";
+                                                foreach($this->respostas as $resposta):
+                                                    foreach($resposta as $resp):
+                                                        if($pergunta["nrPergunta"] == $resp["nrPergunta"]):
+                                                            if(strip_tags($resp["dsRespostaSubj"]) != "" && trim($resp["dsRespostaSubj"]) != ""):
+                                                                 $html .= "- ".strip_tags($resp["dsRespostaSubj"])."<br>";
+                                                            endif;
+                                                        endif;
+                                                    endforeach;
+                                                endforeach;
+                                            $html .= "</td>
+                                        </tr>";
+                                    endforeach;
+                endforeach;
+                endif;
+            $html .= "</table>";
+
+            } else { ?>
+
+
+
+                    <table class="tabela">
+                        <tr>
+                            <th colspan="15">Identifica&ccedil;&atilde;o</th>
+                        </tr>
+                        <tr class="destacar">
+                            <td colspan="7">CNPJ / CPF</td>
+                            <td colspan="8">Proponente</td>
+                        </tr>
+                        <tr>
+                            <td colspan="7"><?php echo ((strlen($this->itensGeral[0]->CNPJCPF) > 11) ? aplicaMascara($this->itensGeral[0]->CNPJCPF, "99.999.999/9999-99") : aplicaMascara($this->itensGeral[0]->CNPJCPF, "999.999.999-99")); ?></td>
+                            <td colspan="8"><?php echo $this->itensGeral[0]->NomeAgente; ?></td>
+                        </tr>
+                        <tr>
+                            <th colspan="15">Endere&ccedil;o</th>
+                        </tr>
+                        <tr class="destacar">
+                            <td colspan="2">Tipo de Endereço</td>
+                            <td colspan="2">Tipo do Logradouro</td>
+                            <td colspan="2">Logradouro</td>
+                            <td colspan="1">Número</td>
+                            <td colspan="2">Complemento</td>
+                            <td colspan="2">Bairro</td>
+                            <td colspan="2">Cidade</td>
+                            <td colspan="1">UF</td>
+                            <td colspan="1">CEP</td>
+                        </tr>
+
+                        <?php $auxEndCEP = ""; $auxEndLogra = ""; ?>
+                        <?php if(is_array($this->itensGeral) and count($this->itensGeral)>0){ ?>
+                            <?php foreach($this->itensGeral as $endereco){ ?>
+                                <?php if($endereco->CEP != $auxEndCEP || $endereco->Logradouro != $auxEndLogra){ ?>
+                        <tr>
+                            <td colspan="2"><?php echo $endereco->endereco; ?></td>
+                            <td colspan="2"><?php echo $endereco->logradouro; ?></td>
+                            <td colspan="2"><?php echo $endereco->Logradouro; ?></td>
+                            <td colspan="1"><?php echo $endereco->Numero; ?></td>
+                            <td colspan="2"><?php echo $endereco->Complemento; ?></td>
+                            <td colspan="2"><?php echo $endereco->Bairro; ?></td>
+                            <td colspan="2"><?php echo $endereco->NomeCidade; ?></td>
+                            <td colspan="1"><?php echo $endereco->SiglaUf; ?></td>
+                            <td colspan="1"><?php echo aplicaMascara($endereco->CEP, "99999-999"); ?></td>
+                        </tr>
+                                <?php } $auxEndCEP = $endereco->CEP; $auxEndLogra = $endereco->Logradouro;?>
+                            <?php } ?>
+                        <?php } ?>
+
+                        <tr>
+                            <th colspan="15">Telefones</th>
+                        </tr>
+                        <tr class="destacar">
+                            <td colspan="3">Tipo</td>
+                            <td colspan="3">UF</td>
+                            <td colspan="3">DDD</td>
+                            <td colspan="3">Número</td>
+                            <td colspan="3">Divulgar</td>
+                        </tr>
+
+                        <?php if(is_array($this->itensTelefone) and count($this->itensTelefone)>0){ ?>
+                            <?php foreach($this->itensTelefone as $telefone){ ?>
+                        <tr>
+                            <td colspan="3"><?php echo $telefone->Descricao; ?></td>
+                            <td colspan="3"><?php echo $telefone->Sigla; ?></td>
+                            <td colspan="3"><?php echo $telefone->DDD; ?></td>
+                            <td colspan="3"><?php echo $telefone->Numero; ?></td>
+                            <td colspan="3"><?php echo (($telefone->Divulgar == 1)? "Sim":"Nao" ); ?></td>
+                        </tr>
+                            <?php } ?>
+                        <?php } ?>
+
+
+                        <tr>
+                            <th colspan="15">E-mail</th>
+                        </tr>
+                        <tr class="destacar">
+                            <td colspan="3">Tipo</td>
+                            <td colspan="6">E-mail</td>
+                            <td colspan="3">Para correspond&ecirc;ncia?</td>
+                            <td colspan="3">Posso divulgar?</td>
+                        </tr>
+                        
+                        <?php $auxEmail = array(); $auxEmailTipo = array(); ?>
+                        <?php foreach($this->itensGeral as $email){ ?>
+                            <?php if(!in_array($email->agente, $auxEmail) || !in_array($email->email, $auxEmailTipo)){ ?>
+                        <tr>
+                            <td colspan="3"><?php echo $email->email; ?></td>
+                            <td colspan="6"><?php echo $email->agente; ?></td>
+                            <td colspan="3"><?php echo (($email->divulgarEmail == 1)?"Sim":"Nao"); ?></td>
+                            <td colspan="3"><?php echo (($email->divulgarEmail == 1)?"Sim":"Nao"); ?></td>
+                        </tr>
+                            <?php } $auxEmail[] = $email->agente; $auxEmailTipo[] = $email->email; ?>
+                       <?php } ?>
+
+                        <tr>
+                            <th colspan="15">Natureza</th>
+                        </tr>
+                        <tr class="destacar">
+                            <td colspan="3">Direito</td>
+                            <td colspan="4">Esfera</td>
+                            <td colspan="4">Poder</td>
+                            <td colspan="4">Administra&ccedil;&atilde;o</td>
+                        </tr>
+                        <?php if(!empty($this->itensGeral[0]->direito)){ ?>
+                        <tr>
+                            <td colspan="3"><?php echo $this->itensGeral[0]->direito; ?></td>
+                            <td colspan="4"><?php echo $this->itensGeral[0]->esfera; ?></td>
+                            <td colspan="4"><?php echo $this->itensGeral[0]->poder; ?></td>
+                            <td colspan="4"><?php echo $this->itensGeral[0]->Admins; ?></td>
+                        </tr>
+                        <?php } else { ?>
+                        <tr>
+                            <td colspan="15" align="center">Natureza n&atilde;o informada</td>";
+                        </tr>
+                        <?php } ?>
+
+                        <tr>
+                            <th colspan="15">Dirigente</th>
+                        </tr>
+
+                        <?php if(!empty($this->itensGeral[0]->CNPJCPFdigirente)){ ?>
+                        <tr class="destacar">
+                            <td colspan="7">CPF</td>
+                            <td colspan="8">Nome</td>
+                        </tr>
+                        <tr>
+                            <td colspan="7"><?php echo ((strlen($this->itensGeral[0]->CNPJCPFdigirente) > 11) ? aplicaMascara($this->itensGeral[0]->CNPJCPFdigirente, "99.999.999/9999-99") : aplicaMascara($this->itensGeral[0]->CNPJCPFdigirente, "999.999.999-99")); ?></td>
+                            <td colspan="8"><?php echo $this->itensGeral[0]->nomeAgente; ?></td>
+                        </tr>
+                        <?php } else { ?>
+                        <tr>
+                            <td colspan="15" align="center">Dirigente n&atilde;o informado</td>
+                        </tr>
+                        <?php } ?>
+
+                        <tr>
+                            <th colspan="15">Usu&aacute;rio SalicWEB</th>
+                        </tr>
+
+                        <?php if(is_array($this->itensGeral) and !empty($this->itensGeral[0]->nomeUsuario)){ ?>
+                        <tr class="destacar">
+                            <td colspan="7">CPF</td>
+                            <td colspan="8">Nome</td>
+                        </tr>
+                        <tr>
+                            <td colspan="7"><?php echo aplicaMascara($this->itensGeral[0]->Cpf, "999.999.999-99"); ?></td>
+                            <td colspan="8"><?php echo $this->itensGeral[0]->nomeUsuario; ?></td>
+                        </tr>
+                        <?php } ?>
+                    </table>
+
+                    <table class="tabela">
+                        <tr>
+                            <th colspan="15">Proposta cultural</th>
+                        </tr>
+                        <tr>
+                            <th colspan="15">Identifica&ccedil;&atilde;o</th>
+                        </tr>
+                        <?php if(is_array($this->itensGeral) and count($this->itensGeral)>0){ ?>
+                        <tr class="destacar">
+                            <td colspan="7">Proposta</td>
+                            <td colspan="8">Nome do Projeto</td>
+                        </tr>
+                        <tr>
+                            <td colspan="7"><?php echo $this->itensGeral[0]->idPreProjeto; ?></td>
+                            <td colspan="8"><?php echo $this->itensGeral[0]->NomeProjeto; ?></td>
+                        </tr>
+                        <?php } ?>
+                        <tr>
+                            <th colspan="15">Informaç&otilde;es Complementares</th>
+                        </tr>
+                        <tr class="destacar">
+                            <td colspan="2">&Eacute; proposta de audiovisual?</td>
+                            <td colspan="3">Mecanismo</td>
+                            <td colspan="2">Ag&ecirc;ncia Banc&aacute;ria</td>
+                            <td colspan="2">Dt. In&iacute;cio Execuç&atilde;o</td>
+                            <td colspan="2">Dt. Final Execu&ccedil;&atilde;o</td>
+                            <td colspan="2">Dt. Fixa</td>
+                            <td colspan="2">Plano Atual</td>
+                        </tr>
+                        <?php if(is_array($this->itensGeral) and count($this->itensGeral)>0){ ?>
+                        <tr>
+                            <td colspan="2"><?php echo (($this->itensGeral[0]->AreaAbrangencia == 1)? "Sim":"Nao"); ?></td>
+                            <td colspan="3"><?php echo (($this->itensGeral[0]->Mecanismo == 1)? "Incentivo Fiscal Federal":""); ?></td>
+                            <td colspan="2"><?php echo $this->itensGeral[0]->AgenciaBancaria; ?></td>
+                            <td colspan="2"><?php echo substr($this->itensGeral[0]->DtInicioDeExecucao,0,10); ?></td>
+                            <td colspan="2"><?php echo substr($this->itensGeral[0]->DtFinalDeExecucao,0,10); ?></td>
+                            <td colspan="2"><?php echo (($this->itensGeral[0]->stDataFixa == 1)? "Sim":"Nao"); ?></td>
+                            <td colspan="2"><?php echo (($this->itensGeral[0]->stPlanoAnual == 1)? "Sim":"Nao"); ?></td>
+                        </tr>
+                        <?php } ?>
+                        <tr>
+                            <th colspan="15">Informaç&otilde;es sobre tombamento</th>
+                        </tr>
+                        <tr class="destacar">
+                            <td colspan="5">N&ordm; Ato Tombamento</td>
+                            <td colspan="5">Dt. Ato Tombamento</td>
+                            <td colspan="5">Esfera Tombamento</td>
+                        </tr>
+                        <?php if(is_array($this->itensGeral) and count($this->itensGeral)>0){ ?>
+                        <?php $esferaTombamento = array('','Municipal','Estadual','Federal'); ?>
+                        <tr>
+                            <td colspan="5"><?php echo $this->itensGeral[0]->NrAtoTombamento; ?></td>
+                            <td colspan="5"><?php echo $this->itensGeral[0]->DtAtoTombamento; ?></td>
+                            <td colspan="5"><?php echo $esferaTombamento[$this->itensGeral[0]->EsferaTombamento]; ?></td>
+                        </tr>
+                        <?php } ?>
+                        <tr>
+                            <th colspan="15">Resumo do Projeto</th>
+                        </tr>
+                        <?php if(is_array($this->itensGeral) and count($this->itensGeral)>0){ ?>
+                        <tr>
+                            <td colspan="15"><?php echo (($this->itensGeral[0]->ResumoDoProjeto)? $this->itensGeral[0]->ResumoDoProjeto :"N&atilde;o informado."); ?></td>
+                        </tr>
+                        <?php } ?>
+                        <tr>
+                            <th colspan="15">Objetivos</th>
+                        </tr>
+                        <?php if(is_array($this->itensGeral) and count($this->itensGeral)>0){ ?>
+                        <tr>
+                            <td colspan="15"><?php echo ((($this->itensGeral[0]->Objetivos != "")? $this->itensGeral[0]->Objetivos :"N&atilde;o informado.")); ?></td>
+                        </tr>
+                        <?php } ?>
+                        <tr>
+                            <th colspan="15">Justificativa</th>
+                        </tr>
+                        <?php if(is_array($this->itensGeral) and count($this->itensGeral)>0){ ?>
+                        <tr>
+                            <td colspan="15"><?php echo (($this->itensGeral[0]->Justificativa != "")? $this->itensGeral[0]->Justificativa :"N&atilde;o informado."); ?></td>
+                        </tr>
+                        <?php } ?>
+                        <tr>
+                            <th colspan="15">Acessibilidade</th>
+                        </tr>
+                        <?php if(is_array($this->itensGeral) and count($this->itensGeral)>0){ ?>
+                        <tr>
+                            <td colspan="15"><?php echo (($this->itensGeral[0]->Acessibilidade != "")? $this->itensGeral[0]->Acessibilidade :"N&atilde;o informado."); ?></td>
+                        </tr>
+                        <?php } ?>
+                        <tr>
+                            <th colspan="15">Democratizaç&atilde;o de Acesso</th>
+                        </tr>
+                        <?php if(is_array($this->itensGeral) and count($this->itensGeral)>0){ ?>
+                        <tr>
+                            <td colspan="15"><?php echo (($this->itensGeral[0]->DemocratizacaoDeAcesso != "")? $this->itensGeral[0]->DemocratizacaoDeAcesso :"N&atilde;o informado."); ?></td>
+                        </tr>
+                        <?php } ?>
+                        <tr>
+                            <th colspan="15">Etapa de Trabalho</th>
+                        </tr>
+                        <?php if(is_array($this->itensGeral) and count($this->itensGeral)>0){ ?>
+                        <tr>
+                            <td colspan="15"><?php echo (($this->itensGeral[0]->EtapaDeTrabalho != "")? $this->itensGeral[0]->EtapaDeTrabalho :"N&atilde;o informado."); ?></td>
+                        </tr>
+                        <?php } ?>
+                        <tr>
+                            <th colspan="15">Ficha Técnica</th>
+                        </tr>
+                        <?php if(is_array($this->itensGeral) and count($this->itensGeral)>0){ ?>
+                        <tr>
+                            <td colspan="15"><?php echo (($this->itensGeral[0]->FichaTecnica != "")? $this->itensGeral[0]->FichaTecnica :"N&atilde;o informado."); ?></td>
+                        </tr>
+                        <?php } ?>
+                        <tr>
+                            <th colspan="15">Sinopse de obra</th>
+                        </tr>
+                        <?php if(is_array($this->itensGeral) and count($this->itensGeral)>0){ ?>
+                        <tr>
+                            <td colspan="15"><?php echo (($this->itensGeral[0]->Sinopse != "")? $this->itensGeral[0]->Sinopse :"N&atilde;o informado."); ?></td>
+                        </tr>
+                        <?php } ?>
+                        <tr>
+                            <th colspan="15">Impacto Ambiental</th>
+                        </tr>
+                        <?php if(is_array($this->itensGeral) and count($this->itensGeral)>0){ ?>
+                        <tr>
+                            <td colspan="15"><?php echo (($this->itensGeral[0]->ImpactoAmbiental != "")? $this->itensGeral[0]->ImpactoAmbiental :"N&atilde;o informado."); ?></td>
+                        </tr>
+                        <?php } ?>
+                        <tr>
+                            <th colspan="15">Especificaç&otilde;es técnicas do produto</th>
+                        </tr>
+                        <?php if(is_array($this->itensGeral) and count($this->itensGeral)>0){ ?>
+                        <tr>
+                            <td colspan="15"><?php echo (($this->itensGeral[0]->EstrategiaDeExecucao != "")? $this->itensGeral[0]->EstrategiaDeExecucao :"N&atilde;o informado."); ?></td>
+                        </tr>
+                        <?php } ?>
+                        <tr>
+                            <th colspan="15">Outras Informaç&otilde;es</th>
+                        </tr>
+                        <?php if(is_array($this->itensGeral) and count($this->itensGeral)>0){ ?>
+                        <tr>
+                            <td colspan="15"><?php echo (($this->itensGeral[0]->EspecificacaoTecnica != "")? $this->itensGeral[0]->EspecificacaoTecnica :"N&atilde;o informado."); ?></td>
+                        </tr>
+                        <?php } ?>
+                        <tr>
+                            <th colspan="15">Plano de Distribuiç&atilde;o do Produto</th>
+                        </tr>
+                        <tr class="destacar">
+                            <td style="font-size:7px;">Nome do Evento / Produto</td>
+                            <td style="font-size:7px;">Área</td>
+                            <td style="font-size:7px;">Segmento</td>
+                            <td style="font-size:7px;">Posiç&atilde;o da Logomarca</td>
+                            <td style="font-size:7px;">N&ordm; Exemplares / Ingressos</td>
+                            <td style="font-size:7px;">Distribuíç&atilde;o / Patrocinador</td>
+                            <td style="font-size:7px;">Distribuíç&atilde;o / Divulgaç&atilde;o</td>
+                            <td style="font-size:7px;">Distribuíç&atilde;o / Beneficiários</td>
+                            <td style="font-size:7px;">Total Venda Normal</td>
+                            <td style="font-size:7px;">Total Venda Promocional</td>
+                            <td style="font-size:7px;">Preço Unitário Normal</td>
+                            <td style="font-size:7px;">Preço Unitário Promocional</td>
+                            <td style="font-size:7px;">Receita Prevista Venda Normal (R$)</td>
+                            <td style="font-size:7px;">Receita Prevista Venda Promocional (R$)</td>
+                            <td style="font-size:7px;">Total de Receita Prevista (R$)</td>
+                        </tr>
+                        <?php
+                            $vlQtdeProduzida              = 0;
+                            $vlQtdePatrocinador           = 0;
+                            $vlQtdeProponente             = 0;
+                            $vlQtdeOutros                 = 0;
+                            $vlQtdeVendaNormal            = 0;
+                            $vlQtdeVendaPromocional       = 0;
+                            $vlPrecoUnitarioNormal        = 0;
+                            $vlPrecoUnitarioPromocional   = 0;
+                            $vlReceitaNormal              = 0;
+                            $vlReceitaPro                 = 0;
+                            $vlReceitaPrevista            = 0;
+
+                            if(is_array($this->itensPlanosDistribuicao) and count($this->itensPlanosDistribuicao)>0)
+                                foreach ($this->itensPlanosDistribuicao as $distribuicao) {
+                                    $destacar = "";
+                                    if ($distribuicao->stPrincipal == 1) {
+                                        $destacar = 'style="color:#FF0000"';
+                                    }
+
+                                    $vlQtdeProduzida += $distribuicao->QtdeProduzida;
+                                    $vlQtdePatrocinador += $distribuicao->QtdePatrocinador;
+                                    $vlQtdeProponente += $distribuicao->QtdeProponente;
+                                    $vlQtdeOutros += $distribuicao->QtdeOutros;
+                                    $vlQtdeVendaNormal += $distribuicao->QtdeVendaNormal;
+                                    $vlQtdeVendaPromocional += $distribuicao->QtdeVendaPromocional;
+                                    $vlPrecoUnitarioNormal += $distribuicao->PrecoUnitarioNormal;
+                                    $vlPrecoUnitarioPromocional += $distribuicao->PrecoUnitarioPromocional;
+                                    $vlReceitaNormal += $distribuicao->ReceitaNormal;
+                                    $vlReceitaPro += $distribuicao->ReceitaPro;
+                                $vlReceitaPrevista += $distribuicao->ReceitaPrevista;
+                        ?>
+                        <tr>
+                            <td style="font-size:7px;" align="left" <?php echo $destacar; ?>><?php echo $distribuicao->produto; ?></td>
+                            <td style="font-size:7px;" align="center" <?php echo $destacar; ?>><?php echo $distribuicao->area; ?></td>
+                            <td style="font-size:7px;" align="center" <?php echo $destacar; ?>><?php echo $distribuicao->segmento; ?></td>
+                            <td style="font-size:7px;" align="center" <?php echo $destacar; ?>><?php echo $distribuicao->posicaoLogo; ?></td>
+                            <td style="font-size:7px;" align="center" <?php echo $destacar; ?>><?php echo $distribuicao->QtdeProduzida; ?></td>
+                            <td style="font-size:7px;" align="center" <?php echo $destacar; ?>><?php echo $distribuicao->QtdePatrocinador; ?></td>
+                            <td style="font-size:7px;" align="center" <?php echo $destacar; ?>><?php echo $distribuicao->QtdeProponente; ?></td>
+                            <td style="font-size:7px;" align="center" <?php echo $destacar; ?>><?php echo $distribuicao->QtdeOutros; ?></td>
+                            <td style="font-size:7px;" align="center" <?php echo $destacar; ?>><?php echo $distribuicao->QtdeVendaNormal; ?></td>
+                            <td style="font-size:7px;" align="center" <?php echo $destacar; ?>><?php echo $distribuicao->QtdeVendaPromocional; ?></td>
+                            <td style="font-size:7px;" align="center" <?php echo $destacar; ?>><?php echo number_format($distribuicao->PrecoUnitarioNormal,2,',','.'); ?></td>
+                            <td style="font-size:7px;" align="center" <?php echo $destacar; ?>><?php echo number_format($distribuicao->PrecoUnitarioPromocional,2,',','.'); ?></td>
+                            <td style="font-size:7px;" align="center" <?php echo $destacar; ?>><?php echo number_format($distribuicao->ReceitaNormal,2,',','.'); ?></td>
+                            <td style="font-size:7px;" align="center" <?php echo $destacar; ?>><?php echo number_format($distribuicao->ReceitaPro,2,',','.'); ?></td>
+                            <td style="font-size:7px;" align="center" <?php echo $destacar; ?>><?php echo number_format($distribuicao->ReceitaPrevista,2,',','.'); ?></td>
+                        </tr>
+                        <?php } ?>
+                        <tr>
+                            <td style="font-size:7px;" align="center" colspan="4"><b>Total Geral</b></td>
+                            <td style="font-size:7px;" align="center"><?php echo $vlQtdeProduzida; ?></td>
+                            <td style="font-size:7px;" align="center"><?php echo $vlQtdePatrocinador; ?></td>
+                            <td style="font-size:7px;" align="center"><?php echo $vlQtdeProponente; ?></td>
+                            <td style="font-size:7px;" align="center"><?php echo $vlQtdeOutros; ?></td>
+                            <td style="font-size:7px;" align="center"><?php echo $vlQtdeVendaNormal; ?></td>
+                            <td style="font-size:7px;" align="center"><?php echo $vlQtdeVendaPromocional; ?></td>
+                            <td style="font-size:7px;" align="center"><?php echo number_format($vlPrecoUnitarioNormal,2,',','.'); ?></td>
+                            <td style="font-size:7px;" align="center"><?php echo number_format($vlPrecoUnitarioPromocional,2,',','.'); ?></td>
+                            <td style="font-size:7px;" align="center"><?php echo number_format($vlReceitaNormal,2,',','.'); ?></td>
+                            <td style="font-size:7px;" align="center"><?php echo number_format($vlReceitaPro,2,',','.'); ?></td>
+                            <td style="font-size:7px;" align="center"><?php echo number_format($vlReceitaPrevista,2,',','.'); ?></td>
+                        </tr>
+                        <tr>
+                            <th colspan="15" align="center">Planilha Orçamentária</th>
+                        </tr>
+                        <?php $item = 1;
+
+                            $totalVal_01_Fonte = (float) 0;
+                            $totalVal_02_Fonte = (float) 0;
+
+                            // inicializa valor total por produto
+                            $totalVal_01_Produto = (float) 0;
+                            $totalVal_02_Produto = (float) 0;
+                            $totalVal_03_Produto = (float) 0;
+
+                            // inicializa valor total por etapa
+                            $totalVal_01_Etapa = (float) 0;
+                            $totalVal_02_Etapa = (float) 0;
+                            $totalVal_03_Etapa = (float) 0;
+
+                            // inicializa valor total por uf
+                            $totalVal_01_UF = (float) 0;
+                            $totalVal_02_UF = (float) 0;
+                            $totalVal_03_UF = (float) 0;
+
+                            // arrays que servem para armazenar os elementos, e, posteriormente,
+                            // verificar se o elemento j&aacute; encontra-se no array e evitar a sua "impressão" duplicada na tela
+                            $arrayIncentivo = array();
+                            $arrayProdutos  = array();
+                            $arrayEtapas    = array();
+                            $arrayUFs       = array();
+
+                            // total geral
+                            $totalVal_01_Geral = (float) 0;
+                            $totalVal_02_Geral = (float) 0;
+
+                            foreach ($this->AnaliseCustos as $resposta) :
+                            // contador dos itens
+
+                            //* INÍCIO FOREACH PRODUTOS
+                            //* Percorre todos os produtos
+
+
+                            // vari&aacute;veis que servirão para fazer compara&ccedil;ão dos itens j&aacute; existentes,
+                            // e, evitar "imprimir" um iten j&aacute; "impresso"
+
+
+                                $comparadorIncentivo = $resposta->idFonte;
+                                $comparadorProdutos  = $resposta->idFonte . $resposta->idProduto;
+                                $comparadorEtapas    = $resposta->idFonte . $resposta->idProduto . $resposta->idPlanilhaEtapa;
+                                $comparadorUFs       = $resposta->idFonte . $resposta->idProduto . $resposta->idPlanilhaEtapa . $resposta->idUF . $resposta->idMunicipio;
+
+
+
+                                //<!-- ========== INÍCIO TÍTULO INCENTIVO FISCAL FEDERAL ========== -->
+                                if (!in_array($comparadorIncentivo, $arrayIncentivo)){ ?>
+
+                        <tr>
+                            <td colspan="15">
+                                <b><?php echo utf8_decode(htmlentities($resposta->FonteRecurso)); ?></b>
+                            </td>
+                        </tr>
+                        
+                        <?php }
+                            //<!-- ========== FIM TÍTULO INCENTIVO FISCAL FEDERAL ========== -->
+                            //<!-- ========== INÍCIO BUSCA POR PRODUTO ========== -->
+                                    if (!in_array($comparadorProdutos, $arrayProdutos)):
+                                    //<!-- ========== INÍCIO TÍTULO PRODUTOS ========== -->
+                                    $html .= "<tr class=\"linha\">
+                                            <td colspan=\"15\">
+                                                    <strong>
+                                                            ".utf8_decode(htmlentities($resposta->Produto))."
+                                                    </strong>
+                                            </td>
+                                    </tr>";
+                                    //<!-- ========== FIM TÍTULO PRODUTOS ========== -->
+                                    endif;
+                                    if (!in_array($comparadorEtapas, $arrayEtapas)):
+                                    //<!-- ========== INÍCIO TÍTULO ETAPAS ========== -->
+                                        $html .= "<tr>
+                                                <td colspan=\"15\">
+                                                    ".utf8_decode(htmlentities($resposta->Etapa))."
+                                                </td>
+                                        </tr>";
+                                    //<!-- ========== INÍCIO TÍTULO ETAPAS ========== -->
+                                    endif;
+                                    if (!in_array($comparadorUFs, $arrayUFs)):
+                                    //<!-- ========== INÍCIO TÍTULO UF ========== -->
+                                    $html .= "<tr>
+                                            <td colspan=\"15\">
+                                                            <span class=\"black del_link\">{$resposta->UF} - ".utf8_decode(htmlentities($resposta->Municipio))."</span>
+                                            </td>
+                                    </tr>";
+                                    //<!-- ========== FIM TÍTULO UF ========== -->
+                                    //<!-- ========== INÍCIO TITULO ÍTENS ========== -->
+                                    $html .= "<tr class=\"destacar \">";
+                                    $html.="<td class=\"titulo\">&nbsp;</td>
+                                            <td class=\"titulo\">Item</td>
+                                            <td class=\"titulo\">Dias</td>
+                                            <td class=\"titulo\">Unidade</td>
+                                            <td class=\"titulo\">Qtde</td>
+                                            <td class=\"titulo\">Ocor.</td>
+                                            <td class=\"titulo\">Vl. Unit&aacute;rio</td>
+                                            <td class=\"titulo\">Vl. Solicitado</td>
+                                            <td colspan=\"7\" class=\"titulo\">Justificativa do Proponente</td>
+                                    </tr>";
+                                    //<!-- ========== FIM TITULO ÍTENS ========== -->
+                                    endif;
+                                    //<!-- ========== INÍCIO ÍTENS ========== -->
+                                    $totalItens = 0;
+                                    //$i = $resposta->idPlanilhaProjeto; // criar&aacute; id único
+                                    $totalItens--;
+                                    $html .= "<tr>
+                                            <td>{$item}</td>
+                                            <td>{$this->escape($resposta->Item)}</td>
+                                            <td class=\"direita\">{$this->escape($resposta->QtdeDias)}</td>
+                                            <td class=\"centro\">{$this->escape($resposta->Unidade)}</td>
+                                            <td class=\"direita\">{$this->escape($resposta->Quantidade)}</td>
+                                            <td class=\"direita\">{$this->escape($resposta->Ocorrencia)}</td>
+                                            <td class=\"direita\">{$this->formatarReal($this->escape($resposta->ValorUnitario))}</td>
+                                            <td class=\"direita blue\">{$this->formatarReal($this->escape($resposta->VlSolicitado))}</td>
+                                            <td colspan=\"7\" class=\"direita\">".strip_tags($this->escape($resposta->JustificativaProponente))."</td>
+                                    </tr>";
+                                    //<!-- ========== FIM ÍTENS ========== -->
+                                    //<!-- ========== INÍCIO TOTAL UF ========== -->
+                                    // ===== CALCULA TOTAL UFS =====
+                                    $totalVal_01_UF += (float) $resposta->VlSolicitado;
+                                    $totalVal_02_UF += (float) $resposta->Sugerido;
+                                    $ultimaUF = isset($this->AnaliseCustos[$item]->idMunicipio) ? $this->AnaliseCustos[$item]->idFonte . $this->AnaliseCustos[$item]->idProduto . $this->AnaliseCustos[$item]->idPlanilhaEtapa . $this->AnaliseCustos[$item]->idUF . $this->AnaliseCustos[$item]->idMunicipio : null;
+                                    // compara a uf atual com a próxima uf para poder exibir o valor total
+                                    if ($resposta->idFonte . $resposta->idProduto . $resposta->idPlanilhaEtapa . $resposta->idUF . $resposta->idMunicipio != $ultimaUF) :
+
+                                        $html .= "<tr>
+                                                <td colspan=\"8\"><strong>Total de UF</strong></td>
+                                                <td colspan=\"7\"class=\"direita\"><strong>{$this->formatarReal($totalVal_01_UF)}</strong></td>
+                                        </tr>";
+                                            // ===== ZERA TOTAL UFS =====
+                                            $totalVal_01_UF = (float) 0;
+                                            $totalVal_02_UF = (float) 0;
+                                    endif;
+                                    //<!-- ========== FIM TOTAL UF ========== -->
+                                    //<!-- ========== INÍCIO TOTAL ETAPAS ========== -->
+                                    // ===== CALCULA TOTAL ETAPAS =====
+                                    $totalVal_01_Etapa += (float) $resposta->VlSolicitado;
+                                    $totalVal_02_Etapa += (float) $resposta->Sugerido;
+
+                                    $ultimaEtapa = isset($this->AnaliseCustos[$item]->idPlanilhaEtapa) ? $this->AnaliseCustos[$item]->idFonte . $this->AnaliseCustos[$item]->idProduto . $this->AnaliseCustos[$item]->idPlanilhaEtapa : null;
+                                    // compara a etapa atual com a próxima etapa para poder exibir o valor total
+                                    if ($resposta->idFonte . $resposta->idProduto . $resposta->idPlanilhaEtapa != $ultimaEtapa) :
+
+                                        $html .= "<tr>
+                                                <td colspan=\"8\" class=\"orange\"><strong>Total da Etapa</strong></td>
+                                                <td colspan=\"7\" class=\"direita orange\"><strong>".$this->formatarReal($totalVal_01_Etapa)."</strong></td>
+                                        </tr>";
+                                            // ===== ZERA TOTAL ETAPAS =====
+                                            $totalVal_01_Etapa = (float) 0;
+                                            $totalVal_02_Etapa = (float) 0;
+                                    endif;
+                                    //<!-- ========== FIM TOTAL ETAPAS ========== -->
+                                    //<!-- ========== INÍCIO TOTAL PRODUTOS ========== -->
+                                    // ===== CALCULA TOTAL PRODUTOS =====
+                                    $totalVal_01_Produto += (float) $resposta->VlSolicitado;
+                                    $totalVal_02_Produto += (float) $resposta->Sugerido;
+                                    $ultimoProduto = isset($this->AnaliseCustos[$item]->idProduto) ? $this->AnaliseCustos[$item]->idFonte . $this->AnaliseCustos[$item]->idProduto : null;
+                                    // compara o produto atual com o próximo produto para poder exibir o valor total
+                                    if ($resposta->idFonte . $resposta->idProduto != $ultimoProduto) :
+                                        $html .= "<tr>
+                                                <td colspan=\"8\" class=\"green\"><strong>Total dos Custos Administrativos ou do Produto</strong></td>
+                                                <td colspan=\"7\" class=\"direita green\"><strong>{$this->formatarReal($totalVal_01_Produto)}</strong></td>
+                                        </tr>";
+                                            // ===== ZERA TOTAL PRODUTOS =====
+                                            $totalVal_01_Produto = (float) 0;
+                                            $totalVal_02_Produto = (float) 0;
+                                    endif;
+                                    //<!-- ========== FIM TOTAL PRODUTOS ========== -->
+                            //<!-- ========== INICIO TOTAL GERAL ========== -->
+                                    // ===== CALCULA TOTAL UFS =====
+                                    $totalVal_01_Fonte += (float) $resposta->VlSolicitado;
+                                    $totalVal_02_Fonte += (float) $resposta->Sugerido;
+                                    $ultimaFonte = isset($this->AnaliseCustos[$item]->idFonte) ? $this->AnaliseCustos[$item]->idFonte : null;
+                                    // compara a etapa atual com a próxima etapa para poder exibir o valor total
+                                    if ($resposta->idFonte != $ultimaFonte) :
+                                        $html .= "<tr>
+                                                <td colspan=\"8\" class=\"red\"><strong>Total por mecanismo de incentivo</strong></td>
+                                                <td colspan=\"7\" class=\"direita red\"><strong>{$this->formatarReal($totalVal_01_Fonte)}</strong></td>
+                                        </tr>";
+                                    // ===== ZERA TOTAL FONTE =====
+                                    $totalVal_01_Fonte = (float) 0;
+                                    $totalVal_02_Fonte = (float) 0;
+                            endif;
+                            // total geral
+                            $totalVal_01_Geral += (float) $resposta->VlSolicitado;
+                            $totalVal_02_Geral += (float) $resposta->Sugerido;
+                            //<!-- ========== FIM TOTAL PRODUTOS ========== -->
+                                    // adiciona os elementos no array para guardar no histórico
+                                    $arrayIncentivo[] = $resposta->idFonte;
+                                    $arrayProdutos[]  = $resposta->idFonte . $resposta->idProduto;
+                                    $arrayEtapas[]    = $resposta->idFonte . $resposta->idProduto . $resposta->idPlanilhaEtapa;
+                                    $arrayUFs[]       = $resposta->idFonte . $resposta->idProduto . $resposta->idPlanilhaEtapa . $resposta->idUF . $resposta->idMunicipio;
+
+                                    $item++; // incrementa o contador de itens
+
+                            endforeach;
+
+        //                     * FIM FOREACH PRODUTOS
+
+                            //<!-- ========== FIM BUSCA POR PRODUTO ========== -->
+                            //<!-- ========== INICIO TOTAL GERAL ========== -->
+                            $html .= "<tr class=\"destacar\">
+                                    <td class=\"left\" colspan=\"8\"><strong>Total Geral</strong></td>
+                                    <td colspan=\"7\" class=\"direita red\"><strong>{$this->formatarReal($totalVal_01_Geral)}</strong></td>
+                            </tr>
+                            <tr>
+                                <th colspan=\"15\">
+                                    Fonte de Recurso
+                                </th>
+                            </tr>
+                            <tr class=\"destacar\">
+                                <td colspan=\"7\" align=\"left\">Fonte de Recurso</td>
+                                <td colspan=\"8\" align=\"right\">Valor</td>
+                            </tr>";
+                               if(is_array($this->itensFonteRecurso) and count($this->itensFonteRecurso)>0)
+                                    foreach ($this->itensFonteRecurso as $fonte){
+                                        $html .= "<tr>
+                                            <td colspan=\"7\">{$fonte->Descricao}</td>
+                                            <td colspan=\"8\" align=\"right\">".number_format($fonte->valor,2,',','.')."</td>
+                                        </tr>";
+                              }
+                        $html .= "
+
+                                <tr>
+                                    <th  colspan=\"15\">
+                                        Local de Realiza&ccedil;&atilde;o
+                                    </th>
+                                </tr>
+                                <tr class=\"destacar\">
+                                    <td colspan=\"5\" align=\"left\">Pais</td>
+                                    <td colspan=\"5\" align=\"left\">UF</td>
+                                    <td colspan=\"5\" align=\"left\">Cidade</td>
+                                </tr>";
+                                       if(is_array($this->itensLocalRealiazacao) and count($this->itensLocalRealiazacao)>0){
+                                           foreach($this->itensLocalRealiazacao as $itensLocalRealizacao){
+                                            $html .= "<tr>
+                                                <td colspan=\"5\">{$itensLocalRealizacao->Pais}</td>
+                                                <td colspan=\"5\">{$itensLocalRealizacao->UF}</td>
+                                                <td colspan=\"5\">{$itensLocalRealizacao->Cidade}</td>
+                                            </tr>";
+                                            }
+                                       }else{
+                                            $html .= "<td colspan=\"15\" align=\"center\">N&atilde;o informado</td>";
+                                       }
+                            $html .= "
+                                <tr>
+                                    <th  colspan=\"15\">
+                                        Deslocamento
+                                    </th>
+                                </tr>
+                                <tr class=\"destacar\">
+                                    <td colspan=\"2\" align=\"left\">Pais de Origem</td>
+                                    <td colspan=\"2\" align=\"left\">UF de Origem</td>
+                                    <td colspan=\"2\" align=\"left\">Cidade de Origem</td>
+                                    <td colspan=\"2\" align=\"left\">Pais de Destino</td>
+                                    <td colspan=\"2\" align=\"left\">UF de Destino</td>
+                                    <td colspan=\"3\" align=\"left\">Cidade de Destino</td>
+                                    <td colspan=\"2\">Quantidade</td>
+                                </tr>";
+                                if(is_array($this->itensDeslocamento) and count($this->itensDeslocamento)>0){
+                                    foreach ($this->itensDeslocamento as $deslocamento){
+                                    $html .= "<tr>
+                                        <td colspan=\"2\" class=\"esquerda\">{$deslocamento->paisOrigem}</td>
+                                        <td colspan=\"2\" class=\"esquerda\">{$deslocamento->ufOrigem}</td>
+                                        <td colspan=\"2\" class=\"esquerda\">{$deslocamento->municipioOrigem}</td>
+                                        <td colspan=\"2\" class=\"esquerda\">{$deslocamento->paisDestino}</td>
+                                        <td colspan=\"2\" class=\"esquerda\">{$deslocamento->ufDestino}</td>
+                                        <td colspan=\"3\" class=\"esquerda\">{$deslocamento->municipioDestino}</td>
+                                        <td colspan=\"2\" align=\"center\" >{$deslocamento->Qtde}</td>
+                                    </tr>";
+                                    }
+                                }else{
+                                    $html .= "<tr><td colspan=\"15\" align=\"center\">N&atilde;o informado</td></tr>";
+                                }
+                            $html .= "
+                            <tr>
+                                <th colspan=\"15\">
+                                    Plano de Divulga&ccedil;&atilde;o
+                                </th>
+                            </tr>
+                            <tr class=\"destacar\">
+                                <td colspan=\"7\" align=\"left\">Peça de Divulga&ccedil;&atilde;o</td>
+                                <td colspan=\"8\" align=\"left\">Veículo de Divulga&ccedil;&atilde;o</td>
+                            </tr>";
+                        if(is_array($this->itensPlanoDivulgacao) and count($this->itensPlanoDivulgacao)>0)
+                            foreach ($this->itensPlanoDivulgacao as $divulgacao){
+                                $html .= "<tr>
+                                    <td colspan=\"7\" align=\"left\">{$divulgacao->Peca}</td>
+                                    <td colspan=\"8\" align=\"left\">{$divulgacao->Veiculo}</td>
+                                </tr>";
+                        }
+                        $html .= "
+                                <tr>
+                                    <th colspan=\"15\">
+                                        Documentos Proponente
+                                    </th>
+                                </tr>";
+                                if(is_array($this->itensDocumentoAgente) and count($this->itensDocumentoAgente)>0){
+                                    $html .= "
+                                    <tr class=\"destacar\">
+                                        <td colspan=\"5\">Tipo de Documento</td>
+                                        <td colspan=\"5\">Nome do Documento</td>
+                                        <td colspan=\"5\">Data</td>
+                                    </tr>";
+                                    foreach ($this->itensDocumentoAgente as $docAgente){
+                                        $html .= "<tr>
+                                            <td colspan=\"5\">{$docAgente->TipoArqui}</td>
+                                            <td colspan=\"5\">{$docAgente->NomeArqui}</td>
+                                            <td colspan=\"5\">{$docAgente->Data}</td>
+                                        </tr>";
+                                    }
+
+                              }else{
+                                  $html .= "<tr>
+                                        <td colspan=\"15\" align=\"center\">N&atilde;o informado</td>
+                                    </tr>";
+                              }
+                              $html .= "
+                                     <tr>
+                                        <th  colspan=\"15\">
+                                            Documentos Proposta
+                                        </th>
+                                     </tr>";
+                                if(is_array($this->itensDocumentoPreProjeto) and count($this->itensDocumentoPreProjeto)>0){
+                                    $html .= "
+                                     <tr class=\"destacar\">
+                                        <td colspan=\"4\">Tipo de Documento</td>
+                                        <td colspan=\"4\">Nome do Documento</td>
+                                        <td colspan=\"3\">Data</td>
+                                        <td colspan=\"4\">Observa&ccedil;&atilde;o</td>
+                                    </tr>";
+                                   foreach ($this->itensDocumentoPreProjeto as $docPreProjeto){
+                                    $html .= "<tr>
+                                        <td colspan=\"4\" align=\"left\">{$docPreProjeto->TipoDocumento}</td>
+                                        <td colspan=\"4\" align=\"left\">{$docPreProjeto->NoArquivo}</td>
+                                        <td colspan=\"3\" align=\"left\">".ConverteData($docPreProjeto->Data, 5)."</td>
+                                        <td colspan=\"4\" align=\"left\">{$docPreProjeto->dsDocumento}</td>
+                                    </tr>";
+                                  }
+                              }else{
+                                  $html .= "<tr>
+                                        <td colspan=\"15\" align=\"center\">N&atilde;o informado</td>
+                                    </tr>";
+                              }
+                                  $html .= "
+                            <tr>
+                                <th colspan=\"15\">
+                                    Histórico de Avalia&ccedil;&otilde;es
+                                </th>
+                            </tr>
+                            <tr class=\"destacar\">
+                                <td colspan=\"4\" align=\"left\">Data</td>
+                                <td colspan=\"11\" align=\"left\">Avalia&ccedil;&atilde;o</td>
+                            </tr>";
+
+                            if(is_array($this->itensHistorico) and count($this->itensHistorico)>0)
+                                foreach ($this->itensHistorico as $historico){
+                                $html .= "<tr>
+                                    <td colspan=\"4\">{$historico->DtAvaliacao}</td>
+                                    <td colspan=\"11\">{$historico->Avaliacao}</td>
+                                </tr>";
+                            }
+                        $html .= "
+            </table>";
+            }
+        echo $html;
+
+        ?>
+
+        <!--<table class="tabela" style="border: 0px">
+            <tr>
+                <td align="center">
+                    <img id="brasao" src="<?php //echo $this->baseUrl() . "/public/img/brasaoArmas.jpg" ?>"/><br>
+                    <b>
+                    MINISTÉRIO DA CULTURA<br>
+                    PROGRAMA NACIONAL DE APOIO À CULTURA<br>
+                    </b>
+                </td>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <th>xxx</th>
+                <th>NOME yyyyy</th>
+            </tr>
+            <tr>
+                <td align="center">090909</td>
+                <td align="center">nomeProjeto</td>
+            </tr>
+        </table>
+
+        <br clear="all" />-->
+
+    </div>
+
+
+    <?php //xd($this->DadosEtiqueta); ?>
+    <div class="paginaA4">
+        <table class="tabela">
+            <tr>
+                <th colspan="2">Dados do Projeto</th>
+            </tr>
+            <tr>
+                <td class="destacar bold">Nr. Projeto</td>
+                <td class="destacar bold">Nome do Projeto</td>
+            </tr>
+            <tr>
+                <td><?php echo $this->DadosEtiqueta[0]->NrProjeto; ?></td>
+                <td><?php echo $this->DadosEtiqueta[0]->NomeProjeto; ?></td>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <th colspan="6">Valores do Projeto</th>
+            </tr>
+            <tr class="destacar">
+                <td align="center">Solicitado (A)</td>
+                <td align="center">Outras Fontes (B)</td>
+                <td align="center">Vl.Proposta (C = A + B)</td>
+                <td align="center">Aprovado (D)</td>
+                <td align="center">Vl.Projeto (E = B + D)</td>
+                <td align="center">Captação / Conv&ecirc;nio (E)</td>
+            </tr>
+            <tr>
+                <td align="center"><?php echo @number_format($this->valoresDoProjeto['fontesincentivo'], 2, ",", "."); ?></td>
+                <td align="center"><?php echo @number_format($this->valoresDoProjeto['outrasfontes'], 2, ",", "."); ?></td>
+                <td align="center"><?php echo @number_format(($this->valoresDoProjeto['valorproposta']), 2, ",", "."); ?></td>
+                <td align="center"><?php echo @number_format(($this->valoresDoProjeto['valorcomponente']), 2, ",", "."); ?></td>
+                <td align="center"><?php echo @number_format(($this->valoresDoProjeto['outrasfontes'] + $this->valoresDoProjeto['valorcomponente']), 2, ",", "."); ?></td>
+                <td align="center"><?php echo @number_format(($this->totalGeralCaptado), 2, ",", "."); ?></td>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <th colspan="3">Situação</th>
+            </tr>
+            <tr class="destacar">
+                <td align="center">Dt.Situação</td>
+                <td align="center">Situação</td>
+                <td align="center">Provid&ecirc;ncia Tomada</td>
+            </tr>
+            <tr>
+                <td align="center"><?php echo $this->projeto->DtSituacao; ?></td>
+                <td align="center"><?php echo $this->projeto->Situacao; ?></td>
+                <td align="left"><?php echo $this->projeto->ProvidenciaTomada; ?></td>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <th colspan=4">Unidade de An&aacute;lise</th>
+            </tr>
+            <tr>
+                <td class="destacar bold">&Oacute;rg&atilde;o</td>
+                <td class="destacar bold">Produto</td>
+                <td class="destacar bold">Tipo de An&aacute;lise</td>
+                <td class="destacar bold">Situa&ccedil;&atilde;o</td>
+            </tr>
+            <?php $idOrgao = 0; $idProduto = 0; ?>
+            <?php foreach ($this->unidadesAnalise as $unidades) { ?>
+            <tr>
+                <td><?php echo ($unidades->idOrgao != $idOrgao) ? $unidades->Orgao : ''; ?></td>
+                <td><?php echo ($unidades->idProduto != $idProduto) ? $unidades->Produto : ''; ?></td>
+                <td><?php echo $unidades->DescricaoAnalise; ?></td>
+                <td><?php echo $unidades->Situacao; ?></td>
+            </tr>
+            <?php $idOrgao = $unidades->idOrgao; $idProduto = $unidades->idProduto; } ?>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <th colspan="3">Localização Atual do Projeto</th>
+            </tr>
+            <tr class="destacar">
+                <td><b>Localiza&ccedil;&atilde;o</b><br>(<font size="1em">A localização atual do projeto só será alterada após o recebimento do projeto na unidade destino.</font>)</td>
+            </tr>
+            <tr>
+                <td align="left"><?php echo $this->projeto->Origem; ?></td>
+            </tr>
+        </table>
+    </div>
+    <?php } ?>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<? /* <table class="tabela">
+    <tr class="destacar">
+        <td align="center">Aguarde, gerando PDF!<br><img src="<?php echo $this->baseUrl() ?>/public/img/ajax.gif"/></td>
+    </tr>
+</table>
+<form action="<?php echo $this->url(array("controller" => "gerenciarparecertecnico", "action" => "dadosetiqueta")) ?>" name="imprimeEtiqueta" id="imprimeEtiqueta" METHOD="POST">
+
+	<input type="hidden" name="html" id="html" value='<?php echo $html;?>' />
+	<input type="hidden" name="pronac" id="pronac" value='<?php echo $pronac;?>'/>
+	<input type="hidden" name="caminho" value="<?php echo $this->caminho ?>" />
+
+</form>
+<script>
+$(document).ready(function() {
+	$("#imprimeEtiqueta").submit();
+
+});
+</script>
+ */ ?>
+

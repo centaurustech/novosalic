@@ -1,0 +1,302 @@
+<?php require_once "inc/menu.inc.php"; // menu ?>
+
+<script src='<?php echo $this->baseUrl(); ?>/public/js/jquery.MultiFile.js' type="text/javascript" language="javascript"></script>
+
+<div id="Teste" class="sumir" title="Enviar Solicitação"><p>Solicitação de readequação realizada com sucesso! Deseja fazer nova readequação?</p></div>
+<div id="div" class="sumir" title="Dados obrigatórios não informados!"></div>
+<div id="dialog-alert" class="sumir">Dados obrigatórios não informados!</div>
+
+<script>
+function validarFormulario(form,idtext)
+{
+    var verifica = true;
+    $(form).find('[null=false]').each(function(){
+        if($.trim($(this).val().replace(/(\,|\.)/g,'')).length == 0){
+            verifica = false;
+        }
+    });
+
+    var texto = $('#'+idtext).val();
+    if (texto.length == 0 ){
+        verifica = false;
+    }
+
+    if(!verifica){
+        $("#Teste").dialog("destroy");
+        $("#dialog").dialog("destroy");
+        $("#dialog-alert").dialog('open');
+    }
+    $("#Teste").dialog("destroy");
+    return verifica;
+}
+
+$("#dialog-alert").dialog({
+    modal: true,
+    resizable: false,
+    autoOpen: false,
+    buttons: {
+        Ok: function() {
+            $(this).dialog('close');
+        }
+    }
+});
+$('.ui-dialog-titlebar-close').remove();
+
+function EnviarProjeto()
+{
+    if(validarFormulario('#Projeto','recurso1')){
+        $("#dialog").dialog("destroy");
+        //$('html').css('overflow', 'hidden');
+        $("#Teste").dialog
+        ({
+        	width: 300,
+            height: 200,
+            modal: true,
+            draggable: false,
+            resizable: false,
+            closeOnEscape: false,
+            buttons: {
+                'Não': function()
+                {
+                    $('#Projeto').attr('action','<?php echo $this->url(array('controller' => 'solicitaralteracao','action' => 'nomeproponente2')); ?>');
+                    $('#Projeto').submit();
+                    
+                },
+                'Sim': function()
+                {  
+                    $('#Projeto').attr('action','<?php echo $this->url(array('controller' => 'solicitaralteracao','action' => 'nomeproponente')); ?>');
+                    $('#Projeto').submit();
+                }
+            }
+        });
+        $('.ui-dialog-titlebar-close').remove();
+    }
+}
+function EnviarNome()
+{
+    if(validarFormulario('#Social','recurso2')){
+        $("#dialog").dialog("destroy");
+        //$('html').css('overflow', 'hidden');
+        $("#Teste").dialog
+        ({
+        	width: 300,
+            height: 200,
+            modal: true,
+            draggable: false,
+            resizable: false,
+            closeOnEscape: false,
+            buttons: {
+                'Não': function()
+                {
+                    $('#Social').attr('action','<?php echo $this->url(array('controller' => 'solicitaralteracao','action' => 'nomeprojeto2')); ?>');
+                    $('#Social').submit();
+                    
+                },
+                'Sim': function()
+                {   $('#Social').attr('action','<?php echo $this->url(array('controller' => 'solicitaralteracao','action' => 'nomeprojeto')); ?>');
+                    $('#Social').submit();
+                }
+            }
+        });
+        $('.ui-dialog-titlebar-close').remove();
+    }
+}
+function buscaragenteread(cpf)
+{
+    $('#erroCpf').html('<p>Aguarde!</p>');
+    value = $("#CPFCNPJ").val();
+
+    if (value == '')
+    {
+        $('#erroCpf').html('<p>Informe o CPF/CNPJ!</p>');
+    }
+    else if (value.length != 14 && value.length != 18)
+    {
+        $('#erroCpf').html('<p>CPF/CNPJ Incompleto!</p>');
+    }
+    else
+    {
+        $('#erroCpf').html('');
+        // retira as máscaras do cpf/cnpj
+        value = value.replace(".","");
+        value = value.replace(".","");
+        value = value.replace("/","");
+        cpf = value.replace("-","");
+
+        // faz a verificação do agente via post
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            data: {
+                cpf: cpf
+            },
+            url: '<?php echo $this->url(array("controller"=>"agentes", "action"=>"agentecadastrado")); ?>',
+            success: function (data)
+            {
+            	if (data[0].msgCPF == 'cadastrado')
+                {
+                    document.getElementById('razaosocial').value = data[0].Nome;
+                }
+                else if (data[0].msgCPF == 'invalido')
+                {
+                    $('#erroCpf').html('<p>CPF/CNPJ Inválido</p>');
+                }
+                else if (data[0].msgCPF == 'novo')
+                {
+                	$('#erroCpf').html('<p>Preencha os dados abaixo. Após salvar a solicitação, você deverá terminar de cadastrar o Proponente!</p>');
+                }
+            },
+            error: function (data)
+            {
+                alert("Falha na recuperação dos dados.\nNão foi possível carregar agente!");
+            }
+        });
+    }
+}
+</script>
+
+<link type="text/css" rel="stylesheet" href="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.css" />
+
+<!-- início: #breadcrumb -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'principalproponente', 'action' => 'index')); ?>" title="Ir para p&aacute;gina inicial">In&iacute;cio</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index')); ?>?idPronac=<?php echo $_GET['idpronac'] ?>" title="Ir para consultar dados do projeto">Consultar dados do projeto</a></li>
+        <li class="last">Readequa&ccedil;&atilde;o de projeto</li>
+    </ul>
+</div>
+<!-- final: #breadcrumb -->
+
+<!-- início: #titulo -->
+<div id="titulo">
+    <div>Solicitar altera&ccedil;&atilde;o no projeto - Proponente <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- final: #titulo -->
+
+<!-- início: área principal #conteudo -->
+<div id="conteudo">
+
+    <?php
+    $resultado = $this->buscaprojeto;
+    $idPronac=$this->escape($resultado[0]->IdPRONAC);
+
+    $nomedoprojeto = $this->buscanome;
+    $justificativa = $this->justificativa;
+    $nomedoprojeto2 = $this->buscanome2;
+    $justificativa2 = $this->justificativa2;
+    if(empty($nomedoprojeto)){
+      $nomedoprojeto = $this->escape($resultado[0]->Descricao);
+    }
+
+    if(empty($justificativa)){
+      //$justificativa = "Digite seu texto aqui...";
+      $justificativa = "";
+    }
+    if(empty($nomedoprojeto2)){
+      $nomedoprojeto2 = $this->escape($resultado[0]->Descricao);
+    }
+
+    if(empty($justificativa2)){
+      //$justificativa2 = "Digite seu texto aqui...";
+      $justificativa2 = "";
+    }
+    if ($menu=="Botão") {
+    	$readonly = 'readonly="readonly"';
+    } else {
+    	$readonly = '';
+    }
+    ?>
+
+    <table class="tabela">
+        <thead>
+            <tr>
+                <th align="center" width="50%">N&ordm; PRONAC</th>
+                <th align="center" width="50%">Nome do Projeto</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="linha">
+                <td align="center"><?php echo $this->escape($resultado[0]->pronac); ?></td>
+                <td align="center"><?php echo $this->escape($resultado[0]->NomeProjeto); ?></td>
+            </tr>
+        </tbody>
+        <tr>
+            <th align="center">CNPJ/CPF</th>
+            <th align="center">Proponente</th>
+        </tr>
+        <tbody>
+            <tr class="linha">
+                <td align="center"><?php $valor = $this->escape($resultado[0]->CgcCpf); echo Validacao::mascaraCPFCNPJ($valor); ?></td>
+                <td align="center"><?php echo $this->escape($resultado[0]->Descricao);?></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <form name="Social" id="Social" action="<?php echo $this->url(array('controller' => 'solicitaralteracao', 'action' => 'nomeprojeto')); ?>" method="post" enctype="multipart/form-data">
+        <input type="hidden" id="idpronac" name="idpronac" value="<?php echo $idPronac; ?>">
+        <input type="hidden" name="CpfCnpjAtual" value="<?php echo $resultado[0]->CgcCpf; ?>">
+        <table class="tabela">
+        	<tr>
+        		<th>Nome do Proponente</th>
+        	</tr>
+        	<tr>
+        		<td>&nbsp;</td>
+        	</tr>
+            <tr class="destacar bold">
+                <td align="center"><label for="CPFCNPJ">CPF/CNPJ</label></td>
+            </tr>
+            <tr>
+                <?php if ( !empty ( $this->nrCNPJCPFAlterado ) ) { ?>
+                <td>
+                	<input <?php echo $readonly; ?> type="text" id="CPFCNPJ" name="CPFCNPJ" class="input_simples w98p" onkeyup="mascaraCnpjCpf(this);" maxlength="18" value="<?php $valor = $this->escape($this->nrCNPJCPFAlterado); echo Validacao::mascaraCPFCNPJ($valor); ?>" />  <span id="erroCpf" class="spanError"></span>
+                </td>
+                <?php } else { ?>
+                <td>
+                	<input <?php echo $readonly; ?> type="text" id="CPFCNPJ" name="CPFCNPJ" class="input_simples w98p" onkeyup="mascaraCnpjCpf(this);" maxlength="18" value="<?php $valor = $this->escape($resultado[0]->CgcCpf); echo Validacao::mascaraCPFCNPJ($valor); ?>" />  <span id="erroCpf" class="spanError"></span>
+                </td>
+                <?php } ?>
+                <script>
+                //buscaragenteread(document.getElementById('CPFCNPJ').value);
+                </script>
+            </tr>
+            <tr class="destacar bold">
+                <td align="center"><label for="razaosocial">NOVO PROPONENTE</label></td>
+            </tr>
+            <tr>
+                <td><input <?php echo $readonly; ?> type="text" id="razaosocial" null="false" name="razaosocial" maxlength="300" class="input_simples w98p" value="<?php echo $nomedoprojeto2; ?>" /></td>
+            </tr>
+            <tr class="destacar bold">
+                <td align="center"><label for="recurso2">JUSTIFICATIVA</label></td>
+            </tr>
+            <tr>
+                <td><textarea <?php echo $readonly; ?> class="input_simples w98p h200" id="recurso2" name="recurso2"><?php echo $justificativa; ?></textarea></td>
+            </tr>
+            <tr class="destacar bold">
+                <td align="center"><label for="arquivo">ANEXOS</label></td>
+            </tr>
+            <?php if (empty($readonly)) { ?>
+            <tr>
+                <td><input type="file" class="multi" id="arquivo" name="arquivo[]" accept="pdf" /></td>
+            </tr>
+            <?php } ?>
+			<?php echo "<tr><td>" ?><?php echo SolicitaralteracaoController::buscarArquivosNomeTrocaProponente($idPronac); ?><?php echo "</td></tr>"; ?>
+        </table>
+
+		<?php if (empty($readonly)) { ?>
+        <table class="tabela">
+            <tr>
+                <td class="centro">
+                    <input type="button" class="btn_salvar" value=" " onclick="EnviarNome();" />
+                    <input type="button" class="btn_cancelar" id="fechar" value=" " onclick="redirecionar('<?php echo $this->url(array('controller' => 'solicitaralteracao', 'action' => 'acaoprojeto')); ?>?idpronac=<?php echo $_GET['idpronac'] ?>');" />
+                </td>
+            </tr>
+        </table>
+        <?php } ?>
+	</form>
+</div>
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

@@ -1,0 +1,485 @@
+<script type="text/javascript">
+    function retirarAcento(text) {
+        var varString = text;
+        var stringAcentos = new String('‡‚ÍÙ˚„ı·ÈÌÛ˙Á¸¿¬ ‘€√’¡…Õ”⁄«‹');
+        var stringSemAcento = new String('aaeouaoaeioucuAAEOUAOAEIOUCU');
+
+        var i = new Number();
+        var j = new Number();
+        var cString = new String();
+        var varRes = '';
+
+        for (i = 0; i < varString.length; i++) {
+            cString = varString.substring(i, i + 1);
+            for (j = 0; j < stringAcentos.length; j++) {
+                if (stringAcentos.substring(j, j + 1) == cString){
+                    cString = stringSemAcento.substring(j, j + 1);
+                }
+            }
+            varRes += cString;
+        }
+        return varRes;
+    }
+
+    $(document).ready(function(){
+
+        $("#btn_pesquisar").click(function(){
+            if($('#nomeProjeto').val() != ''){
+                var textoProjeto = retirarAcento( $('#nomeProjeto').val() );
+                $('#nomeProjeto').val(textoProjeto);
+            }
+            if($('#nomeProponente').val() != ''){
+                var textoProponente = retirarAcento( $('#nomeProponente').val() );
+                $('#nomeProponente').val(textoProponente);
+            }
+            $("#frmRelatorio").submit();
+        });
+
+        $(".cmpNumerico").numeric().attr("maxlength", "9");
+        $(".cmpNome").attr("maxlength", "50");
+        $(".cmpCnpjCpf").attr("maxlength", "18").keyup(function(){
+            mascaraCnpjCpf(this);
+        });
+
+        $("#pronac").keyup(function(){
+            if($(this).val() != ""){
+                $(".cmpDesabilitar").attr("disabled", "disabled").val("");
+            }else{
+                $(".cmpDesabilitar").attr("disabled", "");
+            }
+        });
+
+        $('#area').change(function() {
+            $('#segmento').html('<option value=""> - Carregando - </option>');
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo $this->url(array('controller' => 'segmento', 'action' => 'combo')); ?>',
+                data: {
+                    id: $('#area').val()
+                },
+                success: function(dados) {
+                    $('#segmento').find('option').remove();
+                    $('#segmento').append(dados);
+                }
+            });
+        });
+
+        $('#fundo').change(function(){
+            var id = $(this).val();
+            $.ajax({
+                type: "POST",
+                url:  "<?php echo $this->url(array('controller' => 'ajax', 'action' => 'fundo-classificacao')); ?>",
+                data: {
+                    id : id
+                },
+                success: function(data)
+                {
+                    if(!data.error){
+                        $("#classificacao").find('option').remove();
+                        $("#classificacao").append('<option value="">Todos</option>');
+                        for (i in data){
+                            $("#classificacao").append('<option value="'+data[i].id+'">'+data[i].desc+'</option>');
+                        }
+                    }
+                    else{
+                        $("#classificacao").find('option').remove();
+                        $("#classificacao").append('<option value="">Todos</option>');
+                    }
+                }
+                , dataType : 'json'
+            });
+        });
+
+        $('#classificacao').change(function(){
+            var id = $(this).val();
+            $.ajax({
+                type: "POST",
+                url:  "<?php echo $this->url(array('controller' => 'ajax', 'action' => 'classificacao-edital')); ?>",
+                data: {
+                    id : id
+                },
+                success: function(data)
+                {
+                    if(!data.error){
+                        $("#edital").find('option').remove();
+                        $("#edital").append('<option value="">Todos</option>');
+                        for (i in data){
+                            $("#edital").append('<option value="'+data[i].id+'">'+data[i].desc+'</option>');
+                        }
+                    }
+                    else{
+                        $("#edital").find('option').remove();
+                        $("#edital").append('<option value="">Todos</option>');
+                    }
+                }
+                , dataType : 'json'
+            });
+        });
+
+        $("#tpDtSituacao").change(function(){
+            if($("#spanDtSituacao").css("display")=="none" && $(this).val() == "entre"){
+                $("#spanDtSituacao").show();
+            }else{
+                $("#spanDtSituacao").hide();
+            }
+            //$("#spanDtFinal").toggle();
+        });
+
+        $("#tpDtPublicacao").change(function(){
+            if($("#spanDtPublicacao").css("display")=="none" && $(this).val() == "entre"){
+                $("#spanDtPublicacao").show();
+            }else{
+                $("#spanDtPublicacao").hide();
+            }
+            //$("#spanDtFinal").toggle();
+        });
+
+        $("#tpDtPortaria").change(function(){
+            if($("#spanDtPortaria").css("display")=="none" && $(this).val() == "entre"){
+                $("#spanDtPortaria").show();
+            }else{
+                $("#spanDtPortaria").hide();
+            }
+            //$("#spanDtFinal").toggle();
+        });
+        
+        $('#uf').change(function(){
+            if($(this).val() == 0){
+                $("#municipio").find('option').remove();
+                $("#municipio").append('<option value=""> - Selecione - </option>');
+            }
+            else{
+                $.ajax({
+                    url : '<?php echo $this->url(array('controller' => 'ajax', 'action' => 'municipio')); ?>',
+                    type: "POST",
+                    data :{
+                        iduf : $(this).val()
+                    },
+                    success: function(valor){
+                        $("#municipio").find('option').remove();
+                        $("#municipio").append('<option value=""> - Selecione - </option>');
+
+                        for(a in valor){
+                            $("#municipio").append('<option value="'+valor[a].idmun+'">'+valor[a].descmun+'</option>');
+                        }
+                    },
+                    type : 'post'
+                    , dataType : 'json'
+                });
+            }
+        });
+
+        $(function()
+        {
+        	// m·scaras dos campos
+    		$("#dtSituacao, #dtPublicacao, #dtPortaria").keyup(function()
+    		{
+    			mascara(this, format_data); // data
+    		});
+    		
+            $.datepicker.regional['pt-BR'] = {
+                closeText: 'Fechar',
+                prevText: '&#x3c;Anterior',
+                nextText: 'Pr&oacute;ximo&#x3e;',
+                currentText: 'Hoje',
+                monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+                monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+                dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+                dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                weekHeader: 'Sm',
+                dateFormat: 'dd/mm/yy',
+                firstDay: 0,
+                isRTL: false,
+                showMonthAfterYear: false,
+                yearSuffix: ''};
+            $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+            $(".cmpData").datepicker($.datepicker.regional['pt-BR']);
+        });
+    });
+
+</script>
+
+<!-- ========== INÕCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''), '', true); ?>" title="Ir para P·gina Inicial">InÌcio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'relatorio', 'action' => 'projeto'), '', true); ?>" title="Ir para Relatorio">Gerar RelatÛrio An·lise</a></li>
+        <li class="last">Projeto</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INÕCIO TÕTULO ========== -->
+<div id="titulo">
+    <div>Consulta de projeto cultural<span class="voltar"><a href="javascript:voltar()">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÕTULO ========== -->
+
+<div id="conteudo" align="center">
+    <form action="<?php echo $this->url(array('controller' => 'relatorio', 'action' => 'resultado-projeto')); ?>" method="get" name="frmRelatorio" id="frmRelatorio">
+        <table class="tabela">
+            <tbody>
+                <tr>
+                    <th colspan="3">Selecionar campos para pesquisa</th>
+                </tr>
+                <tr>
+                    <td width="120" class="destacar bold">PRONAC</td>
+                    <td align="left" colspan="2">
+                        <input type="text" class="input_simples w150 cmpNumerico" name="pronac" id="pronac" />
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120" class="destacar bold">CNPJ/CPF</td>
+                    <td align="left" colspan="2">
+                        <input type="text" class="input_simples w150 cmpDesabilitar cmpCnpjCpf" name="cnpfcpf" id="cnpfcpf" />
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120" class="destacar bold">Nome do Projeto</td>
+                    <td align="left" colspan="2">
+                        <input type="text" class="input_simples w400 cmpDesabilitar cmpNome" name="nomeProjeto" id="nomeProjeto" />
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120" class="destacar bold">Nome do Proponente</td>
+                    <td align="left" colspan="2">
+                        <input type="text" class="input_simples w400 cmpDesabilitar cmpNome" name="nomeProponente" id="nomeProponente" />
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120" class="destacar bold">&Aacute;rea</td>
+                    <td align="left" colspan="2">
+                        <select class="select_simples w200 cmpDesabilitar" name="area" id="area">
+                            <option value="">Todos</option>
+                            <?php foreach($this->areas as $area){ ?>
+                            <option value="<?php echo $area->Codigo; ?>"><?php echo $area->Descricao; ?></option>
+                            <?php } ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120" class="destacar bold">Segmento</td>
+                    <td align="left" colspan="2">
+                        <select class="select_simples cmpDesabilitar" style="min-width: 200px;" name="segmento" id="segmento">
+                            <option value="">Todos</option>
+                        </select>
+                    </td>
+                </tr>
+                <!--<tr>
+                    <td width="120" align="left">Fundo Setorial</td>
+                    <td align="left" colspan="2">
+                        <select class="input_simples w200" name="fundo" id="fundo">
+                            <option value="">Todos</option>
+                            <?php //foreach($this->fundossetoriais as $fundo):?>
+                            <option value="<?php //echo $fundo->idVerificacao; ?>"><?php //echo $fundo->Descricao; ?></option>
+                            <?php //endforeach; ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left">Classifica&ccedil;&atilde;o</td>
+                    <td colspan="2" align="left">
+                        <select class="input_simples w200" name="classificacao" id="classificacao">
+                            <option value="" selected="">Todos</option>
+                            <!-- <?php //foreach($this->classificacoes as $classificacao):?>
+                            <option value="<?php //echo $classificacao->idClassificaDocumento; ?>"><?php //echo $classificacao->dsClassificaDocumento; ?></option>
+                            <?php //endforeach; ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left">Edital</td>
+                    <td align="left" colspan="2">
+                        <select class="input_simples w200" name="edital" id="edital">
+                            <option value="">Todos</option>
+                        </select>
+                    </td>
+                </tr>-->
+                <tr>
+                    <td width="120" class="destacar bold">Mecanismo</td>
+                    <td align="left" colspan="2">
+                        <select style="width: 200px;" class="select_simples cmpDesabilitar" name="mecanismo" id="mecanismo">
+                            <option value="">- Selecione -</option>
+                            <?php 
+                            foreach($this->mecanismos as $item): 
+                                    if($item->Descricao == 'Mecenato'){
+                            ?>
+                                    <option value="<?php echo $item->Codigo ?>">Incentivo Fiscal Federal</option>	
+                            <?php 
+                                    }else{
+                            ?>                                
+                            <option value="<?php echo $item->Codigo ?>"><?php echo $item->Descricao ?></option>
+                            <?php 
+                                    } 
+                            endforeach; 
+                            ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120" class="destacar bold">UF</td>
+                    <td align="left" colspan="2">
+                        <select style="width: 110px;" class="select_simples cmpDesabilitar" name="uf" id="uf">
+                            <option value="">- Selecione -</option>
+                            <?php foreach($this->ufs as $uf){ ?>
+                            <option value="<?php echo $uf->idUF; ?>"><?php echo $uf->Sigla; ?></option>
+                            <?php } ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120" class="destacar bold">MunicÌpio</td>
+                    <td align="left" colspan="2">
+                        <select name="municipio" id="municipio" style="width: 200px;" class="select_simples cmpDesabilitar">
+                            <option value="">- Selecione -</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120" class="destacar bold">Situa&ccedil;&atilde;o do Projeto</td>
+                    <td align="left" colspan="2">
+                        <select name="situacao" id="situacao" style="width: 200px;" class="select_simples cmpDesabilitar">
+                            <option value="">- Selecione -</option>
+                            <?php foreach($this->situacoes as $item): ?>
+                            <option value="<?php echo $item->Codigo ?>"><?php echo $item->Codigo . ' - ' . $item->Descricao ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120" class="destacar bold">Data da Situa&ccedil;&atilde;o</td>
+                    <td width="220" align="center">
+                        <select name="tpDtSituacao" id="tpDtSituacao" class="select_simples cmpDesabilitar" onchange="if($(this).val()=='OT' || $(this).val()=='U7' || $(this).val()=='SP' || $(this).val()=='MM' || $(this).val()=='UM'){$('#camposDatadtSituacao').css('display','none');}else{$('#camposDatadtSituacao').css('display','');}">
+                            <OPTGROUP LABEL="Normais">
+                                <option value="">- Selecione -</option>
+                                <option value="igual">Exatamente Igual</option>
+                                <option value="entre">Entre dois valores</option>
+                                <option value="maior">Maior ou igual a </option>
+                                <option value="menor">Menor ou igual a</option>
+                            </OPTGROUP>
+                            <OPTGROUP LABEL="Especiais">
+                               <option value="OT">Ontem</option>
+                               <option value="U7">&Uacute;ltimos 7 dias</option>
+                               <option value="SP">Semana Passada (seg-dom)</option>
+                               <option value="MM">Este m&ecirc;s</option>
+                               <option value="UM">&Uacute;ltimo m&ecirc;s</option>
+                            </OPTGROUP>
+                        </select>
+                    <td align="left">
+                        <span id="camposDatadtSituacao">
+                            <input name="dtSituacao" id="dtSituacao" value="" maxlength="10" class="input_simples btn_calendario cmpData" />
+                            <span id="spanDtSituacao" style="display: none;">&nbsp;e&nbsp;<input name="dtSituacao_Final" id="dtSituacao_Final" value="" class="input_simples cmpData btn_calendario"/></span>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120" class="destacar bold">Data de Publica&ccedil;&atilde;o</td>
+                    <td width="220" align="center">
+                        <select name="tpDtPublicacao" id="tpDtPublicacao" class="select_simples cmpDesabilitar" onchange="if($(this).val()=='OT' || $(this).val()=='U7' || $(this).val()=='SP' || $(this).val()=='MM' || $(this).val()=='UM'){$('#camposDatadtPublicacao').css('display','none');}else{$('#camposDatadtPublicacao').css('display','');}">
+                            <OPTGROUP LABEL="Normais">
+                                <option value="">- Selecione -</option>
+                                <option value="igual">Exatamente Igual</option>
+                                <option value="entre">Entre dois valores</option>
+                                <option value="maior">Maior ou igual a </option>
+                                <option value="menor">Menor ou igual a</option>
+                            </OPTGROUP>
+                            <OPTGROUP LABEL="Especiais">
+                               <option value="OT">Ontem</option>
+                               <option value="U7">&Uacute;ltimos 7 dias</option>
+                               <option value="SP">Semana Passada (seg-dom)</option>
+                               <option value="MM">Este m&ecirc;s</option>
+                               <option value="UM">&Uacute;ltimo m&ecirc;s</option>
+                            </OPTGROUP>
+                        </select>
+                    <td align="left">
+                        <span id="camposDatadtPublicacao">
+                            <input name="dtPublicacao" id="dtPublicacao" value="" maxlength="10" class="input_simples btn_calendario cmpData"/>
+                            <span id="spanDtPublicacao" style="display: none;">&nbsp;e&nbsp;<input name="dtPublicacao_Final" id="dtPublicacao_Final" value="" class="input_simples cmpData btn_calendario"/></span>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120" class="destacar bold">Data de Portaria</td>
+                    <td width="220" align="center">
+                        <select name="tpDtPortaria" id="tpDtPortaria" class="select_simples cmpDesabilitar" onchange="if($(this).val()=='OT' || $(this).val()=='U7' || $(this).val()=='SP' || $(this).val()=='MM' || $(this).val()=='UM'){$('#camposDatadtPortaria').css('display','none');}else{$('#camposDatadtPortaria').css('display','');}">
+                            <OPTGROUP LABEL="Normais">
+                                <option value="">- Selecione -</option>
+                                <option value="igual">Exatamente Igual</option>
+                                <option value="entre">Entre dois valores</option>
+                                <option value="maior">Maior ou igual a </option>
+                                <option value="menor">Menor ou igual a</option>
+                            </OPTGROUP>
+                            <OPTGROUP LABEL="Especiais">
+                               <option value="OT">Ontem</option>
+                               <option value="U7">&Uacute;ltimos 7 dias</option>
+                               <option value="SP">Semana Passada (seg-dom)</option>
+                               <option value="MM">Este m&ecirc;s</option>
+                               <option value="UM">&Uacute;ltimo m&ecirc;s</option>
+                            </OPTGROUP>
+                        </select>
+                    <td align="left">
+                        <span id="camposDatadtPortaria">
+                            <input name="dtPortaria" id="dtPortaria" value="" maxlength="10" class="input_simples btn_calendario cmpData"/>
+                            <span id="spanDtPortaria" style="display: none;">&nbsp;e&nbsp;<input name="dtPortaria_Final" id="dtPortaria_Final" value="" class="input_simples cmpData btn_calendario"/></span>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120" class="destacar bold">PerÌodo de Execu&ccedil;&atilde;o</td>
+                    <td align="left" colspan="2">
+                        <span id="camposDtInicioExec">
+                            <input name="dtInicioExec" id="dtInicioExec" value="" maxlength="10" class="input_simples btn_calendario cmpData" />
+                            <span id="spanDtInicioExec" style="display: none;"></span>
+                        </span> &agrave;
+                        <span id="camposDtFimExec">
+                            <input name="dtFimExec" id="dtFimExec" value="" maxlength="10" class="input_simples btn_calendario cmpData" />
+                            <span id="spanDtFimExec" style="display: none;"></span>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120" class="destacar bold">Proponente Regular</td>
+                    <td align="left" colspan="2">
+                        <input type="radio" name="propRegular" value="S" class="input_simples w250 cmpDesabilitar"> Sim &ensp;&ensp;&ensp;&ensp;
+                        <input type="radio" name="propRegular" value="N" class="input_simples w250 cmpDesabilitar"> N&atilde;o
+
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120" class="destacar bold">Plano Anual</td>
+                    <td align="left" colspan="2">
+                        <input type="radio" name="planoAnual" value="1" class="input_simples w250 cmpDesabilitar"> Sim &ensp;&ensp;&ensp;&ensp;
+                        <input type="radio" name="planoAnual" value="0" class="input_simples w250 cmpDesabilitar"> N&atilde;o
+
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120" class="destacar bold">Data Fixa</td>
+                    <td align="left" colspan="2">
+                        <input type="radio" name="datafixa" value="1" class="input_simples w250 cmpDesabilitar"> Sim &ensp;&ensp;&ensp;&ensp;
+                        <input type="radio" name="datafixa" value="0" class="input_simples w250 cmpDesabilitar"> N&atilde;o
+
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="tabela">
+            <tr>
+                <td align="center">
+                    <input type="button" class="btn_pesquisar" id="btn_pesquisar"/>
+                    <input type="reset" class="btn_limpar" id="btn_limpar" value=""/>
+                </td>
+            </tr>
+        </table>
+    </form>
+
+</div>
+<!-- ========== FIM CONTE⁄DO ========== -->
+
+
+<!-- ========== INÕCIO RODAP… DO CONTE⁄DO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAP… DO CONTE⁄DO ========== -->
+
+<br clear="all" />

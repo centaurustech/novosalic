@@ -1,0 +1,517 @@
+<?php
+    $tpAgente = filter_input(INPUT_GET, 'tpAgente');
+    if (empty($tpAgente)) {
+        require_once "inc/menu.inc.php"; // menu
+    }
+?>
+
+<script language="javascript">
+    function AnalisarProjeto() {
+        $("#analisar").dialog("destroy");
+        $('html').css('overflow', 'hidden');
+        $("#analisar-confirm").dialog
+        ({
+            width:650,
+            height:430,
+            modal: true,
+            draggable: true,
+            resizable: true,
+            closeOnEscape: false,
+            buttons: {
+                'Salvar': function(){
+                    redirecionar('<?php echo $this->url(array('controller' => 'analisaritem', 'action' => 'tecnicoprestacaocontas'), '', true); ?>');
+                },
+                'Cancelar': function(){
+                    $(this).dialog('close');
+                }
+            }
+        });
+        $('.ui-dialog-titlebar-close').open();
+    } // fecha função logout()
+</script>
+
+<style>
+    .editarIco {
+        display: block;
+        width: 15px;
+        text-indent: -99999px;
+        overflow: hidden;
+        background-image: url('<?php echo $this->baseUrl(); ?>/public/img/edit_ico.gif');
+        background-repeat: no-repeat;
+    }
+</style>
+<div id="enviar-confirm" class="sumir" title="Finalizar Análise"><p aling="Center">Deseja realmente finalizar a análise?</p></div>
+
+<script language="javascript">
+    function EnviarChefeDivisao() {
+        $("#enviar").dialog("destroy");
+        $("#enviar-confirm").html("");
+        $('html').css('overflow', 'hidden');
+        $("#enviar-confirm").dialog
+        ({
+            height: 200,
+            modal: true,
+            draggable: false,
+            resizable: false,
+            closeOnEscape: false,
+            title: "Envio de Projeto",
+            buttons: {
+                'Não': function(){
+                    $(this).dialog('close');
+                },
+                'Sim': function(){
+                    redirecionar("<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'enviarchefedivisao')) .'?idPronac=' . $IdPronac; ?>");
+                }
+            }
+        });
+        $('.ui-dialog-titlebar-close').remove();
+    } // fecha função logout()
+</script>
+
+<div id="enviar-confirm" class="sumir" title="Finalizar Análise"><p>Deseja realmente finalizar a análise?</p></div>
+
+<!-- MODAL DA CHEFE DE DIVISÃO  -->
+
+<script language="javascript">
+    function chefedivisao() {
+        $("#analisar").dialog("destroy");
+        $("#analisar-confirm").html("");
+        $('html').css('overflow', 'hidden');
+        $("#analisar-confirm").dialog
+        ({
+            width:800,
+            height:430,
+            modal: true,
+            draggable: true,
+            resizable: false,
+            closeOnEscape: false,
+            title: "Enviar Chefe de Divisão",
+            buttons: {
+                'Não': function(){
+                    $(this).dialog('close');
+                },
+                'Sim': function(){
+                    redirecionar("<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'enviarchefedivisao')) .'?idPronac=' . $IdPronac; ?>");
+                }
+            }
+        });
+        $('.ui-dialog-titlebar-close').open();
+    } // fecha função logout()
+</script>
+
+<div id="analisar-confirm" style="width:220px" class="sumir" title="Enviar Chefe de Divisão"></div>
+<!-- FIM DA MODAL DO CHEFE DE DIVISÃO -->
+
+<?php
+    $comprovacaoPagamentoHref   =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'comprovacaopagamento'));
+    $descreverItemHref          =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'descreveritem'));
+    $voltarHref                 =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => ''));
+    $finalizarHref              =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'finalizar'));
+    $finalizadoHref             =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'finalizado')).'?cadastro=1&idpronac='.$this->idpronac;
+?>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''), '', true); ?>" title="Ir para p&aacute;gina inicial">Início</a></li>
+        <?php if($this->codGrupo == 132){ ?>
+            <li><a href="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'chefedivisaoprestacaocontas'));?>">Presta&ccedil;&atilde;o de contas</a></li>
+        <?php }else if($this->codGrupo == 124): ?>
+            <li><a href="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'tecnicoprestacaocontas'));?>">Presta&ccedil;&atilde;o de contas</a></li>
+        <?php else: ?>
+            <li><a href="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'painel'));?>">Presta&ccedil;&atilde;o de contas</a></li>
+        <?php endif; ?>
+        <li class="last">Planilha or&ccedil;ament&aacute;ria comprovada</li>
+    </ul>
+</div>
+<div id="titulo">
+    <div>
+        Planilha or&ccedil;ament&aacute;ria comprovada
+        <span class="voltar" style="float:right;"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span>
+    </div>
+</div>
+<div id="conteudo">
+    <table class="tabela">
+        <tr>
+            <th>PRONAC</th>
+            <th>NOME DO PROJETO</th>
+            <?php if($this->itemAvaliadoFilter == 2 || $this->codGrupo == 132){ ?>
+                <th>Valor Impugnado</th>
+            <?php } ?>
+        </tr>
+        <tr>
+            <td align="center"><?php echo $this->pronac;?></td>
+            <td align="center"><?php echo $this->nomeProjeto;?></td>
+            <?php if($this->itemAvaliadoFilter == 2 || $this->codGrupo == 132){ ?>
+                <?php
+                    $TotalAprovado = 0;
+                    $TotalImpugnado = 0;
+                    foreach ($this->incFiscaisA as $val1) {
+                        foreach ($val1 as $val1) {
+                            foreach ($val1 as $val1) {
+                                foreach ($val1 as $val1) {
+                                    $TotalAprovado = $TotalAprovado + $val1[1];
+                                    $TotalImpugnado = $TotalImpugnado + $val1[7];
+                                }
+                            }
+                        }
+                    }
+
+                    foreach ($this->incFiscaisP as $val2) {
+                        foreach ($val2 as $val2) {
+                            foreach ($val2 as $val2) {
+                                foreach ($val2 as $val2) {
+                                    foreach ($val2 as $val2) {
+                                        $TotalAprovado = $TotalAprovado + $val2[1];
+                                        $TotalImpugnado = $TotalImpugnado + $val2[7];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ?>
+                <td align="center"><?php echo $this->formatarReal($TotalAprovado - $TotalImpugnado); ?></td>
+            <?php } ?>
+        </tr>
+    </table>
+    
+<?php
+    $validaA = true;
+    $validab = true;
+    foreach($this->incFiscaisA as $titulo => $item) {
+        if(!(is_array($item) and count($item)>0)){
+            $validaA = false;
+        }
+    }
+    foreach($this->incFiscaisP as $titulo => $item) {
+        if(!(is_array($item) and count($item)>0)){
+            $validab = false;
+        }
+    }
+
+    if($validaA || $validab){ ?>
+    <div id="pagamentoAjax">
+    <fieldset>
+        <legend>Comprova&ccedil;&atilde;o de Execu&ccedil;&atilde;o Financeira</legend>
+
+            <form name="frPagamento" id="frPagamento" >
+                <input type="hidden" name="idPronac" value="<?php echo $this->idPronac;?>" />
+	                <table class="tabela">
+	                    <tr><th colspan="3">Filtro de Pesquisa</th></tr>
+	                    <tr class="divFiltroPesquisa">
+	                        <td class="destacar bold">Situa&ccedil;&atilde;o</td>
+	                        <td>
+	                            <select name="itemAvaliadoFilter" style="width: 245px;" class="input_simples">
+	                                <option value="0">Selecione</option>
+					                <?php if ($this->codGrupo != 132 && $this->codGrupo != 125) : ?>
+		                                <option value="1" <?php echo $this->itemAvaliadoFilter == 1 ? 'selected="true"' : null; ?>>Aguardando Análise</option>
+		                                <option value="2" <?php echo $this->itemAvaliadoFilter == 2 ? 'selected="true"' : null; ?>>Analisados</option>
+						            <?php else : ?>
+	                                	<option value="3" <?php echo $this->itemAvaliadoFilter == 3 ? 'selected="true"' : null; ?>>Glosados</option>
+						            <?php endif; ?>
+	                            </select>
+	                        </td>
+	                        <td colspan="6" align="center">
+	                            <input type="submit" id="btn_pesquisar" class="btn_pesquisar" value="">
+	                            <?php if($this->coordenador){ ?>
+	                            <input type="button" name="redistribuir" id="redistribuir" class="btn_devolver_tecnico" value="">
+	                            <?php } ?>
+	                        </td>
+	                    </tr>
+	                </table>
+
+                <table id="planilhaItem" class="tabela">
+                <?php
+                    $html = '';
+                    $html .= '<tr>';
+                        $html .= '<td>';
+                            $cont=0;
+                            $cont2=0;
+                            $cont3=0;
+                            foreach($this->incFiscaisA as $titulo => $item) {
+                                $html .= '<div > ';
+                                $html .= "<span class='green'>{$titulo}</span>";
+                                if(is_array($item) && !empty($item)) {
+                                    foreach($item as $titulo => $subItem) {
+                                        $html .= '<div class="divfilho'.$cont.'" style="padding-left: 15px;">';
+                                        $html .= "<span class='orange'>{$titulo}</span>";
+                                        if(is_array($subItem) && !empty($subItem)) {
+                                            foreach($subItem as $titulo => $tabelaItem) {
+                                                $html .= '<div class="divF'.$cont2.'"  style="padding:3px; margin-left: 15px;">';
+                                                $html .= "<span class='black'>{$titulo}</span>";
+                                                if(is_array($tabelaItem) && !empty($tabelaItem)) {
+                                                    $html .= '<table width="90%" style="margin-left:60px; clear:both;" class="linhaTabelaItem dF'.$cont3.'">';
+                                                    $html .= '<tr>';
+                                                    if ($this->codGrupo == 132 || $this->codGrupo == 125) :
+                                                        $html .= '<th>Visualizar An&aacute;lise</th>';
+                                                    else :
+                                                        $html .= '<th>Analisar</th>';
+                                                    endif;
+                                                    $html .= '<th>Item de Custo</th>';
+                                                    $html .= '<th>Valor Aprovado</th>';
+                                                    $html .= '<th>Valor Comprovado</th>';
+                                                    $html .= '<th>Comprovação Validada</th>';
+                                                    $html .= '<th>Modalidade Vinculada</th>';
+                                                    $html .= '</tr>';
+                                                    foreach($tabelaItem as $key=>$valor) {
+                                                        $html .= '<tr>';
+                                                        $html .= '<td align="center">';
+                                                        $href = $this->url(
+                                                            array(
+                                                               'controller' => 'realizarprestacaodecontas',
+                                                                'action' => 'analisar-comprovacao',
+                                                                'idPronac' => $this->idPronac,
+                                                                'idPlanilhaAprovacao' => $key,
+                                                                'idPlanilhaItem' => $valor[6],
+                                                            )
+                                                        );
+                                                        $html .= "<a href='{$href}' class='editarIco'>Analisar item</a>";
+                                                        $html .= '</td>';
+                                                        $html .= "<td>{$valor[0]}</td>";
+                                                        $html .= "<td nowrap>{$this->formatarReal($valor[1])}</td>";
+                                                        $html .= "<td nowrap>{$this->formatarReal($valor[3])}</td>";
+                                                        $html .= "<td nowrap>{$this->formatarReal($valor[7])}</td>";
+                                                        $html .= "<td>{$valor[4]}</td>";
+                                                        $html .= '</tr>';
+                                                    }
+                                                    $html .= '</table>';
+                                                    $cont3++;
+                                                }
+                                                $html .= '</div>';
+                                            }
+                                        } 
+                                        $html .= '</div>';
+                                        $cont2++;
+                                    }
+                                }
+                                $html .= '</div>';
+                                $cont++;
+                            }
+                        $html .= '</td>';
+                        $html .= '</tr>';
+                    echo $html;
+
+                    $html = '';
+                    $cont4=0;
+                    foreach($this->incFiscaisP as $titulo => $incFiscal) {
+                        $html .= '<tr>';
+                        $html .= '<td>';
+                        $html .= "<span class='green'>{$titulo}</span>";
+                        if(is_array($incFiscal) && !empty($incFiscal)) {
+                            foreach($incFiscal as $titulo => $item) {
+                                $html .= '<div class="divfilho'.$cont.'" style="padding:3px; margin-left: 15px;" > ';
+                                $html .= "<span class='green'>{$titulo}</span>";
+                                if(is_array($item) && !empty($item)) {
+                                    foreach($item as $titulo => $subItem) {
+                                        $html .= '<div class="divF'.$cont2.'" style="padding:3px; margin-left: 15px;"> ';
+                                        $html .= "<span class='orange'>{$titulo}</span>";
+                                        if(is_array($subItem) && !empty($subItem)) {
+                                            foreach($subItem as $titulo => $tabelaItem) {
+                                                $html .= '<div class="dF'.$cont3.'" style="padding:3px; margin-left: 15px;">';
+                                                $html .= "<span class='black'>{$titulo}</span>";
+                                                if(is_array($tabelaItem) && !empty($tabelaItem)) {
+                                                    $html .= '<table width="90%" style="margin-left:45px; clear:both;" class="linhaRegistros dFilho'.$cont4.'">';
+                                                    $html .= '<tr>';
+                                                    if($this->codGrupo == 132 || $this->codGrupo == 125)
+                                                        $html .= '<th>Visualizar An&aacute;lise</th>';
+                                                    else
+                                                        $html .= '<th>Analisar</th>';
+                                                    $html .= '<th>Item de Custo</th>';
+                                                    $html .= '<th>Valor Aprovado</th>';
+                                                    $html .= '<th>Valor Comprovado</th>';
+                                                    $html .= '<th>Comprovação Validada</th>';
+                                                    $html .= '<th>Modalidade Vinculada</th>';
+                                                    $html .= '</tr>';
+                                                    foreach ($tabelaItem as $idPlanilhaAprovacao => $valor) : 
+                                                        $html .= '<tr>';
+                                                        $html .= '<td align="center">';
+                                                        $href = $this->url(
+                                                            array(
+                                                                'controller' => 'realizarprestacaodecontas',
+                                                                'action' => 'analisar-comprovacao',
+                                                                'idPronac' => $this->idPronac,
+                                                                'idPlanilhaAprovacao' => $idPlanilhaAprovacao,
+                                                                'idPlanilhaItem' => $valor[6],
+                                                            )
+                                                        );
+                                                        $html .= "<a href='{$href}' class='editarIco'>Analisar item</a>";
+                                                        $html .= '</td>';
+                                                        $html .= "<td>".htmlentities($valor[0])."</td>";
+                                                        $html .= "<td nowrap>{$this->formatarReal($valor[1])}</td>";
+                                                        $html .= "<td nowrap>{$this->formatarReal($valor[3])}</td>";
+                                                        $html .= "<td nowrap>{$this->formatarReal($valor[7])}</td>";
+                                                        $html .= "<td>{$valor[4]}</td>";
+                                                        $html .= '</tr>';
+                                                    endforeach;
+                                                    $html .= '</table>';
+                                                }
+                                                $html .= '</div>';
+                                                $cont4++;
+                                            }
+                                            $cont3++;
+                                        }
+                                        $html .= '</div>';
+                                    }
+                                }
+                                $html .= '</div>';
+                                $cont2++;
+                            }
+                        }
+                        $html .= '</td>';
+                        $html .= '</tr>';
+                        $cont++;
+                    }
+                    echo $html;
+                ?>
+            </table>
+            </form>
+    </fieldset>
+    <?php } else { ?>
+        <table class="tabela">
+            <tr>
+                <th colspan="2"> N&atilde;o existe planilha or&ccedil;ament&aacute;ria comprovada</th>
+            </tr>
+        </table>
+    <?php } ?>
+    </div>
+</div>
+    
+<div id="rodapeConteudo"></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />
+
+<?php $analisarItemHref   =   $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'analisaritem'));?> 
+
+<script type="text/javascript">
+    <?php if(isset($_GET['tipoMsg'])):?>
+        $("#novas_mensagens", document).append("<div class='msg<?php echo $_GET['tipoMsg']; ?>'><div class='float_right'><input type='button' class='btn_close' title='Fechar mensagem' id='msg<?php echo $_GET['tipoMsg']; ?>' onclick='$(\".msg<?php echo $_GET['tipoMsg']; ?>\").hide();' onkeypress='$(\".msg<?php echo $_GET['tipoMsg']; ?>\").hide();'/></div><div><?php echo $_GET['msg'] ?></div></div>");
+    <?php endif;?>
+
+    function analisarItem(idPlanilhaAprovacao, idPronac, idPlanilhaItem){
+        window.location='<?php echo $analisarItemHref; ?>?idPronac=' + idPronac + '&idPlanilhaAprovacao=' + idPlanilhaAprovacao+ '&idPlanilhaItem=' + idPlanilhaItem;
+        return false;
+    }
+
+    regra = new Object();
+    regra = /(icn_mais.gif)/i;
+    $(function(){
+        $('.divPai').click(function(){
+            $('.'+$(this).attr('divFilho')).toggle();
+            if(regra.exec($('img', $(this)).attr('src'))) {
+                $(this).find('img').attr('src','<?php echo $this->baseUrl();?>/public/img/icn_menos.gif');
+            }
+            else{
+                $(this).find('img').attr('src','<?php echo $this->baseUrl();?>/public/img/icn_mais.gif');
+            }
+        });
+    });
+
+    $('#pagamentoAjaxBt a').click(function(){
+        var este = this;
+        var dados = $('#frPagamento').serializeArray();
+        if($(este).attr('retorna')==undefined){
+            var info = {
+                este        :   este,
+                corpo       :   'pagamentoAjaxBt',
+                parametros  :   dados,
+                formularioModal     :   'frComprovarPagamento',
+                naoFechar           :   true
+            };
+            acoesLink(info);
+            return false;
+        }
+    });
+    $('#frPagamento').find('input').click(function(){
+        var este = this;
+        if($(este).attr('type') == 'checkbox'){
+            var verifica = false;
+            $('#frPagamento').find('.ckItens').each(function(){
+                if($(este).attr('id') == $(this).attr('id')){
+                    if($(this).attr('checked'))
+                        verifica = true;
+                }
+            });
+            $('#frPagamento').find('.ckItens').each(function(){
+                if($(este).attr('id') != $(this).attr('id')){
+                    if($(este).attr('checked') || verifica)
+                        $(this).attr('disabled',true);
+                    else
+                        $(this).attr('disabled',false);
+                }
+            });
+        }
+    });
+    
+    $('#btComprovar').click(function(){
+        var dados = $('#frPagamento').serializeArray();
+        var verifica = false;
+        $('#frPagamento').find('.ckItens').each(function(){
+            if($(this).attr('checked'))
+                verifica = true;
+        });
+        if(verifica){
+            var pagina = requisicaoAjaxObj();
+            pagina.executar({
+                pagina: $(this).attr('href'),
+                parametros:dados
+            });
+        }
+        else{
+            janelaAlerta('Selecione um ou mais itens!');
+        }
+        return false;
+    });
+
+    $('.dadosDoc').click(function(){
+        var nomeJanelalicitacaoanterior      =   janelaObj({
+            parametros : {
+                width:800,
+                autoOpen: false,
+                modal:true,
+                resizable: false
+            },
+            title : 'Nome do Item de Custo'
+        });
+        var carregarCont    =   requisicaoAjaxObj();
+        carregarCont.executar({
+            pagina      :   $(this).attr('href'),
+            parametros:{id:$(this).attr('id')},
+            resposta    :   nomeJanelalicitacaoanterior.divConteudo
+        });
+        nomeJanelalicitacaoanterior.abrirJanela();
+
+        return false;
+    });
+    $('#finalizar').click(function(){
+        var este = this;
+       var nomeJanelaAlerta =   janelaObj({
+            parametros : {
+                width:      400,
+                autoOpen:   false,
+                resizable:  false,
+                modal:      true,
+                buttons: {
+                    'Nao': function() {
+                        $(this).dialog('close');
+                    },
+                    'Sim': function() {
+
+                        var resposta = buscarJson($(este).attr('href'),{idPronac:'<?php echo $this->idpronac;?>'});
+                        if(resposta.resultado){
+                            janelaAlerta(resposta.mensagem,function(){
+                                window.location = '<?php echo $finalizadoHref;?>';
+                            });
+                        }
+                        else{
+                            janelaAlerta(resposta.mensagem);
+                        }                      
+
+                        $(this).dialog('close');
+                    }
+                }
+            },
+            removerBtFechar:true,
+            title : 'Alerta'
+        });
+        nomeJanelaAlerta.divConteudo.html('Deseja finalizar a Comprova&ccedil;&atilde;o?');
+        nomeJanelaAlerta.abrirJanela();
+    });
+</script>

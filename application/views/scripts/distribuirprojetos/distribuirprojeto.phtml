@@ -1,0 +1,44 @@
+<?php
+if(strlen($this->error) > 2){
+    echo '<div class="msgERROR"><div>'.utf8_encode($this->error).'</div></div>';
+}elseif(strlen($this->confirme) > 2){
+        echo '<div class="msgCONFIRM"><div>'.utf8_encode($this->confirme).'</div></div>';
+}elseif(strlen($this->alerta) > 2){
+        echo '<div class="msgALERT"><div>'.utf8_encode($this->alerta).'</div></div>';
+}
+
+foreach ($this->listaprojetos as $lista){
+?>
+<table class="tabela">
+    <tr>
+        <th>PRONAC</th>
+        <th>Nome do Projeto</th>
+    </tr>
+    <tr>
+        <td><?php echo utf8_encode($lista['AnoProjeto']) . utf8_encode($lista['Sequencial']); ?></td>
+        <td><?php echo utf8_encode($lista['NomeProjeto']); ?></td>
+    </tr>
+</table>
+
+<table class="tabela">
+    <tr>
+        <td>
+            <table class="tabela">
+                <tr>
+                    <td><b>Avaliador</b></td>
+                    <td width="15%"><b>A&ccedil;&atilde;o</b></td>
+                </tr>
+                <?php foreach ($lista['Avaliadores'] as $avaliador){ ?>
+                <tr>
+                    <td><?php echo utf8_encode($avaliador['Descricao']) ?></td>
+                    <td class="centro">
+                        <!-- <input type="button" class="btn_excluir" title="Adicionar Observa&ccedil;&atilde;o" style="background-image: url(<?php echo $this->baseUrl(); ?>/public/img/edit_ico.gif)" onclick="addObs('<?php echo $avaliador['idDistribuicao'] ?>')" src="<?php echo $this->baseUrl(); ?>/public/img/edit_ico.gif"> -->
+                        <input type="button" class="btn_excluir" title="Excluir Avaliador do Projeto" onclick="removedistribuicao('<?php echo $avaliador['idDistribuicao'] ?>')" >
+                    </td>
+                </tr>
+                <?php } ?>
+            </table>
+        </td>
+    </tr>
+</table>
+<?php } ?>

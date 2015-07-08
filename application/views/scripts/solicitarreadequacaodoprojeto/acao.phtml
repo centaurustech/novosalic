@@ -1,0 +1,847 @@
+<?php include_once "inc/menu2.inc.php"; // menu ?>
+<?php
+$enviar = $this->botao;
+
+if ($menu=="Botão") {
+	$readonly = 'readonly="readonly"';
+} else {
+	$readonly = '';
+}
+?>
+<!-- início: navegação local #qm0 -->
+<div id="Teste" class="sumir" title="Alterar Produto"><p>Produto alterado com sucesso!</p><p>Solicitação de readequação realizada com sucesso! Deseja fazer nova readequação?</p></div>
+<div id="Excluir" class="sumir" title="Excluir"><p>Tem certeza que deseja excluir este Produto? As planilhas de custos serão deletadas!</p></div>
+<div id="Excluido" class="sumir" title="Excluir"><p>Produto excluído com sucesso!</p><p>Solicitação de readequação realizada com sucesso! Deseja fazer nova readequação?</p></div>
+<script type="text/javascript">
+
+function validarFormulario(form){
+
+var verifica = true;
+
+	$(form).find('[null=false]').each(function()
+	{
+            
+		if ($.trim($(this).val().replace(/(\,|\.)/g,'')).length == 0)
+		{
+			verifica = false;
+		}
+	});
+
+	if (!verifica)
+	{
+		$("#Teste").dialog("destroy");
+		$("#dialog").dialog("destroy");
+		$("#dialog-alert").dialog('open');
+	}
+
+	$("#Teste").dialog("destroy");
+
+	return verifica;
+     }
+     $(function(){
+         $('#formPlano').submit(function(){
+            var verifica = validarFormulario(this);
+            return verifica;
+         });
+     });
+     
+    function Enviar()
+    {
+
+        if(validarFormulario('#form')){
+            $("#dialog").dialog("destroy");
+            //$('html').css('overflow', 'hidden');
+            $("#Teste").dialog
+            ({
+                height: 280,
+                modal: true,
+                draggable: false,
+                resizable: false,
+                closeOnEscape: false,
+                buttons: {
+                    'Não': function()
+                    {
+                        $('#form').attr('action','<?php echo $this->url(array('controller' => 'solicitarreadequacaodoprojeto','action' => 'alterar2')); ?>');
+                        $('#form').submit();
+                        $(this).dialog('close');
+                        
+
+                    },
+                    'Sim': function()
+                    {
+                        $('#form').attr('action','<?php echo $this->url(array('controller' => 'solicitarreadequacaodoprojeto','action' => 'alterar')); ?>?ativar_menu_produto=ok');
+                        $('#form').submit();
+                        $(this).dialog('close');
+
+                    }
+                }
+            });
+            $('.ui-dialog-titlebar-close').remove();
+        }
+    }
+function EnviarProposta()
+    {
+        $("#dialog").dialog("destroy");
+        //$('html').css('overflow', 'hidden');
+        $("#Excluir").dialog
+        ({
+            height: 280,
+            modal: true,
+            draggable: false,
+            resizable: false,
+            closeOnEscape: false,
+            buttons: {
+                'Não': function()
+                {
+                    $(this).dialog('close');
+                },
+                'Sim': function()
+                {
+			        $("#Excluido").dialog
+			        ({
+			            height: 280,
+			            modal: true,
+			            draggable: false,
+			            resizable: false,
+			            closeOnEscape: false,
+			            buttons: {
+			                'Não': function()
+			                {
+			                    $(this).dialog('close');
+			                    $('#Curso').attr('action', '<?php echo $this->url(array('controller' => 'solicitarreadequacaodoprojeto', 'action' => 'excluir2')); ?>');
+			                    $('#Curso').submit();
+			                },
+			                'Sim': function()
+			                {
+			                    $(this).dialog('close');
+			                    $('#Curso').attr('action', '<?php echo $this->url(array('controller' => 'solicitarreadequacaodoprojeto', 'action' => 'excluir')); ?>');
+			                    $('#Curso').submit();
+			                }
+			            }
+			        });
+			        $(this).dialog('close');
+                }
+            }
+        });
+        $('.ui-dialog-titlebar-close').remove();
+    }
+
+function Proposta()
+    {
+        $("#dialog").dialog("destroy");
+        //$('html').css('overflow', 'hidden');
+        $("#Teste").dialog
+        ({
+            height: 180,
+            modal: true,
+            draggable: false,
+            resizable: false,
+            closeOnEscape: false,
+            buttons: {
+                'Não': function()
+                {
+                    $(this).dialog('close');
+                    $('#Curso').attr('action','<?php echo $this->url(array('controller' => 'solicitarreadequacaodoprojeto','action' => 'excluir2')); ?>');
+                    $('#Curso').submit();
+                    
+
+                },
+                'Sim': function()
+                {
+                    $(this).dialog('close');
+                    $('#Curso').attr('action', '<?php echo $this->url(array('controller' => 'solicitarreadequacaodoprojeto', 'action' => 'excluir')); ?>');
+                    $('#Curso').submit();
+                    
+
+                   // document.forms['Curso'].action = "<?php echo $this->url(array('controller' => 'solicitarreadequacaodoprojeto', 'action' => 'excluir')); ?>";
+                   // document.forms['Curso'].submit();
+
+                }
+            }
+        });
+        //$('.ui-dialog-titlebar-close').remove();
+    }
+
+
+
+	/**
+	 * Função responsável por fazer a soma dos ingressos e calcular o total
+	 */
+	function somaIngressos()
+	{
+		/* ========== INÍCIO SOMA DE INGRESSOS ========== */
+		campo1 = document.getElementById('Patrocinador').value;
+		campo1 = campo1.replace(/\D/g, ""); // retira os pontos e as vírgulas, deixando somente números
+		campo1 = campo1.replace(/(\d{0})(\d)/, "$1$2");
+		campo1 = parseInt(campo1); // converte para int
+
+		campo2 = document.getElementById('Divulgacao').value;
+		campo2 = campo2.replace(/\D/g, ""); // retira os pontos e as vírgulas, deixando somente números
+		campo2 = campo2.replace(/(\d{0})(\d)/, "$1$2");
+		campo2 = parseInt(campo2); // converte para int
+
+		campo3 = document.getElementById('Beneficiario').value;
+		campo3 = campo3.replace(/\D/g, ""); // retira os pontos e as vírgulas, deixando somente números
+		campo3 = campo3.replace(/(\d{0})(\d)/, "$1$2");
+		campo3 = parseInt(campo3); // converte para int
+
+		campo4 = document.getElementById('Normal').value;
+		campo4 = campo4.replace(/\D/g, ""); // retira os pontos e as vírgulas, deixando somente números
+		campo4 = campo4.replace(/(\d{0})(\d)/, "$1$2");
+		campo4 = parseInt(campo4); // converte para int
+
+		campo5 = document.getElementById('Promocional').value;
+		campo5 = campo5.replace(/\D/g, ""); // retira os pontos e as vírgulas, deixando somente números
+		campo5 = campo5.replace(/(\d{0})(\d)/, "$1$2");
+		campo5 = parseInt(campo5); // converte para int
+
+		// total de ingressos
+		total = campo1 + campo2 + campo3 + campo4 + campo5;
+
+		if (isNaN(total)) // se não for número
+		{
+			total = '';
+		}
+		else
+		{
+			total = (parseFloat(total)).toFixed(0); // armazena o resultado
+
+			// formata para real
+			total = total.replace(/\D/g, "");
+			total = total.replace(/(\d+)(\d{3},\d{2})$/g, "$1.$2");
+
+			var q = (total.length - 3) / 3; // quantidade caracteres
+			var c = 0; // contador
+			while (q > c)
+			{
+				c++;
+				total = total.replace(/(\d+)(\d{3}.*)/, "$1.$2");
+			}
+			total = total.replace(/^(0+)(\d)/g, "$2");
+			total = total;
+		}
+		document.getElementById('Numero').value = total;
+		/* ========== FIM SOMA DE INGRESSOS ========== */
+
+
+		/* ========== INÍCIO CALCULO DE INGRESSOS ========== */
+		campo6 = document.getElementById('Normal_Uni').value;
+		campo6 = campo6.replace(/\D/g, ""); // retira os pontos e as vírgulas, deixando somente números
+		campo6 = campo6.replace(/(\d{0})(\d)/, "$1$2");
+		campo6 = campo6.replace(/(\d)(\d{2})$/, "$1.$2"); // adiciona o ponto na casa decimal
+		campo6 = parseFloat(campo6).toFixed(2); // converte para float e adiciona precisão decimal
+
+		campo7 = document.getElementById('Proporcional').value;
+		campo7 = campo7.replace(/\D/g, ""); // retira os pontos e as vírgulas, deixando somente números
+		campo7 = campo7.replace(/(\d{0})(\d)/, "$1$2");
+		campo7 = campo7.replace(/(\d)(\d{2})$/, "$1.$2"); // adiciona o ponto na casa decimal
+		campo7 = parseFloat(campo7).toFixed(2); // converte para float e adiciona precisão decimal
+
+		// variável com o resultado
+		total_normal      = parseFloat(campo6 * campo4).toFixed(2); // armazena o resultado
+		total_promocional = parseFloat(campo7 * campo5).toFixed(2); // armazena o resultado
+
+
+		// total de ingressos (normal + promocional)
+		if (isNaN(total_normal) || isNaN(total_promocional)) // se não for número
+		{
+			total_geral = '';
+		}
+		else
+		{
+			total_geral = (parseFloat(total_normal) + parseFloat(total_promocional)).toFixed(2); // armazena o resultado
+
+			// formata para real
+			total_geral = total_geral.replace(/\D/g, "");
+			total_geral = total_geral.replace(/(\d)(\d{2})$/, "$1,$2");
+			total_geral = total_geral.replace(/(\d+)(\d{3},\d{2})$/g, "$1.$2");
+
+			var q = (total_geral.length - 3) / 3; // quantidade caracteres
+			var c = 0; // contador
+			while (q > c)
+			{
+				c++;
+				total_geral = total_geral.replace(/(\d+)(\d{3}.*)/, "$1.$2");
+			}
+			total_geral = total_geral.replace(/^(0+)(\d)/g, "$2");
+			total_geral = 'R$ ' + total_geral;
+		}
+		document.getElementById('total').value = total_geral;
+
+
+		// total de ingressos (normal)
+		if (isNaN(total_normal)) // se não for número
+		{
+			total_normal = '';
+		}
+		else
+		{
+			// formata para real
+			total_normal = total_normal.replace(/\D/g, "");
+			total_normal = total_normal.replace(/(\d)(\d{2})$/, "$1,$2");
+			total_normal = total_normal.replace(/(\d+)(\d{3},\d{2})$/g, "$1.$2");
+
+			var q = (total_normal.length - 3) / 3; // quantidade caracteres
+			var c = 0; // contador
+			while (q > c)
+			{
+				c++;
+				total_normal = total_normal.replace(/(\d+)(\d{3}.*)/, "$1.$2");
+			}
+			total_normal = total_normal.replace(/^(0+)(\d)/g, "$2");
+			total_normal = 'R$ ' + total_normal;
+		}
+		document.getElementById('valor1').value = total_normal;
+
+
+		// total de ingressos (promocional)
+		if (isNaN(total_promocional)) // se não for número
+		{
+			total_promocional = '';
+		}
+		else
+		{
+			// formata para real
+			total_promocional = total_promocional.replace(/\D/g, "");
+			total_promocional = total_promocional.replace(/(\d)(\d{2})$/, "$1,$2");
+			total_promocional = total_promocional.replace(/(\d+)(\d{3},\d{2})$/g, "$1.$2");
+
+			var q = (total_promocional.length - 3) / 3; // quantidade caracteres
+			var c = 0; // contador
+			while (q > c)
+			{
+				c++;
+				total_promocional = total_promocional.replace(/(\d+)(\d{3}.*)/, "$1.$2");
+			}
+			total_promocional = total_promocional.replace(/^(0+)(\d)/g, "$2");
+			total_promocional = 'R$ ' + total_promocional;
+		}
+		document.getElementById('valor2').value = total_promocional;
+		/* ========== FIM CALCULO DE INGRESSOS ========== */
+
+    } // fecha função somaIngressos()
+</script>
+<!-- início: #breadcrumb -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'principalproponente', 'action' => 'index')); ?>" title="Ir para p&aacute;gina inicial">In&iacute;cio</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index')); ?>?idPronac=<?php echo $this->buscaprojeto[0]->IdPRONAC; ?>" title="Ir para consultar dados do projeto">Consultar dados do projeto</a></li>
+        <li class="last">Readequa&ccedil;&atilde;o de projeto</li>
+    </ul>
+</div>
+<!-- final: #breadcrumb -->
+
+<!-- início: #titulo -->
+<div id="titulo"><div>Dados do projeto com Opções de Readequações <span class="voltar"><a  href="<?php echo $this->url(array('controller' => 'solicitarreadequacaodoprojeto', 'action' => 'index')); ?>?idpronac=<?php echo $_POST['idPronac'] ?>">Voltar</a></span></div>
+</div>
+<!-- final: #titulo -->
+
+<!-- início: área principal #conteudo -->
+<div id="conteudo">
+    <div id="miolo">
+
+
+
+<script type="text/javascript">
+<!--
+function areaCultural(idSegmento, dsSegmento)
+{
+	area     = document.getElementById('areaCultural').value;
+
+	if (area == "" || area == " " || area == 0)
+	{
+		carregar_combo(area, 'segmentoCultural', '../segmentocultural/combo', ' - Selecione - ', idSegmento);
+	}
+	else
+	{
+		document.getElementById('segmentoCultural').options.length = 0;
+		var novoOption = document.createElement("option");
+		novoOption.value = idSegmento; // atribui um valor ao option
+		novoOption.text  = dsSegmento; // atribui um texto ao option
+		document.getElementById('segmentoCultural').options.add(novoOption); // adiciona o novo elemento
+	}
+}
+//-->
+</script>
+
+
+
+
+        <?php
+        $resultado = $this->buscaprojeto;
+        $idPronac=$this->escape($resultado[0]->IdPRONAC);
+        ?>
+        <div id="dialog-message" style="display:none;">
+            Campo obrigatório não informado!
+        </div>
+        <table class="tabela">
+            <thead>
+                <tr>
+                    <th align="center" width="50%">N&ordm; PRONAC</th>
+                    <th align="center" width="50%">Nome do Projeto</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="linha">
+                    <td align="center"><?php echo $this->escape($resultado[0]->pronac); ?></td>
+                    <td align="center"><?php echo $this->escape($resultado[0]->NomeProjeto); ?></td>
+                </tr>
+            </tbody>
+            <tr>
+                <th align="center">CPNJ/CPF</th>
+                <th align="center">Proponente</th>
+            </tr>
+            <tbody>
+                <tr class="linha">
+                    <td align="center"><?php $valor = $this->escape($resultado[0]->CgcCpf); echo Validacao::mascaraCPFCNPJ($valor); ?></td>
+                    <td align="center"><?php echo $this->escape($resultado[0]->Descricao);?></td>
+                </tr>
+            </tbody>
+        </table>
+
+
+        <?php $tela  = $this->Tela; if(!empty($tela)){?>
+
+        <form name="form" id="form" action="<?php echo $this->url(array('controller' => 'solicitarreadequacaodoprojeto','action' => 'alterar')); ?>" method="post">
+            <input type="hidden" value="<?php echo $idPronac; ?>" name="idPronac"/>
+            <input type="hidden" value="<?php echo $this->escape($resultado[0]->pronac); ?>" name="pronac">
+            <input type="hidden" value="<?php echo $this->escape($resultado[0]->NomeProjeto); ?>" name="NomeProjeto">
+            <input type="hidden" value="<?php $valor = $this->escape($resultado[0]->CgcCpf); echo Validacao::mascaraCPFCNPJ($valor); ?>" name="CgcCpf">
+            <?php $produtoacao = $this->buscarprodutoAcao;
+                $idProduto=$this->escape($produtoacao[0]->idProduto);
+                $idPedidoAlteracao=$this->escape($produtoacao[0]->idPedidoAlteracao);
+                $idPosicacaoLogo = $this->escape($produtoacao[0]->idPosicaoLogo);
+            ?>
+            <input type="hidden" value="<?php echo $idPronac; ?>" name="idPronac"/>
+            <input type="hidden" value="<?php echo $idProduto; ?>" name="idProduto"/>
+            <input type="hidden" value="<?php echo $idPedidoAlteracao; ?>" name="idPedidoAlteracao"/>
+            <input type="hidden" value="<?php echo $idPosicacaoLogo; ?>" name="idPosicaoLogo"/>
+            <table width="100%" border="0" cellpadding="0" cellspacing="1" class="tabela">
+                <thead>
+                    <tr>
+                        <th colspan="6">Plano de Distribuição</th>
+                    </tr>
+                    <tr>
+                        <td colspan="6">&nbsp;</td>
+                    </tr>
+                    <tr class="destacar bold">
+                        <td align="center" colspan="6">NOME DO EVENTO/PRODUTO</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="linha">
+                        <td colspan="2">
+                            <label for="idProduto">Produto *</label><br />
+                            <select name=" idProduto" id="idProduto" disabled="disabled" class="select_simples" <?php echo $readonly; ?>>
+                                <?php  $teste=$this->buscadescricao; foreach ($teste as $value) { ?>
+                                    <option value="<?php echo $this->escape($value->Codigo); ?>" <?php if ($this->escape($value->Codigo) == $idProduto) echo "selected=\"selected\""; ?>><?php echo $this->escape($value->Descricao); ?></option>;
+                                <?php } ?>
+                            </select>
+                        </td>
+                        <td>
+                            <label for="tipo_produto">Produto Principal?</label><br />
+                            <?php
+                                $excluir = $idPronac=$this->escape($produtoacao[0]->stPrincipal);
+                                if(empty($excluir)){
+                                    echo "Não";
+                                } else {
+                                    echo "Sim";
+                                }
+                            ?>
+                        </td>
+                        <td>
+                            <label for="areaCultural">Área *</label><br />
+                            <select <?php echo $readonly; ?> class="input_simples" name="areaCultural" id="areaCultural" onchange="carregar_combo(this.value, 'segmentoCultural', '<?php echo $this->url(array('controller' => 'segmentocultural', 'action' => 'combo')); ?>', ' - Selecione uma Área Cultural - ');">
+                                <?php if (!isset($this->buscarprodutoAcao[0]->cdArea) || empty($this->buscarprodutoAcao[0]->cdArea)) { ?>
+                                    <option value="0"> - Selecione - </option>
+                                <?php } ?>
+                                <?php foreach ($this->comboareasculturais as $comboareacultural): ?>
+                                    <option value="<?php echo $comboareacultural->id; ?>" <?php if ($this->buscarprodutoAcao[0]->cdArea == $comboareacultural->id)
+                                        echo "selected=\"selected\""; ?>>
+                                <?php echo $comboareacultural->descricao; ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+                        <td colspan="2">
+                            <label for="segmentoCultural">Segmento *</label><br />
+                                <select <?php echo $readonly; ?> class="input_simples" name="segmentoCultural" id="segmentoCultural">
+                                    <?php if (!isset($this->buscarprodutoAcao[0]->cdArea) || empty($this->buscarprodutoAcao[0]->cdArea)) { ?>
+                                    <option value="0"> - Selecione uma Área Cultural - </option>
+                                    <?php } else { ?>
+                                        <?php if (!isset($this->buscarprodutoAcao[0]->cdSegmento) || empty($this->buscarprodutoAcao[0]->cdSegmento)) { ?>
+                                        <option value=""> - Selecione - </option>
+                                        <?php } ?>
+                                        <?php foreach ($this->combosegmentosculturais as $combosegmentocultural): ?>
+                                        <option value="<?php echo $combosegmentocultural->id; ?>" <?php if ($this->buscarprodutoAcao[0]->cdSegmento == $combosegmentocultural->id) echo "selected=\"selected\""; ?>>
+                                                <?php echo $combosegmentocultural->descricao; ?>
+                                        </option>
+                                        <?php endforeach; ?>
+                                    <?php } ?>
+                                </select>
+                            <script type="text/javascript">areaCultural(<?php echo $this->buscarprodutoAcao[0]->Codigo; ?>, '<?php echo $this->buscarprodutoAcao[0]->Descricao; ?>');</script>
+                        </td>
+                    </tr>
+                    <tr class="destacar bold">
+                        <td align="center" colspan="6">LOGOMARCA</td>
+                    </tr>
+                    <tr class="linha">
+                        <td colspan="6">
+                            <label for="Posicao">Posição *</label>
+                            <select <?php echo $readonly; ?> name="Posicao" id="Posicao" class="input_simples">
+                                <?php $teste1=$this->buscaposicao; foreach ($teste1 as $value) { ?>
+                                <option value="<?php echo $this->escape($value->idVerificacao); ?>" <?php if ($this->escape($value->idVerificacao) == $idPosicacaoLogo) echo "selected=\"selected\""; ?>><?php echo $this->escape($value->Descricao); ?></option>;
+                                <?php } ?>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr class="destacar bold">
+                        <td colspan="3" align="center">DISTRIBUIÇÃO GRATUITA (QTDE)</td>
+                        <td colspan="2" align="center">TOTAL PARA A VENDA (QTDE)</td>
+                        <td align="center">QUANTIDADE</td>
+                    </tr>
+                    <tr class="linha">
+                        <td>
+                            <label for="Patrocinador">Patrocinador *</label><br />
+                            <input <?php echo $readonly; ?> null="false" name="Patrocinador" id="Patrocinador" class="input_simples w100" type="text" onkeyup="mascara(this, format_num);" onblur="somaIngressos();" value="<?php echo $result = $this->escape($this->formatarMilhar($produtoacao[0]->qtPatrocinador)); ?>" maxlength="9" />
+                        </td>
+                        <td>
+                            <label for="Divulgacao">Divulgação *</label><br />
+                            <input <?php echo $readonly; ?> null="false" name="Divulgacao" id="Divulgacao" class="input_simples w100" type="text" onkeyup="mascara(this, format_num);" onblur="somaIngressos();" value="<?php echo $result=$this->escape($this->formatarMilhar($produtoacao[0]->qtOutros));?>" maxlength="9" />
+                        </td>
+                        <td>
+                            <label for="Beneficiario">Beneficiários *</label><br />
+                            <input <?php echo $readonly; ?> null="false" name="Beneficiario" id="Beneficiario" class="input_simples w100" type="text" onkeyup="mascara(this, format_num);" onblur="somaIngressos();" value="<?php echo $result=$this->escape($this->formatarMilhar($produtoacao[0]->qtProduzida));?>" maxlength="9" />
+                        </td>
+                        <td>
+                            <label for="Normal">Normal *</label><br />
+                            <input <?php echo $readonly; ?> null="false" name="Normal" id="Normal" class="input_simples w100" type="text" onkeyup="mascara(this, format_num);" onblur="somaIngressos();" value="<?php echo $result=$this->escape($this->formatarMilhar($produtoacao[0]->qtVendaNormal));?>" maxlength="9" />
+                        </td>
+                        <td>
+                            <label for="Promocional">Promocional *</label><br />
+                            <input <?php echo $readonly; ?> null="false" name="Promocional" id="Promocional" class="input_simples w100" type="text" onkeyup="mascara(this, format_num);" onblur="somaIngressos();" value="<?php echo $result=$this->escape($this->formatarMilhar($produtoacao[0]->qtVendaPromocional));?>" maxlength="9" />
+                        </td>
+                        <td align="center">
+                            <label for="Numero">N&ordm; de Exemplares / Ingressos</label><br />
+                            <input <?php echo $readonly; ?> disabled="disabled" null="false" name="Numero" id="Numero" class="checkradio centro w100" type="text" value="<?php
+                            $v1=$result=$this->escape($produtoacao[0]->qtProduzida);
+                            $v2=$result=$this->escape($produtoacao[0]->qtPatrocinador);
+                            $v3=$result=$this->escape($produtoacao[0]->qtOutros);
+                            $v4=$result=$this->escape($produtoacao[0]->qtVendaNormal);
+                            $v5=$result=$this->escape($produtoacao[0]->qtVendaPromocional);
+                            $v6=$result=$this->escape($produtoacao[0]->vlUnitarioNormal);
+                            $v7= $result=$this->escape($produtoacao[0]->vlUnitarioPromocional);
+                            print $this->formatarMilhar($v1+$v2+$v3+$v4+$v5);
+                            ?>" maxlength="9" />
+
+                        </td>
+                    </tr>
+                    <tr class="destacar bold">
+                        <td align="center" colspan="2">PREÇO UNITÁRIO (R$)</td>
+                        <td align="center" colspan="2">RECEITA PREVISTA (R$)</td>
+                        <td align="center" colspan="2">TOTAL RECEITA PREVISTA (R$)</td>
+                    </tr>
+                    <tr class="linha">
+                        <td>
+                            <label for="Normal_Uni">Normal *</label><br />
+                            <input <?php echo $readonly; ?> null="false" name="Normal_Uni" id="Normal_Uni" class="input_simples w100" type="text" onkeyup="mascara(this, format_moeda);" onblur="somaIngressos();" value="<?php echo $result=str_replace("R$ ", "", $this->formatarReal($this->escape($produtoacao[0]->vlUnitarioNormal)));?>" maxlength="9" />
+                        </td>
+                        <td>
+                            <label for="Proporcional">Promocional *</label><br />
+                            <input <?php echo $readonly; ?> null="false" name="Proporcional" id="Proporcional" class="input_simples w100" type="text" onkeyup="mascara(this, format_moeda);" onblur="somaIngressos();" value="<?php echo $result=str_replace("R$ ", "", $this->formatarReal($this->escape($produtoacao[0]->vlUnitarioPromocional)));?>" maxlength="9" />
+                        </td>
+                        <td align="right">
+                            <label for="valor1">Normal</label><br />
+                            <input disabled="disabled" null="false" name="valor1" id="valor1" class="checkradio direita w100" type="text" value="<?php $total=$v4*$v6; echo $this->formatarReal($total); ?>" maxlength="9" />
+                        </td>
+                        <td align="right">
+                            <label for="valor2">Promocional</label><br />
+                            <input disabled="disabled" null="false" name="valor2" id="valor2" class="checkradio direita w100" value="<?php $total2=$v5*$v7; echo $this->formatarReal($total2); ?>" maxlength="9" />
+                        </td>
+                        <td align="right" colspan="2">
+                            <label for="total">Total</label><br />
+                            <input disabled="disabled" name="total" id="total" class="checkradio direita w100" type="text" maxlength="9" value="<?php echo $this->formatarReal($total+$total2); ?>" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6">
+                            <textarea <?php echo $readonly; ?> class="input_simples h200" style="width: 99%;" id="dsJustificativa" name="dsJustificativa"><?php echo $this->buscarprodutoAcao[0]->JustificativaProponente; ?></textarea>
+                        </td>
+                    </tr>
+
+                    <?php if (empty($readonly)) { ?>
+                    <tr>
+                        <td colspan="6" align="center"><div style="float: left; margin-left:40%;">
+                        <input type="submit" class="btn_salvar" value=" " <?php echo "onclick='Enviar(); return false'"; ?>  /></div>
+                           <?php
+                            $resultado = $this->buscaprojeto;
+                            $Pronac=$this->escape($resultado[0]->IdPRONAC);
+                            if(!empty($enviar))
+							{
+                            	$e= "";
+                            }
+                            else 
+                            {
+                            	$e= "onclick='EnviarProposta(); return false'";
+                            }
+                            
+                            $excluir = $idPronac=$this->escape($produtoacao[0]->stPrincipal);
+
+                            $action = $this->url(array('controller' => 'solicitarreadequacaodoprojeto','action' => 'excluir'));
+                            if(empty ($excluir))
+                            {
+                                echo '<div style="float: left;>
+                                            <input type="button" class="btn_exclusao" value="" onclick="EnviarProposta();" />
+                                    </div>';
+                            }
+
+                            ?>
+                            <div style="float: left;">
+                                <input type="button" class="btn_cancelar" value=" " onclick="return voltar();" />
+                            </div>
+                        </td>
+                    </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
+        </form>
+        <?php
+            if(empty ($excluir))
+            {
+            	if (empty($idPronac)) :
+            		$idPronac = $Pronac;
+            	endif;
+                echo '
+                        <form name="Curso" id="Curso" action="" method="post">
+                            <input type="hidden" value="'.$idPronac.'" name="idPronac"/>
+                            <input type="hidden" value="'.$idProduto.'" name="idProduto"/>
+                          </form>
+                    ';
+            }
+            ?>
+        <?php } else { ?>
+        <form name="form" id="form" action="<?php echo $this->url(array('controller' => 'solicitarreadequacaodoprojeto','action' => 'alterar')); ?>" method="post">
+            <input type="hidden" value="<?php echo $idPronac; ?>" name="idPronac"/>
+            <input type="hidden" value="<?php echo $this->escape($resultado[0]->pronac); ?>" name="pronac">
+            <input type="hidden" value="<?php echo $this->escape($resultado[0]->NomeProjeto); ?>" name="NomeProjeto">
+            <input type="hidden" value="<?php $valor = $this->escape($resultado[0]->CgcCpf); echo Validacao::mascaraCPFCNPJ($valor); ?>" name="CgcCpf">
+            <?php
+            	$produtoacao = $this->buscarprodutoAcao;
+                $idProduto= !empty($this->idProdutoEnviado) ? $this->idProdutoEnviado : $this->escape($produtoacao[0]->idProduto);
+                $idPosicacaoLogo = $this->escape($produtoacao[0]->idPosicaoDaLogo);
+            ?>
+            <input type="hidden" value="<?php echo $idPronac; ?>" name="idPronac"/>
+            <input type="hidden" value="<?php echo $idProduto; ?>" name="idProduto"/>
+           
+            <table width="100%" border="0" cellpadding="0" cellspacing="1" class="tabela">
+                <thead>
+                    <tr>
+                        <th colspan="6">Plano de Distribuição</th>
+                    </tr>
+                    <tr>
+                        <td colspan="6">&nbsp;</td>
+                    </tr>
+                    <tr class="destacar bold">
+                        <td align="center" colspan="6">NOME DO EVENTO/PRODUTO</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="linha">
+                        <td colspan="2">
+                            <label for="idProduto">Produto *</label><br />
+                            <select <?php echo $readonly; ?> name=" idProduto" id="idProduto" disabled="disabled" class="select_simples">
+                                <?php  $teste=$this->buscadescricao; foreach ($teste as $value) { ?>
+                                    <option value="<?php echo $this->escape($value->Codigo); ?>" <?php if ($this->escape($value->Codigo) == $idProduto) echo "selected=\"selected\""; ?>><?php echo $this->escape($value->Descricao); ?></option>;
+                                <?php } ?>
+                            </select>
+                        </td>
+                        <td>
+                            <label for="tipo_produto">Produto Principal?</label><br />
+                            <?php $excluir = $idPronac=$this->escape($produtoacao[0]->stPrincipal);
+                                if(empty($excluir)){
+                                    echo "Não";
+                           	} else{
+                                echo "Sim";
+                            } ?>
+                        </td>
+                        <td>
+                            <label for="areaCultural">Área *</label><br />
+                            <select <?php echo $readonly; ?> class="input_simples" name="areaCultural" id="areaCultural" onchange="carregar_combo(this.value, 'segmentoCultural', '../segmentocultural/combo', ' - Selecione uma Área Cultural - ');">
+                                <?php foreach ($this->comboareasculturais as $comboareacultural): ?>
+                                <option value="<?php echo $comboareacultural->id; ?>">
+                                    <?php echo $comboareacultural->descricao; ?>
+                                </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+                        <td colspan="2">
+                            <label for="segmentoCultural">Segmento *</label><br />
+                            <select <?php echo $readonly; ?> class="input_simples" name="segmentoCultural" id="segmentoCultural" >
+                                <option value="0"> - Selecione uma Área Cultural - </option>
+                            </select>
+                            <script type="text/javascript">areaCultural(<?php echo $this->buscarprodutoAcao[0]->Segmento; ?>, '<?php echo $this->buscarprodutoAcao[0]->Descricao; ?>');</script>
+                        </td>
+                    </tr>
+                    <tr class="destacar bold">
+                        <td align="center" colspan="6">LOGOMARCA</td>
+                    </tr>
+                    <tr class="linha">
+                        <td colspan="6">
+                            <label for="Posicao">Posição *</label>
+                            <select <?php echo $readonly; ?> class="input_simples" name="Posicao" id="Posicao">
+                                <?php $teste1=$this->buscaposicao; foreach ($teste1 as $value) { ?>
+                                <option value="<?php echo $this->escape($value->idVerificacao); ?>" <?php if ($this->escape($value->idVerificacao) == $idPosicacaoLogo) echo "selected=\"selected\""; ?>><?php echo $this->escape($value->Descricao); ?></option>;
+                                <?php } ?>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr class="destacar bold">
+                        <td colspan="3" align="center">DISTRIBUIÇÃO GRATUITA (QTDE)</td>
+                        <td colspan="2" align="center">TOTAL PARA A VENDA (QTDE)</td>
+                        <td align="center">QUANTIDADE</td>
+                    </tr>
+                    <tr class="linha">
+                        <td>
+                            <label for="Patrocinador">Patrocinador *</label><br />
+                            <input <?php echo $readonly; ?> null="false" name="Patrocinador" id="Patrocinador" class="input_simples w100" type="text" onkeyup="mascara(this, format_num);" onblur="somaIngressos();" value="<?php echo $result = $this->escape($this->formatarMilhar($produtoacao[0]->QtdePatrocinador)); ?>" maxlength="9" />
+                        </td>
+                        <td>
+                            <label for="Divulgacao">Divulgação *</label><br />
+                            <input <?php echo $readonly; ?> null="false" name="Divulgacao" id="Divulgacao" class="input_simples w100" type="text" onkeyup="mascara(this, format_num);" onblur="somaIngressos();" value="<?php echo $result = $this->escape($this->formatarMilhar($produtoacao[0]->QtdeProponente)); ?>" maxlength="9" />
+                        </td>
+                        <td>
+                            <label for="Beneficiario">Beneficiários *</label><br />
+                            <input <?php echo $readonly; ?> null="false" name="Beneficiario" id="Beneficiario" class="input_simples w100" type="text" onkeyup="mascara(this, format_num);" onblur="somaIngressos();" value="<?php echo $result = $this->escape($this->formatarMilhar($produtoacao[0]->QtdeOutros)); ?>" maxlength="9" />
+                        </td>
+                        <td>
+                            <label for="Normal">Normal *</label><br />
+                            <input <?php echo $readonly; ?> null="false" name="Normal" id="Normal" class="input_simples w100" type="text" onkeyup="mascara(this, format_num);" onblur="somaIngressos();" value="<?php echo $result = $this->escape($this->formatarMilhar($produtoacao[0]->QtdeVendaNormal)); ?>" maxlength="9" />
+                        </td>
+                        <td>
+                            <label for="Promocional">Promocional *</label><br />
+                            <input <?php echo $readonly; ?> null="false" name="Promocional" id="Promocional" class="input_simples w100" type="text" value="<?php echo $result=$this->escape($produtoacao[0]->QtdeVendaPromocional);?>" maxlength="9" />
+                        </td>
+                        <td align="center">
+                            <label for="Numero">N&ordm; de Exemplares / Ingressos</label><br />
+                            <input disabled="disabled" null="false" name="Numero" id="Numero" class="checkradio centro w100" type="text" value ="<?php
+                                $v1=$result=$this->escape($produtoacao[0]->QtdeProponente);
+                                $v2=$result=$this->escape($produtoacao[0]->QtdePatrocinador);
+                                $v3=$result=$this->escape($produtoacao[0]->QtdeOutros);
+                                $v4=$result=$this->escape($produtoacao[0]->QtdeVendaNormal);
+                                $v5=$result=$this->escape($produtoacao[0]->QtdeVendaPromocional);
+                                $v6=$result=$this->escape($produtoacao[0]->PrecoUnitarioNormal);
+                                $v7= $result=$this->escape($produtoacao[0]->PrecoUnitarioPromocional);
+                                print $this->formatarMilhar($v1+$v2+$v3+$v4+$v5);
+                            ?>" maxlength="9" />
+                        </td>
+
+                    </tr>
+                    <tr class="destacar bold">
+                        <td align="center" colspan="2">PREÇO UNITÁRIO (R$)</td>
+                        <td align="center" colspan="2">RECEITA PREVISTA (R$)</td>
+                        <td align="center" colspan="2">TOTAL RECEITA PREVISTA (R$)</td>
+                    </tr>
+                    <tr class="linha">
+                        <td>
+                            <label for="Normal_Uni">Normal *</label><br />
+                            <input <?php echo $readonly; ?> null="false" name="Normal_Uni" id="Normal_Uni" class="input_simples w100" type="text" onkeyup="mascara(this, format_moeda);" onblur="somaIngressos();" value="<?php echo $result = str_replace("R$ ", "", $this->formatarReal($produtoacao[0]->PrecoUnitarioNormal)); ?>" maxlength="9" />
+                        </td>
+                        <td>
+                            <label for="Proporcional">Promocional *</label><br />
+                            <input <?php echo $readonly; ?> null="false" name="Proporcional" id="Proporcional" class="input_simples w100" type="text" onkeyup="mascara(this, format_moeda);" onblur="somaIngressos();" value="<?php echo $result = str_replace("R$ ", "", $this->formatarReal($produtoacao[0]->PrecoUnitarioPromocional)); ?>" maxlength="9" />
+                        </td>
+                        <td align="right">
+                            <label for="valor1">Normal</label><br />
+                            <input disabled="disabled" null="false" name="valor1" id="valor1" class="checkradio direita w100" type="text" value="<?php $total = $v4 * $v6;
+                            echo $this->formatarReal($total); ?>" maxlength="9" />
+                        </td>
+                        <td align="right">
+                            <label for="valor2">Promocional</label><br />
+                            <input disabled="disabled" null="false" name="valor2" id="valor2" class="checkradio direita w100" value="<?php $total2 = $v5 * $v7;
+                            echo $this->formatarReal($total2); ?>" maxlength="9" />
+                        </td>
+                        <td align="right" colspan="2">
+                            <label for="total">Total</label><br />
+                            <input disabled="disabled" name="total" id="total" class="checkradio direita w100" type="text" maxlength="9" value="<?php echo $this->formatarReal($total + $total2); ?>" />
+                        </td>
+                    </tr>
+                    <tr class="destacar bold" align="center">
+                        <td colspan="6">JUSTIFICATIVA</td>
+                    </tr>
+                    <tr>
+                        <td colspan="6">
+                            <textarea <?php echo $readonly; ?> class="input_simples h200" style="width: 99%" id="dsJustificativa" name="dsJustificativa" null="false"><?php echo $this->buscarprodutoAcao[0]->JustificativaProponente; ?></textarea>
+                        </td>
+                    </tr>
+
+                    <?php if (empty($readonly)) { ?>
+                    <tr>
+                        <td colspan="6" align="center"><div style="float: left; margin-left:40%;">
+                            <input type="submit" class="btn_salvar" value=" " <?php echo "onclick='Enviar(); return false'"; ?>  /></div>
+                            <?php
+                                $resultado = $this->buscaprojeto;
+                                $Pronac=$this->escape($resultado[0]->IdPRONAC);
+                                if(!empty($enviar)) {
+                                        }
+                                        else {
+                                            $e= "onclick='EnviarProposta(); return false'";
+                                        }
+                                $excluir = $idPronac=$this->escape($produtoacao[0]->stPrincipal);
+
+                                $action = $this->url(array('controller' => 'solicitarreadequacaodoprojeto','action' => 'excluir'));
+                                if(empty ($excluir)){
+
+                                echo '<div style="float: left;>
+                                          <input type="submit" class="btn_exclusao" value="" onclick="EnviarProposta(); return false;" />
+                                      </div>';
+                                }
+                            ?>
+                            <div style="float: left;">
+                                <input type="button" class="btn_cancelar" value=" " onclick="return voltar();" />
+                            </div>
+                        </td>
+                    </tr>
+                    <?php } ?>
+
+                </tbody>
+            </table>
+        </form>
+        <?php
+            if(empty ($excluir)) {
+                echo '
+                    <form name="Curso" id="Curso" method="post">
+                        <input type="hidden" value="'.$Pronac.'" name="idPronac"/>
+                        <input type="hidden" value="'.$idProduto.'" name="idProduto">
+                     </form>
+                ';
+            }
+        ?>
+<?php } ?>
+    <!-- final: conteúdo principal #conteudo -->
+</div>
+<!-- início: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+</div><!-- final: área principal #container -->
+<div id="dialog-alert">Campos obrigatórios não preenchidos!</div>
+<br clear="all" />
+<script type="text/javascript">
+    $("#dialog-alert").dialog({
+        modal: true,
+        resizable: false,
+        autoOpen: false,
+        buttons: {
+            Ok: function() {
+                $(this).dialog('close');
+            }
+        }
+    });
+
+
+
+    $('#formPlano').submit(function(){
+        
+        return validarFormulario(this);
+    });
+</script>

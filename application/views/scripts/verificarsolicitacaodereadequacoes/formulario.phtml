@@ -1,0 +1,345 @@
+<?php include_once 'inc/menuitemcusto.inc.php'; ?>
+
+<script type="text/javascript">
+    $(document).ready(function (){
+
+        $("#btSalvar").click(function(){
+            <?php if ($_GET['tpAcao'] != "N") { ?>
+            if ($("#dsjustificativaAvaliador").val()==""){
+                $("#alertaJus").dialog({
+                    resizable: true,
+                    title: 'Alerta',
+                    width:350,
+                    height:150,
+                    modal: true,
+                    autoOpen:false,
+                    buttons: {
+                        'OK': function(){
+                            $("#alertaJus").dialog('close');
+                        }
+                    }
+                });
+                $("#alertaJus").dialog('open');
+                return false;
+            }
+            <?php } ?>
+
+            if (document.formulario.tipoaprovacao[0].checked == true || document.formulario.tipoaprovacao[1].checked){
+                $("#ok").dialog({
+                    resizable: true,
+                    title: 'Alerta',
+                    width:350,
+                    height:150,
+                    modal: true,
+                    autoOpen:false,
+                    buttons: {
+                        'OK': function(){
+                            $("#formularioDesic").submit();
+                            $("#ok").dialog('close');
+                        }
+                    }
+                });
+                $("#ok").dialog('open');
+            
+            } else {
+                $("#alertaDecisao").dialog({
+                    resizable: true,
+                    title: 'Alerta',
+                    width:350,
+                    height:150,
+                    modal: true,
+                    autoOpen:false,
+                    buttons: {
+                        'OK': function(){
+
+                            $("#alertaDecisao").dialog('close');
+                        }
+                    }
+                });
+                $("#alertaDecisao").dialog('open');
+                return false;
+            }
+        });
+
+        campo1 = document.formulario.qtd.value;
+        campo1 = campo1.replace(/[.]/g, "");
+        campo1 = campo1.replace(/[,]/g, "");
+
+        campo2 = document.formulario.ocorrencia.value;
+        campo2 = campo2.replace(/[.]/g, "");
+        campo2 = campo2.replace(/[,]/g, "");
+
+        campo3 = document.formulario.vUnitario.value;
+        campo3 = campo3.replace(/[.]/g, "");
+        campo3 = campo3.replace(/[,]/g, "");
+
+        if(campo1!="" && campo2!=""  && campo3!=""){
+            total = parseFloat(campo1)*parseFloat(campo2)*parseFloat(campo3);
+            document.formulario.total.value=parseFloat(total);
+        }
+    });
+</script>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'verificarsolicitacaodereadequacoes', 'action' => 'index')); ?>" title="Início">Início</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'verificarsolicitacaodereadequacoes', 'action' => 'planilhaaprovada')); ?>?idPronac=<?php echo $_GET['idPronac']?>" title="Consulta">Planilha aprovada</a></li>
+        <li class="last"><a href="<?php echo $this->url(array('controller' => 'verificarsolicitacaodereadequacoes', 'action' => 'planilhasolicitada')); ?>?idPronac=<?php echo $_GET['idPronac']?>" title="Requerente">Planilha solicitada</a></li>
+    </ul>
+</div> <!-- final: #breadcrumb -->
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Verificar solicita&ccedil;&atilde;o de readequa&ccedil;&otilde;es <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<!-- início: área principal #conteudo -->
+<div id="conteudo">
+    <div id="mostra"></div>
+    <div id="erro" title="ERRO"  style="display:none"></div>
+    <div id="dialog-alert2" style="display:none"></div>
+    <div id="ok" style="display:none">Dados analisados e atualizados com sucesso!</div>
+    <div id="alertaJus" style="display:none">Preencha a justificativa!</div>
+    <div id="alertaDecisao" style="display:none">Preencha a decis&atilde;o!</div>
+    <div id="miolo">
+        <div id="divMensagemSucesso"></div>
+        <?php $resultado = $this->buscaprojeto; ?>
+        <table class="tabela">
+            <thead>
+                <tr>
+                    <th align="center">Nº PRONAC:</th>
+                    <th align="center">Nome do Projeto:</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="linha">
+                    <td align="center"><?php echo $this->escape($resultado[0]->pronac); ?></td>
+                    <td align="center"><?php echo $this->escape($resultado[0]->NomeProjeto); ?></td>
+                </tr>
+            </tbody>
+            <tr>
+                <th align="center">CPNJ/CPF:</th>
+                <th align="center">Proponente:</th>
+            </tr>
+            <tbody>
+                <tr class="linha">
+                    <td align="center">
+                        <?php
+                            $valor = $this->escape($resultado[0]->CgcCpf);
+                            echo Validacao::mascaraCPFCNPJ($valor);
+                        ?>
+                    </td>
+                    <td align="center"><?php echo $this->escape($resultado[0]->Descricao); ?></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div id="div_custo" >
+            <?php foreach ($this->buscaitem as $item) { ?>
+            <form name='formulario' id="formularioDesic" method='post' action='<?php echo $this->url(array('controller' => 'verificarsolicitacaodereadequacoes', 'action' => 'formulario')); ?>'>
+                <table class="tabela">
+                    <tr>
+                        <th colspan="2">Nome do Produto: <?php echo empty($item->dsProduto) ? 'Custo Administrativo' : $item->dsProduto; ?></th>
+                    </tr>
+                    <tr class="destacar bold">
+                        <td align="center">Etapa/Meta</td>
+                        <td align="center">Item</td>
+                    </tr>
+                    <tr class="linha">
+                        <td align="center">
+                            <label for="sLetapa"> </label>
+                            <select disabled class="select_simples" id="sLetapa" name="sLetapa" null="false">
+                                <option>
+                                    <?php echo $item->DescricaoEtapa; ?>
+                                </option>
+                            </select>
+                        </td>
+                        <td align="center" class='off'>
+                            <label for="item"> </label>
+                            <select disabled id="item" name="item" class="select_simples" null="false">
+                                <option>
+                                    <?php echo $item->DescricaoItem; ?>
+                                </option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+
+                <table class="tabela">
+                    <tr>
+                        <th colspan="6">Identificadores</th>
+                    </tr>
+                    <tr class="destacar bold">
+                        <td align="center" colspan="3">Físicos</td>
+                        <td align="center" colspan="2">Financeiros</td>
+                        <td align="center">Tempo de Duração</td>
+                    </tr>
+                    <tr class="linha">
+                        <td align="left" class='off w100'>
+                            <label for="unidade">Unidade*</label><br />
+                            <select disabled class="select_simples" name="unidade" id="unidade" null="false">
+                                <option>
+                                    <?php echo $item->DescricaoUnidade; ?>
+                                <option>
+                            </select>
+                        </td>
+                        <td align="left" class='off w80'>
+                            <label for="qtd">Quantidade*</label><br />
+                            <input disabled value="<?php echo $item->qtItem; ?>"  onblur="mult(), restaurar_campo(this, '0');" onclick="limpar_campo(this, '0');" class="input_simples w80"  type="text" name="qtd" id="qtd" onKeyPress="validaDigito(event)" onKeyDown="validaDigito(event)" onKeyUP="validaDigito(event)">
+                        </td>
+                        <td align="left" class='off w80'>
+                            <label for="ocorrencia">Ocorrência*</label><br />
+                            <input disabled value=" <?php echo $item->nrOcorrencia; ?>"  onblur="mult(), restaurar_campo(this, '0');" onclick="limpar_campo(this, '0');" null="false" class="input_simples w80" maxlength="4" type="text" name="ocorrencia" id="ocorrencia" onKeyPress="validaDigito(event)" onKeyDown="validaDigito(event)" onKeyUP="validaDigito(event)">
+                        </td>
+                        <td align="center" class='off w100'>
+                            <label for="vUnitario">Valor Unitário*</label><br />
+                            <input disabled value="<?php echo $item->vlUnitario; ?>" onclick="limpar_campo(this, '0');" null="false" class="input_simples" type="text" name="vUnitario" id="vUnitario" onblur="mult(), restaurar_campo(this, '0');" onKeyPress="validaDigito(event)" onKeyDown="validaDigito(event)" onKeyUP="validaDigito(event)"></td>
+                        <td align="left" class='off w100'>
+                            <label for="total">Total</label><br />
+                            <input value="Total"  class="input_simples" type="text" name="total" id="total" disabled="disable">
+                        </td>
+                        <td align="left" class='off w80'>
+                            <label for="dias">Qtd de Dias*</label><br />
+                            <input disabled value="<?php echo $item->qtDias; ?>" onblur="restaurar_campo(this, '0');" onclick="limpar_campo(this, '0');" null="false" class="input_simples w80" type="text" name="dias" id="dias" onKeyPress="validaDigito(event)" onKeyDown="validaDigito(event)" onKeyUP="validaDigito(event)">
+                        </td>
+                    </tr>
+                </table>
+
+                <table class="tabela">
+                    <tr>
+                        <th colspan="2">Despesas</th>
+                    </tr>
+                    <tr class="destacar bold">
+                        <td align="center">Despesas</td>
+                        <td align="center">Localização de Despesas</td>
+                    </tr>
+                    <tr class="linha">
+                        <td align="left">
+                            <label for="fonte">Fonte de Recurso</label><br />
+                            <select disabled class="select_simples" name="fonte" id="fonte" null="false">
+                                <option>
+                                    <?php echo $item->DescricaoFonteRecurso; ?>
+                                </option>
+                            </select>
+                        </td>
+                        <td align="left">
+                            <label for="uf">UF*</label>
+                            <select disabled class="select_simples" name="uf" id="uf" null="false">
+                                <option>
+                                    <?php echo $item->DescricaoUF; ?>
+                                </option>
+                            </select>
+                            <label for="municipio">Municipio*</label>
+                            <select disabled class="select_simples" name="municipio" id="municipio" null="false">
+                                <option>
+                                    <?php echo $item->DescricaoMunicipio; ?>
+                                </option>
+                            </select>
+                        </td>
+                    </tr>
+                    <input type="hidden" value="<?php echo $item->idPlanilhaAprovacao; ?>" name="planilhaAprovacao" id="planilhaAprovacao">
+                    <input type="hidden" value="<?php echo $item->idPedidoAlteracao; ?>" name="idPedidoAlteracao" id="idPedidoAlteracao">
+                    <input type="hidden" value="<?php echo $_GET['idItem']; ?>" name="idItem" id="idItem">
+                    <input type="hidden" value="<?php echo $item->idAgente; ?>" name="idAgente" id="idAgente">
+                    <input type="hidden" value="<?php echo $item->tpAcao; ?>" name="tpAcao" id="tpAcao">
+                    <input type="hidden" value="<?php echo $item->IdPRONAC; ?>" name="idPronac" id="idPronac">
+                    <input type="hidden" value="<?php echo $_GET['idProduto']; ?>" name="idProduto" id="idProduto">
+                    <input type="hidden" value="<?php echo $_GET['tpAcao']; ?>" name="tpAcao" id="tpAcao">
+                    <input type="hidden" value="<?php echo $item->idPlanilhaEtapa; ?>" name="idEtapa" id="idEtapa">
+                </table>
+
+                <table class="tabela">
+                    <tr>
+                        <th>Justificativa do Proponente</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div id="justificativa">
+                                <!-- ========== EDITOR ========== -->
+                                <script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/ckeditor.js"></script>
+                                <script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.js"></script>
+                                <link type="text/css" rel="stylesheet" href="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.css" />
+                                <label for="dsjustificativa"></label>
+                                <?php echo $item->dsJustificativa; ?>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                    
+                <table class="tabela">
+                    <tr>
+                        <th>Justificativa</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <?php if($this->itemAvaliado){ ?>
+                                <span><?php echo $this->itemAvaliado->dsAvaliacaoSubItemPedidoAltera; ?></span>
+                            <?php } else { ?>
+                                <div id="editor">
+                                    <!-- ========== EDITOR ========== -->
+                                    <script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/ckeditor.js"></script>
+                                    <script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.js"></script>
+                                    <link type="text/css" rel="stylesheet" href="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.css" />
+
+                                    <label for="dsjustificativa"> </label>
+                                    <textarea class="input_simples" style="width: 99%;" id="dsjustificativaAvaliador" name="dsjustificativaAvaliador" cols="" rows="8"></textarea>
+                                </div>
+                            <?php } ?>
+                        </td>
+                    </tr>
+                </table>
+
+                <?php if($this->itemAvaliado){ ?>
+                <table class="tabela">
+                    <tbody>
+                        <tr>
+                            <th>Decisão</th>
+                        </tr>
+                        <tr>
+                            <td>Este item j&aacute; foi analisado. (<?php echo (trim($this->itemAvaliado->stAvaliacaoSubItemPedidoAltera) == 'D') ? 'Deferido' : 'Indeferido'; ?>)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+               <?php } else { ?>
+                <table class="tabela">
+                    <tbody>
+                        <tr>
+                            <th colspan="2">Decisão</th>
+                        </tr>
+                        <tr>
+                            <td>Deferir
+                                <input id="tipoaprovacao" type="radio" name="tipoaprovacao[]" value="AP"><br>
+                            </td>
+                            <td>Indeferir
+                                <input id="tipoaprovacao" type="radio" name="tipoaprovacao[]" value="IN"><br>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table class="tabela">
+                    <tr>
+                        <td class="centro" colspan="2" align="center">
+                            <div id="botoes" name="botoes">
+                                <input id='btSalvar' type='button' value=' ' class='btn_salvar' />
+                                <input id='btCancelar' type='button' value=' ' class='btn_cancelar' onClick="history.go(-1)" onkeypress=" " />
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+               <?php } ?>
+                
+            </form>
+        <?php } ?>
+        </div><!-- final: conteúdo principal #conteudo -->
+    </div>
+</div>
+
+<!-- início: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+<br clear="all" />

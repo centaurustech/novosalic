@@ -1,0 +1,69 @@
+
+<?php
+include_once 'scripts/manterpropostaedital/inc/menu.inc.php';
+?>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'proposta')); ?>" title="Ir para Projetos">Proposta</a></li>
+        <li class="last">Edital </li>
+    </ul>
+</div>
+<div id="titulo">
+    <div>Dados  do Endere&ccedil;o <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<div id="conteudo">
+    <table class="tabela" cellpadding="1" cellspacing="1">
+        <tr class="titulo_tabela">
+            <th colspan="6">Endere&ccedil;os</th>
+        </tr>
+        <tr class="esquerda"><?php
+        foreach($this->edital as $tbedital)?>
+        
+       
+            <td class="esquerda" colspan="4"><?php echo $this->escape($tbedital->Proponente); ?></td>
+            
+        </tr>    
+        <tr class="titulo_tabela">
+            <th colspan="6">DADOS DO ENDERE&Ccedil;O </th>
+        </tr>
+        <tr class="esquerda" ><?php foreach($this->endereco as $tbeendereco) ?>
+            <td class="esquerda" colspan="1"><label for="cep" ><b>CEP * </b></label><?php echo $this->escape($tbeendereco->Cep); ?></td>
+            <td class="esquerda" colspan="1" ><label for="uf"><b>UF * </b></label><?php echo $this->escape($tbeendereco->UF); ?></td>
+            <td class="esquerda" colspan="2" ><label for="cidade"><b>Cidade * </b></label><?php echo $this->escape($tbeendereco->Municipio); ?></td>
+        </tr>
+        <tr class="esquerda" >
+            <td class="esquerda" ><label for="tipoendereco" ><b>Tipo de Endere&ccedil;o * </b></label><?php echo $this->escape($tbeendereco->TipoEndereco); ?>
+            </td>
+            <td class="esquerda" ><label for="tipologradouro"><b>Tipo de Logradouro *</b></label><?php echo $this->escape($tbeendereco->TipoLogradouro); ?>           
+            </td>
+            <td class="esquerda" colspan="2"><label for="logradouro" ><b>Logradouro * </b></label><?php echo $this->escape($tbeendereco->Logradouro); ?></td>
+        </tr>
+        <tr class="esquerda" >
+            <td class="esquerda" colspan="2"><label for="complemento" ><b>Complemento * </b></label><?php echo $this->escape($tbeendereco->Complemento); ?></td>
+            <td class="esquerda"><label for="numero"><b>N&uacute;mero * </b></label><?php echo $this->escape($tbeendereco->Numero); ?></td>
+            <td class="esquerda" colspan="2" ><label for="bairro"><b>Bairro * </b></label><?php echo $this->escape($tbeendereco->Bairro); ?></td>
+        </tr>
+        <tr class="esquerda">
+
+          <td class="esquerda" colspan="2" ><label for="endcorrespondencia"><b>Endere&ccedil;o p/Correspond&ecirc;ncia? *</b></label>
+            </td>
+            <td class="esquerda" colspan="2"><label for="autorizacao" ><b>Divulgar o endere&ccedil;o na Internet*</b></label> <?php echo $this->escape($tbeendereco->Divulgar); ?>
+            </td>
+       </tr>
+       <tr>
+       			<td colspan="4" class="centro"><input type="submit" title=" " class="btn_p_anterior" value=" " />
+                    &nbsp;
+             <input type=" " title="  " class="btn_p_proximo" value=" " />
+                     &nbsp;
+	<input type="submit" title=" " class="btn_novo" value=" " />
+                    &nbsp;
+             <input type=" " title="  " class="btn_salvar" value=" " />
+                </td>
+        </tr>
+    </table>
+    <br/>
+</div>
+<div id="rodapeConteudo"><span></span></div>
+<br clear="all" />

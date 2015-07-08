@@ -1,0 +1,185 @@
+<?php
+$pareceristaHref                = $this->url(array('controller' => 'gerarrelatorioparecerista', 'action' => 'parecerista'));
+$resconsolidacaopareceristaHref = $this->url(array('controller' => 'gerarrelatorioparecerista', 'action' => 'resconsolidacaoparecerista'));
+
+include_once 'inc/funcoes.inc.php';
+?>
+<div id="menu">
+    <!-- início: conteúdo principal #container -->
+    <div id="container">
+        <?php
+        if(!$this->gerenciar)
+        include_once 'inc/menu.inc.php';
+        ?>
+        <!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+        <div id="breadcrumb">
+            <ul>
+                <li class="first"><a href="index.phtml" title="Ir para Início">Início</a></li>
+
+                <li class="last">Principal</li>
+            </ul>
+        </div>
+        <!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+        <!-- ========== BUTTON VOLTAR ========== -->
+        <div id="titulo">
+            <div>Análise por parecerista<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+        </div>
+        <!-- ========== FIM TÍTULO ========== -->
+        <!-- ========== GRID NOME DA PROPOSTA ========== -->
+
+        <div id="conteudo" align="center">
+            <table class="tabela">
+                <tr>
+                    <td align="center"><input type="button" class="btn_pdf" style="width: 40px;" /> <input type="button" class="btn_xls" style="width: 40px;" /></td>
+                </tr>
+            </table>
+            
+
+            <table class="tabela">
+                <tr>
+                    <th colspan="3" style="font-size: 13px; font-family: sans-serif; text-align: left;">Parecerista : <?php echo $this->parecerista['nmParecerista'];?></th>
+                </tr>
+                <tr>
+                    <td>QTD de Análise: <?php echo $this->parecerista['qtAnalise'];?></td>
+                    <td>Férias:<?php echo $this->parecerista['ferias'];?></td>
+                </tr>
+                <tr>
+                    <td> Áreas, Segmentos e Nível</td>
+                    <td>
+                        <?php
+                        foreach ($this->parecerista['area_segmento_nivel'] as $val) {
+                            echo $val.'<br />';
+                        }
+                        ?>
+                    </td>
+
+                </tr>
+            </table>
+            <?php
+            if(isset($this->parecerista['projetos'])){
+            ?>
+            <table class="tabela">
+                <tr>
+                    <td>
+                        <div style="float: left;"><img src="<?php echo $this->baseUrl(); ?>/public/img/notice1.png" width="20px"/></div><div style="margin-top: 2px;margin-left: 3px;  margin-right:15px; float: left"> A diligenciar</div>
+                        <div style="float: left;"><img src="<?php echo $this->baseUrl(); ?>/public/img/notice.png" width="20px"/></div><div style="margin-top: 2px;margin-left: 3px;   margin-right:15px; float: left"> Diligenciado</div>
+                        <div style="float: left;"><img src="<?php echo $this->baseUrl(); ?>/public/img/notice3.png" width="20px"/></div><div style="margin-top: 2px;margin-left: 3px;  margin-right:15px; float: left"> Dilig&ecirc;ncia respondida</div>
+                        <div style="float: left;"><img src="<?php echo $this->baseUrl(); ?>/public/img/notice2.png" width="20px"/></div><div style="margin-top: 2px;margin-left: 3px;  margin-right:15px; float: left"> Dilig&ecirc;ncia n&atilde;o respondida</div>
+                    </td>
+                </tr>
+            </table>
+            <table class="tabela">
+                <tr>
+                    <th width="50">PRONAC</th>
+                    <th>Nome do Projeto</th>
+                    <th>Produto</th>
+                    <th width="100">Dt Distribui&ccedil;&atilde;o</th>
+                    <th width="50">Qtd Dias</th>
+                    <th width="80">Dilig&ecirc;ncia</th>
+                    <!--<th>Situaç?o</th>
+                    <th>Provid?ncia Tomada</th>-->
+                </tr>
+                <?php
+                
+                foreach ($this->parecerista['projetos'] as $projeto) {
+                    $cProduto = 1;
+                    foreach ($projeto['produtos'] as $produto){
+                        if($cProduto == 1){
+                            $cdistribuicao = 1;
+                            foreach ($produto['distribuicao'] as $distribuicao){
+                                if($cdistribuicao==1){
+                                    ?>
+                                    <tr>
+                                        <td><a target="_blank" href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'))."?idPronac=".$projeto['idPronac'];?>"><?php echo $projeto['pronac'];?></a></td>
+                                        <td><?php echo $projeto['nmProjeto'];?></td>
+                                        <td><?php echo $produto['nmProduto'];?></td>
+                                        <td><?php echo $distribuicao['dtDistribuicao'];?></td>
+                                        <td><?php echo $distribuicao['nrDias'];?></td>
+                                        <td><?php echo $produto['diligencia'];?></td>
+                                        <!--<td>B11 - Encaminhado para análise técnica</td>
+                                        <td>Proposta transformada em projeto cultural</td>-->
+                                    </tr>
+                                    <?php
+                                }
+                                //else{
+                                    ?>
+                                   <!-- <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><?php echo $distribuicao['dtDistribuicao'];?></td>
+                                        <td><?php echo $distribuicao['nrDias'];?></td>
+                                        <td></td>
+                                        <!--<td>B11 - Encaminhado para análise técnica</td>
+                                        <td>Proposta transformada em projeto cultural</td>
+                                    </tr> --> 
+                                    <?php
+                                //}
+                                $cdistribuicao++;
+                            }
+                            $cProduto++;
+                        }
+                        else{
+                            $cdistribuicao = 1;
+                            foreach ($produto['distribuicao'] as $distribuicao){
+                                if($cdistribuicao==1){
+                                    ?>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td><?php echo $produto['nmProduto'];?></td>
+                                        <td><?php echo $distribuicao['dtDistribuicao'];?></td>
+                                        <td><?php echo $distribuicao['nrDias'];?></td>
+                                        <td><?php echo $produto['diligencia'];?></td>
+                                        <!--<td>B11 - Encaminhado para análise técnica</td>
+                                        <td>Proposta transformada em projeto cultural</td>-->
+                                    </tr>
+                                    <?php
+                                }
+                                //else{
+                                    ?>
+                                    <!-- <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><?php //echo $distribuicao['dtDistribuicao'];?></td>
+                                        <td><?php //echo $distribuicao['nrDias'];?></td>
+                                        <td></td>
+                                        <!--<td>B11 - Encaminhado para análise técnica</td>
+                                        <td>Proposta transformada em projeto cultural</td>
+                                    </tr> -->
+                                    <?php
+                                //}
+                                $cdistribuicao++;
+                            }
+                        }
+                    }
+                }
+                ?>
+            </table>
+            <?php
+            }
+            else{
+                ?>
+                <table class="tabela">
+                    <tr>
+                        <th>
+                            Este parecerista n&atilde;o tem analises!
+                        </th>
+                    </tr>
+                </table>
+                <?php
+            }
+            ?>
+        </div>
+        <!-- ========== FIM CONTEÚDO ========== -->
+        <!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+        <div id="rodapeConteudo"><span></span></div>
+        <!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+        <br clear="all" />
+    </div>
+</div>
+<?php
+include_once 'inc/geraranexo.inc.php';
+?>

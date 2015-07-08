@@ -1,0 +1,66 @@
+<?php include_once 'inc/menu.inc.php'; ?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para Inï¿½cio">Início</a></li>
+        <li>An&aacute;lise</li>
+        <li class="last">Projetos Votados</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Projetos Votados</div>
+</div>
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">           
+
+    <?php if(count($this->projetos) > 0){ ?>
+    <table class="tabela">
+        <tr class="titulo_tabela">
+            <th>PRONAC</th>
+            <th>Nome do Projeto</th>
+            <th>Tipo Aprova&ccedil;&atilde;o</th>
+            <th>Tipo Readequa&ccedil;&atilde;o</th>
+            <th>Qtde Voto Aprova&ccedil;&atilde;o</th>
+            <th>Qtde Voto Absten&ccedil;&atilde;o</th>
+            <th>Qtde Voto Indeferimento</th>
+            <th>Consolida&ccedil;&atilde;o</th>
+        </tr>
+        <?php foreach ($this->projetos as $p){ ?>
+        <tr>
+            <td align="center">
+                <a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'));?>?idPronac=<?php echo ($p->IdPRONAC); ?>" target="_blank">
+                    <?php echo $p->PRONAC; ?>
+                </a>
+            </td>
+            <td><?php echo $p->NomeProjeto; ?></td>
+            <td><?php echo $p->TipoAprovacao; ?></td>
+            <td><?php echo $p->Tipo; ?></td>
+            <td align="right"><?php echo $p->QtdeVotoAprovacao; ?></td>
+            <td align="right"><?php echo $p->QtdeVotoAbstencao; ?></td>
+            <td align="right"><?php echo $p->QtdeVotoIndeferimento; ?></td>
+            <td><?php echo $p->dsConsolidacao; ?></td>
+        </tr>
+        <?php } ?>
+    </table>
+
+    <?php } else { ?>
+    <table class="tabela">
+        <tr>
+            <td align="center">Nenhum registro encontrado.</td>
+        </tr>
+    </table>
+    <?php } ?>
+    <br clear="all" />
+
+</div>
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

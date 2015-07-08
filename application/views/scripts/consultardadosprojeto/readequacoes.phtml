@@ -1,0 +1,131 @@
+<?php header('Content-Type: text/plain; charset=ISO-8859-1'); ?>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //ATUALIZA TITULO DA PAGINA
+        window.parent.$("#titulo").html("<div>Dados das readequa&ccedil;&otilde;es</div>");
+        window.parent.$("#caminhoLocalAtual").html("Dados das readequa&ccedil;&otilde;es");
+    });
+    function mostraOcultaElemento(elemento)
+    {
+        $('.' + elemento).toggle();
+
+        if ($('#' + elemento).hasClass('btn_adicionar'))
+        {
+            $('#' + elemento).addClass('btn_remover');
+            $('#' + elemento).removeClass('btn_adicionar');
+        }
+        else
+        {
+            $('#' + elemento).addClass('btn_adicionar');
+            $('#' + elemento).removeClass('btn_remover');
+        }
+    }
+</script>
+
+<table class="tabela">
+    <tr class="destacar">
+        <td align="center"><b>PRONAC</b></td>
+        <td align="center"><b>Nome do Projeto</b></td>
+    </tr>
+    <tr>
+        <td align="center"><?php echo $this->projeto->AnoProjeto . $this->projeto->Sequencial; ?></td>
+        <td align="center"><?php echo $this->projeto->NomeProjeto; ?></td>
+    </tr>
+</table>
+
+<?php $ct = 1;
+if (count($this->readequacoes) > 0):
+    foreach ($this->readequacoes as $r) : //x($r);
+        $r = (object) $r;
+    ?>
+
+        <?php if(!in_array($r->siEncaminhamento, array(12))){ ?>
+        <table class="tabela">
+            <tr>
+                <td align="left">
+                    <input type="button" class="btn_adicionar" id="<?php echo $ct; ?>" onclick="mostraOcultaElemento('<?php echo $ct; ?>');" />  <?php echo '<b>' . $r->dsReadequacao . '</b>'; ?>
+                </td>
+            </tr>
+            <tr class="<?php echo $ct; ?> sumir" align="left">
+                <td>
+                    <table class='tabela'>
+                        <tr class="destacar">
+                            <td align="center"><b>Arquivo</b></td>
+                            <td align="center"><b>Dt. Solicitação</b></td>
+                        </tr>
+                        <tr>
+                            <td align="center">
+                            <?php if(!empty($r->idArquivo)){ ?>
+                                <a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id=<?php echo $r->idArquivo; ?>"><?php echo $r->nmArquivo; ?></a>
+                            <?php } else { echo '-'; } ?>
+                            </td>
+                            <td align="center"><?php echo Data::tratarDataZend($r->dtSolicitacao, 'brasileira'); ?></td>
+                        </tr>
+                        <tr class="destacar">
+                            <td colspan="2" align="center"><b>Dados da Solicitação</b></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><?php echo $r->dsSolicitacao; ?></td>
+                        </tr>
+                        <tr class="destacar">
+                            <td colspan="2" align="center"><b>Justificativa da Solicitação</b></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><?php echo $r->dsJustificativa; ?></td>
+                        </tr>
+                    </table>
+                    
+                    <?php if(in_array($r->siEncaminhamento, array(2,3,4,5,6,7,9,10,15))){ ?>
+                    <table class="tabela">
+                        <tr>
+                            <td class="destacar bold" style="width: 50%;">Situação</td>
+                            <td class="destacar bold" style="width: 50%;">Dt. Avaliação</td>
+                        </tr>
+                        <tr>
+                            <td><?php echo $r->stAtendimento == 'I' ? 'Rejeitado' : 'Recebido'; ?></td>
+                            <td><?php echo Data::tratarDataZend($r->dtAvaliador, 'Brasileira'); ?></td>
+                        </tr>
+                        <tr>
+                            <td class="destacar bold" colspan="2">Descrição da Avaliação</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><?php echo $r->dsAvaliacao; ?></td>
+                        </tr>
+                    </table>
+                    <?php } ?>
+                    
+                    <?php if(in_array($r->siEncaminhamento, array(15))){
+                        foreach ($r->pareceres as $parecer) {
+                            $parecer = (object) $parecer;
+                    ?>
+                    <table class="tabela">
+                        <tr>
+                            <td align="right" class="destacar bold w150">Parecer Favorável?</td>
+                            <td><?php echo (isset($parecer->ParecerFavoravel) && ($parecer->ParecerFavoravel == 2)) ? 'Sim' : 'Não'; ?></td>
+                            <td align="right" class="destacar bold w150">Dt. Parecer</td>
+                            <td><?php echo (isset($parecer->DtParecer) && !empty($parecer->DtParecer)) ? Data::tratarDataZend($parecer->DtParecer, 'Brasileira') : ''; ?></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="destacar bold w150">Descriçao do Parecer - <?php echo $parecer->tpAvaliador; ?></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4"><?php echo (isset($parecer->ResumoParecer) && !empty($parecer->ResumoParecer)) ? $parecer->ResumoParecer : ''; ?></td>
+                        </tr>
+                    </table>
+                    <?php } } ?>
+                </td>
+            </tr>
+        </table>
+        <?php } ?>
+
+            
+        <?php $ct++;
+    endforeach; ?>
+<?php else: ?>
+    <table class="tabela">
+        <tr>
+            <td align="center"><em>Dados n&atilde;o informados!</em></td>
+        </tr>
+    </table>
+<?php endif; ?>

@@ -1,0 +1,206 @@
+<script language="javascript" type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        window.print();
+    });
+</script>
+
+<style type="text/css">
+    body {
+        margin:0;
+        font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+        color:#000;
+        line-height:14pt;
+    }
+    a:link, a:active, a:visited {
+        text-decoration:underline;
+    }
+    a:hover {
+        text-decoration:none;
+    }
+    .tabela { /* tamanho de tabelas com registros */
+        margin:10px auto;
+        width:97%;
+        font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+        border: 1px #CCC solid;
+    }
+    table td {
+        background:#fff;
+        padding:4px;
+        color:auto;
+        font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+        border: 1px #CCC solid;
+    }
+    table tr.destacar td, table td.destacar {
+        background:#e2e2e2;
+        font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+        border: 1px #CCC solid;
+    }
+    table th {
+        background:#cccccc;
+        padding:4px;
+        text-transform:uppercase;
+        font-size:11px;
+        border: 1px #CCC solid;
+        color: #000;
+    }
+    #brasao{
+        width : 85px;
+        height: 86px;
+    }
+    legend{
+        font-size:13px;
+        font-weight: bold;
+    }
+    .btn_imprimir{
+        border-top:1px solid #efefef;
+        border-left:1px solid #efefef;
+        border-right:1px solid #aaa;
+        border-bottom:1px solid #aaa;
+        margin:0 5px 0 0;
+        width:20px;
+        height:21px;
+        text-align:center;
+        cursor:pointer;
+        background:url('<?php echo $this->baseUrl(); ?>/public/img/buttons/imprimir.gif') center center no-repeat;
+    }
+    .btn_imprimir:hover{
+        background-color:#fff;
+        border-top:1px solid #aaa;
+        border-left:1px solid #aaa;
+        border-right:1px solid #efefef;
+        border-bottom:1px solid #efefef;
+    }
+    .paginaA4{
+        width:auto;
+        margin: 1.111cm 1cm 1cm 1.005cm;
+        page-break-after: always;
+    }
+    .TituloMinC{
+        font-size: 14px;
+        text-transform: uppercase;
+    }
+    .TituloDoDocumento{
+        font-size: 12px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    .DataDoDocumento{
+        font-size: 10px;
+    }
+    .QntdRegistros{
+        font-size: 12px;
+    }
+</style>
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div class="paginaA4">
+    <div align="center">
+        <img id="brasao" src="<?php echo $this->baseUrl(); ?>/public/img/brasaoArmas.jpg" alt="Ministério da Cultura"/>
+        <br clear="all" /><span class="TituloMinC">Ministério da Cultura</span>
+        <br clear="all" /><span class="TituloDoDocumento">Minhas Solicitações de Itens Or&ccedil;ment&aacute;rios - <?php echo ($this->nmPagina) ? $this->nmPagina : 'Aguardando Análise'; ?></span>
+        <br clear="all" /><span class="DataDoDocumento">Data da impressão: <?php echo date('d/m/Y - H:i:s'); ?></span>
+        <br clear="all" /><br clear="all" /><span class="QntdRegistros"><?php echo count($this->dados).' projetos listados'; ?></span>
+    </div>
+    
+    <?php if($this->qtdRegistros > 0){ ?>
+    <table class="tabela tablesorter">
+        <thead>
+            <tr class="titulo_tabela">
+                <th>Produto</th>
+                <th>Etapa</th>
+                <th>Item Solicitado</th>
+                <th>Justificativa</th>
+                <th>Estado</th>
+                <th>Resposta</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach($this->dados as $d){ ?>
+            <tr>
+                <td><?php echo $d->Produto; ?></td>
+                <td><?php echo $d->Etapa; ?></td>
+                <td><?php echo $d->ItemSolicitado; ?></td>
+                <td><?php echo $d->Justificativa; ?>&nbsp;</td>
+                <td><?php echo $d->Estado; ?></td>
+                <td><?php echo $d->Resposta; ?>&nbsp;</td>
+            </tr>
+            <?php } ?>
+        </tbody>
+    </table>
+
+    <?php if(count($this->dados)>0){ ?>
+
+        <!-- ============ PAGINAÇÃO ============ -->
+        <?php if($this->qtdRegistros > 10) { //echo $this->dados; ?>
+        <center>
+            <?php
+                echo $this->paginacao['inicio']." a ";
+                echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+                echo " de ". $this->paginacao['total'];
+            ?>
+        </center>
+        <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+            <tbody>
+                <tr>
+                    <td align="center">
+                    <form name="form2" id="form2" action="<?php echo $this->url(array('controller' => 'mantertabelaitens', 'action' => 'minhas-solicitacoes'));?>" method="get">
+                        <?php if($this->paginacao['pag']>1) { ?>
+                        <input class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'mantertabelaitens', 'action' => 'minhas-solicitacoes')).'?pag=1'."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro.'&idPreProjeto='.$this->idPreProjeto; ?>'">
+                        <?php } ?>
+                        <input id="btn_p_anterior" type="button"
+                        <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                        <?php }else { ?>
+                               class="btn_p_anterior" onclick="location.href='<?php echo $this->url(array('controller' => 'mantertabelaitens', 'action' => 'minhas-solicitacoes')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro.'&idPreProjeto='.$this->idPreProjeto; ?>'"
+                        <?php } ?>>
+                        <input id="btn_p_proximo" type="button"
+                               <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                               class="btn_p_proximo-off"
+                        <?php }else { ?>
+                               class="btn_p_proximo" onclick="location.href='<?php echo $this->url(array('controller' => 'mantertabelaitens', 'action' => 'minhas-solicitacoes')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro.'&idPreProjeto='.$this->idPreProjeto; ?>'"
+                        <?php } ?>>
+                        <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                        <input class="btn_ultimo" id="btn_ultimo" type="button"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'mantertabelaitens', 'action' => 'minhas-solicitacoes')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro.'&idPreProjeto='.$this->idPreProjeto; ?>'">
+                        <?php } ?>
+                        Pág.:<select name="pag" id="pag" onchange="$('#form2').submit()" class="input_simples">
+                            <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                            <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                            <?php endfor; ?>
+                        </select>
+                        &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>"><input type="submit" class="btn_recarregar" value="">
+                        <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                        <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                        <input type="hidden" name="tipoFiltro" value="<?php echo $this->filtro;?>">
+                        <input type="hidden" name="idPreProjeto" value="<?php echo $this->idPreProjeto;?>">
+                        <input type="button" class="btn_imprimir">
+                     </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- ========== FIM PAGINAÇÃO ========== -->
+
+    <?php } } ?>
+
+
+    <?php } else { ?>
+    <table class="tabela">
+        <tr>
+            <td align="center">Nenhum registro encontrado.</td>
+        </tr>
+    </table>
+    <?php } ?>
+    <br clear="all" />
+
+    <form target="_blank" class="form" name="formImpressao" id="formImpressao" method="post" action='<?php echo $this->url(array('controller' => 'mantertabelaitens', 'action' => 'imprimir-minhas-solicitacoes')); ?>'>
+        <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+        <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+        <input type="hidden" name="tipoFiltro" value="<?php echo $this->filtro;?>">
+        <input type="hidden" name="idPreProjeto" value="<?php echo $this->idPreProjeto;?>">
+    </form>
+
+</div>
+
+<br clear="all" />

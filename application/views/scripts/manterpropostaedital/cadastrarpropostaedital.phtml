@@ -1,0 +1,153 @@
+<?php
+include_once 'scripts/manterpropostaedital/inc/menu.inc.php';
+?>
+<!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'propostas')); ?>" title="Ir para Propostas">Propostas</a></li>
+        <li class="last">Dados da Proposta</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INICIO TITULO ========== -->
+<div id="titulo">
+    <div>DADOS DA PROPOSTA<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+<div id="conteudo">
+
+    <script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/ckeditor.js"></script>
+    <script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.js"></script>
+    <link type="text/css" rel="stylesheet" href="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.css" />
+
+<form>
+
+          
+                <table class="tabela" cellpadding="1" cellspacing="1">
+                    <tr><th>Identifica��o da Proposta</th></tr>
+                    <tr><tr class="fundo">   <?php foreach($this->editalpreprojeto as $tbeditalpreprojeto) ?>
+                        <td><b>Proponente:</b> <?php echo $this->escape($tbeditalpreprojeto->Nome); ?></td>
+                        
+                    </tr><?php ;?>
+                    <tr>
+                        <td colspan="2">
+                            <!-- ========== EDITOR ========== -->
+                            <textarea cols="80" id="detalheproposta2" name="detalheproposta2" rows="10">************************************************</textarea>
+                            <script type="text/javascript">
+                                //CKEDITOR.replaceAll();
+                                $('#form').submit(function()
+                                {
+                                    var texto = CKEDITOR.instances['detalheproposta2'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+
+                                    if (texto.length > 0 && texto != 'Digiteseutextoaqui...')
+                                    {
+                                        // verifica se o usuário clicou no botão 'Reintegração'
+
+                                        $('#detalheproposta2').val(CKEDITOR.instances['detalheproposta2'].getData());
+                                    }
+                                    else
+                                    {
+                                        $("#dialog").dialog("destroy");
+                                        $("#dialog-alert").dialog
+                                        ({
+                                            modal: true,
+                                            draggable: false,
+                                            resizable: false,
+                                            closeOnEscape: false,
+                                            title: 'Dados obrigatórios não informados!',
+                                            buttons:
+                                                {
+                                                Ok:function()
+                                                {
+                                                    $(this).dialog('close');
+                                                }
+                                            }
+                                        });
+                                        $('.ui-dialog-titlebar-close').remove();
+                                        return false;
+                                    }
+                                });
+                            </script>
+                        </td>
+                    </tr>
+                </table>
+                <table class="tabela" cellpadding="1" cellspacing="1">
+                    <tr>
+                        <th>Resumo da Proposta</th></tr>
+                    <tr>
+                        <td>
+                            <p>- Explique a proposta de forma clara, objetiva e suscinta - m�ximo de 10 linhas. *</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <!-- ========== EDITOR ========== -->
+                            <textarea cols="80" id="detalheproposta3" name="detalheproposta3" rows="10">************************************************</textarea>
+                            <script type="text/javascript">
+                                //CKEDITOR.replaceAll();
+                                $('#form').submit(function()
+                                {
+                                    var texto = CKEDITOR.instances['detalheproposta3'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+
+                                    if (texto.length > 0 && texto != 'Digiteseutextoaqui...')
+                                    {
+                                        // verifica se o usuário clicou no botão 'Reintegração'
+
+                                        $('#detalheproposta3').val(CKEDITOR.instances['detalheproposta3'].getData());
+                                    }
+                                    else
+                                    {
+                                        $("#dialog").dialog("destroy");
+                                        $("#dialog-alert").dialog
+                                        ({
+                                            modal: true,
+                                            draggable: false,
+                                            resizable: false,
+                                            closeOnEscape: false,
+                                            title: 'Dados obrigatórios não informados!',
+                                            buttons:
+                                                {
+                                                Ok:function()
+                                                {
+                                                    $(this).dialog('close');
+                                                }
+                                            }
+                                        });
+                                        $('.ui-dialog-titlebar-close').remove();
+                                        return false;
+                                    }
+                                });
+                            </script>
+                        </td>
+                    </tr>
+                </table>
+                
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <center>
+        <a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'listardadospropostas')); ?>"><img src="<?php echo $this->baseUrl(); ?>/public/img/buttons/incluir.gif" /></a>
+
+       
+    </center>
+
+    <br/>
+</form>
+
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+
+
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

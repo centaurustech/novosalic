@@ -1,0 +1,47 @@
+<?php
+include_once 'scripts/gerenciarparecertecnico/inc/menu.inc.php';
+?>
+
+<!-- ========== INCIO BREADCRUMB (LINKS TOPO) ========== -->
+			<div id="breadcrumb">
+				<ul>
+					<li class="first"><a href="<?php echo $this->url(array('controller' => 'consultarparecertecnico', 'action' => 'index')); ?>" title="Ir para Incio">In&iacute;cio</a></li>
+					<li class="last">Projetos</li>
+				</ul>
+			</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INCIO TTULO ========== -->
+				<div id="titulo" style="height: 10%">
+					<div>Parecer T&eacute;cnico<span>Teste</span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+				</div>
+<!-- ========== FIM TTULO ========== -->
+
+<!-- ========== INCIO CONTEDO ========== -->
+	<div id="conteudo" style="min-height: 300px;" align="center">
+	<form method="get" id="form" action="<?php echo $this->url(array('controller' => 'gerenciarparecertecnico', 'action' => 'listaparecer')); ?>">
+		<table width="40%" class="tabela_simples">
+		<tr>
+			<th colspan="1">Digite o n&uacute;mero do Projeto</th>
+		</tr>
+
+ 		<tr>
+ 			<td width="50%" align="center"><b>PRONAC: </b>&nbsp;&nbsp;&nbsp;<input type="text" name="pronac" id="pronac" class="input_simples" size="10px"/></td>
+
+ 		</tr>
+ 		<tr>
+ 			<td colspan="1" align="center">
+ 				<input type="bottom" name="confirmar" onclick="submit();" id="confirmar" class="btn_confirmar" style="width: 17%"/>
+ 			</td>
+ 		</tr>
+ 						
+ 	</table>	
+        </form>
+</div>
+			
+<!-- ========== FIM CONTEDO ========== -->
+
+<!-- ========== INCIO RODAP DO CONTEDO ========== -->
+	<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAP DO CONTEDO ========== -->
+			<br clear="all" />

@@ -1,0 +1,157 @@
+<script>
+    $(document).ready(function(){
+        $('#btn_xls').click(function(){
+            $('#frmPaginacao').attr('target','_blank').append('<input type="hidden" name="tipo" id="xls" value="xls"/>');
+            $('#frmPaginacao').submit();
+            $('#xls').remove();
+            
+        });
+        
+        $("#btn_imprimir").click(function(){
+            var campoGerarPdfTotal = '<input type="hidden" name="tipo" id="pdf" value="pdf"/>';
+            $("#frmPaginacao").append(campoGerarPdfTotal);
+            $("#frmPaginacao").attr('target', '_blank');
+            $("#frmPaginacao").submit();
+            $("#pdf").remove();
+        });
+    });
+
+    function paginar(pag){
+        $("#pag").val(pag);
+        jqAjaxForm(document.getElementById("frmPaginacao"), "resultadoConsulta");
+        $("#resultadoConsulta").html("Aguarde, carregando dados ...");
+    }
+</script>
+<fieldset>
+    <legend>Editais MinC</legend>
+    <table class="tabela" style="width: 100%">
+    <?php if(count($this->registros) > 0):?>
+        <?php foreach($this->registros as $fundo=>$classificacao):?>
+        <tr>
+            <th align="left" bgcolor="#abda5d" valign="middle">Fundo Setorial: <?php echo $fundo?></th>
+        </tr>
+        <tr>
+            <td>
+                <div class="conteudoImprimivel" id="conteudoImprimivel">
+                    <table class="tabela">
+                    <?php foreach($classificacao as $classificacao=>$edital):?>
+                        <tr>
+                            <th align="left" bgcolor="#abda5d" valign="middle">Classifica&ccedil;&atilde;o: <?php echo $classificacao?></th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="conteudoImprimivel" id="conteudoImprimivel">
+                                    <table class="tabela">
+                                    <?php foreach($edital as $nomeEdital=>$registro):?>
+                                        <tr>
+                                            <th colspan="12" align="left" bgcolor="#abda5d" valign="middle">Edital: <?php echo $nomeEdital?></th>
+                                        </tr>
+                                        <tr class="destacar">
+                                            <?php if(@in_array("cmpsOrd_edital", $this->parametrosBusca["visaoAgente"])): ?><td align="center" valign="middle">Edital</td><?php endif; ?>
+                                            <?php if(@in_array("cmpsOrd_unidade", $this->parametrosBusca["visaoAgente"])): ?><td align="center" valign="middle">Unidade</td><?php endif; ?>
+                                            <?php if(@in_array("cmpsOrd_idpreprojeto", $this->parametrosBusca["visaoAgente"])): ?><td align="center" valign="middle">Nr. Proposta</td><?php endif; ?>
+                                            <td align="center" valign="middle">Nome da Proposta</td>
+                                            <?php if(@in_array("cmpsOrd_proponente", $this->parametrosBusca["visaoAgente"])): ?><td align="center" valign="middle">Proponente</td><?php endif; ?>
+                                            <?php if(@in_array("cmpsOrd_regiao", $this->parametrosBusca["visaoAgente"])): ?><td align="center" valign="middle">Regi&atilde;o</td><?php endif; ?>
+                                            <?php if(@in_array("cmpsOrd_uf", $this->parametrosBusca["visaoAgente"])): ?><td align="center" valign="middle">UF</td><?php endif; ?>
+                                            <?php if(@in_array("cmpsOrd_municipio", $this->parametrosBusca["visaoAgente"])): ?><td align="center" valign="middle">Municipio</td><?php endif; ?>
+                                            <?php if(@in_array("cmpsOrd_stestadoavaliacao", $this->parametrosBusca["visaoAgente"])): ?><td align="center" valign="middle">Estado da Proposta</td><?php endif; ?>
+                                            <?php if(@in_array("cmpsOrd_stmovimentacao", $this->parametrosBusca["visaoAgente"])): ?><td align="center" valign="middle">Estado da Avalia&ccedil;&atilde;o</td><?php endif; ?>
+                                            <?php if(@in_array("cmpsOrd_dtcadastro", $this->parametrosBusca["visaoAgente"])): ?><td align="center" valign="middle">Dt. Cadastro</td><?php endif; ?>
+                                            <?php if(@in_array("cmpsOrd_dtenviominc", $this->parametrosBusca["visaoAgente"])): ?><td align="center" valign="middle">Dt. Envio MinC</td><?php endif; ?>
+                                        </tr>
+                                        <?php foreach($registro as $projeto):?>
+                                        <tr>
+                                            <?php if(@in_array("cmpsOrd_edital", $this->parametrosBusca["visaoAgente"])): ?><td align="left" bgcolor="" valign="top"><?php echo $projeto->Edital?></td><?php endif; ?>
+                                            <?php if(@in_array("cmpsOrd_unidade", $this->parametrosBusca["visaoAgente"])): ?><td align="left" bgcolor="" valign="top"><?php echo $projeto->SiglaOrgao?></td><?php endif; ?>
+                                            <?php if(@in_array("cmpsOrd_idpreprojeto", $this->parametrosBusca["visaoAgente"])): ?><td align="left" bgcolor="" valign="top"><?php echo $projeto->idProjeto?></td><?php endif; ?>
+                                            <td align="left" bgcolor="" valign="top"><?php echo $projeto->NomeProposta?></td>
+                                            <?php if(@in_array("cmpsOrd_proponente", $this->parametrosBusca["visaoAgente"])): ?><td align="left" bgcolor="" valign="top"><?php echo $projeto->NomeAgente?></td><?php endif; ?>
+                                            <?php if(@in_array("cmpsOrd_regiao", $this->parametrosBusca["visaoAgente"])): ?><td align="left" bgcolor="" valign="top"><?php echo $projeto->Regiao?></td><?php endif; ?>
+                                            <?php if(@in_array("cmpsOrd_uf", $this->parametrosBusca["visaoAgente"])): ?><td align="left" bgcolor="" valign="top"><?php echo $projeto->NomeUF?></td><?php endif; ?>
+                                            <?php if(@in_array("cmpsOrd_municipio", $this->parametrosBusca["visaoAgente"])): ?><td align="left" bgcolor="" valign="top"><?php echo $projeto->NomeMunicipio?></td><?php endif; ?>
+                                            <?php if(@in_array("cmpsOrd_stestadoavaliacao", $this->parametrosBusca["visaoAgente"])): ?>
+                                            <td align="left" bgcolor="" valign="top">
+                                                    <?php
+                                                    switch ($projeto->ConformidadeOK){
+                                                        case 0:
+                                                            echo "Em avalia&ccedil;&atilde;o de conte&uacute;do";
+                                                            break;
+                                                        case 1:
+                                                            echo "Avaliado conte&uacute;do";
+                                                            break;
+                                                        case 2:
+                                                            echo "Proposta em contru&ccedil;&atilde;o";
+                                                            break;
+                                                        case 9:
+                                                            echo "Enviada p/avalia&ccedil;&atilde;o ao MinC";
+                                                            break;
+                                                    }
+                                                    ?>
+                                            </td>
+                                            <?php endif; ?>
+                                            <?php if(@in_array("cmpsOrd_stmovimentacao", $this->parametrosBusca["visaoAgente"])): ?><td align="left" bgcolor="" valign="top"><?php echo $projeto->Movimentacao?></td><?php endif; ?>
+                                            <?php if(@in_array("cmpsOrd_dtcadastro", $this->parametrosBusca["visaoAgente"])): ?><td align="center" bgcolor="" valign="top"><?php echo ConverteData($projeto->DtCadastro,5)?></td><?php endif; ?>
+                                            <?php if(@in_array("cmpsOrd_dtenviominc", $this->parametrosBusca["visaoAgente"])): ?><td align="center" bgcolor="" valign="top"><?php echo ConverteData($projeto->DtEnvioMinC,5)?></td><?php endif; ?>
+                                        </tr>
+                                        <?php endforeach;//foreach de propostas ?>
+                                    <?php endforeach; ?>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </table>
+                </div>
+            </td>
+        </tr>
+        <?php endforeach;//foreach de fundos la em cima ?>
+    <?php else: ?>
+        <tr>
+            <td valign="top" align="center">Nenhum Registro Encontrado</td>
+        </tr>
+    <?php endif; ?>
+    </table>
+    
+    <form action="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-editais-minc')); ?>" method="post" name="frmPaginacao" id="frmPaginacao">
+    <?php foreach($this->parametrosBusca as $name=>$value):?>
+        <?php if(!is_array($value)): ?>
+        <input type="hidden" name="<?php echo $name?>" id="<?php echo $name?>" value="<?php echo $value?>"/>
+        <?php else: ?>
+            <?php foreach($value as $valor):?>
+                <input type="hidden" name="<?php echo $name?>[]" id="<?php echo $name?>" value="<?php echo $valor?>"/>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    <?php endforeach; ?>
+        <?php if(empty($this->parametrosBusca["pag"])):?>
+        <input type="hidden" name="pag" id="pag" value="<?php echo $this->pag; ?>"/>
+        <?php endif; ?>
+    </form>
+
+    <form method="POST" id="formGerarXls" name="formGerarXls" action="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'gerar-xls')); ?>" style="display:none">
+        <textarea name="html" id="conteudoXLS"></textarea>
+    </form>
+
+    <form method="POST" id="formGerarPdf" name="formGerarPdf" action="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'gerar-pdf')); ?>" style="display:none">
+        <textarea name="html" id="conteudoImprimir"></textarea>
+    </form>
+
+    <table class="tabela">
+        <tr>
+            <td align="center">
+                <input type="button" style="width: 88px" class="btn_inicio" id="btn_inicio" onclick="paginar('1')"/>
+                <input type="button" style="width: 88px" class="btn_p_anterior" id="btn_p_anterior" onclick="paginar('<?php echo ($this->pag > 1)?$this->pag-1:1; ?>')"/>
+                <select name="pagina" id="pagina" class="input_simples" onchange="paginar(this.value)">
+                    <?php for($i=1; $i<$this->totalPag+1; $i++): ?>
+                    <option value="<?php echo $i; ?>" <?php if($i == $this->pag){ echo " selected='selected' "; } ?>><?php echo $i; ?></option>
+                    <?php endfor; ?>
+                </select>
+                <input type="button" style="width: 88px" class="btn_p_proximo" id="btn_p_proximo" onclick="paginar('<?php echo ($this->pag < $this->totalPag)?$this->pag+1:$this->totalPag; ?>')"/>
+                <input type="button" style="width: 88px" class="btn_ultimo" id="btn_ultimo" onclick="paginar('<?php echo $this->totalPag; ?>')"/>
+                <input type="button" style="width: 44px" class="btn_xls" id="btn_xls" />
+                <input type="button" style="width: 88px" class="btn_imprimir" id="btn_imprimir" />
+                Exibindo de <b><?php echo $this->inicio; ?></b> a <b><?php echo $this->fim; ?></b> de um total de <b><?php echo $this->total; ?></b>
+            </td>
+        </tr>
+    </table>
+</fieldset>

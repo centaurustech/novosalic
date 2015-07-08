@@ -1,0 +1,132 @@
+<script>
+
+    function layout_fluido(){
+        var janela = $(window).width();
+        var fluidNavGlobal = janela - 245;
+        var fluidConteudo = janela - 253;
+        var fluidTitulo = janela - 252;
+        var fluidRodape = janela - 19;
+        $("#navglobal").css("width", fluidNavGlobal);
+        $("#conteudo").css("width", fluidConteudo);
+        $("#titulo").css("width", fluidTitulo);
+        $("#rodapeConteudo").css("width", fluidConteudo);
+        $("#imagemRodape").css("width", fluidConteudo);
+        $("#rodape").css("width", fluidRodape);
+        $("#conteudo").css("min-height", $('#menuContexto').height()); // altura minima do conteudo
+        $("#rodapeConteudo").css("margin-left", "225px");
+        $(".sanfonaDiv").css("clear", "both");
+        $(".sanfonaDiv").css("width", "91%");
+    } // fecha função layout_fluido()
+
+
+    function AbrirFecharPlanilha(elemento) {
+        $('.' + elemento).toggle();
+        if ($('#' + elemento).hasClass('icn_mais')) {
+            $('#' + elemento).addClass('icn_menos');
+            $('#' + elemento).removeClass('icn_mais');
+        } else {
+            $('#' + elemento).addClass('icn_mais');
+            $('#' + elemento).removeClass('icn_menos');
+        }
+    }
+
+    $(document).ready(function()
+    {
+        $('a.sanfona').click(function()
+        {
+            $(this).next().toggle('fast');
+        });
+
+        $(".icn_menos").click(function() {
+            var tipo = $(this).attr('tipo');
+            var aberto = $(this).attr('aberto');
+            if (aberto == 'true') {
+                adisplay = 'none';
+                $(this).attr('aberto', 'false')
+                $(this).removeClass('icn_menos').addClass('icn_mais')
+            }
+            else {
+                adisplay = '';
+                $(this).attr('aberto', 'true')
+                $(this).removeClass('icn_mais').addClass('icn_menos')
+            }
+            if (tipo == 'fonte') {
+                fonte = $(this).attr('fonte');
+                $(".master[fonte='" + fonte + "']").css('display', adisplay);
+                $(".clickproduto").removeClass('icn_mais').addClass('icn_menos');
+            }
+            if (tipo == 'produto') {
+                fonte = $(this).attr('fonte');
+                produto = $(this).attr('produto');
+                $(".produto[produto='" + produto + "'][fonte='" + fonte + "']").css('display', adisplay);
+            }
+            if (tipo == 'etapa') {
+                fonte = $(this).attr('fonte');
+                produto = $(this).attr('produto');
+                etapa = $(this).attr('etapa');
+                $(".etapa[produto='" + produto + "'][etapa='" + etapa + "'][fonte='" + fonte + "']").css('display', adisplay);
+            }
+            if (tipo == 'cidade') {
+                fonte = $(this).attr('fonte');
+                produto = $(this).attr('produto');
+                etapa = $(this).attr('etapa');
+                cidade = $(this).attr('cidade');
+                $(".cidade[produto='" + produto + "'][etapa='" + etapa + "'][cidade='" + cidade + "'][fonte='" + fonte + "']").css('display', adisplay);
+            }
+        });
+        $(".item").mouseover(function() {
+            $(this).addClass('fundo_linha3');
+        });
+        $(".item").mouseout(function() {
+            $(this).removeClass('fundo_linha3');
+        });
+        $(".item").click(function() {
+            if ($(this).hasClass('fundo_linha4')) {
+                $(this).removeClass('fundo_linha4');
+            }
+            else {
+                $(this).addClass('fundo_linha4');
+            }
+        });
+    });
+</script>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<?php require_once "scripts/manterpropostaincentivofiscal/inc/menu.inc.php"; ?>
+
+<!-- ========== INCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principalproponente', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second">Or&ccedil;amento</li>
+        <li class="last">Planilha Or&ccedil;ament&aacute;ria Geral</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INCIO TTULO ========== -->
+<div id="titulo">
+    <div>Planilha Or&ccedil;ament&aacute;ria Geral</div>
+</div>
+<!-- ========== FIM TTULO ========== -->
+
+
+<!-- ========== INCIO CONTEDO ========== -->
+<div id="conteudo">
+    
+    <?php /***** CARREGA A PLANILHA ORCAMENTARIA *****/ ?>
+    <script type="text/javascript"> 
+        jqAjaxLink('<?php echo $this->Url(array('controller' => 'index', 'action' => 'montar-planilha-orcamentaria')) ?>?idPronac=<?php echo $_GET['idPreProjeto']; ?>&tipoPlanilha=<?php echo $this->tipoPlanilha; ?>', '', 'planilhaOrcamentariaMontada');
+    </script>
+    <div id="planilhaOrcamentariaMontada"></div>
+    <?php /****** FIM DA PLANILHA ORCAMENTARIA ******/ ?>
+    
+</div> <!-- FIM CONTEUDO -->
+
+
+<!-- ========== FIM CONTEDO ========== --> <!-- ========== INCIO RODAP DO CONTEDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAP DO CONTEDO ========== -->
+
+<br clear="all" />

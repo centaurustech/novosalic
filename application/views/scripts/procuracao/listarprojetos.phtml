@@ -1,0 +1,35 @@
+<?php  
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?> 
+
+<?php if(count($this->projetos) > 0):?>
+<table class="tabela"> 
+    <tr>
+        <th width="100">PRONAC</th>
+        <th>Nome do Projeto</th>
+    	<th width="200">Selecionar</th>
+    </tr>
+    <?php foreach($this->projetos as $pr):?>
+    <tr>
+        <td><?php echo utf8_decode($pr['PRONAC']); ?></td>
+        <td><?php echo $pr['NomeProjeto']; ?></td>
+    	<td align="center">
+    		<?php if($pr['visualiza'] == 'S'): ?>
+    			<input type="checkbox" value="<?php echo utf8_decode($pr['idProjeto']); ?>"  name="projetos[]" class="cinput" />
+    		<?php else:?>
+    			Já possui procuração!	
+    		<?php endif;?>	
+    	</td>
+    </tr>
+	<?php endforeach; ?>
+	<tr>
+		<td colspan="3" class="centro"><input type="submit" class="btn_enviar" value="  "/></td>
+	</tr>
+</table>
+<?php else: ?>
+<table class="tabela"> 
+    <tr>
+        <td>NENHUM PROJETO ENCONTRADO!</td>
+    </tr>
+</table>
+<?php endif; ?>

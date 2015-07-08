@@ -1,0 +1,561 @@
+<?php
+$historicoLink = $this->url(array('controller' => 'verificarreadequacaodeprojeto', 'action' => 'historico'));
+?>
+<div id="erro"></div>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li>Acompanhamento</li>
+        <li class="last">Verificar readequa&ccedil;&atilde;o de projeto</li>
+    </ul>
+</div>
+    
+    
+    
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Verificar readequa&ccedil;&atilde;o de projeto</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <script type='text/javascript' src='<?php echo $this->baseUrl(); ?>/public/js/projetosGerenciar.js'></script>
+
+    <div style="width:100%; margin: 0 auto;">
+	    <table class="tabela" summary=" ">
+	        <tr>
+	            <th width="90%" style="text-align:left; padding-left:2%" colspan="2">TIPOS DE READEQUAÇÕES</th>
+	            <th width="10%" align="center">Quantidade de Projetos</th>
+	        </tr>
+	    </table>
+
+        <!-- MODAL PARA ENCAMINHAMENTO -->
+        <?php foreach ($this->AnaliseGeral as $AnaliseGeral): ?>
+
+            <div style="display:none;" id="encaminhar2<?php echo $AnaliseGeral->ID_PRONAC . $AnaliseGeral->idAcao . $AnaliseGeral->tpAlteracaoProjeto; ?>" title="Encaminhar projeto para análise" >
+                <form name="formencaminhar" id="form<?php echo $AnaliseGeral->ID_PRONAC; ?>" action="<?php echo $this->baseUrl(); ?>/verificarreadequacaodeprojeto/encaminhacoordparecerista" method="post">
+
+                    <script type="text/javascript">
+
+                        window.document.body.onpaste = function() { return false; }; //Ctrl+V
+
+                        $(document).ready(function (){
+
+                            $("#erro").dialog({
+                                title : 'Alerta',
+                                resizable: false,
+                                width:300,
+                                height:150,
+                                modal: true,
+                                autoOpen:false,
+                                buttons: {
+                                    'OK': function() {
+                                        $(this).dialog('close');
+                                    }
+                                }
+                            });
+                            $('#btn_enviar').click(function (){
+                                var select = $(this).parent().parent().find('div','divAchar').find('select').val();
+                                if (select == ""){
+                                    $("#erro").dialog('open');
+                                    $("#erro").html("Dados obrigatórios não preenchidos!");
+                                    return false;
+                                }
+                            });
+                        });
+                    </script>
+
+                    <table class="tabela">
+                        <tr>
+                            <th width="1%">PRONAC</th>
+                            <th>Nome do Projeto</th>
+                        </tr>
+                        <tr>
+                            <td><?php echo $AnaliseGeral->PRONAC; ?></td>
+                            <td><?php echo $AnaliseGeral->NomeProjeto; ?></td>
+                        </tr>
+                    </table>
+
+                    <br /><br />
+
+                    <textarea maxlength="255" name="justificativa" id="justificativaencaminha" rows="6" cols="50" style="width:95%;"
+                              onclick="limpar_campo(this, 'Digite a observação...');" onkeypress=" " class="textarea_simples" 
+                              onblur="restaurar_campo(this, 'Digite a observação...');">Digite a observação...</textarea>
+                    <span style="font-size: 11px;">Quantidade m&aacute;xima de 255 caracteres.</span>
+
+                    <br /><br />
+
+                    <div width="95%" class="divAchar">
+                        <tr>
+                            <td><b>Encaminhar para:</b></td>
+                            <td>
+                                <select name="agenteNovo" id="agenteNovo" style="width:70%;" class="select_simples">
+                                    <option value=""></option>
+                                <?php foreach ($this->listaParecerista as $listaParecerista): ?>
+                                    <option value="<?php echo $listaParecerista->idAgente; ?>"><?php echo $listaParecerista->usu_nome; ?></option>
+                                <?php endforeach; ?>
+                                </select>
+                            </td>
+                        </tr>
+                    </div>
+
+                    <br />
+
+                    <input type="hidden" name="idAvaliacaoItemPedidoAlteracao" value="<?php echo $AnaliseGeral->idAvaliacaoItemPedidoAlteracao; ?>">
+                    <input type="hidden" name="idAcao" value="<?php echo $AnaliseGeral->idAcao; ?>">
+                    <input type="hidden" name="stAcao" value="<?php echo $AnaliseGeral->stAcao; ?>">
+                    <input type="hidden" name="Orgao" value="<?php echo $AnaliseGeral->idOrgao; ?>">
+
+                    <p align="left" style="margin-top:1%;">
+                        <input type="submit"  id="btn_enviar" value=" " class="btn_enviar salvarencaminhamento"  value=" " />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="reset"  value=" " class="btn_limpar" />
+                    </p>
+                </form>
+            </div>
+        <?php endforeach; ?>
+        <!-- FIM DO MODAL PARA ENCAMINHAMENTO -->
+
+
+        <!-- MODAL PARA REENCAMINHAMENTO -->
+        <?php foreach ($this->AnaliseGeral as $AnaliseGeral): ?>
+            <div style="display:none;" id="reencaminhar<?php echo $AnaliseGeral->ID_PRONAC; ?>" title="Encaminhar projeto para análise" >
+                <form name="formencaminhar" id="form<?php echo $AnaliseGeral->ID_PRONAC; ?>" action="<?php echo $this->baseUrl(); ?>/verificarreadequacaodeprojeto/reencaminhacoordparecerista" method="post">
+
+                    <script type="text/javascript">
+
+                        $(document).ready(function (){
+
+                            $("#erro").dialog({
+                                title : 'Alerta',
+                                resizable: false,
+                                width:300,
+                                height:150,
+                                modal: true,
+                                autoOpen:false,
+                                buttons: {
+                                    'OK': function() {
+                                        $(this).dialog('close');
+                                    }
+                                }
+                            });
+                            $('#btn_enviar2').click(function (){
+                                var select = $(this).parent().parent().find('div','divAchar').find('select').val();
+                                if (select == ""){
+                                    $("#erro").dialog('open');
+                                    $("#erro").html("Dados obrigatórios não preenchidos!");
+                                    return false;
+                                }
+                            });
+                        });
+                    </script>
+
+                    <table class="tabela">
+                        <tr>
+                            <th width="1%">PRONAC</th>
+                            <th>Nome do Projeto</th>
+                        </tr>
+                        <tr>
+                            <td><?php echo $AnaliseGeral->PRONAC; ?></td>
+                            <td><?php echo $AnaliseGeral->NomeProjeto; ?></td>
+                        </tr>
+                    </table>
+
+                    <br /><br />
+
+                    <textarea maxlength="255" name="justificativa" id="justificativaencaminha" rows="6" cols="50" style="width:95%;"
+                              onclick="limpar_campo(this, 'Digite a observação...');" onkeypress=" " class="textarea_simples" 
+                              onblur="restaurar_campo(this, 'Digite a observação...');">Digite a observação...</textarea>
+                    <span style="font-size: 11px;">Quantidade m&aacute;xima de 255 caracteres.</span>
+
+                    <br /><br>
+
+                    <div width="95%" class="testesaetas">
+                        <tr>
+                            <td><b>Encaminhar para:</b></td>
+                            <td>
+                                <select name="agenteNovo" id="agenteNovo" style="width:70%;">
+                                    <option value=""></option>
+                                    <?php foreach ($this->listaParecerista as $listaParecerista): ?>
+                                    <option value="<?php echo $listaParecerista->idAgente; ?>"><?php echo $listaParecerista->usu_nome; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </td>
+                        </tr>
+                    </div>
+                    <br>
+                    <input type="hidden" name="idAcao" value="<?php echo $AnaliseGeral->idAcao; ?>">
+                    <input type="hidden" name="idOrgao" value="<?php echo $AnaliseGeral->idOrgao; ?>">
+                    <input type="hidden" name="idPedidoAlteracao" value="<?php echo $AnaliseGeral->idPedidoAlteracao; ?>">
+                    <input type="hidden" name="tpAlteracaoProjeto" value="<?php echo $AnaliseGeral->tpAlteracaoProjeto; ?>">
+
+                    <p align="left" style="margin-top:1%;">
+                        <input type="submit" id="btn_enviar2"  value=" " class="btn_enviar salvarencaminhamento"  value=" " />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="reset"  value=" " class="btn_limpar" />
+                    </p>
+                </form>
+            </div>
+        <?php endforeach; ?>
+        <!-- FIM DO MODAL PARA REENCAMINHAMENTO -->
+
+
+        <!-- MODAL PARA VISUALIZAR HISTÓRICO -->
+        <?php foreach ($this->HistoricoUnico as $HistoricoUnico): ?>
+            <div style="display:none;" id="visualizarhist<?php echo $HistoricoUnico->idAvaliacaoItemPedidoAlteracao; ?>" title="Visualizar Histórico" >
+                <div id="recebeValor"></div>
+            </div>
+            <?php endforeach; ?>
+        <!-- FIM DO MODAL PARA VISUALIZAR HISTÓRICO -->
+
+
+        <!-- MODAL PARA CONFIRMAÇÃO DE ENCAMINHAMENTO-->
+        <div id="mostra"></div>
+        <!-- MODAL PARA CONFIRMAÇÃO DE ENCAMINHAMENTO-->
+
+
+        <!--	<table width="95%" summary="">
+        <tr>
+        <td width="4%"  align="center"><img style="cursor: pointer;" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/btn_adicionar.gif" onkeypress="return abrir_fechar_aguardando()" onclick="return abrir_fechar_aguardando()" alt="Adicionar" /></td>
+        <td width="88%" style="text-align:left; padding-left:2%;">AGUARDANDO ANÁLISE</td>
+        <td width="8%"  align="center"><?php echo $this->AguardAnaliseQNTD; ?></td>
+        </tr>
+        </table>-->
+
+        <div id="aguardando" style="display:inherit;">
+            <table class="tabela" summary="itens de custo">
+                <tr class="bold">
+                    <td width="90%"><input type="button" name="grid1" id="g1_analise_itensdecusto" class="btn_adicionar" title="Expandir" /> AGUARDANDO ANÁLISE</td>
+                    <td width="10%" align="center"><?php echo count($this->AguardAnalise10); ?></td>
+                </tr>
+            </table>
+            <div id="div_g1_analise_itensdecusto" class="miolo_grid_01 sumir">
+                <table class="tabela" summary="Itens de Custo">
+                    <tr>
+                        <td class="destacar bold centro" width="7%">PRONAC</td>
+                        <td class="destacar bold centro" width="35%">Nome do projeto</td>
+                        <td class="destacar bold centro" width="15%">Área / Segmento</td>
+                        <td class="destacar bold centro" width="7%">Dt. de Recebimento</td>
+                        <!--<td class="destacar bold centro" width="8%">Estado(s)</td>-->
+                        <td class="destacar bold centro" width="7%">Status</td>
+                        <td class="destacar bold centro" width="8%">Visualizar Histórico</td>
+                        <td class="destacar bold centro">Visualizar Readequa&ccedil;&atilde;o</td>
+                        <!--<td class="destacar bold centro">Enviar mensagem</td>-->
+                        <td class="destacar bold centro" width="7%">Encaminhar p/ análise</td>
+                        <td class="destacar bold centro" width="5%">Controle</td>
+                    </tr>
+                    <?php foreach ($this->AguardAnalise10 as $AguardAnalise10): ?>
+                    <tr class="tblGerenciar_projetos">
+                        <td align="center"><a href="<?php echo $this->baseUrl(); ?>/consultardadosprojeto/index?idPronac=<?php echo $AguardAnalise10->ID_PRONAC; ?>" target="_blank"><?php echo $AguardAnalise10->PRONAC; ?></a></td>
+                        <td style="text-align:left;"><?php echo $AguardAnalise10->NomeProjeto; ?></td>
+                        <td align="center"><?php echo $AguardAnalise10->areaDesc . " / " . $AguardAnalise10->segmentoDesc; ?></td>
+                        <td align="center"><?php
+                            if ($AguardAnalise10->DataEnvio == '') {
+                                echo 'Não há registro'; } else {
+                                echo Data::tratarDataZend($AguardAnalise10->DataEnvio, 'brasileiro');
+                            } ?>
+                        </td>
+                        <!--<td align="center">
+                        <?php /*foreach ($this->UFs as $UFs){
+                                if ($AguardAnalise10->ID_PRONAC == $UFs->ID_PRONAC) {
+                                    echo $UFs->Sigla;
+                                }
+                            }
+                        */?>
+                        </td>-->
+                        <td align="center">
+                            <?php
+                            if ($AguardAnalise10->stAcao == 0) {
+                                echo 'Aguardando análise';
+                            } else if ($AguardAnalise10->stAcao == 1) {
+                                echo 'Em análise';
+                            } ?>
+                        </td>
+                        <td align="center"><img style="cursor: pointer;" border="0" class="abrirJanela" src="../public/img/table_multiple.png" idAvaliacao="<?php echo $AguardAnalise10->idAvaliacaoItemPedidoAlteracao; ?>" alt="Visualizar Histórico" /></td>
+                        <td class="centro"><img style="cursor: pointer;" src="../public/img/ico/kdict.png" width="25px" alt="Visualizar Projeto" title="Visualizar Projeto" onclick="redirecionar('<?php echo $this->baseUrl(); ?>/verificarreadequacaodeprojeto/consultareadequacaoitensdecusto?id=<?php echo $AguardAnalise10->ID_PRONAC; ?>');" /></td>
+                        <!--<td class="centro"><a target='_blank' href='<?php //echo $this->url(array('controller' => 'mantermensagens', 'action' => 'consultarmensagem'), '', true); ?>/idpronac/<?php //echo $AguardAnalise10->ID_PRONAC; ?>'><img src='<?php //echo $this->baseUrl() ?>/public/img/buttons/sair-p.gif' title='Enviar mensagem'/></a></td>-->
+                        <td align="center"><img style="cursor: pointer;" src="../public/img/user_gray.png" onclick="return encaminhar2('<?php echo $AguardAnalise10->ID_PRONAC . $AguardAnalise10->idAcao . $AguardAnalise10->tpAlteracaoProjeto; ?>')" onkeypress="return encaminhar2('<?php echo $AguardAnalise10->ID_PRONAC . $AguardAnalise10->idAcao . $AguardAnalise10->tpAlteracaoProjeto; ?>')" alt="Reencaminhar" /></td>
+                        <td align="center">
+                        	<?php echo $this->verificarStatusAnalise($AguardAnalise10->DataEnvio); ?>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+
+                    <?php if(count($this->AguardAnalise10) <= 0){ ?>
+                    <tr>
+                        <td colspan="11" class="centro">N&atilde;o existe(m) Projeto(s) com solicita&ccedil;&atilde;o de readequa&ccedil;&atilde;o!</td>
+                    </tr>
+                    <?php } ?>
+
+                </table>
+            </div>
+
+
+            <!--
+            <table style="margin:0 0 0 4%;" width="93%" summary="proposta pedagogica">
+                <tr>
+                    <td width="4%"  align="center"><img style="cursor: pointer;" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/btn_adicionar.gif" onclick="return abrir_fechar('propostapedagogica')" onkeypress="return abrir_fechar('propostapedagogica')" alt="Adicionar" /></td>
+                    <td width="88%" style="text-align:left; padding-left:2%;">Proposta Pedagógica</td>
+                    <td width="8%"  align="center"><?php echo count($this->AguardAnalise6); ?></td>
+                </tr>
+            </table>
+            <div id="propostapedagogica" style="display:none;">
+
+            <table width="92%" cellspacing="0" cellpadding="0" style="margin:0 0 0 5%;" summary="Proposta Pedagógica">
+                <tr>
+                    <td width="7%" align="center">PRONAC</td>
+                    <td width="35%" style="text-align:left;">Nome do projeto</td>
+                    <td width="15%" align="center">Área / Segmento</td>
+                    <td width="7%" align="center">Data de Recebimento</td>
+                    <td width="8%" align="center">Estado(s)</td>
+                    <td width="7%" align="center">Status</td>
+                    <td width="8%" align="center">Visualizar Histórico</td>
+                    <td width="7%" align="center">Encaminhar p/ análise</td>
+                    <td width="5%" align="center">Controle</td>
+                </tr>
+                <?php foreach ($this->AguardAnalise6 as $AguardAnalise6): ?>
+                <tr class="tblGerenciar_projetos">
+                    <td align="center"><a href="<?php echo $this->baseUrl(); ?>/verificarreadequacaodeprojeto/propostapedagogica?id=<?php echo $AguardAnalise6->ID_PRONAC; ?>"><?php echo $AguardAnalise6->PRONAC; ?></a></td>
+                    <td style="text-align:left;"><?php echo $AguardAnalise6->NomeProjeto; ?></td>
+                    <td align="center"><?php echo $AguardAnalise6->areaDesc . " / " . $AguardAnalise6->segmentoDesc; ?></td>
+                    <td align="center">
+                        <?php
+                            if ($AguardAnalise6->DataEnvio == '') {
+                                echo 'Não há registro';
+                            } else {
+                                echo Data::tratarDataZend($AguardAnalise6->DataEnvio, 'brasileiro');
+                            }
+                        ?>
+                    </td>
+                    <td align="center">
+                    <?php foreach ($this->UFs as $UFs): ?>
+                        <?php
+                            if ($AguardAnalise6->ID_PRONAC == $UFs->ID_PRONAC) {
+                                echo $UFs->Sigla;
+                            }
+                        ?>
+                    <?php endforeach; ?>
+                    </td>
+                    <td align="center">
+                    <?php
+                        if ($AguardAnalise6->stAcao == 0) {
+                            echo 'Aguardando análise';
+                        }
+                        if ($AguardAnalise6->stAcao == 1) {
+                            echo 'Em análise';
+                        }
+                    ?>
+                    </td>
+                    <td align="center"><img style="cursor: pointer;" border="0" class="abrirJanela" src="../public/img/table_multiple.png" idAvaliacao="<?php echo $AguardAnalise6->idAvaliacaoItemPedidoAlteracao; ?>" alt="Visualizar Histórico" /></td>
+                    <td align="center"><img style="cursor: pointer;" src="../public/img/user_gray.png" onclick="return encaminhar2('<?php echo $AguardAnalise6->ID_PRONAC . $AguardAnalise6->idAcao . $AguardAnalise6->tpAlteracaoProjeto; ?>')" onkeypress="return encaminhar2('<?php echo $AguardAnalise6->ID_PRONAC . $AguardAnalise6->idAcao . $AguardAnalise6->tpAlteracaoProjeto; ?>')" alt="Reencaminhar" /></td>
+                    <td align="center">
+                    <?php
+                        $qntdDias = round(Data::CompararDatas($AguardAnalise6->DataEnvio, date("Y-m-d"))) + 1;
+                        if ($qntdDias < 10) {
+                            echo '<img src="../public/img/bola_verde.gif" alt="< 10 dias de atraso no recebimento da solicitação (data inicial)" />';
+                        } else if ($qntdDias >= 10 && $qntdDias < 20) {
+                            echo '<img src="../public/img/bola_amarelo.gif" alt=">= 10 e < 20 dias de atraso no recebimento da solicitação (data inicial)" />';
+                        } else if ($qntdDias >= 20) {
+                            echo '<img src="../public/img/bola_vermelho.gif" alt="20 dias de atraso no recebimento da solicitação (data inicial)" />';
+                        }
+                    ?>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </table>
+        </div>-->
+
+        </div>
+
+        <!--
+        <table width="95%" summary="">
+            <tr>
+                <td width="4%"  align="center"><img style="cursor: pointer;" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/btn_adicionar.gif" onkeypress="return abrir_fechar_devolvidos()" onclick="return abrir_fechar_devolvidos()" alt="Adicionar" /></td>
+                <td width="88%" style="text-align:left; padding-left:2%;">DEVOLVIDOS APÓS ANÁLISE</td>
+                <td width="8%"  align="center"><?php echo $this->DevolvAnaliseQNTD; ?></td>
+            </tr>
+        </table>-->
+
+        <div id="devolvidos" style="display:inherit;">
+
+            <table class="tabela" summary="produtos2">
+                <tr class="bold">
+                    <td width="90%"><input type="button" name="grid1" id="g1_devolvido_itensdecusto" class="btn_adicionar" title="Expandir" /> DEVOLVIDOS APÓS ANÁLISE</td>
+                    <td width="10%" align="center"><?php echo count($this->DevolvAnalise10); ?></td>
+                </tr>
+            </table>
+        	<div id="div_g1_devolvido_itensdecusto" class="miolo_grid_01 sumir">
+                <table class="tabela" summary="Produtos2">
+                    <tr>
+                        <td class="destacar bold centro" width="7%">PRONAC</td>
+                        <td class="destacar bold centro" width="35%">Nome do projeto</td>
+                        <td class="destacar bold centro" width="15%">Área / Segmento</td>
+                        <td class="destacar bold centro" width="8%">Data de Recebimento</td>
+                        <!--<td class="destacar bold centro" width="7%">Estado(s)</td>-->
+                        <td class="destacar bold centro" width="8%">Status</td>
+                        <td class="destacar bold centro" width="8%">Visualizar Histórico</td>
+                        <td class="destacar bold centro" width="7%">Reencaminhar p/ análise</td>
+                        <td class="destacar bold centro">Visualizar Readequa&ccedil;&atilde;o</td>
+                        <!--<td class="destacar bold centro">Enviar mensagem</td>-->
+                        <td class="destacar bold centro" width="5%">Finalizar</td>
+                        <td class="destacar bold centro" width="5%">Controle</td>
+                    </tr>
+                    <?php foreach ($this->DevolvAnalise10 as $DevolvAnalise10): ?>
+                    <tr class="tblGerenciar_projetos">
+                        <td align="center"><a href="<?php echo $this->baseUrl(); ?>/consultardadosprojeto/index?idPronac=<?php echo $DevolvAnalise10->ID_PRONAC; ?>" target="_blank"><?php echo $DevolvAnalise10->PRONAC; ?></a></td>
+                        <td style="text-align:left;"><?php echo $DevolvAnalise10->NomeProjeto; ?></td>
+                        <td align="center"><?php echo $DevolvAnalise10->areaDesc . " / " . $DevolvAnalise10->segmentoDesc; ?></td>
+                        <td align="center">
+                            <?php
+                                if ($DevolvAnalise10->DataEnvio == '') {
+                                    echo 'Não há registro';
+                                } else {
+                                    echo Data::tratarDataZend($DevolvAnalise10->DataEnvio, 'brasileiro');
+                                }
+                            ?>
+                        </td>
+                        <!--<td align="center">
+                        <?php /*foreach ($this->UFs as $UFs): ?>
+                            <?php
+                                if ($DevolvAnalise10->ID_PRONAC == $UFs->ID_PRONAC) {
+                                    echo $UFs->Sigla;
+                                }
+                            ?>
+                        <?php endforeach;*/ ?>
+                        </td>-->
+                        <td align="center">
+                            <?php
+                                if ($DevolvAnalise10->situacao == 'AP') {
+                                    echo 'Aprovado';
+                                } else {
+                                    echo 'Indeferido';
+                                }
+                            ?>
+                        </td>
+                        <td align="center"><img style="cursor: pointer;" border="0" class="abrirJanela" src="../public/img/table_multiple.png" idAvaliacao="<?php echo $DevolvAnalise10->idAvaliacaoItemPedidoAlteracao; ?>" alt="Visualizar Histórico" /></td>
+                        <td align="center"><img style="cursor: pointer;" src="../public/img/user_gray.png" onclick="return reencaminhar('<?php echo $DevolvAnalise10->ID_PRONAC; ?>')" onkeypress="return reencaminhar('<?php echo $DevolvAnalise10->ID_PRONAC; ?>')" alt="Reencaminhar" /></td>
+                        <td class="centro"><img style="cursor: pointer;" src="../public/img/ico/kdict.png" width="25px" alt="Visualizar Projeto" title="Visualizar Projeto" onclick="redirecionar('<?php echo $this->baseUrl(); ?>/verificarreadequacaodeprojeto/readequacaoitensdecustoconcluido?id=<?php echo $DevolvAnalise10->ID_PRONAC; ?>');" /></td>
+                        <!--<td class="centro"><a target='_blank' href='<?php echo $this->url(array('controller' => 'mantermensagens', 'action' => 'consultarmensagem'), '', true); ?>/idpronac/<?php echo $DevolvAnalise10->ID_PRONAC; ?>'><img src='<?php echo $this->baseUrl() ?>/public/img/buttons/sair-p.gif' title='Enviar mensagem'/></a></td>-->
+                        <td align="center"><img style="cursor: pointer;" src="../public/img/passed.gif" onclick="return encaminharCoordAcomp('<?php echo $DevolvAnalise10->idAcao; ?>')"></td>
+                        <td align="center">
+                        	<?php echo $this->verificarStatusAnalise($DevolvAnalise10->DataEnvio); ?>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+
+	                <?php if (count($this->DevolvAnalise10) <= 0) : ?>
+	                <tr>
+	                	<td colspan="12" class="centro">N&atilde;o existe(m) Projeto(s) com solicita&ccedil;&atilde;o de readequa&ccedil;&atilde;o!</td>
+	                </tr>
+	                <?php endif; ?>
+
+                </table>
+            </div>
+
+
+                <!--
+                <table style="margin:0 0 0 4%;" width="93%" summary="proposta pedagogica">
+                    <tr>
+                        <td width="4%"  align="center"><img style="cursor: pointer;" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/btn_adicionar.gif" onclick="return abrir_fechar('propostapedagogica2')" onkeypress="return abrir_fechar('propostapedagogica2')" alt="Adicionar" /></td>
+                        <td width="88%" style="text-align:left; padding-left:2%;">Proposta Pedagógica</td>
+                        <td width="8%"  align="center"><?php echo count($this->DevolvAnalise6); ?></td>
+                    </tr>
+                </table>
+                <div id="propostapedagogica2" style="display:none;">
+
+                <table width="92%" cellspacing="0" cellpadding="0" style="margin:0 0 0 5%;" summary="Proposta Pedagógica2">
+                    <tr>
+                        <td width="7%" align="center">PRONAC</td>
+                        <td width="35%" style="text-align:left;">Nome do projeto</td>
+                        <td width="15%" align="center">Área / Segmento</td>
+                        <td width="8%" align="center">Data de Recebimento</td>
+                        <td width="7%" align="center">Estado(s)</td>
+                        <td width="8%" align="center">Status</td>
+                        <td width="8%" align="center">Visualizar Histórico</td>
+                        <td width="7%" align="center">Reencaminhar p/ análise</td>
+                        <td width="5%" align="center">Finalizar</td>
+                        <td width="5%" align="center">Controle</td>
+                    </tr>
+                    <?php foreach ($this->DevolvAnalise6 as $DevolvAnalise6): ?>
+                    <tr class="tblGerenciar_projetos">
+                    <td align="center"><a href="<?php echo $this->baseUrl(); ?>/verificarreadequacaodeprojeto/propostapedagogica?id=<?php echo $DevolvAnalise6->ID_PRONAC; ?>"><?php echo $DevolvAnalise6->PRONAC; ?></a></td>
+                        <td style="text-align:left;"><?php echo $DevolvAnalise6->NomeProjeto; ?></td>
+                        <td align="center"><?php echo $DevolvAnalise6->areaDesc . " / " . $DevolvAnalise6->segmentoDesc; ?></td>
+                        <td align="center"><?php
+                            if ($DevolvAnalise6->DataEnvio == '') {
+                                echo 'Não há registro';
+                            } else {
+                                echo Data::tratarDataZend($DevolvAnalise6->DataEnvio, 'brasileiro');
+                            } ?>
+                        </td>
+                        <td align="center">
+                        <?php foreach ($this->UFs as $UFs): ?>
+                            <?php
+                                if ($DevolvAnalise6->ID_PRONAC == $UFs->ID_PRONAC) {
+                                    echo $UFs->Sigla;
+                                }
+                            ?>
+                        <?php endforeach; ?>
+                        </td>
+                        <td align="center">
+                        <?php
+                            if ($DevolvAnalise6->stAcao == 2) {
+                                echo 'Finalizado pelo parecerista';
+                            }
+                        ?>
+                        </td>
+                        <td align="center"><img style="cursor: pointer;" border="0" class="abrirJanela" src="../public/img/table_multiple.png" idAvaliacao="<?php echo $DevolvAnalise6->idAvaliacaoItemPedidoAlteracao; ?>" alt="Visualizar Histórico" /></td>
+                        <td align="center"><img style="cursor: pointer;" src="../public/img/user_gray.png" onclick="return reencaminhar('<?php echo $DevolvAnalise6->ID_PRONAC; ?>')" onkeypress="return reencaminhar('<?php echo $DevolvAnalise6->ID_PRONAC; ?>')" alt="Reencaminhar" /></td>
+                        <td align="center"><img style="cursor: pointer;" src="../public/img/passed.gif" onclick="return encaminharCoordAcomp('<?php echo $DevolvAnalise6->idAcao; ?>')"></img></td>
+                        <td align="center">
+                        <?php
+                            $qntdDias = round(Data::CompararDatas($DevolvAnalise6->DataEnvio, date("Y-m-d"))) + 1;
+                            if ($qntdDias < 10) {
+                                echo '<img src="../public/img/bola_verde.gif"></img>';
+                            } else if ($qntdDias >= 10 && $qntdDias < 20) {
+                                echo '<img src="../public/img/bola_amarelo.gif"></img>';
+                            } else if ($qntdDias >= 20) {
+                                echo '<img src="../public/img/bola_vermelho.gif"></img>';
+                            }
+                        ?>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </table>
+            </div>-->
+
+        </div>
+        <br /><br />
+
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    $('.abrirJanela').click(function(){
+        visualizarhist($(this).attr('idAvaliacao'),'<?php echo $historicoLink; ?>');
+    });
+    $('.abrirJanela').keypress(function(){
+        visualizarhist($(this).attr('idAvaliacao'),'<?php echo $historicoLink; ?>');
+    });
+    
+    $("textarea[maxlength]").keypress(function(event){
+    var key = event.which;
+ 
+    //todas as teclas incluindo enter
+    if(key >= 33 || key == 13) {
+        var maxLength = $(this).attr("maxlength");
+        var length = this.value.length;
+        if(length >= maxLength) {
+            event.preventDefault();
+        }
+    }
+});
+</script>
+
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

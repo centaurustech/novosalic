@@ -1,0 +1,61 @@
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'projetos')); ?>" title="Ir para Projetos">Projetos</a></li>
+        <li class="last">Informa&ccedil;&otilde;es Complementares</li>
+    </ul>
+</div>
+<style type="text/css">
+    <!--
+    .style1 {color: #FF0000}
+    -->
+</style>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(".btn_salvar").click(function(){
+            if($(".necessario").attr('checked') == true) {
+                $(".formulario").submit();
+            } else {
+                alert("Para prosseguir, clique no campo De acordo localizado abaixo da Declaração de Responsabilidade.");
+            }
+        });
+    });
+</script>
+<div id="titulo">
+    <div>Edital Novo <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<div id="conteudo">
+    <form id="formDeclaracao" class="formulario" name="formDeclaracao" action="<?php echo $this->url(array('controller' => 'manterpropostaedital', 'action' => 'editalconfirmar')); ?>" method="post" onSubmit="return vcb(this);">
+        <table class="tabela">
+            <tr class="centro">
+                <th>
+                    Declaracao de Responsabilidade
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <div align='justify'> I - <b>DECLARO</b>, sob penas da lei, que:
+                        <br/><br/>1. São verdadeiras as informações prestadas no preenchimento dos formulários de cadastramento acerca do usuário, do proponente e da proposta apresentada;
+                        <br/><br/>2. Não me enquadro nas vedações dispostas no Art. 11 do Anexo da Portaria MinC nº 29/2009:
+                        <br/><br/>Art. 11. Não poderão se inscrever na seleção pública as entidades privadas que possuam dentre os seus dirigentes:
+                        <br/><br/>I - membro do Poder Executivo, Legislativo, Judiciário, do Ministério Público ou do Tribunal de Contas da União, ou respectivo cônjuge ou companheiro ou parente em linha reta, colateral ou por afinidade até o 2º grau; e
+                        <br/><br/>II - servidor público vinculado ao órgão ou entidade concedente, ou respectivo cônjuge, companheiro ou parente em linha reta, colateral ou por afinidade até o 2º grau;
+                        <br/><br/>3. Sou integralmente responsável pela utilização, na execução da proposta, de documentos, textos, imagens e outros meios cujos direitos autorais estejam protegidos pela legislação vigente;
+                        <br/><br/>4. Autorizo o MinC a divulgar, sem autorização prévia e sem qualquer ônus, de qualquer natureza, em tempo algum, as imagens e informações contidas na inscrição, com fins exclusivamente educacionais e culturais;
+                        <br/><br/>5. Estou ciente de que a minha senha de acesso ao SalicWeb é pessoal e intransferível;
+                        <br/><br/>II - COMPROMETO-ME a manter comprovantes documentais das informações constantes no cadastro das propostas culturais, assim como das fases seguintes do edital (habilitação, seleção, convocação, pagamento, acompanhamento e, se for o caso, prestação de contas). </div>
+                    <br/><br/><br/><span class="style1">
+                        <input type="checkbox" name="nome_do_cb" class="necessario"/> De acordo</span><br />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="hidden"  name="idAgente" value="<?php echo $this->idAgente; ?>" />
+                    <input type="button" style="width: 88px" class="btn_salvar" value="" />
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div id="rodapeConteudo"><span></span></div>
+<br clear="all" />

@@ -1,0 +1,19 @@
+	<table width="95%">
+  <tr>
+    <td colspan="4" class="titulo_tabela">DADOS DO RECURSO</td>
+  </tr>
+  <tr>
+    <td class="fundo_linha2 bold">Proponente</td>
+    <td class="fundo_linha2 bold">Pronac</td>
+    <td class="fundo_linha2 bold">Nome do Projeto</td>
+    <td class="fundo_linha2 bold">Situação</td>
+  </tr>
+ <?php foreach($this->proponente as $tbproponente): ?>
+<tr>
+    <td><?php echo $this->escape($tbproponente->nmproponente);?></td>
+    <td><?php echo $this->escape($tbproponente->pronac);?></td>
+    <td><?php echo $this->escape($tbproponente->nmprojeto);?></td>
+    <td><?php echo $this->escape($tbproponente->situacao);?></td>
+  </tr>
+  <?php endforeach;?> 
+</table>

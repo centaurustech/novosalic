@@ -1,0 +1,107 @@
+<?php
+/**
+ * Login do Sistema
+ * @author Equipe RUP - Politec
+ * @since 12/03/2011
+ * @version 1.0
+ * @package application
+ * @subpackage application.views.scripts.login
+ * @copyright © 2011 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+
+<div id="titulo">
+    <div>Bem Vindo!</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+    <script type="text/javascript">
+	$(document).ready( function(){
+            $("#inicial").validate({
+                // Define as regras
+                rules:{
+                    Login:{
+                        // campoNome será obrigatório (required) e terá tamanho mínimo (minLength)
+                        required: true,
+                        minlength: 14
+                    },
+                    Senha:{
+                        // campoSenha será obrigatório (required)
+                        required: true,
+                        minlength: 2
+                    }
+                },
+                // Define as mensagens de erro para cada regra
+                messages:{
+                    Login:{
+                        required: " Digite o seu CPF!",
+                        minlength: " O CPF / CNPJ deve conter, no mínimo, 11 caracteres!"
+                    },
+                    Senha:{
+                        required: " Digite a sua senha!",
+                        minlength: " A senha deve conter, no mínimo, 2 caracteres!"
+                    }
+                }
+            });
+	});
+
+	function validaSenha()
+	{
+            var data = document.getElementById("Senha").value;
+            //var iChars = "<";
+            data = data.replace("<", "##menor##");
+            data = data.replace(">", "##maior##");
+            data = data.replace("'", "##aspa##");
+
+            document.getElementById("Senha").value = data;
+            //document.inicial.submit();
+            return true;
+        }
+    </script>
+
+    <fieldset>
+        <legend>Login</legend>
+        <form name="inicial" id="inicial"  onsubmit="return validaSenha();" method="POST" action="<?php echo $this->url(array('controller' => 'index', 'action' => 'login')); ?>">
+            <table class="tabela" border="1" style="margin-bottom: 50px; margin-top: 20px;">
+                <thead>
+                    <tr>
+                        <th colspan="2">Ministério da Cultura Apresentação de Proposta Cultural via Web</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td width="10%" class="destacar bold" align="right"><label for="Login">CPF</label></td>
+                        <td width="90%"><input maxlength="18" onkeydown="mascaraCnpjCpf(this);" onkeypress="mascaraCnpjCpf(this);" onkeyup="mascaraCnpjCpf(this);" class="input_simples" type="text" name="Login" id="Login" /></td>
+                    </tr>
+                    <tr>
+                        <td width="10%" class="destacar bold" align="right"><label for="Senha">SENHA</label></td>
+                        <td width="90%"><input class="input_simples" type="password" name="Senha" id="Senha" /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" align="center">
+                            <a href="<?php echo $this->url(array('controller' => 'login', 'action' => 'cadastrarusuario')); ?>" title="Cadastre-se">N&atilde;o sou cadastrado</a>&nbsp;&nbsp;&nbsp;
+                            <a href="<?php echo $this->url(array('controller' => 'login', 'action' => 'solicitarsenha')); ?>" title="Lembrar senha">Esqueci a senha</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" colspan="2">
+                            <input id="btConfirmar" type="submit" value=" " class="btn_confirmar enviar" title="Acessar o sistema" style="width: 88px;" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+    </fieldset>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<br clear="all" />
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->

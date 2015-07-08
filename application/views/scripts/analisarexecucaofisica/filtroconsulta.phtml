@@ -1,0 +1,308 @@
+<?php 
+/**
+ * Alterar Projeto
+ * @author Equipe RUP - Politec
+ * @since 15/01/2011
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.alterarprojeto
+ * @copyright ? 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(".btn_pesquisar").click(function(){
+            $("#formulario")[0].submit();
+        })
+
+        $('#uf').change(function(){
+            var iduf = $(this).val();
+            $.ajax({
+                type: "POST",
+                url:  "<?php echo $this->url(array('controller' => 'ajax', 'action' => 'municipio')); ?>",
+                data: {
+                    iduf : iduf
+                },
+                success: function(data)
+                {
+                    if(!data.error){
+                        $("#municipio").find('option').remove();
+                        $("#municipio").append('<option value="0">--Selecione--</option>');
+                        for (i in data){
+                            $("#municipio").append('<option value="'+data[i].idmun+'">'+data[i].descmun+'</option>');
+                        }
+                    }
+                    else{
+                        $("#municipio").find('option').remove();
+                        $("#municipio").append('<option value="0">--Selecione--</option>');
+                    }
+                }
+                , dataType : 'json'
+            });
+        });
+
+        $("#tpPeriodoExecucao").change(function(){
+            var opcao = $(this).val();
+            if(opcao == '1'){
+                $('#labelTipo1').html('Dt. Início:');
+                $('#labelTipo2').html('Dt. Fim:');
+                $("#spandtExecucaoIni").show();
+                $("#spandtExecucaoFim").show();
+            }else if(opcao == '2'){
+                $('#labelTipo1').html('A partir de:');
+                $('#labelTipo2').html('');
+                $("#spandtExecucaoIni").show();
+                $("#spandtExecucaoFim").hide();
+            }else if(opcao == '3'){
+                $('#labelTipo1').html('');
+                $('#labelTipo2').html('Finaliza em:');
+                $("#spandtExecucaoIni").hide();
+                $("#spandtExecucaoFim").show();
+            }else if(opcao == '4'){
+                $('#labelTipo1').html('De:');
+                $('#labelTipo2').html('até:');
+                $("#spandtExecucaoIni").show();
+                $("#spandtExecucaoFim").show();
+            }else{
+                $('#labelTipo1').html('');
+                $('#labelTipo2').html('');
+                $("#spandtExecucaoIni").hide();
+                $("#spandtExecucaoFim").hide();
+            }
+        });
+
+        $('#pronac').focus(function(){
+            $('.focus').each(function(){
+                $(this).attr('disabled','disabled');
+                if($(this).attr('type') == 'text'){
+                    $(this).val('');
+                }
+                else{
+                    $(this).val(0);
+                }
+
+            });
+        })
+        $('#pronac').blur(function(){
+            if($.trim($(this).val()) == ''){
+                $('.focus').each(function(){
+                    $(this).removeAttr('disabled');
+                });
+            }
+        })
+
+        $(".btn_calendario").blur(function(){
+            dtInicioExecucao = $("#dtInicioExecucao").val().split("/");
+            dtFimExecucao = $("#dtFimExecucao").val().split("/");
+            var datainicio = new Date(dtInicioExecucao[1]+"/"+dtInicioExecucao[0]+"/"+dtInicioExecucao[2]);
+            var datafim    = new Date(dtFimExecucao[1]+"/"+dtFimExecucao[0]+"/"+dtFimExecucao[2]);
+            var diffdias = Math.abs(Math.round((datainicio-datafim)/86400000));
+            gerarRelatorio(datafim, diffdias);
+        });
+
+        // calendário
+        $(function()
+            {
+                $.datepicker.regional['pt-BR'] = {
+                    closeText: 'Fechar',
+                    prevText: '&#x3c;Anterior',
+                    nextText: 'Pr&oacute;ximo&#x3e;',
+                    currentText: 'Hoje',
+                    monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+                    monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+                    dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+                    dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                    dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                    weekHeader: 'Sm',
+                    dateFormat: 'dd/mm/yy',
+                    firstDay: 0,
+                    isRTL: false,
+                    showMonthAfterYear: false,
+                    yearSuffix: ''};
+                $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+                $(".cmpData").datepicker($.datepicker.regional['pt-BR']);
+            });
+    });
+
+    function gerarRelatorio(data1, periodo){
+        var data1 = new Date(data1);
+        var datacalculada = new Date(data1.getTime() - (periodo * 24 * 60 * 60 * 1000));
+        dataatual = data1.getFullYear() + '-' + (data1.getMonth()+1) + '-' + data1.getDate();
+        datacalculada = datacalculada.getFullYear() + '-' + (datacalculada.getMonth()+1) + '-' + datacalculada.getDate();
+        $.ajax({
+            type: "POST",
+            url:  "<?php echo $this->url(array('controller' => 'analisarexecucaofisica', 'action' => 'filtroconsulta')); ?>",
+            data: {
+                datacalculada : datacalculada,
+                periodo : periodo
+            },
+            success: function(data)
+            {
+                $("#relatorio").find('option').remove();
+                $("#relatorio").append('<option value="0">--Selecione--</option>');
+                for(i in data){
+                        $("#relatorio").append('<option value="'+data[i].valor+'">'+data[i].descricao+'</option>');
+                }
+            }
+            , dataType : 'json'
+        });
+    }
+</script>
+
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->baseUrl(); ?>/principal" title="Ir para Início">Início</a></li>
+        <li class="last">Analisar Relat&oacute;rios Trimestrais</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<div id="titulo">
+    <div>Analisar Relat&oacute;rios Trimestrais</div>
+</div>
+<div id="conteudo">
+    <form action="<?php echo $this->url(array('controller' => 'analisarexecucaofisica', 'action' => 'projetos')); ?>" id="formulario" method="post">
+    	<fieldset>
+    	<legend>Filtros de pesquisa</legend>
+        <table class='tabela' style="width:90%">
+        	<tr>
+        		<th colspan="4">Selecionar Campos para Pesquisa</th>
+        	</tr>
+            <tr>
+                <td class="bold" width="120">PRONAC</td>
+                <td colspan="3"><input name='PRONAC' type='text' class='input_simples w100' id='pronac' onkeypress="mascara(this,format_num);" onchange="mascara(this,format_num);" onkeydown="mascara(this,format_num);" /></td>
+            </tr>
+            <tr>
+                <td align="left"><b>Nome do Projeto</b></td>
+                <td align="left" colspan="2">
+                    <select name="tipoPesqNomeProjeto" id="tipoPesqNomeProjeto" style="width: 140px;" class="input_simples focus">
+                        <option value="0"> - Selecione -</option>
+                        <option value="QC" selected>Que contenha</option>
+                        <option value="EIG">Exatamente igual</option>
+                        <option value="IIG">In&iacute;cio igual</option>
+                    </select>
+                    <input type="text" name="NomeProjeto" id="NomeProjeto" class="input_simples w200 cmpNome focus" />
+                </td>
+            </tr>
+            <tr>
+                <td class="bold" width="120">UF</td>
+                <td colspan="3">
+                    <select name='idUF' class='select_simples focus' id='uf'>
+                        <option value='0' selected> - Selecione - </option>
+                        <?php
+                        foreach ($this->uf as $uf) {
+                            echo "<option value='" . $uf->idUF . "'>" . $uf->Sigla . "</option>";
+                        }
+                        ?>
+                    </select>
+                </td>
+                <!--<th>Município</th>
+                <td>
+                    <select name='idMunicipioIBGE' class='select_simples focus' id='municipio'>
+                        <option value="0">--Selecione--</option>
+                    </select>
+                </td>-->
+            </tr>
+            <tr>
+                    <td align="left"><b>Per&iacute;odo de execu&ccedil;&atilde;o</b></td>
+                    <td width="220" align="left">
+                        <select name='tpPeriodoExecucao' class='select_simples focus' id='tpPeriodoExecucao'>
+                            <option value='0'> - Selecione - </option>
+                            <option value='1'>Exatamente Igual</option>
+                            <option value='2'>Que inicia</option>
+                            <option value='3'>Que finaliza</option>
+                            <option value='4'>Entre</option>
+                        </select>
+                    <td align="left">
+                        <span id="camposDatadtExecucao">
+                            <span id="labelTipo1"></span>
+                            <span id="spandtExecucaoIni" style="display: none;">
+                                <input onkeyup="mascara(this, format_data);" name="dtExecucao" id="dtExecucao" maxlength="10" value="" class="input_simples cmpData"/>
+                            </span>
+                            <span id="spandtExecucaoFim" style="display: none;">
+                                &nbsp;<span id="labelTipo2"></span>&nbsp;
+                                <input onkeyup="mascara(this, format_data);" name="dtExecucao_Final" id="dtExecucao_Final" maxlength="10" value="" class="input_simples cmpData"/>
+                            </span>
+                        </span>
+                    </td>
+                </tr>
+            <tr>
+                <td class="bold">Situação do projeto</td>
+                <td colspan="3">
+                    <select name='Situacao' class='select_simples focus'>
+                        <option value='0' selected>- Selecione -</option>
+                        <?php
+                        foreach ($this->situacao as $situacao) {
+                            echo "<option value='" . $situacao->Codigo . "'>" . $situacao->Codigo.' - '.$situacao->Descricao . "</option>";
+                        }
+                        ?>
+                    </select>
+                </td>
+            </tr>
+                <tr>
+                <td class="bold">Mecanismo</td>
+                <td colspan="3">
+                    <select name='mecanismo' class='select_simples focus'>
+                        <option value='0' selected>- Selecione -</option>
+                        <!-- copiado do UC 25, falta ajustar na controller -->
+                        <?php foreach ($this->mecanismo as $mecanismo): ?>
+                        <option value='<?php echo $mecanismo->Codigo;?>'>
+                        <?php echo $mecanismo->Descricao; ?>
+                        </option>
+                     <?php endforeach; ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="bold">Dilig&ecirc;ncia</td>
+                <td colspan="3"> 
+                    <select name='stDiligencia' class='select_simples focus'>
+                        <option value='0' selected>- Selecione -</option>
+                        <option value="d0">A diligenciar</option>
+                        <option value="d1">Diligenciado</option>
+                        <option value="d2">Dilig&ecirc;ncia respondida</option>
+                        <option value="d3">Dilig&ecirc;ncia n&atilde;o respondida</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+<!--                <th>Relatório</th>
+                <td>
+                    <select name='relatorio' class='select_simples habilitar focus' id='relatorio'>
+                        <option  value="0">--Selecione--</option>
+                    </select>
+                </td>-->
+                <td class="bold">Status</td>
+                <td colspan="3">
+                    <select name='stRelatorio' class='select_simples habilitar focus'>
+                        <option value='0' selected>- Selecione -</option>
+                        <option value="1">Aguardando análise</option>
+                        <option value="2">Em análise</option>
+                        <option value="3">Analisado</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+
+        <table class="tabela" style="width:90%">
+            <tr>
+                <td class="centro">
+                    <input class='btn_pesquisar' value=' ' type='button' />
+                    <input type="reset" style="width: 88px" class="btn_limpar" id="btn_limpar" onclick="$('#spandtExecucaoIni').hide(); $('#spandtExecucaoFim').hide(); $('#labelTipo1').html('');$('#labelTipo2').html(''); JSLiberaCampos();" value=""/>
+                </td>
+            </tr>
+        </table> 
+        <br />
+        </fieldset>
+    </form>
+</div><!-- final: conteudo principal #conteudo -->
+
+<!-- início: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+
+<br clear="all" />

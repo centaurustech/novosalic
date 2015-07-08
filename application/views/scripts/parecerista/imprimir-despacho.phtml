@@ -1,0 +1,196 @@
+
+<html>
+    <header>
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+        <title>DESPACHO <?php echo $this->listaDePagamentos[0]['nrDespacho']; ?></title>
+    </header> 
+    
+    <style>
+        body {
+        margin:0;
+        font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+        color:#000;
+        line-height:14pt;
+    }
+    a:link, a:active, a:visited {
+        text-decoration:underline;
+    }
+    a:hover {
+        text-decoration:none;
+    }
+    .tabela { /* tamanho de tabelas com registros */
+        margin:10px auto;
+        width:97%;
+        font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+        border: 1px #999 solid;
+        border-spacing: 1px;
+        empty-cells: show;
+    }
+    table td {
+        background:#fff;
+        padding:4px;
+        color:auto;
+        font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+        border: 1px #999 solid;
+    }
+    table tr.destacar td, table td.destacar {
+        background:#e2e2e2;
+        font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+        border: 1px #999 solid;
+    }
+    table th {
+        background:#cdcdcd;
+        padding:4px;
+        text-transform:uppercase;
+        font-size:11px;
+        border: 1px #999 solid;
+        color: #000;
+    }
+    #brasao{
+        width : 85px;
+        height: 86px;
+    }
+    legend{
+        font-size:13px;
+        font-weight: bold;
+    }
+    .btn_imprimir{
+        border-top:1px solid #efefef;
+        border-left:1px solid #efefef;
+        border-right:1px solid #aaa;
+        border-bottom:1px solid #aaa;
+        margin:0 5px 0 0;
+        width:20px;
+        height:21px;
+        text-align:center;
+        cursor:pointer;
+        background:url('/salic-1.0/public/img/buttons/imprimir.gif') center center no-repeat;
+    }
+    .btn_imprimir:hover{
+        background-color:#fff;
+        border-top:1px solid #aaa;
+        border-left:1px solid #aaa;
+        border-right:1px solid #efefef;
+        border-bottom:1px solid #efefef;
+    }
+    .paginaA4{
+        width:auto;
+        margin: 1.111cm 1cm 1cm 1.005cm;
+        page-break-after: always;
+    }
+    .TituloMinC{
+        font-size: 14px;
+        text-transform: uppercase;
+    }
+    .TituloDoDocumento{
+        font-size: 12px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    .DataDoDocumento{
+        font-size: 10px;
+    }
+    .QntdRegistros{
+        font-size: 12px;
+    }
+    .break {
+        page-break-after: always;
+    }
+    </style>
+
+    <body>
+        <div class="paginaA4">
+            <div id="topo-despacho" style="text-align: center; font-size: 13px; font-weight: 500;">
+                <img src="<?php echo $this->baseUrl();?>/public/img/brasaoArmas.jpg" />
+                <div>Ministério da Cultura</div>
+                <div>Secretaria de Fomento e Incentivo a Cultura</div>
+                <div>Coordenação Técnica do Pronac</div>
+            </div>
+            <br />
+            <br />
+            <div id="topo-despacho-descricao" style="text-align: left; padding-left: 0px; font-size: 15px; font-weight: 500;">
+                <div style="margin-bottom: 4px;">DESPACHO <?php echo $this->listaDePagamentos[0]['nrDespacho']; ?>/COTEP/GAB/SEFIC/MINC</div>
+                <div style="margin-bottom: 4px;">Assunto: Solicitação de Pagamento</div>
+            </div>
+            <br />
+            <br />
+            <div id="topo-despacho-data" style="text-align: right; font-size: 15px; font-weight: 500;">
+                <div style="padding-right: 10px;"><?php echo Data::DataporExtenso(date('d-m-Y'));?></div>
+            </div>
+            <br />
+            <br />  
+            <div style="padding-left: 0px;">À Coordenação-Geral de Execusão Orçamentária e Financeira</div>
+
+            <table class="tabela" border="1">
+                <tr class="titulo_tabela">
+                    <th width="10%">Item</th>
+                    <th width="10%">PRONAC</th>
+                    <th width="55%">PROJETO</th>
+                    <th width="10%">Vinculada</th>
+                    <th width="15%">Valor a ser Pago</th>
+                </tr>
+                <?php $i = 1;?>
+                <?php foreach($this->listaDePagamentos[0]['Projetos'] as $pag):?>
+                <tr>
+                    <td style="text-align: center;"><?php echo $i; ?></td>
+                    <td style="text-align: center;"><?php echo $pag['pronac']; ?></td>
+                    <td><?php echo $pag['NomeProjeto']; ?></td>
+                    <td><?php echo $pag['UnidadeAnalise']; ?></td>
+                    <td style="text-align: right;"><?php echo $this->formatarReal(round($pag['vlPagamento'],1)); ?></td>
+                </tr>
+                <?php $i++; ?>
+                <?php endforeach; ?>
+
+                <tr>
+                    <td style="text-align: right;" colspan="4">Total:</td>
+                    <td style="text-align: right;"><?php echo $this->formatarReal(round($this->listaDePagamentos[0]['vlTotalPagamento'],1)); ?></td>
+                </tr>
+            </table>
+
+            <p class="break" style="text-indent: 30px; text-align: justify;">
+               Encaminho a V.Sa., Relação de Pareceres emitidos pelo(a) parecerista <strong><?php echo $this->pareceristaNome; ?></strong>, 
+               CPF: <?php echo Mascara::addMaskCPF($this->pareceristaCpf); ?>, cujo valor perfaz o montante de <?php echo $this->formatarReal($this->projetoValor); ?> 
+               (<?php echo $this->projetoValorExtenso; ?>), referente ao mês de <?php echo nome_do_mes($this->dataCompetencia->format('m')) ?> de 
+               <?php echo $this->dataCompetencia->format('Y') ?>.
+            </p>
+
+            <p style="text-indent: 30px; text-align: justify;">
+                Solicito que sejam tomadas as providências necessárias para efetuar o pagamento do valor acima citado, tendo em vista que os 
+                serviços foram devidamente realizados.
+            </p>
+            <p style="text-indent: 30px; text-align: justify;">
+                Realizado o pagamento, os respectivos Recibos de Pagamento Autônomo - RPA, serão encaminhados para a Secretaria de Fomento e 
+                Incentivo à Cultura - SEFIC, para fins de registro e controle.
+            </p>
+
+            <?php
+                $counter = 1;
+                foreach($this->assinantesConfigurados as $ass) :
+                    switch ($counter) :
+                        case 1:
+                            echo '<div style="padding: 10px 0px 10px 0px; text-align: left;">Atenciosamente,</div>';
+                            break;
+                        case 2:
+                            echo '<div style="padding: 10px 0px 10px 0px; text-align: left;">De acordo, encaminhe-se ao Ordenador de Despesas.</div>';
+                            echo '<span style="float: right"> Em ___/___/' , date('Y') , '.</span>';
+                            break;
+                        case 3:
+                            echo '<div style="padding: 10px 0px 10px 0px; text-align: left;">De acordo, encaminhe-se à Coordenação-Geral de Execução Orçamentária e Financeira, para providências.</div>';
+                            echo '<span style="float: right"> Em ___/___/' , date('Y') , '.</span>';
+                            break;
+                    endswitch;
+                    echo '<div style=" padding: 30px 0px 10px 0px; text-align: center; font-size: 14px;">';
+                    echo "<b>{$ass->Nome}</b><br />{$ass->Cargo}";
+                    echo '</div>';
+                    $counter++;
+                endforeach;
+            ?>
+        </div>
+    </body>
+</html>
+
+
+<script language="javascript" type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){ window.print(); });
+</script>

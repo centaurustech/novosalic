@@ -1,0 +1,43 @@
+<script type="text/javascript">
+
+	jqAjaxLink('<?php echo $this->Url(array('controller' => 'principalproponente', 'action' => 'listar-comunicados', 'stEstado' => '1', 'stOpcao' => '1')) ?>', '', 'resultadoConsulta');
+
+</script>
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Seja Bem Vindo ao SALIC! <span><?php echo $this->saudacao; ?></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+<div id="confirma"></div>
+
+<?php if(count($this->comunicados) > 0):?>
+
+	<div id="resultadoConsulta"><br><center>Aguarde, carregando dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br></div>
+
+<?php else:?>
+
+	<table class="tabela">
+		<tr>
+			<td align="center">
+				<br /><br /><br /><br />
+				<img alt="" src="<?php echo $this->baseUrl(); ?>/public/img/logo.png" />
+				<br /><br /><br /><br />
+			</td>
+		</tr>
+	</table>
+	
+<?php endif;?>	
+	
+</div>
+
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

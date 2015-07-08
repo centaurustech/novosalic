@@ -1,0 +1,183 @@
+<?php
+/**
+ * Alterar Projeto
+ * @author Equipe RUP - Politec
+ * @since 15/01/2011
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.alterarprojeto
+ * @copyright ? 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+
+//if(isset($this->idPreProjeto)){
+//    include_once 'scripts/alterarprojeto/inc/menu.inc.php';
+//}
+?>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+            <li class="first"><a href="index" title="Ir para Início">In&iacute;cio</a></li>
+            <li><a href="index" title="Painel do Avaliador">Painel do Avaliador</a></li>
+            <li class="last">Avaliar</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== BUTTON VOLTAR ========== -->
+<div id="titulo">
+	<div>Avaliar Projeto <span class="voltar"><a href="javascript:voltar();">Voltar</a></span>      </div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== GRID NOME DA PROPOSTA ========== -->
+<script>
+
+
+  $(document).ready( function() {
+               
+        $('#input_total').numeric(",");
+
+        $('.nota').change( function(){
+            calculaLinha($(this));
+            calculaTotal();
+        });
+
+        $('.btn_salvar').click( function() {
+            $('#formularioAvaliacao').submit();
+        });
+
+        $('#notas').find('.nota').each(function(){calculaLinha($(this));});
+        calculaTotal();
+
+ });
+
+         function calculaLinha(obj){
+            peso  = parseFloat($('#peso_'+$(obj).attr('id')).html());
+            valor = parseFloat($(obj).val());
+            resultado = peso*valor;
+            $('#subtotal_'+$(obj).attr('id')).html(arredondamento(resultado,1));
+        }
+
+        function calculaTotal(){
+             totalpeso = 0;
+           $('#notas').find('.peso').each(function(){
+               novopeso = parseFloat($(this).html());
+               totalpeso = (totalpeso+novopeso);
+               novopeso = 0;
+            });
+            //pega todos os subtotais
+            total = 0;
+            $('#notas').find('.subtotal').each(function(){
+               novototal = parseFloat($(this).html());
+               total = (total+novototal);
+               novototal = 0;
+            });
+            //tira a media
+            total = total/totalpeso;
+            $('#notaltotal').html('<b>'+arredondamento(total,1)+'</b>');
+            $('#campoValorTotal').val(arredondamento(total,1));
+        }
+
+
+        function arredondamento(x, n){
+            if (n < 0 || n > 10) return x;
+            var pow10 = Math.pow (10, n);
+            var y = x * pow10;
+            return Math.round (y) / pow10;
+        }
+
+
+</script>
+
+<div id="conteudo" align="center">
+    <div style="width:80%;">
+        <form name="formularioAvaliacao" id="formularioAvaliacao" method="post" action="<?php echo $this->url(array('controller' => 'avaliarprojetos', 'action' => 'salvarprojeto')); ?>" >
+            <input type="hidden" name="idPreProjeto" value="<?php echo $this->listaProjetos->idPreProjeto ?>" >
+            <input type="hidden" name="nrFormDocumento" value="<?php echo $this->listaProjetos->nrFormDocumento ?>" >
+            <input type="hidden" name="nrVersaoDocumento" value="<?php echo $this->listaProjetos->nrVersaoDocumento ?>" >
+            <input type="hidden" name="campoValorTotal" id="campoValorTotal" value="" >
+                <table class="tabela" border="0" cellpadding="0" cellspacing="1" style="margin-top: 20px;">
+                    <tr>
+                        <th class="centro">Avalia&ccedil;&atilde;o</th>
+                    </tr>
+                </table>
+                <table class="tabela notas" id="notas">
+                    <tr class="destacar">
+                        <td align="center" colspan="4"><b>Identifica&ccedil;&atilde;o</b></td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">
+                            <div style="width: 27%; float: left; margin-left: 3%"><b>PRONAC</b>:<br><?php echo $this->listaProjetos->AnoProjeto.$this->listaProjetos->Sequencial ?></div>
+                            <div style="width: 70%; float: left;"><b>Nome do Projeto</b>:<br><?php echo $this->listaProjetos->NomeProjeto ?></div>
+                        </td>
+                    </tr>
+                    <tr class="destacar">
+                        <td align="center" colspan="4"><b>Crit&eacute;rios de Avalia&ccedil;&atilde;o</b></td>
+                    </tr>
+                    <tr>
+                        <td width="90%"><b>Crit&eacute;rio</b></td>
+                        <td><b>Peso</b></td>
+                        <td><b>Nota</b></td>
+                        <td><b>Subtotal</b></td>
+                    </tr>
+                    <?php foreach ($this->perguntas as $pergunta) { ?>
+                    <tr>
+                        <td><?php echo $pergunta['dsPergunta'] ?></td>
+                        <td class="peso" id="peso_<?php echo $pergunta['nrPergunta'] ?>">
+                        	<?php echo ($pergunta['nrPeso'] >= 1) ? $pergunta['nrPeso'] : 1 ?>
+                        	<input type="hidden" name="nrPeso[]" value="<?php echo ($pergunta['nrPeso'] >= 1) ? $pergunta['nrPeso'] : 1 ?>" />
+                        </td>
+                        <td>
+                            <select name="nota_<?php echo $pergunta['nrPergunta'] ?>" id="<?php echo $pergunta['nrPergunta'] ?>" class="input_simples w100 nota">
+                            <?php
+                                $i = $pergunta['nrNotaInicio'];
+                                while ($i <= $pergunta['nrNotaFim']) {
+                                echo '<option value="'.$i.'"';
+                                if (floatval($pergunta['dsRespostaSubj']) == floatval($i)){ echo ' selected '; }
+                                echo '>'.floatval($i).'</option>';
+                                $i = $i + $pergunta['nrNotaVariacao'];
+                                }
+                             ?>
+                            </select>
+                            <input type="hidden" value="<?php echo $pergunta['nrOpcao'] ?>" name="Opcao_<?php echo $pergunta['nrPergunta'] ?>" >
+                            <input type="hidden" value="<?php echo $pergunta['nrPergunta'] ?>" name="perguntas[]" >
+                        </td>
+                        <td id="subtotal_<?php echo $pergunta['nrPergunta'] ?>" class="subtotal">0</td>
+                   </tr>
+                   <?php } ?>
+                   <tr>
+                       <td colspan="3" align="right" style="color:#f00"><b>Total</b></td>
+                       <td style="color:#f00" id="notaltotal"><b>4.6</b></td>
+                   </tr>
+            </table>
+            <table class="tabela" border="0" cellpadding="0" cellspacing="1" style="margin-top: 20px;">
+                    <tr>
+                        <td colspan="2" class="centro">
+                            <input class="btn_salvar" id="btn_salvar" value="" type="submit"/>
+                        </td>
+                    </tr>
+            </table>
+        </form>
+
+
+
+
+    </div>
+</div>
+
+
+
+
+<!-- in?­cio: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+<br clear="all" />
+
+<iframe name="enviar_arquivo" id="enviar_arquivo" style="height: 20px; display: none;"></iframe>
+</body>
+</html>

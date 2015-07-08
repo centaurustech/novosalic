@@ -1,0 +1,87 @@
+<script> 
+    function vinculaResposavel(idAgente)
+    {
+            $("#acao").dialog({
+            title :'Vincular',
+            resizable: false,
+            width:400,
+            height:200,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'Não': function() {
+                    $(this).dialog('close');
+                },
+                'Sim': function() {
+                    location.href="<?php echo $this->url(array('controller' => 'vincularresponsavel', 'action' => 'desvincularresponsavel')); ?>?idAgente="+idAgente;
+                }
+            }
+        });
+        $("#acao").dialog('open');
+    }
+
+</script>
+<div id="acao" style="display:none">Deseja realmente desvincular este responsável?</div>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para Início">Início</a></li>
+        <li class="last">Responsável Vinculado</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Desvincular Responsável<span>ID #23A</span> <span class="voltar"><a href="#" onclick="redirecionar('<?php echo $this->url(array('controller' => 'vincularresponsavel', 'action' => 'index')); ?>');">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+    <fieldset>
+
+        <table class="tabela" summary="Esta tabela contém os dados dos Agentes pertencentes á Instituiçãoe e que podem ser desvinculados">
+            <tr>
+                <td colspan="3" class="titulo_tabela">Responsável Vinculado</td>
+            </tr>
+            <tr>
+                <th>CPF</th>
+                <th >Nome</th>
+                <th >Desvincular</th>
+            </tr>
+       <?php foreach ($this->buscaragentes as $agentes) {       ?>
+
+
+            <tr>
+                <td ><?php echo $agentes->CNPJCPF ?></td>
+                <td ><?php echo $agentes->Descricao ?></td>
+                <td style="cursor:hand" onclick="vinculaResposavel('<?php echo $agentes->idAgente ?>')"><img alt="vincular" src="<?php echo $this->baseUrl()?>/public/img/passed.gif"></td>
+            </tr>
+
+
+        <?php }?>
+
+
+        </table>
+
+
+    </fieldset>
+
+
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

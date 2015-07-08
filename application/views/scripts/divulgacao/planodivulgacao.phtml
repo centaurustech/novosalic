@@ -1,0 +1,131 @@
+<?php
+require_once "scripts/manterpropostaincentivofiscal/inc/menu.inc.php"; // menu
+$EditarDivulgacao                 = $this->url(array('controller' => 'divulgacao', 'action' => 'editardivulgacao'));
+$ExcluirDivulgacao                 = $this->url(array('controller' => 'divulgacao', 'action' => 'excluirdivulgacao'));
+$IncluirDivulgacao                 = $this->url(array('controller' => 'divulgacao', 'action' => 'novodivulgacao'));
+?>
+<!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== -->
+<script>
+    $(document).ready(function(){
+        <?php if(isset($this->movimentacaoAtual) && $this->movimentacaoAtual != '95'): ?>
+             //DESABILITA ALTERACOES NOS DADOS DO FORMULARIO (INCLUIR/ALTERAR/EXCLUIR)
+             JSBloquearAlteracaoFormulario();
+        <?php endif; ?>
+    });
+
+    function excluir(cod){
+        
+        $("#confirm").dialog("destroy");
+        $("#confirm").dialog
+        ({
+            width:350,
+            height:150,
+            EscClose:false,
+            modal:true
+            ,
+            buttons:
+            {
+                'Cancelar':function()
+                {
+                    $(this).dialog('close'); // fecha a modal
+                },
+                'Confirmar':function()
+                {
+                    window.location.href="<?php echo $this->url(array('controller'=>'divulgacao', 'action'=>'excluirdivulgacao')); ?>?cod="+cod+"&idPreProjeto=<?php if($_GET['idPreProjeto'])echo $_GET['idPreProjeto'];?>";
+                }
+            }
+        });
+
+        $("#confirm").dialog('open');
+    }
+</script>
+<div id="confirm" title="Confirma&ccedil;&atilde;o" style="display: none">Tem certeza que deseja excluir o registro?</div>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'projetos')); ?>" title="Projetos">Projetos</a></li>
+        <li class="last">Divulga&ccedil;&atilde;o</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INICIO TITULO ========== -->
+<div id="titulo">
+    <div>Divulga&ccedil;&atilde;o </div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+
+<!-- ========== INICIO CONTEUDO ========== -->
+<div id="conteudo">
+
+    <form id="formDivulgacao" method="post">
+        <input type="hidden" name="idpeca" id="idpeca" value=""/>
+        <input type="hidden" name="idveiculo" id="idveiculo" value=""/>
+        <input type="hidden" name="iddivulgacao" id="iddivulgacao" value=""/>
+    </form>
+    <table class="tabela">
+        
+            
+        <tr class="titulo_tabela">
+            <th width="40%">Pe&ccedil;a</th>
+            <th width="40%">Ve&iacute;culo</th>
+            <th width="20%" nowrap>A&ccedil;&otilde;es</th>
+        </tr>
+                <?php
+                    foreach ($this->itensDivulgacao as $divulgacao){
+                        //Zend_Debug::dump($divulgacao);
+                        ?>
+                            <tr class="fundo">
+                                <!--<td class="centro"><img border="0" title="Editar" class="editar" veiculo="<?php echo $divulgacao->idVeiculo ?>" peca="<?php echo $divulgacao->idPeca ?>" divulgacao="<?php echo $divulgacao->idPlanoDivulgacao ?>" src="<?php echo $this->baseUrl(); ?>/public/img/ico/edit.png"></td>
+                                <td class="centro"><img border="0" title="Excluir" class="excluir" veiculo="<?php echo $divulgacao->idVeiculo ?>" peca="<?php echo $divulgacao->idPeca ?>" divulgacao="<?php echo $divulgacao->idPlanoDivulgacao ?>" src="<?php echo $this->baseUrl(); ?>/public/img/btn_excluir.gif"></td>-->
+
+                                <td class="centro"><?php echo $divulgacao->Peca ?></td>
+                                <td class="centro"><?php echo $divulgacao->Veiculo ?></td>
+                                <td class="centro" nowrap>
+                                    <input type="button" id="btn_editar" name="btn_editar" style="width: 88px" class="btn_editar" onclick="window.location.href='<?php echo $this->url(array('controller'=>'divulgacao', 'action'=>'editardivulgacao')); ?>?cod=<?php echo $divulgacao->idPlanoDivulgacao;?>&idPreProjeto=<?php if($_GET['idPreProjeto'])echo $_GET['idPreProjeto'];?>'">
+                                    <input type="button" id="btn_excluir" name="btn_excluir" style="width: 88px" class="btn_exclusao" onclick="excluir(<?php echo $divulgacao->idPlanoDivulgacao; ?>);">
+                                </td>
+                            </tr>
+                       <?php
+                    }
+                 ?>
+        
+        
+    </table>
+
+    <div id="miolo"> <!-- ========== INICIO MIOLO IDENTIFICACAO ========== -->
+        <table class="tabela" style="width: 100%;" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td align="center">
+                   
+                    <!--<a href="<?php echo ''?>"    anterior="true"  id="<?php ?>" ><img border="0" title="Anterior" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/anterior-off.gif"></a>
+                    <a href="<?php echo ''?>"    proximo="true"  id="<?php ?>" ><img border="0" title="Proximo" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/proximo-off.gif"></a>-->
+                    <input type="button" onclick="window.location='<?php echo $IncluirDivulgacao;?>?idPreProjeto=<?php echo $this->idPreProjeto;?>'" class="btn_novo">
+                </td>
+            </tr>
+        </table>
+    </div>
+
+</div><!-- ========== FIM CONTEUDO ========== -->
+
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />
+<script>
+
+    $(document).ready(function(){
+        $('#conteudo .editar').click(function(){
+            $('#idpeca').val($(this).attr('peca'));
+            $('#idveiculo').val($(this).attr('veiculo'));
+            $('#iddivulgacao').val($(this).attr('divulgacao'));
+            //alert($(this).attr('peca'));
+            $('#formDivulgacao').attr('action','<?php echo $EditarDivulgacao;?>');
+            $('#formDivulgacao').submit();
+
+        });
+
+    });
+    
+
+</script>

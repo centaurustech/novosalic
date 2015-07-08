@@ -1,0 +1,119 @@
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->baseUrl(); ?>" title="Início">Início</a></li>
+        <li class="last">Prorrogação do Prazo</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Prorrogação do Prazo <span>ID #23A</span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+<table class="tabela"  >
+
+            <tr>
+            	<td class="titulo_tabela">Projeto Cultural</td>
+            </tr>
+            <tr align="center">
+            	<th>Prorrogação do prazo</th>
+            </tr>
+            <tr>
+            	<td >&nbsp;</td>
+            </tr>
+</table>
+<table class="tabela"  >
+            <tr>
+                <td class="titulo_tabela"> Identificação</td>                
+            </tr>
+</table>
+<table class="tabela"  >            
+            <?php foreach ($this->resposta as $resposta) {?>
+            <tr>
+                <td><strong>Pronac:</strong> <br>         <?php echo $this->escape($resposta->idPronac); ?></td>
+                <td><strong>Nome do Projeto:</strong> <br><?php echo $this->escape($resposta->NomeProjeto); ?></td>
+           
+            </tr>
+                     
+           <tr>
+                <td><strong>CNPJ / CPF:</strong> <br>
+                <?php 
+                	$arr2 = str_split($this->escape($resposta->CgcCpf), 3); 
+                	echo $arr2["0"].".".$arr2["1"].".".$arr2["2"]."-".$arr2["3"]; 
+                ?>
+                </td>
+                <td><strong>Proponente:</strong> <br><?php echo $this->escape($resposta->Nome); ?></td>
+           </tr>
+           <?php } ?>
+</table>
+<table class="tabela" >
+	            <tr>
+	            
+	            <tr>
+	            	<td bgcolor="#cccccc" colspan="2"> 
+	            	<?php foreach ($this->resposta as $resposta) {?>		            
+	            	<a href="<?php echo $this->baseUrl(); ?>/solicitaralteracaoprojeto/prorrogacaoprazocapacitacao/pron/<?php echo $this->escape($resposta->idPronac); ?>/prop/<?php echo $this->escape($resposta->CgcCpf); ?>">+</a> Prorrogação de Prazo - Captação</td>
+	            	<?php } ?>
+	            </tr>	            
+</table>
+	<table class="tabela"  >
+	            
+	            <tr>
+	            	<td ><label for="dtInicioC">*Data Início: </label><input type="text" name="dtInicioC" size="10" maxlength="10" onkeyup="mascara(this, format_data);" disabled="disabled"/>
+	            	     &nbsp;&nbsp;&nbsp;<label for="dtFimC">*Data Fim: </label><input type="text" name="dtFimC" size="10" maxlength="10" onkeyup="mascara(this, format_data);" disabled="disabled"/></td>
+	            </tr>
+	            <tr>
+	            	<td></td>
+	            </tr>
+	            <tr>
+	            	<td ><label for="justificativaC">*Justificativa</label><br />
+	            	<textarea name="justificativaC" id="justificativaC" cols="70"  rows="10" maxlength="600" disabled="disabled"></textarea></td>
+	            </tr>
+	            <tr>
+	            	<td >Anexos<br /><input type="file" name="anexo1" disabled="disabled"/></td>
+	            
+	            </tr>
+           
+	            <tr>
+	            	<?php foreach ($this->resposta as $resposta) {?>
+	            	<td bgcolor="#cccccc" colspan="2"><a href="<?php echo $this->baseUrl(); ?>/solicitaralteracaoprojeto/prorrogacaoprazoexecucao/pron/<?php echo $this->escape($resposta->idPronac); ?>/prop/<?php echo $this->escape($resposta->CgcCpf); ?>">+</a>Prorrogação de Prazo - Execução</td>
+	            	<?php } ?>
+	           
+	            </tr>
+	            <tr>
+	            	<td ><label for="dtInicioE">*Data Início: </label><input type="text" name="dtInicioE" id="dtInicioE" size="10" maxlength="10" onkeyup="mascara(this, format_data);" disabled="disabled"/>
+	            	     &nbsp;&nbsp;&nbsp;<label for="dtFimE">*Data Fim:  </label><input type="text" name="dtFimE" size="10" maxlength="10" onkeyup="mascara(this, format_data);" disabled="disabled"/></td>
+	           
+	            </tr>
+	            <tr>
+	            	<td ><label for="justificativaE">*Informe a Justificativa da execução física do projeto (metas físicas REALIZADAS e A REALIZAR do projeto)</label><br />
+	            	<textarea name="justificativaE" id="justificativaE" cols="70"  rows="10" maxlength="600" disabled="disabled"></textarea></td>
+	            </tr>
+	            <tr>
+	            	<td >Anexos<br /><input type="file" name="anexo2" disabled="disabled"/></td>
+	            </tr>
+	            <tr>
+	            	<td ><input type="submit" title="Buscar" value="Alterar" /><input type="button" title="Cancelar" value="Cancelar" onkeypress="redirecionar('<?php echo $this->baseUrl(); ?>/solicitaralteracaoprojeto/index')" onclick="redirecionar('<?php echo $this->baseUrl(); ?>/solicitaralteracaoprojeto/index')"/></td>	            	
+	            </tr>
+	</table>
+	
+	</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

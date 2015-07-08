@@ -1,0 +1,374 @@
+<script type="text/javascript">
+$(document).ready(function(){
+
+$(".cmpCnpjCpf").attr("maxlength", "18").keyup(function(){
+    mascaraCnpjCpf(this);
+});
+
+
+$("#areacultural").change(function(){
+    
+    var area = $(this).val();
+    segmento(area,null);
+});
+
+/*$('#nrprocesso').focus(function(){
+    var data = $(this).val();
+    if(data.length != ''){
+        $(this).val(data.replace( /[^0-9]/g, '' ));
+        $(this).attr("maxlength", "20");
+    }
+    //alert(data)
+    
+})*/
+    
+
+   
+
+$('#nrprocesso').blur(function(){
+        $('#validarProcesso').html('').css('display','block');
+        var nrprocesso = $('#nrprocesso').val();
+        $(this).attr("maxlength", "20");
+        if(nrprocesso.length >= 17){
+            $('#nrprocesso').val(mascaraProcesso(nrprocesso));
+        }
+       nrprocesso = $('#nrprocesso').val();
+        
+        $('#validarProcesso').html("<div class='carregando'><img src='public/img/ajax.gif' alt='Aguarde...' /><br />CARREGANDO</div>");
+        
+        $.ajax({
+            url : '<?php echo $this->url(array('controller' => 'cadastrarprojeto', 'action' => 'validacaoprocesso')); ?>',
+            type: 'POST',
+            async : false,
+            data : {nrprocesso : nrprocesso },
+            success : function(data){
+                $('#validarProcesso').html(data)
+            }
+        });
+        
+        
+        if($('#validarProcesso').html() == 'ok'){
+            $('#validarProcesso').css('display','none');
+        } else {
+            $('#validarProcesso').css('display','block');
+        }
+});
+
+
+$('#cnpfcpf').blur(function(){
+    var CgcCpf = $(this).val();
+    //if(CgcCpf.length == 14 || CgcCpf.length == 18 ){
+        $('#nomeProponente').html('Carregando...');
+        $.post('<?php echo $this->url(array('controller' => 'cadastrarprojeto', 'action' => 'validaragente')); ?>',
+                {CgcCpf : CgcCpf}, 
+                function(data){
+                    if(data.agente){
+                        $('#nomeProponente').html('');
+                        $('#nomeProponente').html(data.descricao);
+                    } else{
+                        $("#erro").dialog("destroy");
+                        $("#erro").html("Agente não cadastrado no Sistema.<br />Deseja cadastra-lo ? ");
+                        $("#erro").dialog({
+                        resizable: false,
+                        title: 'Atenção!',
+                        width:400,
+                        height:220,
+                        modal: true,
+                        buttons : {
+                            'Sim' : function(){
+                                redirecionar('<?php echo $this->baseUrl() ?>' + '/agentes/incluiragente/cpf/' + CgcCpf.replace( /[^0-9]/g, '' ) + '/cadastrarprojeto/fnc');
+                            },
+                            'Não' : function(){
+                                $('#cnpfcpf').val('');
+                                 $('#nomeProponente').html('');
+                                $(this).dialog('close');
+                            }
+
+                        }
+                    });
+                    $('.ui-dialog-titlebar-close').remove();
+                    }
+                } ,
+                    'json'
+
+        );
+    //}
+});
+
+$("#btn_salvar").click(function(){
+
+    var preenchimento = false;
+    $('.obrigatorio').each(function(){
+        if($.trim($(this).val()) == '')
+            preenchimento = true;
+    });
+
+    if(preenchimento) {
+        $("#erro").dialog("destroy");
+        $("#erro").html("Dados obrigátorios não informados.");
+        $("#erro").dialog({
+            resizable: false,
+            title: 'Atenção!',
+            width:400,
+            height:220,
+            modal: true,
+            buttons : {
+                'Ok' : function(){
+                    $(this).dialog('close');
+                }
+            }
+        });
+        $('.ui-dialog-titlebar-close').remove();
+    }else{
+    	//var nrprocesso = $('#nrprocesso').val();
+    	//var ok = enviar_pag('<?php echo $this->url(array('controller' => 'cadastrarprojeto', 'action' => 'validacaoprocesso')); ?>', 'nrprocesso='+encodeURIComponent(nrprocesso), 'validarProcesso');
+
+    	if ($('#validarProcesso').html() != 'ok')
+    	{
+			return false;
+    	}else{    	  	
+			$('#formCadastraProjeto').submit();
+        }
+    }
+});
+
+
+
+function segmento(cdarea, segmento){
+$.ajax({
+    async : true,
+    data:{
+        area : cdarea,
+        areacultura : 'ok'
+    },
+    url:'<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'coordenadoracompanhamento')); ?>',
+    type:'POST'
+    , success : function(valor)
+    {
+        $("#segmento").find('option').remove();
+        $("#segmento").append("<option value=''>Selecione...</option>");
+        for(i in valor)
+        {
+            if(segmento == valor[i].cdsegmento)
+            {
+                $("#segmento").append("<option value='"+valor[i].cdsegmento+"' selected='selected'>"+valor[i].descsegmento+"</option>");
+            }
+            else
+            {
+                $("#segmento").append("<option value='"+valor[i].cdsegmento+"'>"+valor[i].descsegmento+"</option>");
+            }
+
+        }
+    }
+    ,dataType:'json'
+});
+}
+
+/*--Calendario-->*/
+
+$(function()
+	    {
+	        $.datepicker.regional['pt-BR'] = {
+	            closeText: 'Fechar',
+	            prevText: '&#x3c;Anterior',
+	            nextText: 'Pr&oacute;ximo&#x3e;',
+	            currentText: 'Hoje',
+	            monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+	            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+	            dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+	            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+	            dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+	            weekHeader: 'Sm',
+	            dateFormat: 'dd/mm/yy',
+	            firstDay: 0,
+	            isRTL: false,
+	            showMonthAfterYear: false,
+	            yearSuffix: ''};
+	        $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+	        $("#dtprotocolo").datepicker($.datepicker.regional['pt-BR']);
+	        //$("#dtFimExecucao").datepicker($.datepicker.regional['pt-BR']);
+
+	    });
+
+
+});
+
+                    
+//-->
+</script>
+<link type="image/x-icon" rel="shortcut icon" href="/NovoSalic/public/img/favicon.ico" />
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="index.phtml" title="Ir para Início">Início</a></li>
+        <li class="last">Cadastrar Projetos FNC	</li>
+    </ul>
+</div>
+
+<div id="titulo">
+    <div>
+        Cadastrar Projetos FNC
+        <span>ID #23A</span>
+        <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span>
+    </div> 
+</div>
+
+<div id="conteudo">
+    
+    
+        <form action="<?php echo $this->url(array('controller' => 'cadastrarprojeto', 'action' => 'cadastrarprojetos')); ?>" name="formCadastraProjeto" method="POST" id="formCadastraProjeto">
+        <!-- ========== INÍCIO TABELA DADOS ========== -->
+        <?php //require_once "inc/menuabas.phtml"; // menu abas ?>
+        <div id="tabDados">
+            <table class="tabela">
+                
+                <tr>
+                    <th colspan="4" class="centro">Cadastrar Projetos FNC</th>
+                </tr>
+                <tr>
+                    <td>
+                        PRONAC *
+                        <br>
+                        <input size="30" disabled="disabled" class="select_simples focus" type="text" name="nrpronac" value="" />
+                    </td>
+                    <td>
+                        Nome do Projeto *
+                        <br>
+                        <input size="60" class="select_simples focus obrigatorio" type="text" id="nomedoprojeto" name="nomedoprojeto" value="" />
+                    </td>
+                    <td colspan="2">
+                        UF *
+                        <br>
+                         <select name='uf' class="select_simples focus obrigatorio" onchange='carregar_combo(this.value,"cidade","<?php echo $this->url(array('controller' => 'cidade', 'action' => 'combo')); ?>","- Selecione -");'>
+                    <option value='' selected>--Selecione--</option>
+                        <?php foreach ($this->comboestados as $estado): ?>
+                        <option value='<?php echo $estado->descricao; ?>'>
+                            <?php echo $estado->descricao; ?>
+                        </option>
+                        <?php endforeach; ?>
+                    </select>
+                         <div id='mensagemModalidade'></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Área *
+                        <br>
+                        <select id="areacultural" name="areacultural" class="select_simples focus obrigatorio">
+                    <option value='' selected>--Selecione--</option>
+                <?php foreach ($this->comboareasculturais as $areacultural): ?>
+                        <option value='<?php echo $areacultural->id; ?>'>
+                    <?php echo $areacultural->descricao; ?>
+                    </option>
+                <?php endforeach; ?>
+                    </select>
+                    </td>
+                    <td>
+                        Segmento *
+                        <br />
+                      <select name='segmento' id="segmento" class="select_simples focus obrigatorio">
+                        <option value='0' selected>--Selecione--</option>
+                        </select>
+                    </td>
+                    <td colspan="2">
+                        Mecanismo *
+                        <br />
+                       <select name="mecanismo" class="select_simples focus obrigatorio">
+                    <option value='' selected>--Selecione--</option>
+                <?php foreach ($this->mecanismo as $mecanismo): ?>
+                        <option value='<?php echo $mecanismo['Codigo']; ?>'>
+                    <?php echo $mecanismo['Descricao']; ?>
+                    </option>
+                <?php endforeach; ?>
+                    </select>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td colspan="1">
+                        CPF/CNPJ *
+                        <br />
+                        <input type="text" class="select_simples focus obrigatorio" style="margin-right: 10px" onkeyup="mascaraCnpjCpf(this);" name="cnpfcpf" id="cnpfcpf" maxlength="18"/>
+                        <span id="nomeProponente"></span>
+                    </td>
+                    <td colspan="1">
+                        Data do Protocolo *
+                        <br>
+                            <input type="text" class="btn_calendario-off select_simples focus obrigatorio" name="dtprotocolo" id="dtprotocolo" onkeyup="mascara(this, format_data);" maxlength="10" class="input_simples btn_calendario w100 focus"/>
+                    </td>
+                    <td colspan="2">
+                        Nr.Processo *
+                        <br>
+                        <input type="text" maxlength="20" class="select_simples focus obrigatorio"  name="nrprocesso" id="nrprocesso" /> <span id="validarProcesso" class="red float_center"><span>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="4" class="centro">Situação do Projeto</th>
+                </tr>
+                <tr>
+                    <td>
+                           Situação *
+                        <br>
+                        <select style="width:520px;" name="situacao" id="situacao" class="select_simples focus obrigatorio">
+                            <option  value="">--Selecione--</option>
+                            <?php foreach ($this->situacoes as $situacao): ?>
+                            <option  value="<?php echo $situacao->Codigo; ?>"><?php echo $situacao->Codigo . ' - ' . $situacao->Descricao; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+
+                            <div id='mensagemTipoFundo'></div>
+                    </td>
+                    <td colspan="3">Modalidade *
+                       <br>
+                        <select name="modalidade" class="select_simples focus obrigatorio">
+                            <option value='' selected>--Selecione--</option>
+                            <?php foreach ($this->modalidade as $modalidade): ?>
+                                <option value='<?php echo $modalidade->id; ?>'>
+                            <?php echo $modalidade->descricao; ?>
+                            </option>
+                            <?php endforeach; ?>
+                        </select>
+                            <div id="mensagemObjeto"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="2" class="centro">Providência Tomada *</th>
+                    <th colspan="2" class="centro">Valores do Projeto *</th>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <textarea name="providenciatomada" id="providenciatomada" class="select_simples focus obrigatorio" rows="8" cols="110px"></textarea>
+                        <div id="mensagemObjeto"></div>
+                    </td>
+                    <td colspan="2">
+                    <fieldset>
+                        <legend>Fundo Nacional da Cultura/Recurso do Tesouro</legend><br>
+                        Valor de Custeio: R$ <input type="text" name="VlCusteio" size="10" onkeyup="mascara(this, format_moeda);" class="select_simples focus obrigatorio" /><br /><br>
+                        Valor de Capital: R$ <input type="text" name="VlCapital" size="10" onkeyup="mascara(this, format_moeda);"  class="select_simples focus obrigatorio" /><br />
+                        <br>
+                    </fieldset>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="4" class="centro">Resumo do Projeto *</th>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <textarea name="ResumoProjeto" id="ResumoProjeto" class="select_simples focus obrigatorio" rows="8" cols="110px"></textarea>
+                    </td>
+                </tr>
+            </table>
+            <p align="center">
+                <input class="btn_salvar" name="salvar" id="btn_salvar" value="" type="button" />
+                <input type="button" name="cancelar" class="btn_cancelar" onclick="voltar();">
+            </p>
+        </div>
+        </form>
+</div>
+<!-- ========== FIM TABELA DADOS ========== -->
+    
+    
+<div id="erro" ></div>
+<div id="rodapeConteudo" ><span></span></div>
+<br clear="all" />

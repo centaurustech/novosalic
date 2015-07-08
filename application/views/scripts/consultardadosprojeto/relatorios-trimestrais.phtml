@@ -1,0 +1,74 @@
+<?php header('Content-Type: text/plain; charset=ISO-8859-1'); ?>
+<?php $PeriodoData = Data::tratarDataZend($this->inicioPeriodo, 'Brasileira'); ?>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        //ATUALIZA TITULO DA PAGINA
+        window.parent.$("#titulo").html("<div>Relat&oacute;rios Trimestrais</div>");
+        window.parent.$("#caminhoLocalAtual").html("Relat&oacute;rios Trimestrais");
+    });
+</script>
+
+<table class="tabela">
+    <tr class="destacar">
+        <td align="center"><b>PRONAC</b></td>
+        <td align="center"><b>Nome do Projeto</b></td>
+    </tr>
+    <tr class="linha">
+        <td align="center"><?php echo $this->DadosProjeto->pronac; ?></td>
+        <td align="center"><?php echo $this->DadosProjeto->nomeProjeto; ?></td>
+    </tr>
+    <!--<tr>
+        <th align="center" width="30%">CNPJ/CPF:</th>
+        <th align="center">Proponente:</th>
+    </tr>
+    <tr class="linha">
+        <td align="center"><?php //echo (strlen($this->DadosProjeto->CNPJCPF) > 11) ? Mascara::addMaskCNPJ($this->DadosProjeto->CNPJCPF) : Mascara::addMaskCPF($this->DadosProjeto->CNPJCPF); ?></td>
+        <td align="center"><?php //echo $this->DadosProjeto->NomeProponente; ?></td>
+    </tr>-->
+</table>
+
+<table class="tabela">
+    <?php if(count($this->RelatorioCadastrados) > 0) { ?>
+    <tr>
+        <td width="1" class="destacar bold">N&ordm;&nbsp;Relat&oacute;rio</td>
+        <td width="30%" class="destacar bold">Per&iacute;odo</td>
+        <td width="35%" class="destacar bold">Data de Cadastro</td>
+        <td width="35%" class="destacar bold">Status</td>
+    </tr>
+    <?php foreach ($this->RelatorioCadastrados as $relCadastrados) { ?>
+    <tr>
+        <td align="center"><?php echo $relCadastrados->nrComprovanteTrimestral; ?>&ordm;</td>
+        <td><?php echo Data::tratarDataZend($relCadastrados->dtInicioPeriodo, 'Brasileira').' at&eacute; '.Data::tratarDataZend($relCadastrados->dtFimPeriodo, 'Brasileira');
+                $PeriodoData = Data::tratarDataZend($relCadastrados->dtFimPeriodo, 'Brasileira');
+                list($dia, $mes, $ano) = explode('/', $PeriodoData);
+                $dias = 1;
+                $PeriodoData = mktime(24*$dias, 0, 0, $mes, $dia, $ano);
+                $dataFormatada = date('d/m/Y',$PeriodoData);
+                $PeriodoData = $dataFormatada;
+            ?>
+        </td>
+        <td><?php echo Data::tratarDataZend($relCadastrados->dtComprovante, 'Brasileira'); ?></td>
+        <td>
+            <?php
+                if($relCadastrados->siComprovanteTrimestral == 1){
+                    $msg = 'Em cadastramento';
+                } else if($relCadastrados->siComprovanteTrimestral == 2) {
+                    $msg = 'Enviado';
+                } else if($relCadastrados->siComprovanteTrimestral == 3 || $relCadastrados->siComprovanteTrimestral == 4 || $relCadastrados->siComprovanteTrimestral == 5) {
+                    $msg = 'Em análise';
+                } else if($relCadastrados->siComprovanteTrimestral == 6) {
+                    $msg = 'Analisado';
+                }
+            ?>
+            <a href='#' onclick="carregaDados('<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'visualizar-relatorio'), '', true); ?>?idPronac=<?php echo Seguranca::encrypt($this->idPronac);?>&relatorio=<?php echo $relCadastrados->nrComprovanteTrimestral;?>','conteudo');" title="Ir para Dados complementares do projeto"><?php echo $msg; ?></a>
+        </td>
+    </tr>
+    <?php } ?>
+    <?php } else { ?>
+    <tr>
+        <td align="center">Nenhum relatório cadastrado.</td>
+    </tr>
+    <?php } ?>
+</table>
+<br clear="all" />

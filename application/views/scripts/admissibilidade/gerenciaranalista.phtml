@@ -1,0 +1,103 @@
+<?php include_once 'scripts/admissibilidade/inc/menu.inc.php'; ?>
+<div id="titulo">
+    <div>Admissibilidade de propostas - Gerenciar analista <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<style type="text/css">
+<!--
+.mensagem {
+    padding: 8px;
+    border: darkgreen;
+    background: #e3e3c7;
+}
+-->
+</style>
+<script type="text/javascript">
+<!--
+$(document).ready(function() {
+    $(".btArmazenar").click(function() {
+        $('#frmGerAnalista').submit();
+    });
+});
+//-->
+</script>
+<div id="conteudo">
+    <?php
+//Zend_Debug::dump($this->analista, 1);
+    if (count($this->analista)<=0) {
+        echo '<div class="miolo"><div class="msgALERT"><div>Usuário não encontrado.</div></div></div>';
+    } else {
+        if($this->mensagem) {
+            echo "<div class='miolo'><div class='msgALERT'><div>{$this->mensagem}</div></div></div>";
+        }
+    ?>
+        <form id="frmGerAnalista" method="post" action="<?php echo $this->baseUrl(); ?>/admissibilidade/gerenciaranalista">
+            <table class="tabela">
+                <tr>
+                    <th>
+                        Habilitar / Desabilitar Analista
+                    </th>
+                </tr>
+                <tr>
+                    <td>
+                        &nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Usuário *</b>
+                        <br />
+                        <?php echo $this->analista->usu_nome; ?>
+                        <input type="hidden" name="usu_cod" value="<?php echo $this->analista->usu_cod; ?>" />
+                    </td>
+            </tr>
+            <tr>
+                <td>
+                    <b>Unidade *</b>
+                    <br />
+                    <?php echo $this->analista->unidade; ?>
+                    <input type="hidden" name="usu_orgao" value="<?php echo $this->analista->usu_orgao; ?>" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <b>Perfil</b>
+                    <br />
+                    <?php echo $this->analista->gru_nome; ?>
+                    <input type="hidden" name="gru_codigo" value="<?php echo $this->analista->gru_codigo; ?>" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <b>Status *</b>
+                    <br />
+                    <?php
+                    if ((int) $this->analista->status == 1) {
+                        echo "<input type='radio' id='status' name='status' checked='checked' value='{$this->analista->status}'/>
+                              Habilitado
+                              <input type='radio' id='status' name='status' value='0'/>
+                              Desabilitado";
+                    } else {
+                        echo "<input type='radio' id='status' name='status' value='1'/>
+                              Habilitado
+                              <input type='radio' id='status' name='status' checked='checked' value='{$this->analista->status}'/>
+                              Desabilitado";
+                    }
+                    ?>
+                </td>
+            </tr>
+        </table>
+        <table class="tabela">
+            <tr>
+                <td class="centro">
+                	<input type="button" class="btArmazenar btn_salvar" title="Salvar" value=" " />
+                </td>
+            </tr>
+        </table>
+    </form>
+    <?php } ?>
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

@@ -1,0 +1,75 @@
+<?php include_once 'scripts/admissibilidade/inc/menu.inc.php'; ?>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second">Admissibilidade</li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'redistribuiranalise')); ?>">Admissibilidade de Propostas - Redistribuir Análise</a></li>
+        <li class="last">Resumo: admissibilidade de propostas</li>
+    </ul>
+</div>
+<form method="POST" id="formGerarPdf" name="formGerarPdf" action="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'gerarpdf')); ?>" style="display:none">
+    <textarea name="html" id="conteudoImprimir"></textarea>
+</form>
+
+<div id="titulo">
+    <div>Resumo: admissibilidade de propostas <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+
+<div id="conteudo">
+
+    <div class="conteudoImprimivel" id="conteudoImprimivel">
+    <form action="<?php echo $this->urlGerarGrafico; ?>" method="post" name="frmGraficoResumo" id="frmGraficoResumo" target="_blank">
+    <table class="tabela" style="width: 40%;">
+        <tr>
+            <th width="70%">Resumo</th>
+            <th width="20%">Registros</th>
+            <th width="10%" class="naoImprimivel"><input type="submit" name="todos" class="btn_gerar_grafico" value="" /></th>
+        </tr>
+        <?php $totalGeral=0;?>
+        <?php foreach($this->analistas as $nomeAnalista => $fases): ?>
+        <tr>
+            <td align="left">
+                <?php echo $nomeAnalista; ?>
+                <?php
+                    $qtdeFase=0;
+                    foreach ($fases as $faseNome => $faseItems) {
+                        $qtdeFase += count($faseItems);
+                ?>
+                <br><span style="padding-left: 10px;"><?php echo $faseNome; ?>:&nbsp;<?php echo count($faseItems); ?></span>
+                <?php
+                    }
+                ?>
+            </td>
+            <td align="right"><?php echo $qtdeFase; ?></td>
+            <td width="10%" class="naoImprimivel"><input type="submit" name="<?php echo $nomeAnalista; ?>" class="btn_gerar_grafico" value=""/></td>
+        </tr>
+        <?php $totalGeral+=$qtdeFase; ?>
+        <?php endforeach; ?>
+        <tr>
+            <th align="left">Total Geral</th>
+            <th align="right"><?php echo $totalGeral; ?></th>
+            <th width="10%" class="naoImprimivel"></th>
+        </tr>
+    </table>
+    </div><!-- fecha conteudo imprimivel -->
+
+    <?php echo Grafico::formConfiguracao($this->baseUrl(),null,false) ; ?>
+    <?php foreach($this->resumo as $resumo=>$valor): ?>
+        <input type="hidden" name="gVal_<?php echo $resumo; ?>" value="<?php echo $valor; ?>"/>
+    <?php endforeach; ?>
+    </form>
+    <table class="tabela" style="width: 40%;">
+    <tr>
+    <td class="centro">
+        <input type="button" title="Imprimir" name="imprimir" class="btn_imprimir" onclick='$(".naoImprimivel").css("display", "none"); $("#conteudoImprimir").val($(".conteudoImprimivel").html()); $("#formGerarPdf").submit(); $(".naoImprimivel").css("display", "");'>
+        <input type="button" title="Configurar Gr&aacute;fico" class="btn_configurar_grafico" id="btn_configurar_grafico" style="display: ;" onclick="$('#confGrafico').toggle(); $(this).hide();" />
+    </td>
+    </tr>
+    </table>
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

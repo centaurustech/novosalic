@@ -1,0 +1,140 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.btn_enviar').click(function(){
+            
+            var erros = 0;
+            $('.obrigatorio').each(function(){
+                if($.trim($(this).val()) == '')
+                    erros++;
+            });
+            
+            if(!$("input[name='qst1']:checked").val()) {
+                erros++;
+            }
+            if(!$("input[name='qst2']:checked").val()) {
+                erros++;
+            }
+            if(!$("input[name='qst3']:checked").val()) {
+                erros++;
+            }
+            
+            if(erros == 4) {
+                $("#alerta").dialog("destroy");
+                $("#alerta").html("Todos os dados estão em branco.<br/>Preencha pelo menos um dos campos!");
+                $("#alerta").dialog({
+                    resizable: false,
+                    title: 'Alerta!',
+                    width:340,
+                    height:180,
+                    modal: true,
+                    buttons : {
+                        'OK' : function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+                $('.ui-dialog-titlebar-close').remove();
+            
+            } else {
+                $('#formCadastro').submit();
+            }
+        });
+        
+        $('.btn_cancelar').click(function(){
+            voltar();
+        });
+    });
+</script>
+
+<style type="text/css">
+    label {
+        font-weight: inherit;
+    }
+</style>
+
+<div id="alerta" class="sumir"></div>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para Inï¿½cio">Início</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'cidadao', 'action' => '')); ?>" title="Ir para Lista de Projetos">Lista de Projetos</a></li>
+        <li class="last">Cadastrar Opinião</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Cadastrar Opinião <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+
+
+<div id="conteudo" align="center">
+    <form id="formCadastro" action="<?php echo $this->url(array('controller' => 'cidadao', 'action' => 'inserir-opiniao')); ?>" method="post">
+        <input type="hidden" name="idPronac" value="<?php echo $this->idPronac; ?>">
+        <table class="tabela">
+            <tr class="destacar bold centro">
+                <td>Pronac</td>
+                <td>Nome do Projeto</td>
+            </tr>
+            <tr class="centro">
+                <td><?php echo $this->DadosProjeto->pronac; ?></td>
+                <td><?php echo $this->DadosProjeto->NomeProjeto; ?></td>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <th colspan="6">Questionário</th>
+            </tr>
+            <tr>
+                <td class="w150 destacar bold">Tem relevância cultural?</td>
+                <td>
+                    <label><input type="radio" name="qst1" value="1" style="margin: 0 5px 0 0px;">Sim</label>
+                    <label><input type="radio" name="qst1" value="2" style="margin: 0 5px 0 20px;">Não</label>
+                </td>
+                <td class="w150 destacar bold">Deve ser aprovado?</td>
+                <td>
+                    <label><input type="radio" name="qst2" value="1" style="margin: 0 5px 0 0px;">Sim</label>
+                    <label><input type="radio" name="qst2" value="2" style="margin: 0 5px 0 20px;">Não</label>
+                </td>
+                <td class="w150 destacar bold">O custo está adequado?</td>
+                <td>
+                    <label><input type="radio" name="qst3" value="1" style="margin: 0 5px 0 0px;">Sim</label>
+                    <label><input type="radio" name="qst3" value="2" style="margin: 0 5px 0 20px;">Não</label>
+                </td>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <td class="destacar bold">Comentário - Sua opinião sobre o projeto é muito importante. Participe e comente as suas respostas "Sim ou Não", com críticas, elogios, recomendações, reinvidicações e sugestões.</td>
+            </tr>
+            <tr>
+                <td><textarea class="textarea_simples obrigatorio" name="comentario" style="width: 99%" rows="4"></textarea></td>
+            </tr>
+        </table>
+        
+        <table class="tabela">
+            <tr class="destacar bold">
+                <td class="w300">Caso queira se identificar, coloque aqui seu e-mail:</td>
+                <td><input type="text" name="email" class="input_simples w400"></td>
+            </tr>
+        </table>
+    </form>
+    
+    <p class="centro">
+        <input type="button" class="btn_enviar">
+        <input type="button" class="btn_cancelar">
+    </p>
+    
+    <br clear="all" />
+</div>
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

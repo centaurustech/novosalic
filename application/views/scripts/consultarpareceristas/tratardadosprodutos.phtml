@@ -1,0 +1,72 @@
+<?php if($this->projetos){?>
+<?php foreach ($this->projetos as $projetos):?>
+<div class="projeto">
+	<table class="tabela" style="width: 95%">
+	    <tr>
+	        <td colspan="6">
+	        	<input type="button" id="" class="btn_adicionar projeto" onclick="$('.produtos_<?php echo $projetos['IdPRONAC']?>').toggle()" /> <?php echo $projetos['NomeProjeto']; ?>
+	        </td>
+	    </tr>
+	</table>
+	<div class="produtos_<?php echo $projetos['IdPRONAC']?>">
+		<table class="tabela" style="width: 95%">
+			<tr>
+				<th colspan="7" align="center">
+		    		Lista de An&aacute;lises Realizadas
+		    	</th>
+			</tr>
+		    <tr align="center">
+		        <th>
+		            PRONAC
+		        </th>
+		        <th>
+		            PRODUTO
+		        </th>
+		        <th>
+		            PRODUTO PRINCIPAL
+		        </th>
+		        <th>
+		            PAGAMENTO (Efetuado, Pendentes, Cancelado)
+		        </th>
+		        <th>
+		        	DATA
+		        </th>
+		        <th>
+		            STATUS (Em analise, Em Diligencia, Diligenciado, finalizado, Cancelado)
+		        </th>
+		    </tr>
+		    <?php foreach ($this->produtos as $produto): ?>
+		    	<?php if ($produto->idPronac == $projetos['IdPRONAC']): $pronac = $projetos['Pronac']; $idPronac = $produto->idPronac; ?>
+					<tr style='text-align: center;'>
+			        	<td><a href='<?php $this->url(array('controller' => 'consultarpareceristas', 'action' => 'carregarhistorico'))."?Pronac=$pronac&idPronac=$idPronac"?>'><?php echo $projetos['Pronac']; ?></a></td>
+				        <td><?php echo $produto->Descricao; ?></td>
+				        <td><?php if ($produto->stPrincipal == 1) { echo 'Sim'; } else { echo 'Nâo'; }  ?></td>
+				        <td><?php $siPagamento = $produto->siPagamentoecho; 
+				        	if ($siPagamento == 4) { 
+				        		echo 'Efetuado'; 
+				        	} else{ 
+				        		if($siPagamento == 3) { 
+				        			echo 'Cancelado '; 
+				        		} else if($siPagamento == 0){
+				        			echo 'Pendente';
+				        		}
+				        	}?>
+				        </td>
+				        <td><?php echo $produto->dtPagamento; ?></td>
+				        <td><?php echo 'Status'; ?></td>
+			        </tr>
+			    <?php endif;?>
+		    <?php endforeach;?>
+		</table>
+	</div>
+</div>
+<?php endforeach;?>
+<?php } else {?>
+<table class="tabela" style="text-align: left;width: 95%">
+    <tr>
+        <td>
+            Nenhuma produto para este Parecerista
+        </td>
+    </tr>
+</table>
+<?php }?>

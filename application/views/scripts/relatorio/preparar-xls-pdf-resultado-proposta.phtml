@@ -1,0 +1,45 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#conteudoXLS').val($('#conteudoImprimivel').html());
+        $('#formGerarXls').submit();
+    });
+</script>
+<form method="POST" id="formGerarXls" name="formGerarXls" action="<?php echo $this->url(array('controller' => 'relatorio', 'action' => ($this->tipo == 'xls')?'gerar-xls':'html2-pdf' )); ?>" style="display:none">
+    <textarea name="html" id="conteudoXLS"></textarea>
+</form>
+
+<div class="conteudoImprimivel" id="conteudoImprimivel" style="display:none">
+<table class="tabela" width="100%" align="center">
+    <tr>
+        <th width="10%">Nr Proposta</th>
+        <th width="50%">Nome da Proposta</th>
+        <th width="10%">CPF / CNPJ</th>
+        <th width="20%">Proponente</th>
+        <!-- <th width="20%">Área</th> -->
+        <!-- <th width="20%">Segmento</th> -->
+        <!-- <th width="10%">Município/UF</th> -->
+        <th width="10%">Valor</th>
+        <!-- <th width="10%">Estado da Proposta</th> -->
+    </tr>
+    <?php if(count($this->dados) > 0):?>
+    <?php foreach($this->dados as $registro):?> 
+    <tr class="linha">
+        <td class="centro"><?php echo $registro->idProjeto; ?></td>
+        <td><?php echo $registro->NomeProposta; ?></td>
+        <td><?php echo strlen($registro->CNPJCPF) == 11 ? Mascara::addMaskCPF($registro->CNPJCPF) : Mascara::addMaskCNPJ($registro->CNPJCPF); ?></td>
+        <td><?php echo $registro->Proponente; ?></td>
+        <!-- <td align="left"><?php //echo $registro->Area?></td> -->
+        <!-- <td><?php //echo $registro->NomeProposta?></td> -->
+        <!-- <td align="center"><?php //echo $registro->NomeMunicipio?> / <?php //echo $registro->SiglaUF?></td> -->
+        <td class="centro"><?php if (isset($registro->valor)) echo number_format($registro->valor, 2, ",", ".")?></td>
+        <!-- <td align="left"><?php //echo $registro->NomeProposta?></td> -->
+    </tr>
+    <?php endforeach;?>
+    <?php else: ?>
+    <tr>
+        <td colspan="3" valign="top" class="centro">Nenhum Registro Encontrado</td>
+    </tr>
+    <?php endif; ?>
+</table>
+</div>
+

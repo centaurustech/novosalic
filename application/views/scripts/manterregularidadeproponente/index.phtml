@@ -1,0 +1,47 @@
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''), null, true); ?>" title="Ir para p&aacute;gina inicial">In&iacute;cio</a></li>
+        <li><?php echo $this->dsMod; ?></li>
+        <li class="last">Certid&otilde;es negativas</li>
+    </ul>
+</div> <!-- final: #breadcrumb -->
+
+<!-- início: #titulo -->
+<div id="titulo">
+	<div>Certid&otilde;es negativas <!-- <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span> --></div>
+</div>
+<!-- final: #titulo -->
+
+<!-- início: área principal #conteudo -->
+<div id="conteudo">
+    <?php
+    $federal  = "Federal";
+    $estadual = "Estadual";
+    $fgts     = "FGTS";
+    $cadin    = "CADIN";
+    $inss     = "INSS";
+    ?>
+    <form class="form" name="formulario" id="formulario" method="post" action='<?php echo $this->url(array('controller' => 'manterregularidadeproponente', 'action' => 'manterregularidadeproponente')); ?>'>
+
+        <table class="tabela_busca">
+            <tr>
+                <td class="destacar" align="center"><label for="cpfCnpj">CPF/CNPJ</label></td>
+                <td>
+                    <div class="left"></div>
+                    <input class="input w150" type="text" name="cpfCnpj" id="cpfCnpj" maxlength="18" onkeyup="mascaraCnpjCpf(this);" value="<?php echo !empty($this->cpfcnpj) ? Validacao::mascaraCPFCNPJ($this->cpfcnpj) : ''; ?>" />
+                    <?php echo $this->botaoPesquisar('formulario'); ?>
+                </td>
+            </tr>
+        </table>
+
+    </form>
+
+
+</div>
+<!-- final: conteúdo principal #conteudo -->
+
+<!-- início: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+<br clear="all" />

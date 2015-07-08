@@ -1,0 +1,355 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#btn_pesquisar").click(function(){
+            var pronac = $('#pronacPesquisa').val(),
+                situacao = $('#situacao').val(),
+                filtro = $('#tipoFiltro').val();
+            window.location = "<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'manter-assinantes')); ?>?pag=1&situacao="+situacao+"&tipoFiltro="+filtro+"&pronac="+pronac;
+        });
+
+        $('.btn_imprimir').click(function(){
+            $('#addCampoXls').remove();
+            $('#formImpressao').submit();
+        });
+        
+        $('.btn_xls').click(function(){
+            $('#addCampoXls').remove();
+            $('#formImpressao').append('<input id="addCampoXls" type="hidden" name="xls" value="1">');
+            $('#formImpressao').submit();
+        });
+
+        $('.btn_incluir').click(function(){
+            $("#divIncluirAssinante").dialog("destroy");
+            $("#divIncluirAssinante").dialog({
+                resizable: false,
+                title: 'Incluir Assinante',
+                width:550,
+                height:250,
+                modal: true,
+                buttons : {
+                    'Salvar' : function(){
+                        $('#formIncluirAssinante').submit();
+                    },
+                    'Cancelar' : function(){
+                        $(this).dialog('close');
+                    }
+                }
+            });
+            $('.ui-dialog-titlebar-close').remove();
+        });
+
+        $('.btn_editar').click(function(){
+            var idAssinante = $(this).attr('idAssinante'),
+                nmAssinante = $(this).attr('nmAssinante'),
+                tpCargo = $(this).attr('tpCargo'),
+                stAtivo = $(this).attr('stAtivo');
+                
+            if(stAtivo == 1){
+                $('#editarAtivo').click()
+            } else {
+                $('#editarInativo').click()
+            }
+            
+            $('#idAssinante').val(idAssinante);
+            $('#editarAssinante').val(nmAssinante);
+            $('#editarCargo').val(tpCargo);
+                
+            $("#divEditarAssinante").dialog("destroy");
+            $("#divEditarAssinante").dialog({
+                resizable: false,
+                title: 'Editar Assinante',
+                width:550,
+                height:280,
+                modal: true,
+                buttons : {
+                    'Salvar' : function(){
+                        $('#formEditarAssinante').submit();
+                    },
+                    'Cancelar' : function(){
+                        $(this).dialog('close');
+                    }
+                }
+            });
+            $('.ui-dialog-titlebar-close').remove();
+        });
+        
+        $('#tipoFiltro').change(function(){
+            var tpFiltro = $(this).val();
+            window.location = "<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'manter-assinantes')); ?>?tipoFiltro="+tpFiltro;
+        });
+    });
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'), '', true); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="last">Assinantes</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Assinantes</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+    <table class="tabela">
+	<tr>
+            <td class="destacar bold" width="1" align="center">Cargo</td>
+            <td>
+                <select name="tipoFiltro" id="tipoFiltro" class="select_simples">
+                    <option value=""> - Todos - </option>
+                    <option value="coordIncFiscTec" <?php echo (isset($_GET['tipoFiltro']) && $_GET['tipoFiltro']=='coordGeral')?'selected="selected"':''; ?>>Coordenador (a) de Incentivos Fiscais e Apoio Técnico</option>
+                    <option value="coordGeral" <?php echo (isset($_GET['tipoFiltro']) && $_GET['tipoFiltro']=='coordGeral')?'selected="selected"':''; ?>>Coordenador (a) Geral de Prestação de Contas</option>
+                    <option value="diretorExecutivo" <?php echo (isset($_GET['tipoFiltro']) && $_GET['tipoFiltro']=='diretorExecutivo')?'selected="selected"':''; ?>>Diretor (a) Executivo de Incentivo à Cultura</option>
+                    <option value="secretarioFomento" <?php echo (isset($_GET['tipoFiltro']) && $_GET['tipoFiltro']=='secretarioFomento')?'selected="selected"':''; ?>>Secretário (a) de Fomento e Incentivo à Cultura</option>
+                </select>
+            </td>
+            <td class="destacar bold" width="1" align="center">Assinante</td>
+            <td style="width: 1px;"><input type="button" class="btn_incluir"></td>
+        </tr>
+    </table>
+
+    <?php if(count($this->dados)>0){ ?>
+    <!-- ============ PAGINAÇÃO ============ -->
+    <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+        <tbody>
+            <tr>
+                <td align="center">
+                <form name="form1" id="form1" action="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'manter-assinantes'));?>" method="get">
+                    <?php if($this->paginacao['pag']>1) { ?>
+                    <input class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'manter-assinantes')).'?pag=1'."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro; ?>'">
+                    <?php } ?>
+                    <input id="btn_p_anterior" type="button"
+                    <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                    <?php }else { ?>
+                           class="btn_p_anterior" onclick="location.href='<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'manter-assinantes')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro; ?>'"
+                    <?php } ?>>
+                    <input id="btn_p_proximo" type="button"
+                           <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                           class="btn_p_proximo-off"
+                    <?php }else { ?>
+                           class="btn_p_proximo" onclick="location.href='<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'manter-assinantes')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro; ?>'"
+                    <?php } ?>>
+                    <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                    <input class="btn_ultimo" id="btn_ultimo" type="button"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'manter-assinantes')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro; ?>'">
+                    <?php } ?>
+                    Pág.:<select name="pag" id="pag" onchange="$('#form1').submit()" class="input_simples">
+                        <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                        <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                        <?php endfor; ?>
+                    </select>
+                    &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>">
+                    <input type="submit" class="btn_recarregar" value="">
+                    <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                    <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                    <input type="hidden" name="tipoFiltro" value="<?php echo $this->filtro;?>">
+                    <input type="button" class="btn_imprimir" title="Imprimir" />
+                    <input type="button" class="btn_xls" title="Gerar Excel" />
+                 </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <center>
+        <?php
+            echo $this->paginacao['inicio']." a ";
+            echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+            echo " de ". $this->paginacao['total']. " registros listados";
+        ?>
+    </center>
+    <!-- ========== FIM PAGINAÇÃO ========== -->
+    <?php } ?>
+
+    <?php if($this->qtdRegistros > 0){ ?>
+    <table class="tabela tablesorter">
+        <thead>
+            <tr class="titulo_tabela">
+                <th width="1px">#</th>
+                <th><a href="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'manter-assinantes')).'?pag=1&qtde='.$this->paginacao['qtde'].'&tipoFiltro='.$this->filtro.'&campo=2&ordem='.$this->paginacao['novaOrdem'];?>">Nome do Assinante</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'manter-assinantes')).'?pag=1&qtde='.$this->paginacao['qtde'].'&tipoFiltro='.$this->filtro.'&campo=3&ordem='.$this->paginacao['novaOrdem'];?>">Tipo do Cargo</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'manter-assinantes')).'?pag=1&qtde='.$this->paginacao['qtde'].'&tipoFiltro='.$this->filtro.'&campo=4&ordem='.$this->paginacao['novaOrdem'];?>">Dt. Cadastro</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'manter-assinantes')).'?pag=1&qtde='.$this->paginacao['qtde'].'&tipoFiltro='.$this->filtro.'&campo=5&ordem='.$this->paginacao['novaOrdem'];?>">Situação</a></th>
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php $x=1; foreach($this->dados as $d){ ?>
+            <tr>
+                <td align="center"><?php echo $x; ?></td>
+                <td><?php echo $d->nmAssinante; ?></td>
+                <td>
+                    <?php
+                        switch ($d->tpCargo) {
+                            case '1':
+                                echo 'Coordenador (a) de Incentivos Fiscais e Apoio Técnico';
+                                break;
+                            case '2':
+                                echo 'Coordenador (a) Geral de Prestação de Contas';
+                                break;
+                            case '3':
+                                echo 'Diretor (a) Executivo de Incentivo à Cultura';
+                                break;
+                            case '4':
+                                echo 'Secretário (a) de Fomento e Incentivo à Cultura';
+                                break;
+                            default:
+                                echo ' - ';
+                                break;
+                        }
+                    ?>
+                </td>
+                <td align="center"><?php echo Data::tratarDataZend($d->dtCadastro, 'brasileira'); ?></td>
+                <td align="center"><?php echo ($d->stAtivo == 1) ? 'Ativo' : 'Inativo'; ?></td>
+                <td align="center" nowrap>
+                    <input type="button" class="btn_editar" idAssinante="<?php echo $d->idAssinantesPrestacao; ?>" nmAssinante="<?php echo $d->nmAssinante; ?>" tpCargo="<?php echo $d->tpCargo; ?>" stAtivo="<?php echo $d->stAtivo; ?>">
+                </td>
+            </tr>
+            <?php $x++; } ?>
+
+        </tbody>
+    </table>
+
+    <?php if(count($this->dados)>0){ ?>
+
+        <!-- ============ PAGINAÇÃO ============ -->
+        <?php if($this->qtdRegistros > 10) { //echo $this->dados; ?>
+        <center>
+            <?php
+                echo $this->paginacao['inicio']." a ";
+                echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+                echo " de ". $this->paginacao['total'];
+            ?>
+        </center>
+        <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+            <tbody>
+                <tr>
+                    <td align="center">
+                    <form name="form2" id="form2" action="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'manter-assinantes'));?>" method="get">
+                        <?php if($this->paginacao['pag']>1) { ?>
+                        <input class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'manter-assinantes')).'?pag=1'."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro; ?>'">
+                        <?php } ?>
+                        <input id="btn_p_anterior" type="button"
+                        <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                        <?php }else { ?>
+                               class="btn_p_anterior" onclick="location.href='<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'manter-assinantes')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro; ?>'"
+                        <?php } ?>>
+                        <input id="btn_p_proximo" type="button"
+                               <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                               class="btn_p_proximo-off"
+                        <?php }else { ?>
+                               class="btn_p_proximo" onclick="location.href='<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'manter-assinantes')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro; ?>'"
+                        <?php } ?>>
+                        <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                        <input class="btn_ultimo" id="btn_ultimo" type="button"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'manter-assinantes')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro; ?>'">
+                        <?php } ?>
+                        Pág.:<select name="pag" id="pag" onchange="$('#form2').submit()" class="input_simples">
+                            <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                            <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                            <?php endfor; ?>
+                        </select>
+                        &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>">
+                        <input type="submit" class="btn_recarregar" value="">
+                        <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                        <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                        <input type="hidden" name="tipoFiltro" value="<?php echo $this->filtro;?>">
+                        <input type="button" class="btn_imprimir" title="Imprimir" />
+                        <input type="button" class="btn_xls" title="Gerar Excel" />
+                     </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- ========== FIM PAGINAÇÃO ========== -->
+    <?php } } ?>
+
+    <?php } else { ?>
+    <table class="tabela">
+        <tr>
+            <td align="center">Nenhum registro encontrado.</td>
+        </tr>
+    </table>
+    <?php } ?>
+    <br clear="all" />
+
+    <form name="formImpressao" id="formImpressao" action="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'imprimir-manter-assinantes'));?>" method="post" target="_blank">
+        <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+        <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+        <input type="hidden" name="pag" value="<?php echo $this->paginacao['pag'];?>">
+        <input type="hidden" name="qtde" value="<?php echo $this->intTamPag;?>">
+        <input type="hidden" name="tipoFiltro" value="<?php echo $this->filtro;?>">
+    </form>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+<div id="divIncluirAssinante" class="sumir">
+    <form name="formIncluirAssinante" id="formIncluirAssinante" action="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'incluir-assinantes-prestacao'));?>" method="post">
+        <table class="tabela">
+            <tr>
+                <td class="destacar bold" align="right">Nome</td>
+                <td><input type="text" id="nmAssinante" name="nmAssinante" class="input_simples w300"></td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Cargo</td>
+                <td>
+                    <select name="tpCargo" id="tpCargo" class="select_simples">
+                        <option value="1">Coordenador (a) de Incentivos Fiscais e Apoio Técnico</option>
+                        <option value="2">Coordenador (a) Geral de Prestação de Contas</option>
+                        <option value="3">Diretor (a) Executivo de Incentivo à Cultura</option>
+                        <option value="4">Secretário (a) de Fomento e Incentivo à Cultura</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<div id="divEditarAssinante" class="sumir">
+    <form name="formEditarAssinante" id="formEditarAssinante" action="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'editar-assinantes-prestacao'));?>" method="post">
+        <table class="tabela">
+            <tr>
+                <td class="destacar bold" align="right">Nome</td>
+                <td>
+                    <input type="hidden" id="idAssinante" name="idAssinante">
+                    <input type="text" id="editarAssinante" name="nmAssinante" class="input_simples w300">
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Cargo</td>
+                <td>
+                    <select name="tpCargo" id="editarCargo" class="select_simples">
+                        <option value="1">Coordenador (a) de Incentivos Fiscais e Apoio Técnico</option>
+                        <option value="2">Coordenador (a) Geral de Prestação de Contas</option>
+                        <option value="3">Diretor (a) Executivo de Incentivo à Cultura</option>
+                        <option value="4">Secretário (a) de Fomento e Incentivo à Cultura</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Status</td>
+                <td>
+                    <label style="font-weight: inherit;"><input type="radio" name="stAtivo" id="editarAtivo" value="1"> Ativo</label>
+                    <label style="font-weight: inherit; margin-left: 20px;"><input type="radio" name="stAtivo" id="editarInativo" value="0"> Inativo</label>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

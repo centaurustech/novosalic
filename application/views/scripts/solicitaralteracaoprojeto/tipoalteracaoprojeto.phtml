@@ -1,0 +1,717 @@
+
+<?php if ( $_GET['tipoAlteracao'] == "1" ) {?>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="1">
+    <?php $resultado = $this->buscaprojeto; ?>
+    <thead>
+        <tr>
+            <th align="center">Nº PRONAC:</th>
+            <th align="center">Nome do Projeto:</th>
+
+        </tr>
+    </thead>
+    <tbody><tr class="linha">
+
+            <td align="center"><?php echo $this->escape($resultado[0]->nrpronac); ?></td>
+            <td align="center"><?php echo $this->escape($resultado[0]->NomeProjeto); ?></td>
+        </tr>
+    </tbody>
+
+    <tr>
+        <th align="center">CPNJ/CPF:</th>
+        <th align="center">Proponente:</th>
+
+    </tr>
+
+    <tbody><tr class="linha">
+
+            <td align="center"><?php
+                $valor = $this->escape($resultado[0]->CgcCpf);
+
+                echo Validacao::mascaraCPFCNPJ($valor);
+                ?></td>
+            <td align="center"><?php echo $this->escape($resultado[0]->Descricao); ?></td>
+        </tr>
+    </tbody>
+
+    <thead>
+        <tr>
+            <th align="center" colspan="2">Alteração do Nome do Projeto</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Novo Nome do Projeto:
+                <input class="input_simples" type="text" size="130">
+            </td>
+        </tr>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Justificativa:<br>
+                <textarea style="overflow-y: scroll" rows="8" cols="100" class="textarea_simples">
+                </textarea>
+            </td>
+        </tr>
+
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Anexos:<br>
+               <input class="input_simples" type="file" size="130">
+            </td>
+        </tr>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+               <input class="btn_salvar" type="button" size="130">
+               <input class="btn_cancelar" type="button" size="130">
+            </td>
+        </tr>
+    </tbody>
+ </table>
+    <?php } ?>
+
+
+
+<?php if ( $_GET['tipoAlteracao'] == "2" ) {?>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="1">
+    <?php $resultado = $this->buscaprojeto; ?>
+    <thead>
+        <tr>
+            <th align="center">Nº PRONAC:</th>
+            <th align="center">Nome do Projeto:</th>
+
+        </tr>
+    </thead>
+    <tbody><tr class="linha">
+
+            <td align="center"><?php echo $this->escape($resultado[0]->nrpronac); ?></td>
+            <td align="center"><?php echo $this->escape($resultado[0]->NomeProjeto); ?></td>
+        </tr>
+    </tbody>
+
+    <tr>
+        <th align="center">CPNJ/CPF:</th>
+        <th align="center">Proponente:</th>
+
+    </tr>
+
+    <tbody><tr class="linha">
+
+            <td align="center"><?php
+                $valor = $this->escape($resultado[0]->CgcCpf);
+
+                echo Validacao::mascaraCPFCNPJ($valor);
+                ?></td>
+            <td align="center"><?php echo $this->escape($resultado[0]->Descricao); ?></td>
+        </tr>
+    </tbody>
+
+    <thead>
+        <tr>
+            <th align="center" colspan="2">Alteração do Nome da Razão Social</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Nova Razão Social:
+                <input class="input_simples" type="text" size="130">
+            </td>
+        </tr>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Justificativa:<br>
+                <textarea style="overflow-y: scroll" rows="8" cols="100" class="textarea_simples">
+                </textarea>
+            </td>
+        </tr>
+
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Anexos:<br>
+               <input class="input_simples" type="file" size="130">
+            </td>
+        </tr>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+               <input class="btn_salvar" type="button" size="130">
+               <input class="btn_cancelar" type="button" size="130">
+            </td>
+        </tr>
+    </tbody>
+ </table>
+    <?php } ?>
+
+ <?php if ( $_GET['tipoAlteracao'] == "3" ) {?>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="1">
+    <?php $resultado = $this->buscaprojeto; ?>
+    <thead>
+        <tr>
+            <th align="center">Nº PRONAC:</th>
+            <th align="center">Nome do Projeto:</th>
+
+        </tr>
+    </thead>
+    <tbody><tr class="linha">
+
+            <td align="center"><?php echo $this->escape($resultado[0]->nrpronac); ?></td>
+            <td align="center"><?php echo $this->escape($resultado[0]->NomeProjeto); ?></td>
+        </tr>
+    </tbody>
+
+    <tr>
+        <th align="center">CPNJ/CPF:</th>
+        <th align="center">Proponente:</th>
+
+    </tr>
+
+    <tbody><tr class="linha">
+
+            <td align="center"><?php
+                $valor = $this->escape($resultado[0]->CgcCpf);
+
+                echo Validacao::mascaraCPFCNPJ($valor);
+                ?></td>
+            <td align="center"><?php echo $this->escape($resultado[0]->Descricao); ?></td>
+        </tr>
+    </tbody>
+
+    <thead>
+        <tr>
+            <th align="center" colspan="2">Alteração do Nome da Razão Social</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Nova Razão Social:
+                <input class="input_simples" type="text" size="130">
+            </td>
+        </tr>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Justificativa:<br>
+                <textarea style="overflow-y: scroll" rows="8" cols="100" class="textarea_simples">
+                </textarea>
+            </td>
+        </tr>
+
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Anexos:<br>
+               <input class="input_simples" type="file" size="130">
+            </td>
+        </tr>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+               <input class="btn_salvar" type="button" size="130">
+               <input class="btn_cancelar" type="button" size="130">
+            </td>
+        </tr>
+    </tbody>
+</table>
+    <?php } ?>
+
+
+ <?php if ( $_GET['tipoAlteracao'] == "4" ) {?>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="1">
+    <?php $resultado = $this->buscaprojeto; ?>
+    <thead>
+        <tr>
+            <th align="center">Nº PRONAC:</th>
+            <th align="center">Nome do Projeto:</th>
+
+        </tr>
+    </thead>
+    <tbody><tr class="linha">
+
+            <td align="center"><?php echo $this->escape($resultado[0]->nrpronac); ?></td>
+            <td align="center"><?php echo $this->escape($resultado[0]->NomeProjeto); ?></td>
+        </tr>
+    </tbody>
+
+    <tr>
+        <th align="center">CPNJ/CPF:</th>
+        <th align="center">Proponente:</th>
+
+    </tr>
+
+    <tbody><tr class="linha">
+
+            <td align="center"><?php
+                $valor = $this->escape($resultado[0]->CgcCpf);
+
+                echo Validacao::mascaraCPFCNPJ($valor);
+                ?></td>
+            <td align="center"><?php echo $this->escape($resultado[0]->Descricao); ?></td>
+        </tr>
+    </tbody>
+
+    <thead>
+        <tr>
+            <th align="center" colspan="2">Alteração do Nome da Razão Social</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Nova Razão Social:
+                <input class="input_simples" type="text" size="130">
+            </td>
+        </tr>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Justificativa:<br>
+                <textarea style="overflow-y: scroll" rows="8" cols="100" class="textarea_simples">
+                </textarea>
+            </td>
+        </tr>
+
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Anexos:<br>
+               <input class="input_simples" type="file" size="130">
+            </td>
+        </tr>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+               <input class="btn_salvar" type="button" size="130">
+               <input class="btn_cancelar" type="button" size="130">
+            </td>
+        </tr>
+    </tbody>
+</table>
+    <?php } ?>
+
+ <?php if ( $_GET['tipoAlteracao'] == "5" ) {?>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="1">
+    <?php $resultado = $this->buscaprojeto; ?>
+    <thead>
+        <tr>
+            <th align="center">Nº PRONAC:</th>
+            <th align="center">Nome do Projeto:</th>
+
+        </tr>
+    </thead>
+    <tbody><tr class="linha">
+
+            <td align="center"><?php echo $this->escape($resultado[0]->nrpronac); ?></td>
+            <td align="center"><?php echo $this->escape($resultado[0]->NomeProjeto); ?></td>
+        </tr>
+    </tbody>
+
+    <tr>
+        <th align="center">CPNJ/CPF:</th>
+        <th align="center">Proponente:</th>
+
+    </tr>
+
+    <tbody><tr class="linha">
+
+            <td align="center"><?php
+                $valor = $this->escape($resultado[0]->CgcCpf);
+
+                echo Validacao::mascaraCPFCNPJ($valor);
+                ?></td>
+            <td align="center"><?php echo $this->escape($resultado[0]->Descricao); ?></td>
+        </tr>
+    </tbody>
+
+    <thead>
+        <tr>
+            <th align="center" colspan="2">Alteração do Nome da Razão Social</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Nova Razão Social:
+                <input class="input_simples" type="text" size="130">
+            </td>
+        </tr>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Justificativa:<br>
+                <textarea style="overflow-y: scroll" rows="8" cols="100" class="textarea_simples">
+                </textarea>
+            </td>
+        </tr>
+
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Anexos:<br>
+               <input class="input_simples" type="file" size="130">
+            </td>
+        </tr>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+               <input class="btn_salvar" type="button" size="130">
+               <input class="btn_cancelar" type="button" size="130">
+            </td>
+        </tr>
+    </tbody>
+</table>
+    <?php } ?>
+
+ <?php if ( $_GET['tipoAlteracao'] == "6" ) {?>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="1">
+    <?php $resultado = $this->buscaprojeto; ?>
+    <thead>
+        <tr>
+            <th align="center">Nº PRONAC:</th>
+            <th align="center">Nome do Projeto:</th>
+
+        </tr>
+    </thead>
+    <tbody><tr class="linha">
+
+            <td align="center"><?php echo $this->escape($resultado[0]->nrpronac); ?></td>
+            <td align="center"><?php echo $this->escape($resultado[0]->NomeProjeto); ?></td>
+        </tr>
+    </tbody>
+
+    <tr>
+        <th align="center">CPNJ/CPF:</th>
+        <th align="center">Proponente:</th>
+
+    </tr>
+
+    <tbody><tr class="linha">
+
+            <td align="center"><?php
+                $valor = $this->escape($resultado[0]->CgcCpf);
+
+                echo Validacao::mascaraCPFCNPJ($valor);
+                ?></td>
+            <td align="center"><?php echo $this->escape($resultado[0]->Descricao); ?></td>
+        </tr>
+    </tbody>
+
+    <thead>
+        <tr>
+            <th align="center" colspan="2">Alteração do Nome da Razão Social</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Nova Razão Social:
+                <input class="input_simples" type="text" size="130">
+            </td>
+        </tr>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Justificativa:<br>
+                <textarea style="overflow-y: scroll" rows="8" cols="100" class="textarea_simples">
+                </textarea>
+            </td>
+        </tr>
+
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Anexos:<br>
+               <input class="input_simples" type="file" size="130">
+            </td>
+        </tr>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+               <input class="btn_salvar" type="button" size="130">
+               <input class="btn_cancelar" type="button" size="130">
+            </td>
+        </tr>
+    </tbody>
+</table>
+    <?php } ?>
+
+<?php if ( $_GET['tipoAlteracao'] == "7" ) {?>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="1">
+    <?php $resultado = $this->buscaprojeto; ?>
+    <thead>
+        <tr>
+            <th align="center">Nº PRONAC:</th>
+            <th align="center">Nome do Projeto:</th>
+
+        </tr>
+    </thead>
+    <tbody><tr class="linha">
+
+            <td align="center"><?php echo $this->escape($resultado[0]->nrpronac); ?></td>
+            <td align="center"><?php echo $this->escape($resultado[0]->NomeProjeto); ?></td>
+        </tr>
+    </tbody>
+
+    <tr>
+        <th align="center">CPNJ/CPF:</th>
+        <th align="center">Proponente:</th>
+
+    </tr>
+
+    <tbody><tr class="linha">
+
+            <td align="center"><?php
+                $valor = $this->escape($resultado[0]->CgcCpf);
+
+                echo Validacao::mascaraCPFCNPJ($valor);
+                ?></td>
+            <td align="center"><?php echo $this->escape($resultado[0]->Descricao); ?></td>
+        </tr>
+    </tbody>
+
+    <thead>
+        <tr>
+            <th align="center" colspan="2">Alteração do Nome da Razão Social</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Nova Razão Social:
+                <input class="input_simples" type="text" size="130">
+            </td>
+        </tr>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Justificativa:<br>
+                <textarea style="overflow-y: scroll" rows="8" cols="100" class="textarea_simples">
+                </textarea>
+            </td>
+        </tr>
+
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Anexos:<br>
+               <input class="input_simples" type="file" size="130">
+            </td>
+        </tr>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+               <input class="btn_salvar" type="button" size="130">
+               <input class="btn_cancelar" type="button" size="130">
+            </td>
+        </tr>
+    </tbody>
+</table>
+    <?php } ?>
+
+<?php if ( $_GET['tipoAlteracao'] == "8" ) {?>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="1">
+    <?php $resultado = $this->buscaprojeto; ?>
+    <thead>
+        <tr>
+            <th align="center">Nº PRONAC:</th>
+            <th align="center">Nome do Projeto:</th>
+
+        </tr>
+    </thead>
+    <tbody><tr class="linha">
+
+            <td align="center"><?php echo $this->escape($resultado[0]->nrpronac); ?></td>
+            <td align="center"><?php echo $this->escape($resultado[0]->NomeProjeto); ?></td>
+        </tr>
+    </tbody>
+
+    <tr>
+        <th align="center">CPNJ/CPF:</th>
+        <th align="center">Proponente:</th>
+
+    </tr>
+
+    <tbody><tr class="linha">
+
+            <td align="center"><?php
+                $valor = $this->escape($resultado[0]->CgcCpf);
+
+                echo Validacao::mascaraCPFCNPJ($valor);
+                ?></td>
+            <td align="center"><?php echo $this->escape($resultado[0]->Descricao); ?></td>
+        </tr>
+    </tbody>
+
+    <thead>
+        <tr>
+            <th align="center" colspan="2">Alteração do Nome da Razão Social</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Nova Razão Social:
+                <input class="input_simples" type="text" size="130">
+            </td>
+        </tr>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Justificativa:<br>
+                <textarea style="overflow-y: scroll" rows="8" cols="100" class="textarea_simples">
+                </textarea>
+            </td>
+        </tr>
+
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Anexos:<br>
+               <input class="input_simples" type="file" size="130">
+            </td>
+        </tr>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+               <input class="btn_salvar" type="button" size="130">
+               <input class="btn_cancelar" type="button" size="130">
+            </td>
+        </tr>
+    </tbody>
+</table>
+    <?php } ?>
+
+<?php if ( $_GET['tipoAlteracao'] == "9" ) {?>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="1">
+    <?php $resultado = $this->buscaprojeto; ?>
+    <thead>
+        <tr>
+            <th align="center">Nº PRONAC:</th>
+            <th align="center">Nome do Projeto:</th>
+
+        </tr>
+    </thead>
+    <tbody><tr class="linha">
+
+            <td align="center"><?php echo $this->escape($resultado[0]->nrpronac); ?></td>
+            <td align="center"><?php echo $this->escape($resultado[0]->NomeProjeto); ?></td>
+        </tr>
+    </tbody>
+
+    <tr>
+        <th align="center">CPNJ/CPF:</th>
+        <th align="center">Proponente:</th>
+
+    </tr>
+
+    <tbody><tr class="linha">
+
+            <td align="center"><?php
+                $valor = $this->escape($resultado[0]->CgcCpf);
+
+                echo Validacao::mascaraCPFCNPJ($valor);
+                ?></td>
+            <td align="center"><?php echo $this->escape($resultado[0]->Descricao); ?></td>
+        </tr>
+    </tbody>
+
+    <thead>
+        <tr>
+            <th align="center" colspan="2">Alteração do Nome da Razão Social</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Nova Razão Social:
+                <input class="input_simples" type="text" size="130">
+            </td>
+        </tr>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Justificativa:<br>
+                <textarea style="overflow-y: scroll" rows="8" cols="100" class="textarea_simples">
+                </textarea>
+            </td>
+        </tr>
+
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Anexos:<br>
+               <input class="input_simples" type="file" size="130">
+            </td>
+        </tr>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+               <input class="btn_salvar" type="button" size="130">
+               <input class="btn_cancelar" type="button" size="130">
+            </td>
+        </tr>
+    </tbody>
+</table>
+    <?php } ?>
+
+<?php if ( $_GET['tipoAlteracao'] == "10" ) {?>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="1">
+    <?php $resultado = $this->buscaprojeto; ?>
+    <thead>
+        <tr>
+            <th align="center">Nº PRONAC:</th>
+            <th align="center">Nome do Projeto:</th>
+
+        </tr>
+    </thead>
+    <tbody><tr class="linha">
+
+            <td align="center"><?php echo $this->escape($resultado[0]->nrpronac); ?></td>
+            <td align="center"><?php echo $this->escape($resultado[0]->NomeProjeto); ?></td>
+        </tr>
+    </tbody>
+
+    <tr>
+        <th align="center">CPNJ/CPF:</th>
+        <th align="center">Proponente:</th>
+
+    </tr>
+
+    <tbody><tr class="linha">
+
+            <td align="center"><?php
+                $valor = $this->escape($resultado[0]->CgcCpf);
+
+                echo Validacao::mascaraCPFCNPJ($valor);
+                ?></td>
+            <td align="center"><?php echo $this->escape($resultado[0]->Descricao); ?></td>
+        </tr>
+    </tbody>
+
+    <thead>
+        <tr>
+            <th align="center" colspan="2">Alteração do Nome da Razão Social</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Nova Razão Social:
+                <input class="input_simples" type="text" size="130">
+            </td>
+        </tr>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Justificativa:<br>
+                <textarea style="overflow-y: scroll" rows="8" cols="100" class="textarea_simples">
+                </textarea>
+            </td>
+        </tr>
+
+        <tr class="linha" >
+            <td align="center" colspan="2">
+                Anexos:<br>
+               <input class="input_simples" type="file" size="130">
+            </td>
+        </tr>
+        <tr class="linha" >
+            <td align="center" colspan="2">
+               <input class="btn_salvar" type="button" size="130">
+               <input class="btn_cancelar" type="button" size="130">
+            </td>
+        </tr>
+    </tbody>
+</table>
+    <?php } ?>
+
+
+
+

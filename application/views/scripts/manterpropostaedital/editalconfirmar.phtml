@@ -1,0 +1,94 @@
+
+<div id="titulo">
+    <div>Edital - Resultado Consulta de Edital <span class="voltar"><a href="#" onclick="location.href='<?php echo $this->baseUrl(); ?>/manterpropostaincentivofiscal/listar-propostas';">Voltar</a></span></div>
+</div>
+<script type="text/javascript">
+    function abrir_fechar(id_div){
+        $('#'+id_div).slideToggle(400);
+        $('#maiss'+id_div).toggle().focus();
+        $('#menoss'+id_div).toggle().focus();
+    }
+</script>
+<div id="conteudo">
+    <div align="center">
+        <input type="button" id="btn_imprimir" name="inicio" style="width: 88px" class="btn_localizar"  onclick="window.location='<?php echo $this->url(array('controller' => 'manterpropostaedital', 'action' => 'editallocalizar'))."?idAgente=".$this->idAgente; ?>'"/>
+        <input type="button" class="btn_localizar" style="background-image: url('<?php echo $this->baseUrl(); ?>/public/img/buttons/Indicativo.gif')" id="btn_resumo" name="inicio" onclick="window.location='<?php echo $this->url(array('controller' => 'manterpropostaedital', 'action' => 'editalresumo')).'?idAgente='.$this->idAgente; ?>'"/>
+    </div>
+    <?php if(!$this->mensagem) { ?>
+    <table class="tabela">
+        <tr>
+            <td>
+                <?php
+                $i = 0;
+                foreach($this->dados as $tipoFundo => $dados) {
+                ?>
+                <div>
+                <input type="button" id="" class="btn_adicionar" onclick="return abrir_fechar('linha_<?php echo $i; ?>')" onkeypress="return abrir_fechar('linha_<?php echo $i; ?>')"/><?php echo $tipoFundo; ?>
+                <div id='linha_<?php echo $i; ?>' style="display:none;">
+                    <table class="tabela">
+                        <tr class="titulo_tabela">
+                            <th></th>
+                            <th>Nome do edital</th>
+                            <th>N° do Edital</th>
+                            <th>Classificação</th>
+                            <th>Unidade</th>
+                            <th>Ano</th>
+                            <th>Dt.Início Inscrição</th>
+                            <th>Dt.Fim Inscrição</th>
+                            <th>Objeto</th>
+
+                            
+                            
+                        </tr>
+                        <?php
+                        foreach($dados as $dado) {
+                        
+                            ?>
+                        <div id="modalobj<?php echo $dado['idEdital'] ?>" style="display: none;"><?php echo $dado['Objeto'] ?></div>
+                        <tr class="fundo">
+                            <td class="centro"><a href="<?php echo $this->baseUrl() . "/manterpropostaedital/dadospropostaedital?idEdital={$dado['idEdital']}&idAgente={$dado['idAgente']}"; ?>"><img src="<?php echo $this->baseUrl();?>/public/img/buttons/novo.gif"/></a></td>
+                            <td class="centro"><?php echo $dado['nmDocumento']; ?></td>
+                            <td class="centro"><?php echo $dado['NrEditalTb']; ?></td>
+                            <td class="centro"><?php echo $dado['Classificacao']; ?></td>
+                            
+                            <td class="centro"><?php echo $dado['Unidade']; ?></td>
+                            <td class="centro"><?php echo $dado['Ano']; ?></td>
+                            
+                            <td class="centro"><?php echo ConverteData(strtotime($dado['dtIniFase']),5); ?></td>
+                            <td class="centro"><?php echo ConverteData(strtotime($dado['dtFimFase']),5); ?></td>
+                            <td class="centro"><img src="../public/img/ico/eye.png" style="cursor: pointer" onclick="objeto(<?php echo $dado['idEdital']; ?>)"></td>
+                        </tr>
+                        <?php
+                        }
+                        ?>
+                    </table>
+                </div>
+                <?php
+                $i++;
+                }
+                ?>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <?php
+    } else {
+        echo "<div class='mensagem'>{$this->mensagem}</div>";
+    } ?>
+</div>
+<script>
+    function objeto(valor){
+        $('#modalobj'+valor).dialog({
+            //bgiframe: true,
+            title: 'Objeto',
+            autoOpen: false,
+            width: 400,
+            height: 250,
+            modal: true
+        });
+
+        $('#modalobj'+valor).dialog('open');
+    }
+</script>
+<div id="rodapeConteudo"><span></span></div>
+<br clear="all" />

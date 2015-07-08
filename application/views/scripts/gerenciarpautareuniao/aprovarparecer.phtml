@@ -1,0 +1,119 @@
+<?php
+/**
+ * Emissao de Parecer (Nao Acompanhar Parecer)
+ * @author Equipe RUP - Politec
+ * @since 12/05/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.views.scripts.execucaofisicaprojeto
+ * @copyright  2010 - Ministerio da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+
+<script>
+    function submeterCNIC(msg)
+    {
+        /*if($.trim($("#justificativa").val())== ''){
+            $("#erro").dialog({
+                resizable: false,
+                width:300,
+                height:200,
+                modal: true,
+                autoOpen:false,
+                buttons: {
+                    'OK': function() {
+                        $(this).dialog('close');
+                    }
+                }
+            });
+            $("#erro").html('Dados obrigat&aacute;rios n&atilde;o informados');
+            $("#erro").dialog('open');
+        }
+        else{*/
+            $("#alerta").dialog({
+                resizable: false,
+                width:400,
+                height:200,
+                modal: true,
+                autoOpen:false,
+                buttons: {
+                    'Nao': function() {
+                        $(this).dialog('close');
+                    },
+                    'Sim': function() {
+                        $("#formEnviar").submit();
+                    }
+                }
+            });
+            $("#alerta").html(msg);
+            $("#alerta").dialog('open');
+        //} //fecha else dados obrigatorios
+    }
+
+</script>
+<div id="alerta" title="Alerta"></div>
+<div id="erro" title="Erro"></div>
+<!-- ========== INICIO TITULO PAGINA ========== -->
+    <table class="tabela">
+        <tr>
+            <th>
+                Justificativa de Envio para Plen&aacute;ria
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <?php echo $this->pauta['dsAnalise'] != null ? $this->pauta['dsAnalise'] : '<center><em>Justificativa de envio n&atilde;o informada.</em></center>';?>
+            </td>
+        </tr>
+
+    </table>
+    <!-- ========== FIM TITULO PAGINA ========== -->
+
+
+
+    <!-- ========== INICIO FORMULARIO ========== -->
+    <form id="formEnviar" action="<?php echo $this->url(array('controller' => 'gerenciarpautareuniao', 'action' => 'aprovarparecer')); ?>" method="post">
+
+        <!--<table class="tabela centro">
+            <tr>
+                <td colspan="6" class="centro">
+                    <label for="justificativa"><strong>Justificativa</strong></label><br />
+                    <textarea  class="input_simples" style="width:60em; height:20em; margin-left: 6em; "name="justificativa" id="justificativa" onclick="limpar_campo(this, ' ')" onkeypress=" "
+                               onblur="restaurar_campo(this, ' ')" value=" " onmouseout=" "
+                               <?php //echo $this->contadorTextarea('form.justificativa', 'form.exibirContadorTextarea', 8000); ?>></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td  colspan="6" class="centro">
+                    <?php //echo $this->exibirContadorTextarea('exibirContadorTextarea', 4, 8000, strlen($this->justificativa)); ?>
+                </td>
+            </tr>
+        </table>-->
+        <div class="tabela centro">
+            <br />
+            <?php if ($this->tipoacao == 'submeter') {
+                ?>
+                <p>
+                    <input type="hidden" name="idPronac" id="idPronac" value="<?php echo $this->pauta['IdPRONAC']; ?>" />
+                    <input name="stEnvioPlenaria" type="hidden" value="S"/>
+
+                    <input type="button" class="btn" value=" Submeter a Plen&aacute;ria " onclick="submeterCNIC('Deseja SUBMETER o projeto para Plen&aacute;ria?')" />
+                </p>
+            <?php } ?>
+            <?php if ($this->tipoacao == 'retirar') {
+                ?>
+                <p>
+                    <input type="hidden" name="idPronac" id="idPronac" value="<?php echo $this->pauta['IdPRONAC']; ?>" />
+                    <input name="stEnvioPlenaria" type="hidden" value="N"/>
+
+                    <input type="button" class="btn" value=" Retirar da Plen&aacute;ria " onclick="submeterCNIC('Deseja RETIRAR o projeto da Plen&aacute;ria?')" />&nbsp;&nbsp;
+                    <input type="button" class="btn" value=" Retornar para Componente " onclick="JSRetornarProjeto('<?php echo $this->nrPronac; ?>');" />
+                </p>
+            <?php } ?>
+        </div>
+    <!-- ========== BOTOES ========== -->
+    <br />
+
+</form>

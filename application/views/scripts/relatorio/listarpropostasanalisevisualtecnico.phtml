@@ -1,0 +1,186 @@
+<?php //include("scripts/relatorio/inc/menuGerencial.inc.php"); ?>
+
+<style>
+    .mensagem {
+        padding: 8px;
+        border: darkgreen;
+        background: #e3e3c7;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function(){
+
+    });
+
+    /*
+     * Função responsável pela exibição ou ocultamento de conteúdo,
+     * mudando a imagem.
+     **/
+    function abrirDinamico(elemento, obj) {
+        if($(elemento).css('display') == 'none') {
+            $(elemento).fadeIn('fast', function() {
+                $('img', $(obj)).attr('src','<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png');
+            });
+        } else {
+            $(elemento).fadeOut('fast', function() {
+                $('img', $(obj)).attr('src','<?php echo $this->baseUrl(); ?>/public/img/navigation-baixo.PNG');
+            });
+        }
+    }
+    function toogleAjax(id, url){
+        if(!url) {
+            $('#'+id).toggle('slow');
+        } else {
+            elemento = '#'+id;
+            if($(elemento).css('display') == 'none') {
+                $(elemento).html('<img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /> ');
+                $(elemento).fadeIn('fast');
+                $.ajax({
+                    type: "POST",
+                    data: {
+                        teste: 'testando'
+                    },
+                    url: url,
+                    success: function(data) {
+                        $(elemento).html(data);
+                    }
+                });
+            } else {
+                $(elemento).fadeOut('fast');
+            }
+        }
+    };
+</script>
+
+<form method="POST" id="formGerarPdf" name="formGerarPdf" action="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'gerarpdf')); ?>" target="_blank" style="display:none">
+    <textarea name="html" id="conteudoImprimir"></textarea>
+</form>
+<form method="POST" id="formGerarXls" target="_blank" name="formGerarXls" action="<?php echo $this->url(array('controller' => 'relatorio', 'action' => 'gerar-xls')); ?>" target="_blank" style="display:none">
+    <textarea name="html" id="conteudoImprimirXls"></textarea>
+</form>
+<form action="<?php echo $this->urlResumo; ?>" method="post" name="frmResumo" id="frmResumo">
+    <div class="conteudoImprimivel" id="conteudoImprimivel">
+    <table class="tabela">
+        <tr>
+            <th>ANÁLISE VISUAL POR TÉCNICO</th>
+        </tr>
+        <tr onclick="abrirDinamico('#reavaliacao', $(this))" style="cursor:pointer">
+            <td>
+                <!--<img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png" id="imgDinamica" align="left"/>-->
+                <input type="button" name="grid1" id="g1_1" class="btn_adicionar" title="Expandir" />
+                Avaliação: Reavaliação
+            </td>
+        </tr>
+        <tr id="reavaliacao">
+            <td>
+                <table class="tabela">
+                        <?php $ultimoRegistro = null; $ct = 1; ?>
+                        <?php if(!empty($this->tecnicosPropostasReavaliacao)){ ?>
+                        <?php //foreach($this->tecnicos as $idOrgaoGeral=>$tecnico): ?>
+                        <?php foreach($this->tecnicosPropostasReavaliacao as $tecnico=>$propostas): $qtd = count($this->tecnicosPropostasReavaliacao[$tecnico]); ?>
+                        <input type='hidden' name='reavaliacao_<?php echo $tecnico;?>' value='<?php echo $qtd;?>'/>
+                        <tr onclick="abrirDinamico('#analista_<?php echo $ct; ?>', $(this))" style="cursor:pointer">
+                            <td>
+                                <!--<img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png" id="imgDinamica" align="left"/>-->
+                                <input type="button" name="grid1" id="g1_1" class="btn_adicionar" title="Expandir" />
+                                Analista : <?php echo $tecnico; ?>
+                            </td>
+                        </tr>
+                        <tr id="analista_<?php echo $ct; ?>" style="display:none">
+                            <td>
+                                <table class="tabela">
+                                    <tr>
+                                        <th width="10%">Nr. Proposta</th>
+                                        <th width="75%">Nome da Proposta</th>
+                                        <th width="15%">Dt. Movimentação</th>
+                                    </tr>
+                                    <?php foreach($propostas as $proposta): ?>
+                                    <?php if($proposta->ConformidadeOK == 0): ?>
+                                    <tr>
+                                        <td align="center"><a href="<?php echo $this->baseUrl(); ?>/admissibilidade/exibirpropostacultural?idPreProjeto=<?php echo $proposta->idProjeto; ?>"><?php echo $proposta->idProjeto; ?></a></td>
+                                        <td><?php echo $proposta->NomeProjeto; ?></td>
+                                        <td class="centro"><?php echo str_replace(" ", " as ", data::dataBrasileira($proposta->DtMovimentacao)); ?></td>
+                                    </tr>
+                                    <?php endif; ?>
+                                    <?php endforeach; ?>
+                                </table>
+                            </td>
+                        </tr>
+                        <?php $ct++; ?>
+                        <?php endforeach; ?>
+                        <?php //endforeach; ?>
+                        <?php } else { ?>
+                            <tr>
+                                <td valign="top" align="center">Nenhum Registro Encontrado</td>
+                            </tr>
+                        <?php } ?>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <table class="tabela">
+        <tr onclick="abrirDinamico('#inicial', $(this))" style="cursor:pointer">
+            <td>
+                <!--<img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png" id="imgDinamica" align="left"/>-->
+                <input type="button" name="grid1" id="g1_1" class="btn_adicionar" title="Expandir" />
+                Avaliação: Inicial
+            </td>
+        </tr>
+        <tr id="inicial">
+            <td>
+                <table class="tabela">
+                    <?php $ultimoRegistro = null; $ct = 1; ?>
+                    <?php if(!empty($this->tecnicosPropostasInicial)){ ?>
+                    <?php //foreach($this->tecnicos as $idOrgaoGeral=>$tecnico): ?>
+                    <?php foreach($this->tecnicosPropostasInicial as $tecnico=>$propostas):  if(isset($this->tecnicosPropostasReavaliacao[$tecnico]))$qtd = count($this->tecnicosPropostasReavaliacao[$tecnico]); ?>
+                    <input type='hidden' name='inicial_<?php echo $tecnico;?>' value='<?php echo $qtd;?>'/>
+                    <tr onclick="abrirDinamico('#analista_inicial_<?php echo $ct; ?>', $(this))" style="cursor:pointer">
+                        <td>
+                            <!--<img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png" id="imgDinamica" align="left"/>-->
+                            <input type="button" name="grid1" id="g1_1" class="btn_adicionar" title="Expandir" />
+                            Analista : <?php echo $tecnico ?>
+                        </td>
+                    </tr>
+                    <tr id="analista_inicial_<?php echo $ct; ?>" style="display:none">
+                        <td>
+                            <table class="tabela">
+                                <tr>
+                                    <th width="10%">Nr. Proposta</th>
+                                    <th width="75%">Nome da Proposta</th>
+                                    <th width="15%">Dt. Movimentação</th>
+                                </tr>
+                                <?php foreach($propostas as $proposta): ?>
+                                <?php if($proposta->ConformidadeOK == 9): ?>
+                                <tr>
+                                    <td align="center"><a href="<?php echo $this->baseUrl(); ?>/admissibilidade/exibirpropostacultural?idPreProjeto=<?php echo $proposta->idProjeto; ?>"><?php echo $proposta->idProjeto; ?></a></td>
+                                    <td><?php echo $proposta->NomeProjeto; ?></td>
+                                    <td class="centro"><?php echo str_replace(" ", " as ", data::dataBrasileira($proposta->DtMovimentacao)); ?></td>
+                                </tr>
+                                <?php endif; ?>
+                                <?php endforeach; ?>
+                            </table>
+                        </td>
+                    </tr>
+                    <?php $ct++; ?>
+                    <?php endforeach; ?>
+                    <?php //endforeach; ?>
+                    <?php } else { ?>
+                            <tr>
+                                <td valign="top" align="center">Nenhum Registro Encontrado</td>
+                            </tr>
+                        <?php } ?>
+                </table>
+            </td>
+        </tr>
+    </table>
+    </div>
+    <table class="tabela" border="0" cellpadding="0" cellspacing="0">
+        <tr>
+            <td align="center">
+                <input  type="button" name="imprimir" class="btn_imprimir" onclick='$("#conteudoImprimir").val($(".conteudoImprimivel").html()); $("#formGerarPdf").submit();'>
+                <!--<input  type="button" name="xls" class="btn_xls" style="width: 43px" onclick="window.location='<?php //echo $this->urlXLS; ?>'">-->
+                <input  type="button" name="xls" class="btn_xls" style="width: 43px" onclick='$("#conteudoImprimirXls").val($(".conteudoImprimivel").html()); $("#formGerarXls").submit();'>
+            </td>
+        </tr>
+    </table>
+</form>

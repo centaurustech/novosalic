@@ -1,0 +1,100 @@
+<script type="text/javascript">
+    $('document').ready(function(){
+        
+        $(".reintegrarEtapa").click(function(){
+            
+            var etapa = $(this).attr('etapa');
+            var valor = $(this).attr('vlEtapa');
+            
+            $("#etapaAReintegrar").val(etapa);
+            $("#vlTotalReitegrado").html(valor);
+        })
+
+    }); //fecha $('document').ready
+    
+</script>
+<!-- ================================== -->
+<!-- ========== INICIO MODAL ========== -->
+<!-- ================================== -->
+<form name="formReintegrarEtapa" id="formReintegrarEtapa" action="<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'reintegrar-valores-etapa')); ?>" method="post">
+    <input type="hidden" name="idPronac"  value="<?php echo $this->dadosProjeto->IdPRONAC; ?>" />
+    <input type="hidden" name="idProduto" value="<?php echo $this->idProduto; ?>" />
+    <input type="hidden" name="idEtapa"   value="<?php echo $this->idEtapa; ?>" />
+    <input type="hidden" name="tpPlanilha" value="<?php echo $this->tpPlanilha; ?>" />
+    <input type="hidden" name="etapaAReintegrar" id="etapaAReintegrar" value="" />
+    <input type="hidden" name="codEtapa" id="codEtapa" value="<?php echo $this->codEtapa; ?>" />
+    <table class="tabela">
+        <tr valign="top">
+            <td><strong>PRONAC:</strong><br /><?php echo $this->dadosProjeto->AnoProjeto . $this->dadosProjeto->Sequencial; ?></td>
+            <td><strong>Nome do Projeto:</strong><br /><?php echo $this->dadosProjeto->NomeProjeto; ?></td>
+        </tr>
+        <tr valign="top">
+            <td><strong>Produto:</strong><br />
+                <?php echo $this->dados->Produto; ?>
+            </td>
+            <td>
+                <strong>Etapa:</strong><br />
+                <?php echo $this->dados->Etapa; ?>
+            </td>
+        </tr>
+        <!-- ============================= -->
+        <!-- ===== DADOS DO PROPONENTE ====-->
+        <tr>
+            <th colspan="2"> Valor Solicitado para a Etapa</th>
+        </tr>
+        <tr valign="top">
+            <td class="esquerda" colspan="2">
+                <div style="width: 100%; padding: 0.5em;">
+                    <div style="float: left; width: 60%;"><label for="total"><strong>Total:</strong></label>&nbsp;<?php echo $this->formatarReal($this->totalEtapaSolicitado);?></div>
+                    <div style="float: right; width: 30%;" class="centro" valign="center">
+                        <img style="cursor: pointer" class="reintegrarEtapa" title="Reintegrar Etapa (Solicitado)" src="<?php echo $this->baseUrl();?>/public/img/refresh.gif" etapa="solicitado" vlEtapa="<?php echo $this->formatarReal($this->totalEtapaSolicitado);?>"/>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <!-- ================================ -->
+        <!-- ==== FIM DADOS DO PROPONENTE === -->
+
+        <!-- ================================= -->
+        <!-- ======= DADOS DO PARECERISTA ==== -->
+        <tr>
+            <th colspan="2"> Valor do Parecerista para a Etapa</th>
+        </tr>
+        <tr>
+            <td class="esquerda" colspan="2">
+                <div style="width: 100%; padding: 0.5em;">
+                    <div style="float: left; width: 60%;"><label for="total"><strong>Total:</strong></label>&nbsp;<?php echo $this->formatarReal($this->totalEtapaParecerista);?></div>
+                    <div style="float: right; width: 30%;" class="centro" valign="center"><img style="cursor: pointer" class="reintegrarEtapa" title="Reintegrar Etapa (Parecerista)" src="<?php echo $this->baseUrl();?>/public/img/refresh.gif"  etapa="parecerista" vlEtapa="<?php echo $this->formatarReal($this->totalEtapaParecerista);?>"/></div>
+                </div>
+            </td>
+        </tr>
+        <!-- ================================= -->
+        <!-- ==== FIM DADOS DO PARECERISTA === -->
+
+        <!-- ============================= -->
+        <!-- ===== DADOS DO RELATOR ====== -->
+        <tr>
+            <th colspan="2"> Valor do Relator para a Etapa</th>
+        </tr>
+        <tr valign="top">
+            <td class="esquerda" colspan="2">
+                <div style="width: 100%; padding: 0.5em;">
+                    <div style="float: left; width: 55%;"><label for="total"><strong>Total:</strong></label>&nbsp;<?php echo $this->formatarReal($this->totalEtapaComponente);?></div>
+                    <div style="float: right; width: 45%;" class="esquerda"><label for="total"><strong>Total a ser reintegrado:</strong></label> <span id="vlTotalReitegrado"></span></div>
+                </div>
+            </td>
+        </tr>
+        <!-- =============================== -->
+        <!-- ====== FIM DADOS DO RELATOR === -->
+        <tr valign="top">
+            <td colspan="2">
+                <label for="justificativa"><strong>Justificativa</strong></label><br />
+                <textarea style="width: 99%" class="textarea_simples h100" name="justificativa" id="justificativa" <?php echo $this->contadorTextarea('form.justificativa', 'form.exibirContadorTextarea', 5000); ?>></textarea>
+                <?php echo $this->exibirContadorTextarea('exibirContadorTextarea', 4, 5000); ?><center><span id="msgErro" style="color: red;"></span></center>
+            </td>
+        </tr>
+    </table>
+</form>
+<!-- ================================== -->
+<!-- ========== FIM MODAL ============= -->
+<!-- ================================== -->

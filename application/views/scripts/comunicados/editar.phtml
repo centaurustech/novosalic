@@ -1,0 +1,195 @@
+<?php
+/**
+ * Exemplo de Utilização do Layout
+ * @author Tarcísio Angelo - XTI
+ * @since 11/01/2012
+ * @version 1.0
+ * @package application
+ * @subpackage application.views.scripts.comunicados
+ * @link http://salic.cultura.gov.br
+ * @copyright © 2011 - Ministério da Cultura - Todos os direitos reservados.
+ */
+
+require_once "inc/menu.inc.phtml"; // menu lateral
+?>
+
+<script type="text/javascript">
+<!--
+	/**
+	 * Funções que são chamadas após a página ser carregada
+	 */
+	$(document).ready(function()
+	{
+		// máscaras dos campos
+		$("#periodo1, #periodo2").keyup(function()
+		{
+			mascara(this, format_data); // data
+		});
+
+		// calendário
+		$.datepicker.regional['pt-BR'] = 
+		{
+			closeText: 'Fechar',
+			prevText: '&#x3c;Anterior',
+			nextText: 'Pr&oacute;ximo&#x3e;',
+			currentText: 'Hoje',
+			monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+			monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+			dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','S&aacute;bado'],
+			dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+			dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+			weekHeader: 'Sm',
+			dateFormat: 'dd/mm/yy',
+			firstDay: 0,
+			isRTL: false,
+			showMonthAfterYear: false,
+			yearSuffix: ''
+		};
+		$.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+
+		// id dos campos que utilizarão o calendário
+		$("#dtInicioVigencia, #dtTerminoVigencia").datepicker($.datepicker.regional['pt-BR']);
+		
+		CKEDITOR.replace('comunicado');
+		
+	}); // fim $(document).ready()
+
+	function validaForm()
+	{
+		var comunicado = CKEDITOR.instances['comunicado'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+		//var comunicado = $("#comunicado").val();
+		var dtinicio = $("#dtInicioVigencia").val();
+		var dtfim = $("#dtTerminoVigencia").val();
+		var dtAtual = $("#dtatual").val();
+
+		/*
+		if(dtinicio != '' && compararDataInicialDataFinal(dtinicio, dtAtual) == 0)
+	    {
+			alertar('A data inicial não pode ser menor que a data atual!');
+            return false;
+        }
+        */
+
+		if(dtfim != '' && compararDataInicialDataFinal(dtinicio, dtfim) != 0)
+	    {
+			alertar('A data final deve ser maior que a data inicial!');
+	        return false;
+	    }
+
+		if(dtfim != '' && compararDataInicialDataFinal(dtfim, dtAtual) == 0)
+	    {
+			alertar('A data final deve ser maior que a data atual!');
+	        return false;
+	    }
+	    
+	    if (comunicado.length <= 15)
+	    {
+	        alertar('O campo comunicado deve ter no mínimo 15 carateres!');
+	        return false;
+	    }
+	    
+	    $("#formnovo").submit();
+	    
+	
+	}
+
+
+	//-->
+</script>
+
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''), '', true); ?>" title="Ir para Página Inicial">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'comunicados', 'action' => 'index'), '', true); ?>" title="Ir para Página Comunicados">Comunicados</a></li>
+		<li class="last">Editar</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>
+		Editar comunicado
+		<span class="voltar"><a href="javascript:voltar();" title="Página Anterior">Voltar</a></span>
+	</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+<div id="confirma"></div>
+<input type="hidden" name="dtatual" id="dtatual" value="<?php echo date("d/m/Y");?>" />
+
+	<!-- ========== INÍCIO FORMULÁRIO 1 ========== -->
+	<form name="formnovo" id="formnovo" action="<?php echo $this->url(array('controller' => 'comunicados', 'action' => 'salvar')); ?>" method="POST">
+	<?php foreach($this->comunicado as $c): ?>
+	
+	<input type="hidden" name="idComunicado" id="idComunicado" value="<?php echo $c->idComunicado;?>" />
+	
+		<table class="tabela">
+			<tr>
+				<td align="center">
+					<label for="stOpcao0">Opção: </label>&nbsp;&nbsp;&nbsp;
+					<label for="stOpcao0">SALIC</label>&nbsp;
+					<input type="radio" name="stOpcao" id="stOpcao0" value="0" class="input_simples" <?php if($c->stOpcao == 0){echo 'checked="checked"';} ?> />
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<label for="stOpcao1">PROPOSTA</label>&nbsp;
+					<input type="radio" name="stOpcao" id="stOpcao1" value="1" class="input_simples" <?php if($c->stOpcao == 1){echo 'checked="checked"';} ?> />
+				</td>
+				<td align="center">
+					<label for="stOpcao0">Estado: </label>&nbsp;&nbsp;&nbsp;
+					<label for="stEstado1">Ativado</label>&nbsp;
+					<input type="radio" name="stEstado" id="stEstado1" value="1" class="input_simples" <?php if($c->stEstado == 1){echo 'checked="checked"';} ?> />
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<label for="stEstado0">Desativado</label>&nbsp;
+					<input type="radio" name="stEstado" id="stEstado0" value="0" class="input_simples" <?php if($c->stEstado == 0){echo 'checked="checked"';} ?> />
+				</td>
+			</tr>
+		</table>
+		<table class="tabela">	
+			<tr>
+				<td align="center" colspan="2">
+					<label for="comunicado">Comunicado</label><br />
+					<textarea name="comunicado" id="comunicado" class="textarea_simples w400 h200"><?php echo $c->Comunicado;?></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td align="">
+					<label for="dataInicio">In&iacute;cio de vigência </label>&nbsp;
+					<input type="text" name="dtInicioVigencia" id="dtInicioVigencia" maxlength="10" class="input_simples btn_calendario" value="<?php echo $c->dtInicioVigenciaPT;?>" />
+				</td>
+				<td align="">
+					<label for="dataFim">Fim de vigência</label>&nbsp;
+					<input type="text" name="dtTerminoVigencia" id="dtTerminoVigencia" maxlength="10" class="input_simples btn_calendario" value="<?php echo $c->dtTerminoVigenciaPT;?>" />
+				</td>
+			</tr>
+		</table>
+
+		<table class="tabela">
+			<tr>
+				<td colspan="4" class="centro">
+					<input type="button" value=" " title="Salvar" class="btn_salvar"  onclick="return validaForm();" />
+				</td>
+			</tr>
+		</table>
+	<?php endforeach; ?>	
+	</form>
+	<!-- ========== FIM FORMULÁRIO 1 ========== -->
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

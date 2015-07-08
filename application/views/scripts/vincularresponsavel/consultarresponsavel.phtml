@@ -1,0 +1,116 @@
+<script> 
+    $(document).ready( function() {
+        jqAjaxLink('<?php echo $this->url(array('controller' => 'vincularresponsavel', 'action' => 'mostraresponsavel')) ?>', '', 'mostraresponsavel');
+        $("#formBuscar").validate({
+            // Define as regras
+            rules:{
+                cnpjcpf:{
+                    verificaDados: true, minlength: 14
+                },
+                nome:{
+                    verificaDados: true, minlength: 2
+                },
+                stVinculo:{
+                    verificaDados: true
+                }
+
+            },
+            // Define as mensagens de erro para cada regra
+            messages:{
+                cnpjcpf:{
+                    verificaDados: function(){$("#error").removeClass('sumir')},
+                    minlength: "O cpf/cnpj deve conter, no mínimo, 11 caracteres"
+                },
+                nome:{
+                    verificaDados: function(){$("#error").removeClass('sumir')},
+                    minlength: "O seu nome deve conter, no mínimo, 2 caracteres"
+                },
+                stVinculo:{
+                    verificaDados: function(){$("#error").removeClass('sumir')}
+                }
+            },
+            submitHandler: function(form) {
+                jqAjaxForm(form, 'mostraresponsavel');
+            }
+           
+        });
+        jQuery.validator.addMethod("verificaDados", function(value, element) 
+        {
+            if($("#cnpjcpf").val() != "")
+            {
+                $('#error').addClass('sumir');
+                return true;
+            }else if($("#nome").val() != ""){
+                $('#error').addClass('sumir');
+                return true;
+            }else if($("#stVinculo").val() != ""){
+                $('#error').addClass('sumir');
+                return true;
+            }else{
+                return false;
+            }
+        });
+    });
+
+
+</script>
+<!-- ========== INï¿½CIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para Início">Início</a></li>
+        <li class="last">Consultar Respons&aacute;vel</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+<!-- ========== INï¿½CIO Tï¿½TULO ========== -->
+<div id="titulo">
+    <div>Consultar Respons&aacute;vel<span>ID #23A</span> <span class="voltar"><a href="#" onclick="voltar();"></a></span></div>
+</div>
+<div id="conteudo">
+    <fieldset><legend>Informações do Respons&aacute;vel </legend>
+        <form id="formBuscar" name="formBuscar" method="post" action="<?php echo $this->url(array('controller' => 'vincularresponsavel', 'action' => 'mostraresponsavel')); ?>">
+            <table class="tabela" style="margin:1% auto; width:40%;" summary="Esta tabela contém o campo para pesquisa de Agentes Vinculados a Instituição. Para que a pesquisa tenha efeito é necessário que seja feita através do CNPJ ou o nome da Instituição que consta nos campos abaixo">
+                <td colspan="2" class="titulo_tabela" tabindex="1">PESQUISAR RESPONS&Aacute;VEL</td>
+                <tr>
+
+                    <th class="center" width="50%" tabindex="2"><label for="cnpj" >CNPJ/CPF:</label></th>
+                    <td>
+                        <input class="input_simples" type="text" name="cnpjcpf" id="cnpjcpf" maxlength="18"  tabindex="3" onkeyup="mascaraCnpjCpf(this);"class="input w500" />
+                    </td>
+                </tr>
+
+                <tr>
+
+                    <th class="center" width="50%" tabindex="4"><label for="nome">NOME:</label></th>
+                    <td>
+                        <input class="input_simples" type="text" name="nome" id="nome" tabindex="5" maxlength="70" value="" onkeypress="" class="input w500"/>
+                    </td>
+                </tr>
+                <tr>
+
+                    <th class="center" width="50%" tabindex="4"><label for="nome">Status:</label></th>
+                    <td>
+                        <select name="stVinculo" id="stVinculo" class="select_simples">
+                            <option value="">--Selecione--</option>
+                            <option value="0">Aguardando V&iacute;nculo</option>
+                            <option value="1">Rejeitado</option>
+                            <option value="2">Vinculado</option>
+                            <option value="3">Desvinculado</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="centro">
+                        <div id="error" class="sumir" style="color: red; text-align: center; font-weight: 600;">Dados obrigat&oacute;rios n&atilde;o informados!</div>
+                        <input type="submit" title=" Pesquisar " tabindex="6" class="btn_pesquisar" value=" " />
+                        &nbsp;&nbsp;&nbsp;
+                        <input type="reset" title=" Cancelar " tabindex="7" class="btn_limpar" value=" " />
+                    </td>
+                </tr>
+            </table>
+        </form>
+        </fieldset>
+        <div id="mostraresponsavel"></div>
+</div>
+<div id="rodapeConteudo"><span></span></div>
+<br clear="all" />

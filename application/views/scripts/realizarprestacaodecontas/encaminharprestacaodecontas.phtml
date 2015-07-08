@@ -1,0 +1,250 @@
+<?php
+    header('Content-Type: text/plain; charset=ISO-8859-1');
+    if(count($this->consultorias)==0) {
+?>
+<script>
+    $(document).ready(function(){
+        carregarDestinatariosCombo();
+
+        function carregarDestinatariosCombo(){
+            var idorgao = $('#passaValor<?php echo $this->pag;?>').val();
+
+            var recebe = $('#divDinamica').find('#recebeValor<?php echo $this->pag;?>');
+            recebe.html('');
+            recebe.append("<option value=''>carregando...</option>");
+
+            $.ajax({
+                url : '<?php echo $this->url ( array ('controller' => 'realizarprestacaodecontas', 'action' => 'carregar-destinatarios-tecnicos' ) );?>',
+                data :
+                    {
+                    idorgao : idorgao,
+                    verifica : 'a'
+                },
+                success: function(data){
+                    $('#encaminhar').find('.AgentePerfil').val('');
+                    var recebe = $('#divDinamica').find('#recebeValor<?php echo $this->pag;?>');
+
+                    if(data.resposta){
+                        recebe.html('');
+                        recebe.append("<option value=''>- Selecione o agente -</option>");
+                        for ( i in data.conteudo)
+                        {
+                            recebe.append("<option value='"+data.conteudo[i].idAgente+"/"+data.conteudo[i].idperfil+"'>"+data.conteudo[i].Perfil+" - "+data.conteudo[i].usu_nome+"</option>");
+                        }
+                    }
+                    else{
+                        recebe.html('');
+                        recebe.append("<option value=''>Nenhum registro encontrado</option>");
+                    }
+                },
+                type : 'post'
+                ,dataType : 'json'
+
+            });
+        }
+
+//        $('#passaValor<?php echo $this->pag;?>').change(function()
+//        {
+//        });
+
+        $('#divDinamica').find('#recebeValor<?php echo $this->pag;?>').change(function()
+        {
+            var perfil = $(this).val().split('/');
+            $('#divDinamica').find('.AgentePerfil').val(perfil[1]);
+            $('#divDinamica').find('.AgenteId').val(perfil[0]);
+
+        });
+
+    });
+
+    function validaForm(){
+
+        //var texto = CKEDITOR.instances['dsjustificativa'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+        var texto = $("#dsjustificativa"+<?php echo $this->pag;?>).val();
+        var passaValor = $("#passaValor"+<?php echo $this->pag;?>).val();
+        var recebeValor = $("#recebeValor"+<?php echo $this->pag;?>).val();
+
+        $("#dsjustificativa").val(texto);
+        $("#passaValor").val(passaValor);
+        $("#recebeValor").val(recebeValor);
+
+        if (texto == "" || passaValor == "" || recebeValor == ""){
+
+            $("body").append("<div id='obrigatorio'></div>");
+            $("#obrigatorio").html("");
+            $("#obrigatorio").html('Dados obrigat&oacute;rios n&atilde;o informados!');
+            $("#obrigatorio").dialog({
+                title : 'Alerta',
+                resizable: false,
+                width: 350,
+                height: 150,
+                modal: true,
+                buttons : {
+                    'OK' : function(){
+                        $("#obrigatorio").remove();
+                        $(this).dialog('close');
+                    }
+                }
+            });
+        }else{
+            $("#formEncaminhar").submit();
+        }
+    }
+</script>
+
+<form name="formEncaminhar" id="formEncaminhar" method="post" action="<?php echo $this->url ( array ('controller' => 'realizarprestacaodecontas', 'action' => 'encaminharprestacaodecontas' ) ); ?>" >
+    <input type="hidden" name="passaValor" id="passaValor">
+    <input type="hidden" name="recebeValor" id="recebeValor">
+    <textarea name="dsjustificativa" id="dsjustificativa" style="display: none"></textarea>
+    <input type="hidden" name="idPronac" id="idPronac" value="<?php echo $this->idPronac;?>" />
+    <input type="hidden" name="idSituacaoPrestContas" id="idSituacaoPrestContas" value="<?php echo $this->idSituacaoPrestContas;?>" />
+</form>
+<form name="formValidar" id="formValidar" method="post">
+    <table class="tabela">
+        <tr>
+            <td class="destacar bold centro">PRONAC</td>
+            <td class="destacar bold centro">Nome do Projeto</td>
+        </tr>
+        <tr>
+            <td id="HPronac" class="centro"><?php echo $this->PRONAC; ?></td>
+            <td id="HnomeProjeto" class="centro"><?php echo utf8_decode(htmlentities($this->NomeProjeto)); ?></td>
+        </tr>
+    </table>
+    
+    <table class="tabela">
+        
+        <?php if($this->ocultarJustificativa){ ?>
+        <input type="hidden" name="dsjustificativa<?php echo $this->pag;?>" id="dsjustificativa<?php echo $this->pag;?>" value=".">
+        <?php } else { ?>
+        <tr>
+            <td colspan="2">
+                <textarea name="dsjustificativa<?php echo $this->pag;?>" id="dsjustificativa<?php echo $this->pag;?>" rows="6" style="width: 98%;" class="input_simples"></textarea>
+<!--                <script type="text/javascript">
+                    <![CDATA[
+                    CKEDITOR.replace('dsjustificativa');
+                    ]]>
+                </script>-->
+            </td>
+        </tr>
+        <?php } ?>
+        
+        <tr>
+            <td class="destacar bold" align="right" width="20%" nowrap>Encaminhar para:</td>
+            <td>
+                <select name="passaValor<?php echo $this->pag;?>" id="passaValor<?php echo $this->pag;?>" style="width: 70%;" class="input_simples">
+                    <!--<option value="">- Selecione -</option>-->
+                    <?php foreach ( $this->listaEntidades as $listaEntidades ) :
+                            //12 = GM/JC
+                            //177 = GM/AECI
+                            //270 = GEAR/SPCIN
+                            //303 = ARQ/CGEPC
+                        if(in_array($listaEntidades->Codigo, array(12,177,270,303))): ?>
+                            <option value="<?php echo $listaEntidades->Codigo; ?>"><?php echo utf8_decode(htmlentities($listaEntidades->Sigla));?></option>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="destacar bold" align="right" width="20%">Destinat&aacute;rio:</td>
+            <td>
+                <select name="recebeValor<?php echo $this->pag;?>" id="recebeValor<?php echo $this->pag;?>" style="width: 70%; margin-top: 0.5em;" class="input_simples">
+                    <option value="">- Selecione antes um &Oacute;rg&atilde;o</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center">
+                <input type="hidden" name="idPronac" id="idPronac" value="<?php echo $this->idPronac;?>" />
+                <input type="hidden" name="idSituacaoPrestContas" id="idSituacaoPrestContas" value="<?php echo $this->idSituacaoPrestContas;?>" />
+                <input type="button" value=" " class="btn_enviar" onclick="javascript:validaForm()" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="reset" value=" " class="btn_limpar" onclick="$('#recebeValor'+<?php echo $this->pag;?>).html(''); $('#recebeValor'+<?php echo $this->pag;?>).append('<option value=\'\'>- Selecione antes um &Oacute;rg&atilde;o</option>');" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </td>
+        </tr>
+    </table>
+</form>
+<br>
+    <?php
+    /*
+    <table width="99%" class="tabela">
+        <thead>
+            <tr>
+                <th>Data de Envio</th>
+                <th>Remetente</th>
+                <th>Destinat&aacute;rio</th>
+                <th>&Oacute;rg&atilde;o</th>
+            </tr>
+           <?php if(count($this->Historico)>0){
+                    foreach ($this->Historico as $chave => $dadosHis ) { ?>
+                    <tr>
+                        <td id="Pronac"><?php echo ConverteData($dadosHis->dtInicioEncaminhamento,5); ?></td>
+                        <td id="nomeProjeto"><?php echo utf8_decode(htmlentities($dadosHis->NomeOrigem)); ?></td>
+                        <td id="remetente"><?php echo utf8_decode(htmlentities($dadosHis->NomeDestino)); ?></td>
+                        <td id="destinatario"><?php echo utf8_decode(htmlentities($dadosHis->dsJustificativa)); ?></td>
+                    </tr>
+            <?php   } ?>
+            <?php }else{ ?>
+                    <tr>
+                        <td colspan="4">Nenhum registro encontrado</td>
+                    </tr>
+            <?php } ?>
+        <thead>
+    </table>
+
+    */?>
+    <?php
+}
+else {
+
+
+    ?>
+<div id="obrigatorio" class="sumir"></div>
+<table class="tabela">
+    <tr>
+        <th width="1%">PRONAC</th>
+        <th>Nome do Projeto</th>
+    </tr>
+    <tr>
+        <td id="HPronac"><?php echo $this->PRONAC; ?></td>
+        <td id="HnomeProjeto"><?php echo utf8_decode(htmlentities($this->NomeProjeto)); ?></td>
+    </tr>
+</table>
+<table class="tabela">
+    <tr>
+        <td colspan="2">
+            Nota T&eacute;cnica Consultiva:<br>
+            <textarea name="dsjustificativa" id="dsjustificativa" rows="6" style="width: 98%;" class="input_simples" readonly><?php echo $this->consultorias[0]->dsJustificativa;?></textarea>
+        </td>
+    </tr>
+
+</table>
+
+<table class="tabela">
+    <tr>
+        <td colspan="2">
+            Consultoria:
+            <br>
+            <?php
+            if(count($this->consultoriasResp)>=1) {
+            	
+                ?>
+                <textarea name="dsresposta" id="dsresposta" rows="6" style="width: 98%;" class="input_simples" readonly><?php echo $this->consultoriasResp[0]->dsJustificativa;?></textarea>
+                <?php
+            }
+            else {
+                ?>
+                <table class="tabela">
+	                <tr>
+	                    <th>Aguardando resposta!</th>
+	                </tr>
+	            </table>
+                <?php
+            }
+            ?>
+        </td>
+    </tr>
+</table>
+    <?php
+
+}
+?>

@@ -1,0 +1,67 @@
+<img src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png" class="corrigir" style="cursor: pointer"
+	onclick="JSVerificaIncentivador('<?php echo $this->captacao->nrCpfCnpjIncentivador; ?>', this, event)"
+/>
+
+<script>
+function JSCadastarIncentivador(cpfCnpj, element) {
+    $('html').css('overflow', 'hidden');
+    $("body").append("<div id='divDinamicaAgentes'></div>");
+    $("#divDinamicaAgentes").html("");
+    $('#divDinamicaAgentes').html("<br><br><center>Carregando dados...</center>");
+    $.ajax({
+        url : '<?php echo $this->url(array('controller' => 'agentes', 'action' => 'incluiragente')); ?>',
+        data : {cpf : cpfCnpj, caminho: "", modal : "s", modulo : "movimentacaobancaria"},
+        success: function(data){
+            $('#divDinamicaAgentes').html(data.error ? data.msg : data);
+//            $(element).replaceWith("<font color='green'>[Correção enviada]</font>");
+        },
+        complete: function() {
+            $("#resultadoFinalizar").html("");
+        },
+        type : 'post'
+    });
+
+    $("#divDinamicaAgentes").dialog({
+        resizable: true,
+        width:$(window).width() - 100,
+        height:$(window).height() - 100,
+        modal: true,
+        autoOpen:true,
+        draggable:false,
+        title: 'Cadastrar incentivador',
+        buttons: {
+            'Fechar': function() {
+                $("#divDinamicaAgentes").remove();
+                $(this).dialog('close');
+                $('html').css('overflow', 'auto');
+                top.cadastarIncentivadorClosed = true;
+                JSVerificaIncentivador(cpfCnpj, $(element));
+            }
+        },
+        close: function() {
+            $("#divDinamicaAgentes").remove();
+            $(this).dialog('close');
+            $('html').css('overflow', 'auto');
+            top.cadastarIncentivadorClosed = true;
+            JSVerificaIncentivador(cpfCnpj, $(element));
+        }
+    });
+}
+
+function JSVerificaIncentivador(cpfCnpj, element, event) {
+    $.ajax({
+        url : '<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'verifica-incentivador')); ?>',
+        data : {cpfCnpjIncentivador : cpfCnpj},
+        type : 'post',
+        dataType : 'json',
+        success: function(data){
+            if (data.existe) {
+                $(element).replaceWith("<font color='green'>[Correção enviada]</font>");
+            }
+            if (event) {
+            	JSCadastarIncentivador(cpfCnpj, element);
+            }
+        }
+    });
+}
+</script>

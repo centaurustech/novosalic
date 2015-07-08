@@ -1,0 +1,67 @@
+<?php require_once "inc/menu.dados.bancarios.php"; // menu de consultar dados do projeto - dados bancarios ?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'), '', true); ?>?idPronac=<?php echo $this->idPronac; ?>" title="Consultar dados projeto">Consultar dados projeto</a></li>
+        <li>Dados banc&aacute;rios</li>
+        <li class="last">Libera&ccedil;&atilde;o</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Libera&ccedil;&atilde;o</div>
+</div>
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <table class="tabela">
+        <tr class="destacar">
+            <td align="center"><b>PRONAC</b></td>
+            <td align="center"><b>Nome do Projeto</b></td>
+        </tr>
+        <tr>
+            <td align="center"><?php echo $this->projeto->AnoProjeto.$this->projeto->Sequencial; ?></td>
+            <td align="center"><?php echo $this->projeto->NomeProjeto; ?></td>
+        </tr>
+    </table>
+
+    <?php if(is_object($this->dadosLiberacao) && count($this->dadosLiberacao)>0){ ?>
+        <table class='tabela'>
+            <tr class="destacar">
+                <td align="center" colspan="3"><b>Dados da Libera&ccedil;&atilde;o</b></td>
+            </tr>
+            <tr>
+                <td valign="top">
+                    <b>Dt. Libera&ccedil;&atilde;o</b><br>
+                    <?php echo date("d/m/Y",strtotime($this->dadosLiberacao->DtLiberacao));?>
+                </td>
+                <td valign="top">
+                    <b>Vl. Liberado</b><br>
+                    <?php echo 'R$ '.@number_format($this->dadosLiberacao->vlLiberado, 2, ",", ".");?>
+                </td>
+                <td valign="top">
+                    <b>Conta liberada por:</b><br>
+                    <?php $nome = trim($this->dadosLiberacao->usu_Nome); echo (empty($nome)) ? "<em>Sem informa&ccedil;&atilde;o</em>" : $this->dadosLiberacao->usu_Nome;?>
+                </td>
+            </tr>
+        </table>
+    <?php } else { ?>
+        <table class="tabela">
+            <tr>
+                <td align="center"><em>Dados n&atilde;o informados!</em></td>
+            </tr>
+        </table>
+    <?php } ?>
+
+</div>
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

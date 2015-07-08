@@ -1,0 +1,464 @@
+<?php
+
+$relatorio = "<html>
+<head>
+<meta http-equiv='Content-Type' content='text/html' charset='utf-8' />
+<title>Leitor PDF</title>
+</head>
+<body>
+<style>
+*{
+	font-family: sans-serif;
+	font-size: 14px;
+}
+.separador{
+	color: #f8f8f8;
+	background: #f8f8f8;
+}
+
+.titulo{
+	background: #abda5d;
+	font-weight: bold;
+	font-family: Arial; 
+	text-align: center;
+}
+
+th{
+	 
+	background: #ccc;
+	font-family: Arial; 
+	text-align: center;
+}
+
+</style>
+
+
+    <table border='1' width='97%' align='center'>
+        <tr>
+            <th colspan='6' align='center' class='titulo'>Projeto Cultural</th>
+        </tr>
+        <tr>
+            <th colspan='6' align='center' class='titulo'>Identificação</th>
+        </tr>
+        <tr>
+           <td colspan='3'>
+                <b>PRONAC</b>
+                <br />
+                ".$this->projeto->NrProjeto."
+            </td>
+            <td colspan='3'>
+                <b>Nome do Projeto</b>
+                <br />
+                ".$this->projeto->NomeProjeto."
+            </td>
+        </tr>
+        <tr>
+            <th colspan='6' align='center' class='titulo'>UF / Mecanismo / Área / Segmento / Processo</th>
+        </tr>
+        <tr>
+            <td align='center'>
+                <b>UF</b>
+                <br />
+                ".$this->projeto->UfProjeto."
+            </td>
+            <td align='center'>
+                <b>Mecanismo</b>
+                <br />
+                ".$this->projeto->Mecanismo."
+            </td>
+            <td align='center'>
+                <b>Área Cultural</b>
+                <br />
+                ".$this->projeto->Area."
+            </td>
+            <td align='center'>
+                <b>Segmento</b>
+                <br />
+                ".$this->projeto->Segmento."
+            </td>
+            <td align='center'>
+                <b>Processo</b>
+                <br />
+                ".$this->projeto->Processo."
+            </td>
+            <td align='center'>
+                <b>Enquadramento</b>
+                <br />
+                ".$this->projeto->Enquadramento."
+            </td>
+        </tr>
+        <tr>
+            <th colspan='6' align='center' class='titulo'>Sintese do Projeto</th>
+        </tr>
+        <tr>
+            <td align='center' colspan='6'>
+                ".$this->projeto->ResumoProjeto."
+            </td>
+        </tr>
+        <tr>
+            <th colspan='6' align='center' class='titulo'>Valores</th>
+        </tr>
+        <tr>
+            <td align='center'>
+                <b>Solicitado (A)</b><br />
+                ".number_format($this->projeto->ValorSolicitado, 2, ',', '.')."
+            </td>
+            <td align='center'>
+                <b>Outras Fontes (B)</b><br />
+                ".number_format($this->projeto->OutrasFontes, 2, ',', '.')."
+            </td>
+            <td align='center'>
+                <b>Vl.Proposta (C = A + B)</b><br />
+                ".number_format(($this->projeto->ValorSolicitado + $this->projeto->OutrasFontes), 2, ',', '.')."
+            </td>
+            <td align='center'>
+                <b>Aprovado (D)</b>
+                <br />
+                ".number_format($this->projeto->ValorAprovado, 2, ',', '.')."
+            </td>
+            <td align='center'>
+                <b>Vl.Projeto (E = B + D)</b><br />
+                ".number_format(($this->projeto->OutrasFontes + $this->projeto->ValorAprovado), 2, ',', '.')."
+            </td>
+            <td align='center'>
+                <b>Captação / Convênio (E)</b><br />
+                ".number_format(@($this->projeto->ValorCaptado / ($this->projeto->OutrasFontes + $this->projeto->ValorAprovado)), 2, ',', '.')."
+            </td>
+        </tr>
+        <tr>
+            <th colspan='6' align='center' class='titulo'>Situação</th>
+        </tr>
+        <tr>
+            <td align='center' colspan='2'>
+                <b>Dt.Situação</b><br />
+                ".$this->projeto->DtSituacao."
+            </td>
+            <td align='center' colspan='4'>
+                <b>Situação</b><br />
+                ".$this->projeto->Situacao."
+            </td>
+        </tr>
+        <tr>
+            <td colspan='6' align='left'><b>Providência Tomada</b><br />
+                ".$this->projeto->ProvidenciaTomada."
+            </td>
+        </tr>
+        <tr>
+            <th colspan='6' align='center' class='titulo'>
+                <b>Última Tramitação</b>
+            </th>
+        </tr>
+        <tr>
+            <td align='center' colspan='2'>
+                <b>Emissor</b> <br />
+                ".$this->projeto->Emissor."
+            </td>
+            <td align='center' colspan='2'>
+                <b>Dt.Envio</b> <br />
+                ".$this->projeto->DtTramitacaoEnvio."
+            </td>
+            <td align='center' colspan='2'>
+                <b>Estado</b> <br />
+                ".$this->projeto->Estado."
+            </td>
+        </tr>
+        <tr>
+            <td align='center' colspan='2'>
+                <b>Destino</b> <br />
+                ".$this->projeto->Destino."
+            </td>
+            <td align='center' colspan='2'>
+                <b>Receptor</b> <br />
+                ".$this->projeto->Receptor."
+            </td>
+            <td align='center' colspan='2'>
+                <b>Dt.Recebimento</b> <br />
+                ".$this->projeto->dtTramitacaoRecebida."
+            </td>
+        </tr>
+        <tr>
+            <td align='left' colspan='6'>
+                <b>Despacho</b> <br />
+                ".$this->projeto->meDespacho."
+            </td>
+        </tr>
+        <tr>
+            <th colspan='6' align='center' class='titulo'>Localização atual do projeto <br /></th>
+        </tr>
+        <tr>
+            <td colspan='6' align='center'>
+                A localização atual do projeto só será alterada após o recebimento do projeto na unidade destino.<br />
+                ".$this->projeto->Origem."
+            </td>
+        </tr>
+        <tr>
+            <td colspan='6' align='left' class='separador'>s</td>
+        </tr>
+        <tr>
+            <th colspan='6' align='center' class='titulo'>
+                <b>Plano de Distribuição</b>
+            </th>
+        </tr>";
+        
+            
+            if($this->projeto->idProjeto)
+            {
+                $relatorio .=" <tr>
+                                <th colspan='2' width='25%'>Nome do Evento / Produto</th>
+                                <th colspan='2'width='25%'>Posi&ccedil;&atilde;o da Logomarca</th>
+                                <th width='15%'>Nu. Exemplares / Ingressos</th>
+                                <th width='15%'>Total de Receita Prevista (R$)</th>
+                            </tr>";
+                                            $totalExemplares=0;
+                                            $idPreProjeto = $this->projeto->idProjeto;
+
+                                        $tblPlanoDistribuicao = new PlanoDistribuicao();
+                                        $rsPlanoDistribuicao = $tblPlanoDistribuicao->buscar(array("idProjeto=?"=>$idPreProjeto), array("idPlanoDistribuicao DESC"), 10);
+
+                                            $totalReceita=0;
+
+                                            if(!empty($rsPlanoDistribuicao)):
+                                        foreach($rsPlanoDistribuicao as $planoDistribuicao):
+
+                                            $totalExemplares += $planoDistribuicao->QtdeProduzida;
+                                            $receita = ($planoDistribuicao->QtdeVendaNormal*$planoDistribuicao->PrecoUnitarioNormal)+($planoDistribuicao->QtdeVendaPromocional*$planoDistribuicao->PrecoUnitarioPromocional);
+                                            $totalReceita += $receita;
+
+                $relatorio .="<tr>
+                                            <td colspan='2' align='center'>".utf8_decode(htmlentities($planoDistribuicao->Produto))."</td>
+                                            <td colspan='2' align='center'>".utf8_decode(htmlentities($planoDistribuicao->PosicaoLogomarca))."</td>
+                                            <td align='right'>".utf8_decode(htmlentities($planoDistribuicao->QtdeProduzida))."</td>
+                                            <td align='right'>".number_format($receita, 2, ',', '.')."</td>
+                                        </tr>";
+                                        endforeach;
+                                        endif;
+
+                $relatorio .=   "<tr>
+                                            <th colspan='2' width='25%' colspan='2' align='left'>Total Geral</th>
+                                            <th colspan='2' width='25%' align='right'>".$totalExemplares."</th>
+                                            <th colspan='2' width='25%' align='right'>".number_format($totalReceita, 2, ',', '.')."</th>
+                                        </tr>";
+            }else{
+                $relatorio .=   "<tr>
+                                    <td colspan='6' align='center'>Nenhum registro encontrado.</td>
+                                </tr>";
+            }
+	
+		
+        	
+        
+    $relatorio .="<tr>
+                    <td colspan='6' align='left' class='separador'>s</td>
+                  </tr>
+                  <tr>
+                      <th colspan='6' align='center' class='titulo'>
+                            <b>Plano de Divulgação</b>
+                      </th>
+                  </tr>";
+                
+
+            if($this->projeto->idProjeto)
+            {
+                $relatorio .="<tr>
+                                <th colspan='3' align='center'>Pe&ccedil;a</th>
+                                <th colspan='3' align='center'>Ve&iacute;culo</th>
+                            </tr>";
+
+                $dao = new DivulgacaoDAO();
+                $dados = $dao->buscarDigulgacao($idPreProjeto);
+
+                foreach ($dados as $divulgacao):
+	    
+                $relatorio .="<tr>
+                                <td colspan='3' align='center'>".utf8_decode(htmlentities($divulgacao->Peça))."</td>
+                                <td colspan='3' align='center'>".utf8_decode(htmlentities($divulgacao->Veiculo))."</td>
+                             </tr>";
+           
+                    endforeach;
+            }else{
+                $relatorio .=   "<tr>
+                                    <td colspan='6' align='center' >Nenhum registro encontrado.</td>
+                                </tr>";
+            }
+            
+	    
+$relatorio .="<tr>
+	        <td colspan='6' align='left' class='separador'>s</td>
+              </tr>
+              <tr>
+                  <th colspan='6' align='center' class='titulo'>
+                        <b>Local de Realização</b>
+                  </th>
+              </tr>";
+
+            
+
+            if($this->projeto->idProjeto)
+            {
+                $relatorio .="<tr>
+                                <th colspan='2'>Pa&iacute;s</th>
+                                <th colspan='2'>UF</th>
+                                <th colspan='2'>Cidade</th>
+                            </tr>";
+                $arrBusca = array();
+                $arrBusca['idProjeto']=$idPreProjeto;
+
+                $tblAbrangencia = new Abrangencia();
+                $rsAbrangencia = $tblAbrangencia->buscar($arrBusca);
+                
+		foreach ($rsAbrangencia as $localizacao):
+                    $relatorio .="<tr>
+                                    <td colspan='2' align='center'>".utf8_decode(htmlentities($localizacao->pais))."</td>
+                                    <td colspan='2' align='center'>".utf8_decode(htmlentities($localizacao->uf))."</td>
+                                    <td colspan='2' align='center'>".utf8_decode(htmlentities($localizacao->cidade))."</td>
+                                </tr>";
+                                endforeach;
+            }else{
+                $relatorio .=   "<tr>
+                                    <td colspan='6' align='center' >Nenhum registro encontrado.</td>
+                                </tr>";
+            }
+
+               
+        
+            $relatorio .="
+                    <tr>
+                            <td colspan='6' class='separador'>s</td>
+                    </tr>
+                    <tr>
+                      <th colspan='6' align='center' class='titulo'>
+                            <b>Deslocamento</b>
+                      </th>
+                    </tr>";
+                        
+
+
+                if($this->projeto->idProjeto)
+                {
+                    $relatorio .="<tr>
+                                        <th align='center'>Pa&iacute;s Origem:</th>
+                                        <th align='center'>UF Origem:</th>
+                                        <th align='center'>Cidade Origem:</th>
+                                        <th align='center'>Pa&iacute;s Destino:</th>
+                                        <th align='center'>UF Destino:</th>
+                                        <th align='center'>Cidade Destino:</th>
+                                </tr>";
+                    
+                     $deslocamento = DeslocamentoDAO::buscarDeslocamentos($idPreProjeto, null);
+                     foreach($deslocamento as $desloca):
+
+                    $relatorio .="<tr>
+                                            <td align='center'>".utf8_decode(htmlentities($desloca->PO))."</td>
+                                            <td align='center'>".utf8_decode(htmlentities($desloca->UFO))."</td>
+                                            <td align='center'>".utf8_decode(htmlentities($desloca->MUO))."</td>
+                                            <td align='center'>".utf8_decode(htmlentities($desloca->PD))."</td>
+                                            <td align='center'>".utf8_decode(htmlentities($desloca->UFD))."</td>
+                                            <td align='center'>".utf8_decode(htmlentities($desloca->MUD))."</td>
+                                    </tr>
+                                    <tr>
+                                            <td colspan='6' align='center'>Quantidade: ".utf8_decode(htmlentities($desloca->Qtde))."</td>
+                                    </tr>
+                                    ";
+
+                                    endforeach;
+                }else{
+                    $relatorio .=   "<tr>
+                                        <td colspan='6' align='center' >Nenhum registro encontrado.</td>
+                                    </tr>";
+                }
+
+                
+
+
+            $relatorio .="<tr>
+			  	<td colspan='6'class='separador'>s</td>
+                          </tr>
+                          <tr>
+                            <th colspan='6' align='center' class='titulo'>
+                                <b>Planilha Orçamentária</b>
+                            </th>
+                         </tr></table>";
+
+
+
+                if($this->projeto->idProjeto)
+                {
+                    $buscarPlanilhaEtapa = ManterorcamentoDAO::buscarPlanilhaEtapa($idPreProjeto);
+
+                    $total_geral = 0;
+				foreach ($buscarPlanilhaEtapa as $etapas):
+				
+                   $relatorio .="  <table border='1' width='97%' align='center'>
+					<tr>
+                                            <td colspan='6' align='left' class='etapas'>".utf8_decode(htmlentities($etapas->DescricaoEtapa))."</td>
+                                        </tr>
+					<tr>
+                                            <th width='40%'>&Iacute;tem</th>
+                                            <th>Unidade</th>
+                                            <th>Qtd</th>
+                                            <th>Ocorr&ecirc;ncia</th>
+                                            <th>Vl. Unit&aacute;rio</th>
+                                            <th>Vl. TOTAL</th>
+					</tr>";
+					
+					$buscarPlanilha = ManterorcamentoDAO::buscarPlanilha($idPreProjeto);
+					$soma = 0;
+
+					foreach ($buscarPlanilha as $planilha):
+			       	
+					if($etapas->idEtapa == $planilha->idEtapa):
+				
+					$total = ($planilha->Quantidade * $planilha->Ocorrencia * $planilha->ValorUnitario);
+	                $soma = $soma + $total;
+	                $total_geral = $total_geral + $soma;
+					
+                    $relatorio .="<tr>
+	               		<td>".utf8_decode(htmlentities($planilha->DescricaoItem))."</td>
+                                    <td align='center' width='10%'>".utf8_decode(htmlentities($planilha->DescricaoUnidade))."</td>
+                                    <td align='center' width='6%'>".utf8_decode(htmlentities($planilha->Quantidade))."</td>
+                                    <td align='center' width='13%'>".utf8_decode(htmlentities($planilha->Ocorrencia))."</td>
+                                    <td align='center' width='13%'>".number_format(utf8_decode(htmlentities($planilha->ValorUnitario)), 2, ',', '.')."</td>
+						<td>".number_format(utf8_decode(htmlentities($total)), 2, ',', '.')."</td>
+		       		</tr>";
+				        
+					endif;
+			        endforeach;
+				        
+                                $relatorio .="<tr>
+			        	<td align='center'><b><font color='green'>TOTAL:</font></b></td>
+			        	<td width='10%'></td>
+			        	<td width='6%'></td>
+			        	<td width='13%'></td>
+			        	<td width='13%'></td>
+					    <td align='center'><b><font color='green'>R$ ".number_format(utf8_decode(htmlentities($soma)), 2, ',', '.')."</font></b></td>
+					</tr>";
+				
+					endforeach;
+						 
+                   $relatorio .="<tr>
+		                <td align='center' width='40%'><b><font color='red'>TOTAL GERAL: </font></b></td>
+		                <td width='10%'></td>
+		                <td width='6%'></td>
+		                <td width='13%'></td>
+		                <td width='13%'></td>
+		                <td align='center'><b><font color='red'>R$ ".number_format(utf8_decode(htmlentities($total_geral)), 2, ',', '.')."</font></b></td>
+			       	</tr>";
+                }else{
+                    $relatorio .=   "<table border='1' width='97%' align='center'><tr>
+                                        <td colspan='6' align='center' >Nenhum registro encontrado.</td>
+                                    </tr>";
+                }
+                $relatorio .= "</table>";
+$relatorio .= "
+    </body>
+</html>";
+
+
+//echo $relatorio;
+$pdf = new PDF ( $relatorio, 'pdf' );
+$pdf->gerarRelatorio('horizontal');
+
+?>
+
+
+

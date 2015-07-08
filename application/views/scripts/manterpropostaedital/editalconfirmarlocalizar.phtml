@@ -1,0 +1,39 @@
+<div id="titulo">
+    <div>Edital  - Visualizar<span class="voltar"><a href="javascript:voltar();" onclick="">Voltar</a></span></div>
+</div>
+<div id="conteudo">
+    <?php
+    if($this->mensagem) {
+        echo "<div class='mensagem'>{$this->mensagem}</div>";
+    } else {
+    ?>
+    <table style="width: 1024px;" class="tabela">
+        <tr>
+            <td>
+                Objeto
+            </td>
+            <td>
+                <?php echo $this->dado->Objeto;?>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Fundo setorial
+            </td>
+            <td>
+                <?php echo $this->dado->TipoFundo;?>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Classificação
+            </td>
+            <td>
+                <?php echo $this->dado->Classificacao;?>
+            </td>
+        </tr>
+    </table>
+    <?php } ?>
+</div>
+<div id="rodapeConteudo"><span></span></div>
+<br clear="all" />

@@ -1,0 +1,90 @@
+<?php
+$relatorio = $this->relatorioFiscalizacao;
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+<script type="text/javascript">
+    $(document).ready(function(){
+        //ATUALIZA TITULO DA PAGINA
+        window.parent.$("#titulo").html("<div>Dados da Fiscaliza&ccedil;&atilde;o</div>");
+        window.parent.$("#caminhoLocalAtual").html("Dados da Fiscaliza&ccedil;&atilde;o");
+    });
+    function mostraOcultaElemento(elemento,resultado,idFiscalizacao)
+    {
+        $('.' + elemento).toggle();
+
+        if ($('#' + elemento).hasClass('btn_adicionar'))
+        {
+                $('#' + elemento).addClass('btn_remover');
+                $('#' + elemento).removeClass('btn_adicionar');
+        }
+        else
+        {
+                $('#' + elemento).addClass('btn_adicionar');
+                $('#' + elemento).removeClass('btn_remover');
+        }
+
+        if($('#' + resultado).html() == '')
+        {
+            //CARREGA TRAMITACAO PROJETO
+            $('#' + resultado).html('<br><center>Aguarde, carregando dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br>');
+            jqAjaxLinkSemLoading('<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'dados-fiscalizacao')); ?><?php echo "?idPronac=".$this->idPronac;?>&idFiscalizacao='+idFiscalizacao, '', resultado);
+        }
+    }
+</script>
+
+<table class="tabela">
+    <tr class="destacar">
+        <td align="center"><b>PRONAC</b></td>
+        <td align="center"><b>Nome do Projeto</b></td>
+    </tr>
+    <tr>
+        <td align="center"><?php echo $this->projeto->AnoProjeto.$this->projeto->Sequencial; ?></td>
+        <td align="center"><?php echo $this->projeto->NomeProjeto; ?></td>
+    </tr>
+</table>
+
+<?php if(is_object($this->infoProjeto) && count($this->infoProjeto)>0 && isset($this->infoProjeto[0]->idFiscalizacao) && !empty($this->infoProjeto[0]->idFiscalizacao)): ?>
+    <table class="tabela">
+        <tr>
+            <th width="1%"></th>
+            <th width="30%">Dt. In&iacute;cio</th>
+            <th width="30%">Dt. Fim</th>
+            <th width="30%">T&eacute;cnico</th>
+        </tr>
+    <?php $ct = 1; $idFiscalizacao = 0;
+         foreach ($this->infoProjeto as $infoProjeto) {
+             //xd($infoProjeto);
+             //http://localhost/integracaoCNIC/consultardadosprojeto/?idPronac=122903
+            if($idFiscalizacao != $infoProjeto->idFiscalizacao) { ?>
+            <tr>
+                <td>
+                    <input type="button" title="Expandir" class="btn_adicionar" id="div_<?php echo $ct; ?>" onclick="mostraOcultaElemento('div_<?php echo $ct; ?>','resultado_<?php echo $ct; ?>', '<?php echo $infoProjeto->idFiscalizacao;?>');"/>
+                </td>
+                <td align="center">
+                    <?php if ($infoProjeto->dtInicioFiscalizacaoProjeto != '') {
+                            echo date('d/m/Y', strtotime($infoProjeto->dtInicioFiscalizacaoProjeto));} else { echo 'Não informado';} ?>
+                </td>
+                <td align="center">
+                    <?php if ($infoProjeto->dtFimFiscalizacaoProjeto != '') {
+                            echo date('d/m/Y', strtotime($infoProjeto->dtFimFiscalizacaoProjeto));} else {echo 'Não informado';}?>
+                </td>
+                <td>
+                    <?php echo Validacao::mascaraCPFCNPJ($infoProjeto->cpfTecnico); ?> - <?php echo $infoProjeto->nmTecnico; ?>
+                </td>
+            </tr>
+            <tr class="div_<?php echo $ct; ?> sumir">
+                <td colspan="4">
+                    <!-- INICIO CONTEUDO DEPOIS DO ICONE EXPANDIR -->
+                    <div id="resultado_<?php echo $ct; ?>"></div>
+                </td>
+            </tr>
+        <?php $ct++; }/*fecha if - idFiscalizacao*/ $idFiscalizacao = $infoProjeto->idFiscalizacao; }//fecha foreach ?>
+    </table>
+<?php else: ?>
+    <table class="tabela">
+        <tr>
+            <td align="center"><em>Dados n&atilde;o informados!</em></td>
+        </tr>
+    </table>
+<?php endif; ?>
+

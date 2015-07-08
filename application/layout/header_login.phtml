@@ -1,0 +1,98 @@
+<?php
+//$gmtDate = gmdate("D, d M Y H:i:s");
+//header("Expires: {$gmtDate} GMT");
+//header("Last-Modified: {$gmtDate} GMT");
+//header("Cache-Control: no-cache, must-revalidate");
+//header("Pragma: no-cache");
+//header("Content-Type: text/html; charset=ISO-8859-1", true);
+?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-br">
+	<head>
+
+                <?php if(in_array($_SERVER["HTTP_HOST"], array('novosalic.cultura.gov.br', 'www.novosalic.cultura.gov.br', 'http://novosalic.cultura.gov.br', 'http://www.novosalic.cultura.gov.br'))){ ?>
+                <!-- Piwik -->
+                <script type="text/javascript">
+                  var _paq = _paq || [];
+                  _paq.push(["trackPageView"]);
+                  _paq.push(["enableLinkTracking"]);
+
+                  (function() {
+                    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://analise.cultura.gov.br/";
+                    _paq.push(["setTrackerUrl", u+"piwik.php"]);
+                    _paq.push(["setSiteId", "3"]);
+                    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
+                    g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
+                  })();
+                </script>
+                <!-- End Piwik Code -->
+                <?php } ?>
+
+		<title>Salic - Sistema de Apoio às Leis de Incentivo à Cultura</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+		<meta name="title" content="Sistema Salic" />
+		<meta name="description" content="Sistema de Apoio às Leis de Incentivo à Cultura" />
+		<link type="image/x-icon" rel="shortcut icon" href="<?php echo $this->baseUrl(); ?>/public/img/favicon.ico" />
+		<link type="text/css" rel="stylesheet" media="all" href="<?php echo $this->baseUrl(); ?>/public/css/geral.css" />
+		<link type="text/css" rel="stylesheet" media="screen" href="<?php echo $this->baseUrl(); ?>/public/css/recursos/importar.css" />
+		<link type="text/css" rel="stylesheet" media="all" href="<?php echo $this->baseUrl(); ?>/public/css/ajustes.css" />
+		<link type="text/css" rel="stylesheet" media="all" href="<?php echo $this->baseUrl(); ?>/public/css/botoes.css" />
+
+		<!--[if IE]>
+		<link type="text/css" rel="stylesheet" media="all" href="<?php echo $this->baseUrl(); ?>/public/css/ie.css" />
+		<style type="text/css">img,a,ul,li { behavior: url("<?php echo $this->baseUrl(); ?>/public/scripts/iepngfix.htc"); }</style>
+		<![endif]-->
+		<!--[if gte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="<?php echo $this->baseUrl(); ?>/public/css/ie8.css" />
+		<![endif]-->
+		<!--[if IE 7]>
+		<link type="text/css" rel="stylesheet" media="all" href="<?php echo $this->baseUrl(); ?>/public/css/ie7.css"/>
+		<![endif]-->
+
+		<noscript>
+			<link type="text/css" rel="stylesheet" media="all" href="<?php echo $this->baseUrl(); ?>/public/css/noscript.css" />
+		</noscript>
+
+		<link type="text/css" href="<?php echo $this->baseUrl(); ?>/public/css/custom-theme/jquery-ui-1.8.2.custom.css" rel="stylesheet" />
+		<script language="javascript" type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/jquery-1.4.2.min.js"></script>
+		<script language="javascript" type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/scripts/script_sem_menu.js"></script>
+		<script language="javascript" type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/jquery.validate.min.js"></script>
+		<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/jquery-ui-1.8.2.custom.min.js"></script>
+		<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ajax.js"></script>
+		<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/scripts.js"></script>
+		<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/json.js"></script>
+	</head>
+
+
+
+	<body>
+
+
+
+		<!-- ========== INÍCIO TOPO ========== -->
+		<div id="topo">
+			<div class="barra_governo">
+				<div class="fl">
+					<div class="fr">
+						<p><img src="<?php echo $this->baseUrl(); ?>/public/img/gov/brasil.png" alt="Governo Federal - Brasil - Pa&iacute;s rico &eacute; pa&iacute;s sem pobreza" title="Governo Federal - Brasil - Pa&iacute;s rico &eacute; pa&iacute;s sem pobreza" /></p>
+					</div>
+					<div id="combousuario"></div>				
+				</div>
+			</div>
+			<div id="logo">
+				<h1><a href="<?php echo $this->url(array('controller' => 'index', 'action' => ''), '', true); ?>" title="Sistema de Apoio &agrave;s Leis de Incentivo &agrave; Cultura">Salic</a></h1>
+			</div>
+		</div>
+		<!-- ========== FIM TOPO ========== -->
+
+
+
+		<!-- ========== INÍCIO MENSAGENS (ERROS, CONFIRMAÇÕES E ADVERTÊNCIAS) ========== -->
+		<?php if (isset($this->message)) : ?>
+		<div class="msg<?php echo $this->message_type; ?>">
+			<div class="float_right"><input type="button" class="btn_close" title="Fechar mensagem" id="msg<?php echo $this->message_type; ?>" onclick="$('.msg<?php echo $this->message_type; ?>').hide();" onkeypress="$('.msg<?php echo $this->message_type; ?>').hide();"/></div>
+			<div><?php echo $this->message; ?></div>
+		</div>
+		<?php endif; ?>
+		<!-- ========== FIM MENSAGENS (ERROS, CONFIRMAÇÕES E ADVERTÊNCIAS) ========== -->

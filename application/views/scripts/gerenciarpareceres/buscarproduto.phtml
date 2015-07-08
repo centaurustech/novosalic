@@ -1,0 +1,117 @@
+<?php
+
+
+//require_once "inc/menu.inc.php"; // menu
+?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''),'',true); ?>" title="Ir para Início">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'index'),'',true); ?>" title="Gerenciar Pareceres">Gerenciar Pareceres T&eacute;cnicos</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'pareceresaconsolidar'),'',true); ?>" title="Gerenciar Pareceres">Pareceres a Consolidar</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'pcvisualizartramitacao'),'',true); ?>" title="Gerenciar Pareceres">Visualizar Tramitação</a></li>
+		<li class="last">Localizar Pareceres</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Localizar Pareceres<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+<form action="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'pcvisualizartramitacao')); ?>" method="post">
+<table class="tabela">
+	<tr>	
+		<td width="120">idPronac</td>
+		<td width="220" align="center">Exatamente igual</td>
+		<td><input type="text" class="input_simples" name="idpronac" value="" /></td>
+	</tr>
+	<tr>	
+		<td>idProduto</td>
+		<td align="center">Exatamente igual</td>
+		<td><input type="text" class="input_simples" name="idproduto" value="" /></td>
+	</tr>
+	<tr>	
+		<td>Produto</td>
+		<td align="center">
+			<select name="produtotc" style="width: 200px;" class="input_simples">
+				<option value="1">Exatamente igual</option>
+				<option value="2">Início igual</option>
+				<option value="3">Que contenha</option>												
+				<option value="4">Diferente</option>												
+			</select>
+		</td>
+		<td><input type="text" class="input_simples" name="produto" value="" /></td>
+	</tr>
+	<tr>	
+		<td>Tipo de Analise</td>
+		<td align="center">
+			<select name="tipoanalisetc" style="width: 200px;" class="input_simples">
+				<option value="1">Exatamente igual</option>
+				<option value="1">Início igual</option>
+				<option value="2">Que contenha</option>												
+				<option value="3">Diferente</option>												
+			</select>
+		</td>
+		<td><input type="text" class="input_simples" name="tipoanalise" value="" /></td>
+	</tr>
+	<tr>	
+		<td>Órgao</td>
+		<td align="center">
+			<select name="orgaotc" style="width: 200px;" class="input_simples">
+				<option value="1">Exatamente igual</option>
+				<option value="2">Diferente</option>												
+			</select>
+		</td>
+		<td>
+			<select name="orgao" style="width: 200px;" class="input_simples">
+				<option value="">Selecione</option>
+				<option value="0">Contéudo</option>
+				<option value="1">Custo do Produto</option>
+				<option value="2">Custo Administrativo</option>																								
+			</select>			
+		</td>
+	</tr>
+	<tr>	
+		<td>Unidade</td>
+		<td align="center">
+			<select name="unidadetc" style="width: 200px;" class="input_simples">
+				<option value="1">Exatamente igual</option>
+				<option value="2">Início igual</option>
+				<option value="3">Que contenha</option>												
+				<option value="4">Diferente</option>												
+			</select>
+		</td>
+		<td><input type="text" class="input_simples" name="unidade" value="" /></td>
+	</tr>
+	<tr>	
+		<td colspan="3" align="center">
+			<input type="submit" class="btn_localizar" name="name" value=" " />
+			<input type="reset" class="btn_limpar" name="name" value=" " />
+			<input type="button" class="btn_voltar" name="name" value=" " onclick="redirecionar('<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'pcvisualizartramitacao')); ?>');" />
+		</td>
+	</tr>
+</table>
+
+</form>
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

@@ -1,0 +1,91 @@
+<?php
+/**
+ * Busca Agentes
+ * @author Equipe RUP - Politec
+ * @since 28/04/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.manteragentes
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+
+<?php require_once "inc/menu.inc.php"; ?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->baseUrl(); ?>" title="Início">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'manteragentes', 'action' => 'agentes')); ?>?acao=cc">Manter Agentes</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'manteragentes', 'action' => 'buscaragente')); ?>">Pesquisar Agentes</a></li>
+		<li class="last">Resultado da busca por Agentes</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Resultado da busca por Agentes <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+
+
+	<table class="tabela">
+		<tr>
+			<th colspan="4" class="fundo_linha2">Agentes</th>
+		</tr>
+		<tr>
+			<th>CPF/CNPJ</th>
+			<th>NOME</th>
+			<th>VISÃO</th>
+			<th>AÇÃO</th>
+		</tr>
+		<?php $cont = 0; ?>
+		<?php foreach ($this->buscar as $b) : ?>
+		<tr onmouseover="over_tr(this);" onfocus="over_tr(this);" onmouseout="out_tr(this);" onblur="out_tr(this);" onclick="click_tr(this);" onkeypress="click_tr(this);" class="<?php echo $this->corLinha($cont); ?>">
+			<td class="centro"><a href="<?php echo $this->url(array('controller' => 'manteragentes', 'action' => 'agentes')); ?>?acao=cc&cpf=<?php echo $b->CNPJCPF; ?>" title=" Clique para alterar "><?php echo Validacao::mascaraCPFCNPJ($b->CNPJCPF); ?></a></td>
+			<td><?php echo $b->Nome; ?></td>
+			<td>
+				<?php
+				$visao = VisaoDAO::buscarVisao($b->idAgente); // visão
+				$i     = 0; // contador
+
+				foreach ($visao as $v) :
+					if ($i > 0) echo " / "; // separa por barra caso tenha mais de uma visão
+					echo $v->Descricao;
+					$i++;
+				endforeach;
+				?>
+			</td>
+			<td class="centro"><input type="button" class="btn_perfil" title=" Alterar Visão " value=" " onkeypress=" " onclick="redirecionar('<?php echo $this->url(array('controller' => 'manteragentes', 'action' => 'alterarvisao')); ?>?idAgente=<?php echo $b->idAgente; ?>');" /></td>
+		</tr>
+		<?php $cont++; ?>
+		<?php endforeach; ?>
+	</table>
+
+	<!-- ========== PAGINAÇÃO ========== -->
+	<?php if ($this->qtdAgentes > 10) { echo "<br /><p>" . $this->buscar . "</p><br />"; } ?>
+
+	<p class="centro"><input type="button" class="btn_voltar" onkeypress=" " onclick="redirecionar('<?php echo $this->url(array('controller' => 'manteragentes', 'action' => 'buscaragente')); ?>');" /></p>
+
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

@@ -1,0 +1,190 @@
+<?php
+    $incluirHref = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'incluirdispensa')).'?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    //$DetalharHref   =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'detalhardispensa')).'?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    //$AlterarHref    =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'incluirdispensa')).'?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $ExcluirHref    =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'excluirdispensa')).'?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $FinalizarHref  =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'finalizardispensa')).'?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $anteriorHref          =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'pagamento')).'?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    include_once 'scripts/comprovarexecucaofinanceira/inc/menu.inc.php';
+?>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principalproponente', 'action' => ''), null, true); ?>" title="Ir para p&aacute;gina inicial" onclick="carregandoModal();">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')) . '?idPronac=' . Seguranca::encrypt($this->idpronac); ?>" title="Ir para In&iacute;cio">Consultar dados do Projeto</a></li>
+        <li>Comprovar Execu&ccedil;&atilde;o Financeira</li>
+        <li class="last">Dispensa</li>
+    </ul>
+</div> <!-- final: #breadcrumb -->
+
+<div id="titulo">
+    <div>Dispensa<span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+
+<div id="conteudo" align="center">
+    <div id="dispensaAjax">
+        <table class="tabela">
+            <tr>
+                <th>PRONAC</th>
+                <th>NOME DO PROJETO</th>
+            </tr>
+            <tr>
+                <td><?php echo $this->pronac;?></td>
+                <td><?php echo $this->nomeProjeto;?></td>
+            </tr>
+        </table>
+
+        <br/>
+
+        <table class="tabela">
+            <tr>
+                <th>N&uacute;mero da Dispensa</th>
+                <th>Descri&ccedil;&atilde;o</th>
+                <th>Data de Contrato</th>
+                <th>Detalhar</th>
+                <th>Alterar</th>
+            </tr>
+            <?php
+            if(is_array($this->listadispensa) and count($this->listadispensa)>0)
+            {
+            foreach ($this->listadispensa as $linha){
+                ?>
+                <tr id="linha<?php echo $linha['idDispensa'];?>" class="centro">
+                    <td>
+                        <?php echo $linha['nrDispensa'];?>
+                    </td>
+                    <td class="esquerda">
+                        <?php echo $linha['dsDispensa'];?>
+                    </td>
+                    <td>
+                        <?php echo $linha['dtContrato'];?>
+                    </td>
+                    <td>
+                        <a href="<?php echo $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'detalhardispensa')).'?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac. '&iddispensa=' . $linha['idDispensa']; ?>" iddispensa="<?php echo $linha['idDispensa'];?>" ><img border="0" width="18" title="Detalhar" src="<?php echo $this->baseUrl(); ?>/public/img/ico/kdict.png"></a>
+                    </td>
+                    <td>
+                        <?php
+                        if(!$linha['finalizado']){
+                        ?>
+                            <?php if(!$this->vrSituacao) { ?>
+                                <a href="<?php echo $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'incluirdispensa')).'?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac. '&iddispensa=' . $linha['idDispensa']; ?>" iddispensa="<?php echo $linha['idDispensa'];?>" >
+                                    <img border="0" width="18" class="finaliza" title="Alterar" src="<?php echo $this->baseUrl(); ?>/public/img/ico/edit.png">
+                                </a>
+                                <?php } else { ?>
+                                    -
+                                <?php } ?>
+                        <?php
+                        }
+                        ?>
+                    </td>
+                </tr>
+                <?php
+                } // fecha foreach
+            } // fecha if
+            else
+            {
+            ?>
+            <tr>
+                    <td colspan="5" class="centro">Nenhuma dispensa cadastrada at&eacute; o momento.</td>
+            </tr>
+            <?php } ?>
+        </table>
+        <div style="text-align: center;">
+            <?php if(!$this->vrSituacao) { ?>
+            <a href="<?php echo $incluirHref;?>" style="text-decoration:none;"><input type="button" class="btn_novo" /></a>
+            <?php } ?>
+        </div>
+    </div>
+    <br clear="left" />
+</div>
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />
+
+<script type="text/javascript">
+    /*$(document).ready(function(){
+
+        $('#dispensaAjax a').click(function(){
+
+            if($(this).attr('padrao')!='false'){
+
+                if($(this).attr('excluir')=='true' || $(this).attr('finalizar')=='true'){
+                    var este = this;
+
+                    var nomeJanelaAlerta =   janelaObj({
+                        parametros : {
+                            width:      400,
+                            autoOpen:   false,
+                            resizable:  false,
+                            modal:      true,
+                            buttons: {
+                                'N\u00e3o':function(){
+                                    $(this).dialog('close');
+                                },
+                                Sim: function() {
+
+                                    var carregarCont    =   requisicaoAjaxObj();
+                                    carregarCont.executar({
+                                        pagina      :   $(este).attr('href'),
+                                        parametros  :   {iddispensa:$(este).attr('iddispensa'),idpronac:'<?php //echo $this->idpronac;?>'},
+                                        resposta    :   '',
+                                        async       :   false,
+                                        funcaoRetorno : function(resposta){
+                                            if(resposta.resp && $(este).attr('excluir')=='true')
+                                                $('#dispensaAjax #linha'+$(este).attr('iddispensa')).remove();
+                                            if(resposta.resp && $(este).attr('finalizar')=='true')
+                                                $('#dispensaAjax #linha'+$(este).attr('iddispensa')+' .finaliza').remove();
+
+
+                                            if(resposta.mensagem != ''){
+                                                var nomeJanelaAlerta =   janelaObj({
+                                                    parametros : {
+                                                        width:      400,
+                                                        autoOpen:   false,
+                                                        resizable:  false,
+                                                        modal:      true,
+                                                            buttons: {
+                                                                Ok: function() {
+                                                                    $(this).dialog('close');
+                                                                }
+                                                            }
+                                                    },
+                                                    removerBtFechar:true,
+                                                    title : 'Alerta'
+                                                });
+                                                nomeJanelaAlerta.divConteudo.html(resposta.mensagem);
+                                                nomeJanelaAlerta.abrirJanela();
+                                            }
+                                        },
+                                        dataType : 'json'
+                                    });
+
+                                    $(this).dialog('close');
+                                }
+
+
+                            }
+                        },
+                        removerBtFechar:true,
+                        title : 'Alerta'
+                    });
+                    if($(this).attr('excluir')=='true')
+                        nomeJanelaAlerta.divConteudo.html(ag4);
+                    if($(this).attr('finalizar')=='true')
+                        nomeJanelaAlerta.divConteudo.html(me72);
+                    nomeJanelaAlerta.abrirJanela();
+                }
+                else{
+
+                    var pagina = requisicaoAjaxObj();
+                    pagina.executar({
+                        pagina: $(this).attr('href'),
+                        parametros:{iddispensa:$(this).attr('iddispensa'),idpronac:'<?php //echo $this->idpronac;?>'}
+                    });
+                }
+            }
+            return false;
+        });
+    });*/
+    </script>

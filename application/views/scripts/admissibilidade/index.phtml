@@ -1,0 +1,43 @@
+<?php include_once 'scripts/admissibilidade/inc/menu.inc.php';     ?>
+<!--<div id="breadcrumb">
+    <ul>
+        <li class="first"> <a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'projetos')); ?>" title="Ir para Projetos">Projetos</a></li>
+        <li class="last">Listar Propostas</li>
+    </ul>
+</div>-->
+<div id="titulo">
+    <div>Admissibilidade de propostas <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<script type="text/javascript">
+<!--
+/*
+ * Função responsável pela exibição ou ocultamento de conteúdo,
+ * mudando a imagem.
+ **/
+function abrirDinamico(elemento, obj) {
+    if($(elemento).css('display') == 'none') {
+        $(elemento).fadeIn('fast', function() {
+            $('img', $(obj)).attr('src','<?php echo $this->baseUrl();?>/public/img/navigation-right.png');
+        });
+    } else {
+        $(elemento).fadeOut('fast', function() {
+            $('img', $(obj)).attr('src','<?php echo $this->baseUrl();?>/public/img/navigation-baixo.PNG');
+        });
+    }
+}
+//-->
+</script>
+<div id="conteudo">
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

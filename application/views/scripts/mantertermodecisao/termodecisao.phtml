@@ -1,0 +1,277 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        
+        <?php  if(isset($this->msg) && !empty($this->msg)): ?>
+            message('<?php echo $this->msg;?>', '<?php echo $this->tipoMsg;?>');
+        <?php  endif; ?>
+        
+        //<![CDATA[
+        CKEDITOR.replace('dsTermoDecisao', {fullPage : true });
+        CKEDITOR.config.height = '400';
+        //]]>
+    });
+    
+    function verificarTermo(){
+        if(validarCampo()){
+            $("#frmTermoDecisao").submit();
+        }
+    }
+
+    function validarCampo(){
+
+        var orgao = $("#orgao").val();
+        var tipoTermo = $("#tipoTermo").val();
+        var tipoParecer = $("#tipoParecer").val();
+        var dsTermoDecisao = CKEDITOR.instances['dsTermoDecisao'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+
+        var bln_validacao = true;
+
+        if(orgao == "Selecione"){
+            bln_validacao = false;
+            $('#orgaoSpan').html('<font color="red">Campo obrigat&oacute;rio</font>');
+        }
+        else{
+            $('#orgaoSpan').html('');
+        }
+        if(tipoTermo == "Selecione"){
+            bln_validacao = false;
+            $('#tipoTermoSpan').html('<font color="red">Campo obrigat&oacute;rio</font>');
+        }
+        else{
+            $('#tipoTermoSpan').html('');
+        }
+        if(tipoParecer == "Selecione"){
+            bln_validacao = false;
+            $('#tipoParecerSpan').html('<font color="red">Campo obrigat&oacute;rio</font>');
+        }
+        else{
+            $('#tipoParecerSpan').html('');
+        }
+        if(!dsTermoDecisao){
+            bln_validacao = false;
+            $('#dsTermoDecisaoSpan').html('<font color="red">Campo obrigat&oacute;rio</font>');
+        }
+        else{
+            $('#dsTermoDecisaoSpan').html('');
+        }
+        return bln_validacao;
+    }
+        
+</script>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''), null, true); ?>" title="Ir para p&aacute;gina inicial">In&iacute;cio</a></li>
+        <li>Administrativo</li>
+        <li><a href="<?php echo $this->url(array('controller' => 'mantertermodecisao', 'action' => '')); ?>" title="Ir para Maner termo de decis&atilde;o">Manter termo de decis&atilde;o</a></li>
+        <li class="last">Alterar termo de decis&atilde;o</li>
+    </ul>
+</div> <!-- final: #breadcrumb -->
+
+<!-- início: #titulo -->
+<div id="titulo">
+        <div>Alterar termo de decis&atilde;o <span class="voltar"><a href="<?php echo $this->url(array('controller'=>'mantertermodecisao', 'action'=>'')); ?>" title="Ir para página anterior">Voltar</a></span></div>
+</div>
+<!-- final: #titulo -->
+
+<!-- início: &aacute;rea principal #conteudo -->
+<div id="conteudo">
+
+    <fieldset><legend>Informa&ccedil;&otilde;es do termo</legend>
+        <form class="form" id="frmTermoDecisao" name="frmTermoDecisao" method="post" action='<?php echo $this->url(array('controller' => 'mantertermodecisao', 'action' => 'salvatermo')); ?>'>
+            <table class="tabela">
+                <tr>
+                    <td width="150px">
+                        &Oacute;rg&atilde;o*
+                    </td>
+                    <td>
+                        <select id="orgao" name="orgao" class="input_simples">
+                            <?php if ( $this->sefic == "true" ) {?>
+                                <option value="251" >
+                                    SEFIC
+                                </option>
+                            <?php } else { ?>
+                                <option value="160">
+                                    SAV
+                                </option>
+                            <?php } ?>
+                        </select>
+                        <div id="orgaoSpan"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Tipo de termo*
+                    </td>
+                    <td>
+                        <select id="tipoTermo" name="tipoTermo" class="input_simples">
+                            <?php foreach ($this->listaTipoRecurso as $tipoRecurso) { ?>
+                                <?php if ($tipoRecurso['idVerificacao'] == $this->termo) { ?>
+                                    <option value="<?php echo $tipoRecurso['idVerificacao']; ?>" selected="selected">
+                                        <?php echo $tipoRecurso['Descricao']; ?>
+                                    </option>
+                                <?php } else { ?>
+                                    <option value="<?php echo $tipoRecurso['idVerificacao']; ?>">
+                                        <?php echo $tipoRecurso['Descricao']; ?>
+                                    </option>
+                                <?php } ?>
+                            <?php } ?>
+                        </select>
+                        <div id="tipoTermoSpan"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Tipo parecer*
+                    </td>
+                    <td>
+                        <select id="tipoParecer" name="tipoParecer" class="input_simples">
+                            <?php if ( $this->parecer == 1 ) {?>
+                                <option value="1" >
+                                    Aprovado
+                                </option>
+                            <?php } else { ?>
+                                <option value="0" >
+                                    Indeferido
+                                </option>
+                            <?php } ?>
+                        </select>
+                        <div id="tipoParecerSpan"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label>
+                            Texto termo de decis&atilde;o*
+                        </label>
+                        <textarea cols="80" id="dsTermoDecisao" name="dsTermoDecisao" rows="10">
+
+                            <?php echo $this->texto; ?>
+                        
+                        </textarea>
+                        <div id="dsTermoDecisaoSpan"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <fieldset><legend>Legenda</legend>
+                            <table cellpadding="0" cellspacing="0" style="background-image:''">
+                                <tr>
+                                    <td width="10%">
+                                       {@NUMERO_PLENARIA@}
+                                    </td>
+                                    <td width="90%">
+                                        ==>&nbsp;&nbsp;Número da reunião plenária. <br /> 
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="10%">
+                                       {@DIA_INICIO_PLENARIA@}
+                                    </td>
+                                    <td width="90%">
+                                        ==>&nbsp;&nbsp;Dia de início da reunião plenária. <br /> 
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="10%">
+                                       {@DT_FIM_PLENARIA@}
+                                    </td>
+                                    <td width="90%">
+                                        ==>&nbsp;&nbsp;Data fim da reunião plenária (por extenso). <br /> 
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="10%">
+                                       {@NUMERO_PRONAC@}
+                                    </td>
+                                    <td width="90%">
+                                        ==>&nbsp;&nbsp;Número do PRONAC. <br /> 
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="10%">
+                                       {@NOME_PROJETO@}
+                                    </td>
+                                    <td width="90%">
+                                        ==>&nbsp;&nbsp;Nome do projeto cultural. <br /> 
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="10%">
+                                        {@SUGESTAO_PARECER@}  
+                                    </td>
+                                    <td width="90%">
+                                        ==>&nbsp;&nbsp;Texto do Parecer T&eacute;cnico. <br /> 
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="10%">
+                                        {@SUGESTAO_MEMBRO_RELATOR@}  
+                                    </td>
+                                    <td width="90%">
+                                        ==>&nbsp;&nbsp;Texto do Membro Relator da CNIC. <br /> 
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="10%">
+                                        {@SUGESTAO_PLENARIA@}
+                                    </td>
+                                    <td width="90%">
+                                        ==>&nbsp;&nbsp;Texto da Plen&aacute;ria. <br /> 
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="10%">
+                                        {@NOME_SECRETARIO@}
+                                    </td>
+                                    <td width="90%">
+                                        ==>&nbsp;&nbsp;Nome do(a) secret&aacute;rio(a) que assina o termo. <br /> 
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="10%">
+                                        {@CARGO_SECRETARIO@}
+                                    </td>
+                                    <td width="90%">
+                                        ==>&nbsp;&nbsp;Cargo do(a) secret&aacute;rio(a) que assina o termo. <br /> 
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="10%">
+                                        {@DATA_ASS_TERMO@}
+                                    </td>
+                                    <td width="90%">
+                                        ==>&nbsp;&nbsp;Data de assinatura do termo. <br /> 
+                                    </td>
+                                </tr>
+                            </table>
+                        </fieldset>
+                    </td>
+                <tr>
+
+            </table>
+            <table class="tabela">
+                <tr>
+                    <td colspan="9" align="center">
+                        <input id="btSalvar" type="button" value=" " class="btn_salvar" onclick="return verificarTermo()" />
+                        <input id="btCancelar" name="btCancelar" type="hidden" value="" class="btn_cancelar" onclick="voltar();" />
+                        <input id="idTermo" name="idTermo" type="hidden" value="<?php echo $this->idtermo; ?>" />
+                        <input id="verifica" name="verifica" type="hidden" value="false" />
+                </tr>
+            </table>
+        </form>
+    </fieldset>
+
+
+
+
+
+
+
+</div>
+<!-- final: conteúdo principal #conteudo -->
+
+<!-- início: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+<br clear="all" />

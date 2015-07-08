@@ -1,0 +1,90 @@
+<?php
+include_once 'scripts/gerenciarparecertecnico/inc/menu.inc.php';
+?>
+
+<!-- ========== INCIO BREADCRUMB (LINKS TOPO) ========== -->
+			<div id="breadcrumb">
+				<ul>
+					<li class="first"><a href="<?php echo $this->url(array('controller' => 'consultarparecertecnico', 'action' => 'index')); ?>" title="Ir para Incio">In&iacute;cio</a></li>
+					<li class="last">Projetos</li>
+				</ul>
+			</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INCIO TTULO ========== -->
+		<div id="titulo">
+			<div>Dados do Parecer <span>ID #23A</span> <span class="voltar"><a
+			href="#" onclick="voltar();">Voltar</a></span></div>
+		</div>
+<!-- ========== FIM TTULO ========== -->
+
+<!-- ========== INCIO CONTEDO ========== -->
+<div id="conteudo" style="min-height: 300px;" align="center">
+	
+		<table width="70%">
+		
+		<tr>
+			<th colspan="3">Identifica&ccedil;&atilde;o</th>	
+		</tr>
+		<tr>
+			<td width="35%" colspan="1"><b>Pronac </b><br><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index')).'?idPronac='.$this->dados[0]->idPronac; ?>"><?php echo $this->dados[0]->AnoProjeto."".$this->dados[0]->Sequencial ?></a></td>
+			<td colspan="2"><b>Nome Do Projeto </b><br><?php echo $this->dados[0]->NomeProjeto ?></td>
+		</tr>
+		<tr>
+			<td width="35%" colspan="1"><b>&Aacute;rea</b> <br><?php echo $this->dados[0]->AreaDescricao?> </td>
+			<td colspan="2"><b>Seguimento</b><br><?php echo $this->dados[0]->SegmentoDescricao?></td>
+		</tr>
+		<tr>
+			<td width="35%" colspan="1"><b>UF</b> <br><?php echo $this->dados[0]->UfProjeto ?></td>
+			<td colspan="2"><b>Mecanismo de Incentivo </b><br><?php echo $this->dados[0]->MecanismoDescricao ?></td>
+		</tr>
+		</table>
+		<table width="70%">
+		<tr>
+			<th colspan="3">Dados do Projeto</th>	
+		</tr>
+		<tr>
+			<td width="35%"><b>Tipo Parecer</b> 
+			<br>
+                        <?php if($this->dados[0]->TipoParecer == 1){echo "APROVAÇÃO";}elseif($this->dados[0]->TipoParecer == 2){echo "COMPLEMENTAÇÃO";}elseif($this->dados[0]->TipoParecer == 3){echo"REDUÇÃO";} ?>
+			</td>
+			<td><b>Parecer Favor&aacute;vel? </b>
+			<br>
+                        <?php if($this->dados[0]->ParecerFavoravel == 1){ echo "NÃO";}elseif($this->dados[0]->ParecerFavoravel == 2){ echo "SIM";} ?>
+
+			</td>
+			<td><b>Data do Parecer </b><br><?php echo ConverteData(strtotime($this->dados[0]->DtParecer),5) ?></td>
+		</tr>
+		<tr>
+			<th colspan="3">Parecer</th>
+		</tr>
+		<tr>
+		<td align="justify" colspan="3">
+                    <?php echo str_replace("\n", "<br>", strip_tags($this->dados[0]->ResumoParecer)) ?>
+                </td>
+		</tr>
+		</table>
+		<table width="70%">
+		<tr>
+			<th colspan="3">Sugerido</th>
+		</tr>
+		<tr>
+			<td colspan="4" ><b>Sugerido</b> <br> <?php echo number_format($this->dados[0]->SugeridoReal,2,',','.') ?> </td>
+                </tr>
+		<tr>
+			<th colspan="3">Imprimir Documento</th>
+		</tr>
+		<tr>
+			<td colspan="3"><a href="<?php echo $this->url(array('controller' => 'gerenciarparecertecnico', 'action' => 'gerarpdfparecer')) ;echo "?pronac=". $this->dados[0]->AnoProjeto."".$this->dados[0]->Sequencial; ?>">Clique para Imprimir</a></td>
+		</tr>
+
+		</table>
+
+</div>
+			
+<!-- ========== FIM CONTEDO ========== -->
+
+<!-- ========== INCIO RODAP DO CONTEDO ========== -->
+	<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAP DO CONTEDO ========== -->
+			<br clear="all" />

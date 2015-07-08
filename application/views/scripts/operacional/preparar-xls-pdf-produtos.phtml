@@ -1,0 +1,31 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#conteudoXLS').val($('#conteudoImprimivel').html());
+        $('#formGerarXls').submit();
+    });
+</script>
+<form method="POST" id="formGerarXls" name="formGerarXls" action="<?php echo $this->url(array('controller' => 'operacional', 'action' => ($this->tipo == 'xls') ? 'gerar-xls' : 'html2-pdf')); ?>" style="display:none">
+    <textarea name="html" id="conteudoXLS"></textarea>
+</form>
+<div class="conteudoImprimivel" id="conteudoImprimivel" style="display:none">
+    <table class="tabela" >
+        <tbody>
+            <tr>
+                <th valign="middle" align="center" bgcolor="#D0D0D0">C&oacute;digo</th>
+                <th valign="middle" align="left" bgcolor="#D0D0D0">Produto</th>
+                <th valign="middle" align="left" bgcolor="#D0D0D0">&Oacute;rg&atilde;o</th>
+                <th valign="middle" align="left" bgcolor="#D0D0D0">Estado</th>
+            </tr>
+            <?php foreach ($this->dados as $dado): ?>
+                <tr>
+                    <td valign="middle" align="center"><?php echo $dado->Codigo ?></td>
+                    <td valign="middle" align="left"><?php echo $dado->Descricao ?></td>
+                    <td valign="middle" align="left"><?php echo $this->orgaos[$dado->Idorgao]["SiglaOrgao"] ?></td>
+                    <td valign="middle" align="left"><?php echo ($dado->stEstado == 0) ? "Ativado" : "Desativado" ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+
+

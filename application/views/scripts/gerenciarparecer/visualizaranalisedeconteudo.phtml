@@ -1,0 +1,90 @@
+<script language="javascript">
+
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'index'),'',true); ?>" title="Ir para Início">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'index'),'',true); ?>" title="Gerenciar Parecerer">Gerênciar Parecerer</a></li>
+		<li class="last">Análise de Conteúdo</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Análise de Conteúdo<span>ID #23A</span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+<?php foreach($this->dados as $d):?>
+	<table class="tabela">
+		<tr>
+			<th align="left" colspan="3" style="font-family: sans-serif; font-size: 13px; padding-left: 50px;">
+				   Pronac: <?php echo $d->PRONAC ; ?> - <?php echo $d->NomeProjeto ; ?>
+			<br /> Produto: <?php echo $d->Produto ; ?>
+		 </th>			
+		</tr>
+	</table>
+	
+	<table class="tabela">
+		<tr>
+			<td colspan="3">Tipo Parecer <br /> <?php echo $d->TipoParecer ; ?> </td>
+			<td colspan="3">Parecer Favorável ? <br /> <?php echo $d->ParecerFavoravel ; ?> </td>
+		</tr>
+		<tr>
+			<th colspan="6">Lei 8.313</th>
+		</tr>
+		<tr>
+			<td colspan="6">Lei 8.313/91 alterada pela Lei 9.874/1999*  <br /> <?php echo $d->Lei8313 ; ?> </td>
+		</tr>
+		<tr>
+			<th colspan="3" align="center">Artigo 3º</th>
+			<th colspan="2" align="center">Artigo 18</th>
+			<th colspan="1" align="center">Artigo 26</th>
+		</tr>
+		<tr>
+			<td>Artigo 3  <br /> <?php echo $d->Artigo3 ; ?> </td>
+			<td>Inciso    <br /> <?php echo $d->IncisoArtigo3 ; ?> </td>
+			<td>Alínea    <br /> <?php echo $d->AlineaArtigo3 ; ?> </td>
+			<td>Artigo 18 <br /> <?php echo $d->Artigo18 ; ?> </td>
+			<td>Alínea    <br /> <?php echo $d->AlineaArtigo18 ; ?> </td>
+			<td>Artigo 26 <br /> <?php echo $d->Artigo26 ; ?> </td>
+		</tr>
+		<tr>
+			<th colspan="6">Decreto 5761/2006*</th>
+		</tr>
+		<tr>
+			<td>Lei 5.761  <br /> <?php echo $d->Lei5761 ; ?> </td>
+			<td>Artigo 27  <br /> <?php echo $d->Artigo27 ; ?> </td>
+			<td>Inciso I   <br /> <?php echo $d->IncisoArtigo27_I ; ?> </td>
+			<td>Inciso II  <br /> <?php echo $d->IncisoArtigo27_II ; ?> </td>
+			<td>Inciso III <br /> <?php echo $d->IncisoArtigo27_III ; ?> </td>
+			<td>Inciso IV  <br /> <?php echo $d->IncisoArtigo27_IV ; ?> </td>
+		</tr>
+		<tr>
+			<th colspan="6">Parecer</th>			
+		</tr>
+		<tr>
+			<td colspan="6"><?php echo $d->ParecerDeConteudo ; ?></td>
+		</tr>
+	</table>
+<?php endforeach; ?>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

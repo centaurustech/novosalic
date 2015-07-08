@@ -1,0 +1,76 @@
+<script language="javascript">
+
+$(document).ready(function()
+{
+	var divMsg = $('#divMsg');
+
+	divMsg.css('color','').fadeIn(1000);
+
+	
+	idpronac = $('#idpronac').val();
+	
+	$.ajax({
+        type: 'POST',
+        url: '<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'planilhadecustos')); ?>',
+        data:{
+        	idpronac: idpronac
+        	
+        },
+        success: function(data)
+        {
+        	divMsg.hide();
+			$('#tabela').show();
+			$('#tabela').html(data);
+
+        },
+        error: function (data)
+		{
+        	divMsg.html("Falha na recuperação dos dados.\nNão foi possível carregar agente!");
+		}
+    });
+
+});
+
+
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'index'),'',true); ?>" title="Ir para Início">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'index'),'',true); ?>" title="Gerenciar Parecerer">Gerênciar Parecerer</a></li>
+		<li class="last">Planilha de Custos</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Planilha de Custos<span>ID #23A</span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+<br />
+
+<input type="hidden" value="<?php echo $this->idPronac; ?>" id="idpronac" />
+
+	<center><div id="divMsg" class="sumir"><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /><br />Carregando...</div></center>
+	
+	<div id="tabela" class="sumir"></div>
+<br />	
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

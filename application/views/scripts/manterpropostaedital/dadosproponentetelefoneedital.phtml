@@ -1,0 +1,65 @@
+<?php
+include_once 'scripts/manterpropostaedital/inc/menu.inc.php';
+?>
+<!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'edital')); ?>" title="Ir para Propostas">Edital</a></li>
+        <li class="last">Dados do Proponente </li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INICIO TITULO ========== -->
+<div id="titulo">
+    <div>Alterar Telefones<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+<div id="conteudo">
+
+
+<div class="demo">
+
+
+
+<table class="tabela">
+<tr class="titulo_tabela">
+<th colspan="5">Alterar Telefones</th>
+<tr><td colspan="5"></td></tr>
+</tr>
+
+
+
+<tr>
+<td class="esquerda" >
+<b>Residencial</b>
+</td>
+<td class="esquerda" >
+<b>Amapa </b>
+</td>
+<td class="esquerda" >
+<b>96 </b>
+</td>
+<td class="esquerda" >
+<b>11111</b>
+</td>
+<td class="esquerda" >
+<b>sim divulgar</b>
+</td>
+
+</td>
+
+
+</tr>
+
+        <tr  class="centro"><td colspan="5">
+
+        <a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'listardeslocamento')); ?>"><img src="<?php echo $this->baseUrl(); ?>/public/img/buttons/novo.gif" />
+
+  </td></tr>
+    </table>
+</div>
+<br clear="all" />

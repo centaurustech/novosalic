@@ -1,0 +1,327 @@
+<?php require_once"inc/menu.inc.php"; ?>
+<div id="breadcrumb">
+    <ul>
+       <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''), '', true); ?>" title="Ir para p&aacute;gina inicial">Início</a></li>
+        <li class=""><a href="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'tecnicoprestacaocontas'));?>">Analisar presta&ccedil;&atilde;o de contas</a></li>
+        <li class=""><a href="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'planilhaorcamentaria', 'idPronac' => $this->projeto->IdPRONAC, 'idPlanilhaAprovacao' => $this->projeto->idPlanilhaAprovacao, 'idPlanilhaItem' => $this->projeto->idPlanilhaItens), '', true); ?>">Planilha or&ccedil;amentária comprovada</a></li>
+        <li class="last">Analisar item</li>
+    </ul>
+</div>
+<div id="titulo">
+    <div>
+        Consultar item
+        <span class="voltar" style="float:right;"><a href="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'planilhaorcamentaria', 'idPronac' => $this->projeto->IdPRONAC, 'idPlanilhaAprovacao' => $this->projeto->idPlanilhaAprovacao, 'idPlanilhaItem' => $this->projeto->idPlanilhaItens), '', true); ?>" title="Ir para p&aacute;gina anterior">Voltar</a></span>
+    </div>
+</div>
+<div id="conteudo">
+    <?php $actionForm = $this->url(
+            array(
+                'controller' => 'realizarprestacaodecontas',
+                'action' => 'validaritem',
+                'idPronac' => $this->idPronac,
+                'idPlanilhaAprovacao' => $this->idPlanilhaAprovacao,
+                'idPlanilhaItem' => $this->idPlanilhaItem,
+            ),
+            '',
+            true
+        );
+    ?>
+    <table class="tabela">
+        <tbody>
+            <tr>
+                <th colspan="3">PRONAC</th>
+                <th colspan="3">NOME DO PROJETO</th>
+            </tr>
+            <tr>
+                <td colspan="3"><?php echo $this->projeto->PRONAC;?></td>
+                <td colspan="3"><?php echo $this->projeto->NomeProjeto;?></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- ****** DADOS DA LICITACAO *********** -->
+    <?php if(!empty($this->projeto->nrLicitacao)):?>
+        <table>
+            <tbody>
+                <tr>
+                    <th colspan="4"><b>Licita&ccedil;&atilde;o</b></th>
+                </tr>
+                <tr>
+                    <td><b>Número de Licita&ccedil;&atilde;o</b></td>
+                    <td colspan="3"><?php echo $this->projeto->nrLicitacao;?></td>
+                </tr>
+                <tr>
+                    <td><b>Modalidade</b></td>
+                    <td colspan="3"><?php echo $this->projeto->modalidadeLicitacao;?></td>
+                </tr>
+                <tr>
+                    <td><b>Número de Processo</b></td>
+                    <td colspan="3"><?php echo $this->projeto->processoLicitacao;?></td>
+                </tr>
+                <tr>
+                    <td><b>Data Publica&ccedil;&atilde;o do Edital</b></td>
+                    <td colspan="3"><?php echo ConverteData($this->projeto->dtPubliEditalLicitacao,5);?></td>
+                </tr>
+                <tr>
+                    <td><b>Objeto</b></td>
+                    <td colspan="3"><?php echo $this->projeto->objetoLicitacao;?></td>
+                </tr>
+                <tr>
+                    <td><b>Fundamento Legal</b></td>
+                    <td colspan="3"><?php echo $this->projeto->fundamentoLicitacao;?></td>
+                </tr>
+            </tbody>
+        </table>
+    <?php endif; ?>
+
+    <!-- ****** DADOS DA DISPENSA *********** -->
+    <?php if(!empty($this->projeto->dsDispensa)):?>
+        <table>
+            <tbody>
+                <tr>
+                    <th colspan="6" class="fundo_linha3">Dispensa</th>
+                </tr>
+                <tr>
+                    <td class="destacar" align="center" colspan="4"><b>Descri&ccedil;&atilde;o da dispensa</b></td>
+                    <td class="destacar" align="center" colspan="2"><b>Data da Dispensa</b></td>
+                </tr>
+                <tr>
+                    <td colspan="4"><?php echo $this->projeto->dsDispensa;?></td>
+                    <td colspan="2"><?php echo date('d/m/Y',strtotime($this->projeto->dtDispensa));?></td>
+                </tr>
+            </tbody>
+        </table>
+    <?php endif; ?>
+
+    <!-- ****** DADOS DA COTACAO *********** -->
+    <?php if(!empty($this->projeto->nrCotacao)):?>
+        <table>
+            <tbody>
+                <tr>
+                    <th colspan="4">Cota&ccedil;&atilde;o</th>
+                </tr>
+                <tr>
+                    <td><b>No. cota&ccedil;&atilde;o</b></td>
+                    <td colspan="3"><?php echo $this->projeto->nrCotacao;?></td>
+                </tr>
+                <tr>
+                    <td><b>Descri&ccedil;&atilde;o da cota&ccedil;&atilde;o</b></td>
+                    <td colspan="3"><?php echo $this->projeto->dsCotacao;?></td>
+                </tr>
+                <tr>
+                    <td><b>Data da cota&ccedil;&atilde;o</b></td>
+                    <td colspan="3"><?php echo date('d/m/Y',strtotime($this->projeto->dtCotacao));?></td>
+                </tr>
+            </tbody>
+        </table>
+    <?php endif; ?>
+
+    <?php $vlcpTotal=0; foreach ($this->comprovantesPagamento as $valoresComprovados) {
+        $vlUn = $valoresComprovados->vlComprovacao+$vlcpTotal;
+        $vlcpTotal = $vlUn;
+    } ?>
+        
+    <table class="tabela">
+        <tbody>
+            <tr>
+                <th colspan="6" class="fundo_linha3">Comprova&ccedil;&atilde;o de Pagamento do Item</th>
+            </tr>
+            <tr>
+                <td class="destacar" align="right"><b>Produto:</b></td>
+                <td><?php echo $this->projeto->Produto;?></td>
+                <td class="destacar" align="right"><b>Etapa:</b></td>
+                <td><?php echo $this->projeto->Etapa;?></td>
+                <td class="destacar" align="right"><b>Item de Custo:</b></td>
+                <td><?php echo $this->projeto->NomeItem;?></td>
+            </tr>
+            <tr>
+                <td class="destacar" align="right"><b>Valor Aprovado:</b></td>
+                <td>R$ <?php echo number_format($this->projeto->vlAprovado, 2, ',', '.');?></td>
+                <td class="destacar" align="right"><b>Valor Comprovado:</b></td>
+                <td>R$ <?php echo number_format($vlcpTotal, 2, ',', '.');?></td>
+                <td class="destacar" align="right"><b>Comprovação Validada:</b></td>
+                <td>R$ <?php echo number_format($this->projeto->vlComprovado, 2, ',', '.');?></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- =============== ANALISE DO ITEM  ==================== -->
+    <?php
+        $editable = false;
+        foreach ($this->comprovantesPagamento as $index => $comprovante) :
+            $comprovanteNodeId = "comprovantePagamento{$comprovante->idComprovantePagamento}";
+            if (4 == $comprovante->stItemAvaliado) :
+                $editable = true;
+    ?>
+    <form id="frmValidar" name="frmValidar" action="<?php echo $actionForm; ?>" method="post">
+        <input type="hidden" name="comprovantePagamento[<?php echo $comprovante->idPlanilhaAprovacao; ?>][idComprovantePagamento]" value="<?php echo $comprovante->idComprovantePagamento;?>" />
+        <input type="hidden" name="comprovantePagamento[<?php echo $comprovante->idPlanilhaAprovacao; ?>][idPlanilhaAprovacao]" value="<?php echo $comprovante->idPlanilhaAprovacao;?>" />
+        <?php endif; ?>
+            <table class="tabela">
+                <caption <?php
+                    if (4 == $comprovante->stItemAvaliado) :
+                        echo 'class="naoAnalisado"';
+                    elseif (3 == $comprovante->stItemAvaliado) :
+                        echo 'class="itemRecusado"'; 
+                    endif;
+                    ?>>
+                    <a href="<?php echo "#{$comprovanteNodeId}"; ?>">
+                        <?php
+                            echo $this->tipoComprovante[$comprovante->tpDocumento] , ' ' , 
+                                $comprovante->nrComprovante , ' - ', number_format($comprovante->vlComprovacao, 2, ',', '.');
+                            ?>
+                    </a>
+                </caption>
+                <tbody id="<?php echo $comprovanteNodeId; ?>" class="sumir">
+                    <tr>
+                        <td class="destacar" align="right"><b>Comprovante</b></td>
+                        <td style="width: 175px;"><?php echo $this->tipoComprovante[$comprovante->tpDocumento];?></td>
+                        <td class="destacar" align="right"><b>Número</b></td>
+                        <td><?php echo $comprovante->nrComprovante;?></td>
+                        <td class="destacar" align="right"><b id="nmSerieTxt">S&eacute;rie</b></td>
+                        <td><?php echo $comprovante->nrSerie;?></td>
+                    </tr>
+                    <tr>
+                        <td class="destacar" align="right"><b>Dt. do Documento</td>
+                        <td><?php echo $comprovante->dtEmissao;?></td>
+                        <td class="destacar" align="right"><b>Forma de Pagamento</td>
+                        <td>
+                            <?php
+                                switch ($comprovante->tpFormaDePagamento) {
+                                    case 1: echo 'Cheque'; break;
+                                    case 2: echo 'Transferência Bancária'; break;
+                                    case 3: echo 'Saque/Dinheiro'; break;
+                                }
+                            ?>
+                        </td>
+                        <td class="destacar" align="right" style="width: 155px;"><b>N&ordm; Documento Pagamento</td>
+                        <td><?php echo $comprovante->nrDocumentoDePagamento;?></td>
+                    </tr>
+                    <tr>
+                        <td class="destacar" align="right"><b>Valor</b></td>
+                        <td>R$ <?php echo number_format($comprovante->vlComprovacao, 2, ',', '.'); ?></td>
+                        <td class="destacar" align="right"><b>Arquivo</b></td>
+                        <td colspan="3">
+                            <?php
+                                $urlComprovanteAnexo = $this->url(
+                                    array('controller' => 'upload', 'action' => 'abrir', 'id' => $comprovante->idArquivo)
+                                );
+                                echo "<a href='{$urlComprovanteAnexo}'>{$comprovante->nmArquivo}</a>";
+                            ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="destacar" align="right"><b>Justificativa do Proponente</b></td>
+                        <td colspan="5"><?php echo $comprovante->dsJustificativa;?></td>
+                    </tr>
+                    <tr>
+                        <td class="destacar" align="right"><b>Status</b></td>
+                        <td colspan="5">
+                            <?php
+                                if (4 == $comprovante->stItemAvaliado) :
+                            ?>
+                                <input
+                                    type="radio"
+                                    id="situacao-1-<?php echo $comprovanteNodeId; ?>"
+                                    name="comprovantePagamento[<?php echo $comprovante->idPlanilhaAprovacao; ?>][situacao]"
+                                    value="1"
+                                    <?php echo 1 == $comprovante->stItemAvaliado ? 'checked="checked"': ''; ?>
+                                    >
+                                <label for="situacao-1-<?php echo $comprovanteNodeId; ?>">Comprovação validada</label><br>
+                                <input
+                                    type="radio"
+                                    id="situacao-3-<?php echo $comprovanteNodeId; ?>"
+                                    name="comprovantePagamento[<?php echo $comprovante->idPlanilhaAprovacao; ?>][situacao]"
+                                    value="3"
+                                    <?php echo 3 == $comprovante->stItemAvaliado ? 'checked="checked"': ''; ?>
+                                    >
+                                <label for="situacao-3-<?php echo $comprovanteNodeId; ?>">Comprovação recusada</label><br>
+                            <?php
+                                else :
+                                    switch ($comprovante->stItemAvaliado) :
+                                        case 1: echo 'Comprovado Integralmente'; break;
+                                        case 2: echo 'Comprovado Parcialmente'; break;
+                                        case 3: echo 'Não comprovado'; break;
+                                    endswitch;
+                                endif;
+                            ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="destacar" align="right"><b>Ocorrência do Técnico</b></td>
+                        <td colspan="5">
+                            <?php
+                                if (4 == $comprovante->stItemAvaliado) :
+                            ?>
+                                <textarea
+                                    name="comprovantePagamento[<?php echo $comprovante->idPlanilhaAprovacao; ?>][observacao]"
+                                    rows="10" cols="100"
+                                    class="input_simples"><?php echo $comprovante->ocorrencia; ?></textarea>
+                            <?php
+                                else :
+                                    echo $comprovante->ocorrencia;
+                                endif;
+                            ?>
+                        </td>
+                    </tr>
+                    <?php if($comprovante->stItemAvaliado == 4){ ?>
+                    <tr>
+                        <td colspan="6">
+                            <input type="submit" class="btn_salvar" value="" style="margin: 0px 480px;">
+                        </td>
+                    </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
+        </form>
+        <?php endforeach; ?>
+    </form>
+</div>
+<br clear="all" />
+
+<div id="rodapeConteudo" ><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />
+
+<style>
+    table {
+        margin-bottom: 15px;
+    }
+    table caption {
+        background: -webkit-linear-gradient(#FFFFCC, #FFFFE8); /* For Safari 5.1 to 6.0 */
+        background: -o-linear-gradient(#FFFFCC, #FFFFE8); /* For Opera 11.1 to 12.0 */
+        background: -moz-linear-gradient(#FFFFCC, #FFFFE8); /* For Firefox 3.6 to 15 */
+        background: linear-gradient(#FFFFCC, #FFFFE8); /* Standard syntax */
+        color: #3A7300;
+        font-size: 11px;
+        padding: 8px;
+        text-transform: uppercase;
+        border-width: 2px 2px 0px 2px;
+        border-style: solid;
+        border-color: #CCC;
+    }
+    table caption.itemRecusado { background: rgb(254, 75, 75); }
+    tbody.sumir:target {
+        display: table-row-group;
+    }
+    .naoAnalisado {
+        background: -webkit-linear-gradient(#36963F, #FFFFE8); /* For Safari 5.1 to 6.0 */
+        background: -o-linear-gradient(#36963F, #FFFFE8); /* For Opera 11.1 to 12.0 */
+        background: -moz-linear-gradient(#36963F, #FFFFE8); /* For Firefox 3.6 to 15 */
+        background: linear-gradient(#36963F, #FFFFE8); /* Standard syntax */
+    }
+</style>
+
+<!-- cia 1 760 agamenon -->
+<script type="text/javascript">
+    $('input').addClass('input_simples');
+    $('.btn_salvar').removeClass('input_simples');
+    $('textarea').addClass('textarea_simples');
+    $('select[id!=perfilXgrupo]').addClass('select_simples');
+    $('input:text[name^=comprovantePagamento]').maskMoney({
+        symbol: "R$",
+        decimal: ",",
+        thousands: ".",
+        showSymbol:false
+    });
+</script>

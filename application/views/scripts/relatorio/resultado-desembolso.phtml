@@ -1,0 +1,157 @@
+<script>
+$(document).ready(function(){
+    $(".orderBy").click(function(){
+            var campo = $(this).attr("valorOrdenacao");
+
+            if("ASC" == $("#tipoOrdenacao").val()){
+                tipo = "DESC";
+            }else{
+                tipo = "ASC";
+            }
+
+            ordenar(campo, tipo);
+        });
+
+        $(".orderBy").each(function(){
+            if($("#ordenacao").val() == $(this).attr("valorOrdenacao")){
+                if($("#tipoOrdenacao").val() == "ASC"){
+                    $(this).after('<span style="padding-left:4px;"><img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-baixo.PNG" align="absmiddle"></span>');
+                }else{
+                    $(this).after('<span style="padding-left:4px;"><img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-cima.PNG" align="absmiddle"></span>');
+                }
+            }
+        });
+        
+        
+        $('#btn_xls').click(function(){
+            $('#frmPaginacao').attr('target','_blank').append('<input type="hidden" name="tipo" id="xls" value="xls"/>');
+            $('#frmPaginacao').submit();
+            $('#frmPaginacao').attr('target','');
+            $('#xls').remove();
+        });
+        
+        $('#btn_imprimir').click(function(){
+            $('#frmPaginacao').attr('target','_blank').append('<input type="hidden" name="tipo" id="pdf" value="pdf"/>');
+            $('#frmPaginacao').submit();
+            $('#frmPaginacao').attr('target','');
+            $('#pdf').remove();
+        });
+    });
+
+    function paginar(pag){
+        $("#pag").val(pag);
+        jqAjaxForm(document.getElementById("frmPaginacao"), "resultadoConsulta");
+        $("#resultadoConsulta").html("Aguarde, carregando dados ...");
+    }
+
+    function ordenar(campo, tipo){
+    	$("#ordenacao").val(campo);
+        $("#tipoOrdenacao").val(tipo);
+        paginar(1);
+    }
+</script>
+<fieldset>
+    <legend>Resultado</legend>
+    <div class="conteudoImprimivel">
+    <table class="tabela" style="width: 90%">
+        <tr>
+            <th align="center" valign="middle"><a href="#resultadoConsulta" class="orderBy"  valorOrdenacao="15">Pronac</a></th>
+            <th align="center" valign="middle"><a href="#resultadoConsulta" class="orderBy"  valorOrdenacao="14">Nome do Projeto</a></th>
+            <?php if(@in_array("cmpsOrd_data", $this->parametrosBusca["visaoAgente"])): ?><th align="center" valign="middle"><a href="#resultadoConsulta" class="orderBy"  valorOrdenacao="11">Data</a></th><?php endif; ?>
+            <?php if(@in_array("cmpsOrd_valor", $this->parametrosBusca["visaoAgente"])): ?><th align="center" valign="middle"><a href="#resultadoConsulta" class="orderBy"  valorOrdenacao="4">Valor</a></th><?php endif; ?>
+            <?php if(@in_array("cmpsOrd_vlcapital", $this->parametrosBusca["visaoAgente"])): ?><th align="center" valign="middle"><a href="#resultadoConsulta" class="orderBy"  valorOrdenacao="4">Vl. Capital</a></th><?php endif; ?>
+            <?php if(@in_array("cmpsOrd_nrobcapital", $this->parametrosBusca["visaoAgente"])): ?><th align="center" valign="middle"><a href="#resultadoConsulta" class="orderBy"  valorOrdenacao="8">Nr. OB Capital</a></th><?php endif; ?>
+            <?php if(@in_array("cmpsOrd_vlcusteio", $this->parametrosBusca["visaoAgente"])): ?><th align="center" valign="middle"><a href="#resultadoConsulta" class="orderBy"  valorOrdenacao="5">Vl. Custeio</a></th><?php endif; ?>
+            <?php if(@in_array("cmpsOrd_nrobcusteio", $this->parametrosBusca["visaoAgente"])): ?><th align="center" valign="middle"><a href="#resultadoConsulta" class="orderBy"  valorOrdenacao="10">Nr. OB Custeio</a></th><?php endif; ?>
+            <?php if(@in_array("cmpsOrd_liquidado", $this->parametrosBusca["visaoAgente"])): ?><th align="center" valign="middle"><a href="#resultadoConsulta" class="orderBy"  valorOrdenacao="6">Liquidado</a></th><?php endif; ?>
+        </tr>
+        <?php $cache_pronac = array(); ?>
+        <?php foreach($this->registros as $item): ?>
+        <tr>
+            <td align="center" valign="top" <?php if (in_array($item->IdPRONAC, $cache_pronac)) { echo 'colspan="2"'; } ?>>
+            	<?php if (!in_array($item->IdPRONAC, $cache_pronac)) : ?>
+            	<a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')); ?>?idPronac=<?php echo $item->IdPRONAC; ?>" target="_blank" title="Ir para Consultar Dados do Projeto"><?php echo $item->AnoProjeto.$item->Sequencial?></a>
+            	<?php else : ?>
+            	&nbsp;
+            	<?php endif; ?>
+            </td>
+            <?php if (!in_array($item->IdPRONAC, $cache_pronac)) : ?>
+            <td align="left" nowrap="nowrap" valign="top"><?php echo $item->NomeProjeto?></td>
+            <?php endif; ?>
+            <?php if(@in_array("cmpsOrd_data", $this->parametrosBusca["visaoAgente"])): ?><td align="center" nowrap="nowrap" valign="top"><?php echo ConverteData($item->Data, 5)?></td><?php endif; ?>
+            <?php if(@in_array("cmpsOrd_valor", $this->parametrosBusca["visaoAgente"])): ?><td align="center" valign="top"><?php echo $item->VlCapital?></td><?php endif; ?>
+            <?php if(@in_array("cmpsOrd_vlcapital", $this->parametrosBusca["visaoAgente"])): ?><td align="center" valign="top"><?php echo $item->VlCapital?></td><?php endif; ?>
+            <?php if(@in_array("cmpsOrd_nrobcapital", $this->parametrosBusca["visaoAgente"])): ?><td align="center" valign="top"><?php echo $item->NrOrdemBancaria?></td><?php endif; ?>
+            <?php if(@in_array("cmpsOrd_vlcusteio", $this->parametrosBusca["visaoAgente"])): ?><td align="center" valign="top"><?php echo $item->VlCusteio?></td><?php endif; ?>
+            <?php if(@in_array("cmpsOrd_nrobcusteio", $this->parametrosBusca["visaoAgente"])): ?><td align="center" valign="top"><?php echo $item->NrOrdemBancariaCusteio?></td><?php endif; ?>
+            <?php if(@in_array("cmpsOrd_liquidado", $this->parametrosBusca["visaoAgente"])): ?>
+            <td align="left" valign="top">
+                    <?php
+                    switch ($item->Pagou){
+                        case 1:
+                            echo "Sim";
+                            break;
+                        case 0:
+                            echo "N&atilde;o";
+                            break;
+                    }
+                    ?>
+            </td>
+            <?php endif; ?>
+
+            <?php if (!in_array($item->IdPRONAC, $cache_pronac)) : ?>
+            <?php $cache_pronac[] = $item->IdPRONAC; ?>
+            <?php endif; ?>
+        </tr>
+        <?php endforeach; ?>
+    </table>
+    </div>
+
+    <form action="<?php echo $this->url(array('controller' => 'relatorio', 'action' => 'resultado-desembolso')); ?>" method="post" name="frmPaginacao" id="frmPaginacao">
+    <?php foreach($this->parametrosBusca as $name=>$value):?>
+        <?php if(!is_array($value)): ?>
+        <input type="hidden" name="<?php echo $name?>" id="<?php echo $name?>" value="<?php echo $value?>"/>
+        <?php else: ?>
+            <?php foreach($value as $valor):?>
+                <input type="hidden" name="<?php echo $name?>[]" id="<?php echo $name?>" value="<?php echo $valor?>"/>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    <?php endforeach; ?>
+        <?php if(empty($this->parametrosBusca["pag"])):?>
+        <input type="hidden" name="pag" id="pag" value="<?php echo $this->pag; ?>"/>
+        <?php endif; ?>
+        <?php if(empty($this->parametrosBusca["ordenacao"])):?>
+	    <input type="hidden" name="ordenacao" id="ordenacao" value="<?php echo (!empty($this->parametrosBusca["ordenacao"]))?$this->parametrosBusca["ordenacao"]:""; ?>"/>
+	    <?php endif; ?>
+	    <?php if(empty($this->parametrosBusca["tipoOrdenacao"])):?>
+	    <input type="hidden" name="tipoOrdenacao" id="tipoOrdenacao" value="<?php echo (!empty($this->parametrosBusca["tipoOrdenacao"]))?$this->parametrosBusca["tipoOrdenacao"]:""; ?>"/>
+	    <?php endif; ?>
+    </form>
+
+    <form method="POST" id="formGerarXls" name="formGerarXls" action="<?php echo $this->url(array('controller' => 'relatorio', 'action' => 'gerar-xls')); ?>" style="display:none">
+        <textarea name="html" id="conteudoXLS"></textarea>
+    </form>
+
+    <form method="POST" id="formGerarPdf" name="formGerarPdf" action="<?php echo $this->url(array('controller' => 'relatorio', 'action' => 'gerar-pdf')); ?>" style="display:none">
+        <textarea name="html" id="conteudoImprimir"></textarea>
+    </form>
+
+    <table class="tabela">
+        <tr>
+            <td align="center">
+                <input type="button" style="width: 88px" class="btn_inicio" id="btn_inicio" onclick="paginar('1')"/>
+                <input type="button" style="width: 88px" class="btn_p_anterior" id="btn_p_anterior" onclick="paginar('<?php echo ($this->pag > 1)?$this->pag-1:1; ?>')"/>
+                <select name="pagina" id="pagina" class="input_simples" onchange="paginar(this.value)">
+                    <?php for($i=1; $i<$this->totalPag+1; $i++): ?>
+                    <option value="<?php echo $i; ?>" <?php if($i == $this->pag){ echo " selected='selected' "; } ?>><?php echo $i; ?></option>
+                    <?php endfor; ?>
+                </select>
+                <input type="button" style="width: 88px" class="btn_p_proximo" id="btn_p_proximo" onclick="paginar('<?php echo ($this->pag < $this->totalPag)?$this->pag+1:$this->totalPag; ?>')"/>
+                <input type="button" style="width: 88px" class="btn_ultimo" id="btn_ultimo" onclick="paginar('<?php echo $this->totalPag; ?>')"/>
+                <input type="button" style="width: 44px" class="btn_xls" id="btn_xls" />
+                <input type="button" style="width: 88px" class="btn_imprimir" id="btn_imprimir" />
+                Exibindo de <b><?php echo $this->inicio; ?></b> a <b><?php echo $this->fim; ?></b> de um total de <b><?php echo $this->total; ?></b>
+            </td>
+        </tr>
+    </table>
+</fieldset>

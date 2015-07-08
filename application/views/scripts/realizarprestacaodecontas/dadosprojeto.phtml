@@ -1,0 +1,270 @@
+<script type="text/javascript">
+    function toogleAjax(id, url){
+        if(!url) {
+            $('#'+id).toggle('slow');
+        } else {
+            elemento = '#'+id;
+            if($(elemento).css('display') == 'none') {
+                $(elemento).html('<img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /> ');
+                $(elemento).fadeIn('fast');
+                $.ajax({
+                    type: "POST",
+                    data: {
+                        teste: 'testando'
+                    },
+                    url: url,
+                    success: function(data) {
+                        $(elemento).html(data);
+                    }
+                });
+            } else {
+                $(elemento).fadeOut('fast');
+            }
+        }
+    };
+</script>
+<style>
+    .mensagem {
+        padding: 8px;
+        border: darkgreen;
+        background: #e3e3c7;
+
+    }
+</style>
+
+<?php
+error_reporting(0);
+
+
+
+if (!isset($_GET["tpAgente"])) {
+
+	require_once "inc/menu.inc.php"; // menu de consultar dados do projeto
+	
+}
+
+?>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''), '', true); ?>" title="Ir para p&aacute;gina inicial">Início</a></li>
+        <li>Presta&ccedil;&atilde;o de contas</li>
+        <li class="last">Consultar dados do projeto</li>
+    </ul>
+</div>
+
+<script>
+    <?php if(isset($_GET['tipoMsg'])):?>
+        $("#novas_mensagens", document).append("<div class='msg<?php echo $_GET['tipoMsg']; ?>'><div class='float_right'><input type='button' class='btn_close' title='Fechar mensagem' id='msg<?php echo $_GET['tipoMsg']; ?>' onclick='$(\".msg<?php echo $_GET['tipoMsg']; ?>\").hide();' onkeypress='$(\".msg<?php echo $_GET['tipoMsg']; ?>\").hide();'/></div><div><?php echo $_GET['msg'] ?></div></div>");
+    <?php endif;?>
+</script>
+
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+<!-- ========== INï¿½CIO Tï¿½TULO ========== -->
+<div id="titulo">
+    <div>Consultar dados do projeto <span class="voltar" style="float:right;"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM Tï¿½TULO ========== -->
+<!-- ========== INï¿½CIO CONTEï¿½DO ========== -->
+<div id="conteudo">
+    <?php //include_once 'scripts/consultardadosprojeto/inc/menu.inc.php';
+    if(!isset($this->projeto)) {
+        echo '<div align="center">Projeto não encontrado.</div>';
+    } else {
+        ?>
+    <table  class="tabela">
+        <tr>
+            <th>Projeto Cultural</th>
+        </tr>
+    </table>
+    <table class="tabela">
+        <tr class="destacar">
+            <td colspan="6" align="center"><b>Identificação</b></td>
+        </tr>
+        <!--<tr>
+            <td align="center" colspan="3">
+                <b>PRONAC</b>
+                <br />
+                    <?php echo $this->projeto->NrProjeto; ?>
+            </td>
+            <td align="center" colspan="3">
+                <b>Nome do Projeto</b>
+                <br />
+                    <?php echo $this->projeto->NomeProjeto; ?>
+            </td>
+        </tr>-->
+        <tr>
+            <td align="left" colspan="6">
+                 <div>
+                    <div style="width:20%; float: left;"><b>PRONAC</b>:<br><?php echo $this->projeto->NrProjeto; ?></div>
+                    <div style="width:80%; float: left;"><b>Nome do Projeto</b>:<br><?php echo $this->projeto->NomeProjeto; ?></div>
+                 </div>
+            </td>
+        </tr>
+        <tr>
+            <td align="left" colspan="6">
+                 <div>
+                     <div style="width:20%; float: left;"><b>CNPJ/CPF</b>:<br><?php echo (strlen($this->projeto->CgcCPf)==11) ? aplicaMascara($this->projeto->CgcCPf,"999.999.999-99") : aplicaMascara($this->projeto->CgcCPf,"99.999.999/9999-99"); ?></div>
+                    <div style="width:80%; float: left;"><b>Proponente</b>:<br><?php echo $this->projeto->Proponente; ?></div>
+                 </div>
+            </td>
+        </tr>
+        <tr class="destacar">
+            <td colspan="6" align="center"><b>UF / Mecanismo / Área / Segmento / Processo</b></td>
+        </tr>
+        <tr>
+            <td align="left" colspan="6">
+                <div>
+                    <div style="width:10%; float: left;"><b>UF</b>:<br><?php echo $this->projeto->UfProjeto; ?></div>
+                    <div style="width:19%; float: left;"><b>Mecanismo</b>:<br><?php echo $this->projeto->Mecanismo; ?></div>
+                    <div style="width:19%; float: left;"><b>Área Cultural</b>:<br><?php echo $this->projeto->Area; ?></div>
+                    <div style="width:19%; float: left;"><b>Segmento</b>:<br><?php echo $this->projeto->Segmento; ?></div>
+                    <div style="width:16%; float: left;"><b>Processo</b>:<br><?php echo $this->projeto->Processo; ?></div>
+                    <div style="width:13%; float: left;"><b>Enquadramento</b>:<br><?php echo $this->projeto->Enquadramento; ?></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="destacar">
+            <td colspan="6" align="center"><b>Sintese do Projeto</b></td>
+        </tr>
+        <tr>
+            <td align="left" colspan="6" >
+                    <?php echo $this->projeto->ResumoProjeto; ?>
+            </td>
+        </tr>
+        <tr class="destacar">
+            <td colspan="6" align="center"><b>Valores</b></td>
+        </tr>
+        <tr>
+            <td align="left" colspan="6">
+                <div>
+                    <div style="width:16%; float: left;"><b>Solicitado (A):<br><font color="#009900"><?php echo number_format($this->projeto->ValorSolicitado, 2, ",", "."); ?></font></b></div>
+                    <div style="width:16%; float: left;"><b>Outras Fontes (B):<br><font color="#CC0000"><?php echo number_format($this->projeto->OutrasFontes, 2, ",", "."); ?></font></b></div>
+                    <div style="width:16%; float: left;"><b>Vl.Proposta (C = A + B):<br><font color="#0000FF"><?php echo @number_format(($this->projeto->ValorSolicitado + $this->projeto->OutrasFontes), 2, ",", "."); ?></font></b></div>
+                    <div style="width:16%; float: left;"><b>Aprovado (D):<br><?php echo number_format($this->projeto->ValorAprovado, 2, ",", "."); ?></b></div>
+                    <div style="width:16%; float: left;"><b>Vl.Projeto (E = B + D):<br><?php echo @number_format(($this->projeto->OutrasFontes + $this->projeto->ValorAprovado), 2, ",", "."); ?></b></div>
+                    <div style="width:16%; float: left;"><b>Captação / Conv&ecirc;nio (E):<br><?php echo @number_format(($this->projeto->ValorCaptado / ($this->projeto->OutrasFontes + $this->projeto->ValorAprovado)), 2, ",", "."); ?></b></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="destacar">
+            <td colspan="6" align="center"><b>Situação</b></td>
+        </tr>
+        <tr>
+            <td align="left" colspan="6">
+                 <div>
+                    <div style="width:20%; float: left;"><b>Dt.Situação</b>:<br><?php echo $this->projeto->DtSituacao; ?></div>
+                    <div style="width:40%; float: left;"><b>Situação</b>:<br><?php echo $this->projeto->Situacao; ?></div>
+                    <div style="width:40%; float: left;"><b>Provid&ecirc;ncia Tomada</b>:<br><?php echo $this->projeto->ProvidenciaTomada; ?></div>
+                 </div>
+            </td>
+        </tr>
+        <tr class="destacar">
+            <td colspan="6" align="center"><b>Última Tramitação</b></td>
+        </tr>
+        <tr>
+            <td align="left" colspan="6">
+                 <div>
+                    <div style="width:33%; float: left;"><b>Emissor</b>:<br><?php echo $this->projeto->Emissor; ?></div>
+                    <div style="width:33%; float: left;"><b>Dt.Envio</b>:<br><?php if (isset($this->projeto->DtTramitacaoEnvio)) echo Data::tratarDataZend($this->projeto->DtTramitacaoEnvio,'Brasileiro'); ?></div>
+                    <div style="width:33%; float: left;"><b>Estado</b>:<br><?php echo $this->projeto->Estado; ?></div>
+                 </div>
+                 <div>
+                    <div style="width:33%; float: left;"><b>Destino</b>:<br><?php echo $this->projeto->Destino; ?></div>
+                    <div style="width:33%; float: left;"><b>Receptor</b>:<br><?php echo $this->projeto->Receptor; ?></div>
+                    <div style="width:33%; float: left;"><b>Dt.Recebimento</b>:<br><?php if (isset($this->projeto->dtTramitacaoRecebida))echo Data::tratarDataZend($this->projeto->dtTramitacaoRecebida,'Brasileiro'); ?></div>
+                 </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="6" align="left"><b>Despacho</b>:<br><?php echo $this->projeto->meDespacho; ?></td>
+        </tr>
+        <tr class="destacar">
+            <td colspan="6" align="center"><b>Localização atual do projeto</b></td>
+        </tr>
+        <tr>
+            <td align="left" colspan="6" >
+                A localização atual do projeto só será alterada após o recebimento do projeto na unidade destino.<br />
+                <b><?php echo $this->projeto->Origem; ?></b>
+            </td>
+        </tr>
+        <tr>
+            <th colspan="6" align="center">
+                &nbsp;
+            </th>
+        </tr>
+        <tr>
+            <td colspan="6" align="left">
+                <input type="button" class="btn_adicionar" onclick="return toogleAjax('planoDistribuicao', '<?php echo $this->baseUrl(); ?>/plano-distribuicao/consultar-componente?idPreProjeto=<?php echo ($this->projeto->idProjeto)?$this->projeto->idProjeto:0; ?>')"/>
+                Plano de Distribuição
+            </td>
+        </tr>
+        <tr>
+            <th colspan="6" align="center" id="planoDistribuicao" style="display: none" class="mensagem">
+                &nbsp;
+            </th>
+        </tr>
+        <tr>
+            <td colspan="6" align="left">
+                <input type="button" class="btn_adicionar" onclick="return toogleAjax('planoDivulgacao', '<?php echo $this->baseUrl(); ?>/divulgacao/consultarcomponente?idPreProjeto=<?php echo ($this->projeto->idProjeto)?$this->projeto->idProjeto:0; ?>')"/>
+                Plano de Divulgação
+            </td>
+        </tr>
+        <tr>
+            <th colspan="6" align="center" id="planoDivulgacao" style="display: none" class="mensagem">
+                &nbsp;
+            </th>
+        </tr>
+        <tr>
+            <td colspan="6" align="left">
+                <input type="button" class="btn_adicionar" onclick="return toogleAjax('localRealizacao', '<?php echo $this->baseUrl(); ?>/localderealizacao/consultarcomponente?idPreProjeto=<?php echo ($this->projeto->idProjeto)?$this->projeto->idProjeto:0; ?>')"/>
+                Local de Realização
+            </td>
+        </tr>
+        <tr>
+            <th colspan="6" align="center" id="localRealizacao" style="display: none" class="mensagem">
+                &nbsp;
+            </th>
+        </tr>
+        <tr>
+            <td colspan="6" align="left">
+                <input type="button" class="btn_adicionar" onclick="return toogleAjax('deslocamento', '<?php echo $this->baseUrl(); ?>/deslocamento/consultarcomponente?idPreProjeto=<?php echo ($this->projeto->idProjeto)?$this->projeto->idProjeto:0; ?>')"/>
+                Deslocamento
+            </td>
+        </tr>
+        <tr>
+            <th colspan="6" align="center" id="deslocamento" style="display: none" class="mensagem">
+                &nbsp;
+            </th>
+        </tr>
+        <tr>
+            <td colspan="6" align="left">
+                <input type="button" class="btn_adicionar" onclick="return toogleAjax('planilhaOrcamentaria', '<?php echo $this->baseUrl(); ?>/manterorcamento/consultarcomponente?idPreProjeto=<?php echo ($this->projeto->idProjeto)?$this->projeto->idProjeto:0; ?>')"/>
+                Planilha Orçamentária
+            </td>
+        </tr>
+        <tr>
+            <th colspan="6" align="center" id="planilhaOrcamentaria" style="display: none;" class="mensagem">
+                &nbsp;
+            </th>
+        </tr>
+    </table>
+
+    <table class="tabela">
+        <tr>
+            <td align="center">
+                <input type="button" value=" " class="btn_pdf" style="width: 44px;" onclick="redirecionar('<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'gerarpdf')); ?>?idPronac=<?php echo $this->idpronac?>');">
+               <!-- <input type="button" style="width: 88px" class="btn_sair" id="btn_sair" onclick="redirecionar('<?php //echo $this->url(array('controller' => 'listarprojetos', 'action' => 'index')); ?>');" />-->
+            </td>
+        </tr>
+    </table>
+
+</div>
+<!-- ========== FIM CONTEï¿½DO ========== -->
+<!-- ========== INï¿½CIO RODAPï¿½ DO CONTEï¿½DO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPï¿½ DO CONTEï¿½DO ========== -->
+<br clear="all" />
+    <?php
+}
+?>

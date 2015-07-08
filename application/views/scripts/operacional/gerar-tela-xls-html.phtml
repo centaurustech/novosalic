@@ -1,0 +1,81 @@
+<?php 
+	if ($this->gerar['gerar'] == 'xls') { 
+		echo '<div id="div_g1_1" class="miolo_grid_01 sumir">';		
+	}
+?>
+<div class="conteudoImprimivel" id="conteudoImprimivel" style="display:none">
+<table class="tabela" border="1" cellspacing="0" cellpadding="0">
+	<thead>
+		<th colspan="6">Demonstrativo de captação de recursos</th>
+	</thead>
+    <tbody>
+    <tr>
+    	<td colspan="6">&nbsp;</td>
+    </tr>
+    <tr>
+        <th valign="middle" align="center" bgcolor="#D0D0D0">Cpf/Cnpj do Proponente</th>
+        <th valign="middle" align="center" bgcolor="#D0D0D0">Proponente</th>
+        <th valign="middle" align="center" bgcolor="#D0D0D0">PRONAC</th>
+        <th valign="middle" align="center" bgcolor="#D0D0D0">Nome do Projeto</th>
+        <th valign="middle" align="center" bgcolor="#D0D0D0" nowrap>Vl. Autorizado</th>
+        <th valign="middle" align="center" bgcolor="#D0D0D0" nowrap>Vl. Captado</th>
+    </tr>   
+    <?php $auxSituacao = "";?>
+    <?php if(count($this->registros['valores']) > 0):?>
+    <?php foreach($this->registros['valores'] as $registro):?>
+    <tr>
+        <td valign="top" align="center"><?php echo (strlen($registro['CNPJCPFProponente'])==11) ? Mascara::addMaskCPF($registro['CNPJCPFProponente']) : Mascara::addMaskCNPJ($registro['CNPJCPFProponente']); ?></td>
+        <td valign="top" align="left"><?php echo $registro['Proponente']; ?></td>
+        <td valign="top" align="center"><?php echo $registro['PRONAC']?></td>
+        <td valign="top" align="left"><?php echo $registro['NomeProjeto']?></td>
+        <td valign="top" align="right"><?php echo number_format($registro['vlAutorizado'], 2, ",", ".")?></td>
+        <td valign="top" align="right"><?php echo number_format($registro['vlCaptado'], 2, ",", ".")?></td>
+    </tr>
+    <?php endforeach; ?>
+    <?php else : ?>
+    <tr>
+        <td colspan="16" valign="top" align="center">Nenhum Registro Encontrado</td>
+    </tr>
+    <?php endif; ?>
+    <tr>   	    
+        <th valign="middle" align="right" bgcolor="#abda5d"  colspan="5">Somatório do Valor Autorizado</th>
+        <td align="center" class="red"><strong><?php foreach ($this->valorAltorizado['SmAu'] as $valorAutorizado){echo number_format($valorAutorizado->somatorioVlAutorizado, 2, ",", ".");}?></strong></td>    	    
+        </tr>
+        <tr>
+        <th valign="middle" align="right" bgcolor="#abda5d" colspan="5">Somatório do Valor Captado</th>
+        <td align="center" class="red"><strong><?php foreach ($this->valorCaptado['SmCp'] as $valorCaptado)   {echo number_format($valorCaptado->somatorioVlCaptado, 2, ",", ".");}?></strong></td>
+        </tr>
+        <tr>
+        <th bgcolor="#abda5d" align="right" colspan="5">Valor Teto Renuncia</th>
+        <td align="center" class="red"><strong><?php foreach ($this->ValorTetoRenuncia['teto'] as $valorRenuncia){echo number_format($valorRenuncia->somatorioAnoBusca, 2, ",", ".");}?></strong></td>
+        </tr>
+        <tr>
+        <th bgcolor="#abda5d" align="right" colspan="5">Saldo</th>
+        <td align="center" class="red"><strong><?php echo number_format($this->valorRenunciaFiscal['renuncia'], 2, ",", ".");?></strong></td>
+        </tr>
+</tbody>
+</table>
+</div>
+<?php 
+	if ($this->gerar['gerar'] == 'xls') { 
+		echo '</div>';
+	}
+?>
+
+<?php if ($this->gerar['gerar'] == 'xls') { ?>
+	<form method="POST" id="formGerarXls" name="formGerarXls" action="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'gerar-xls')); ?>" style="display:none">
+	    <textarea name="html" id="conteudoXLS"></textarea>
+	</form>
+	<script>
+		$("#conteudoXLS").val($(".conteudoImprimivel").html());
+		$("#formGerarXls").submit();
+	</script>
+<?php } elseif ($this->gerar['gerar'] == 'html') { ?>
+	<form method="POST" id="formGerarXls" name="formGerarXls" action="<?php echo $this->url(array('controller' => 'operacional', 'action' => ($this->tipo == 'xls')?'gerar-xls':'html2-pdf')); ?>" style="display:none">
+            <textarea name="html" id="conteudoXLS"></textarea>
+        </form>
+	<script>
+		$("#conteudoXLS").val($(".conteudoImprimivel").html());
+		$("#formGerarXls").submit();
+	</script>
+<?php } ?>

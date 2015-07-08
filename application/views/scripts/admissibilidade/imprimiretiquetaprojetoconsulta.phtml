@@ -1,0 +1,90 @@
+<?php include_once 'scripts/admissibilidade/inc/menu.inc.php'; ?>
+<!--<div id="breadcrumb">
+    <ul>
+        <li class="first"> <a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'projetos')); ?>" title="Ir para Projetos">Projetos</a></li>
+        <li class="last">Listar Propostas</li>
+    </ul>
+</div>-->
+<div id="titulo">
+    <div>Admissibilidade de propostas - Imprimir etiqueta projeto <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<style type="text/css">
+<!--
+.mensagem {
+    padding: 8px;
+    border: darkgreen;
+    background: #e3e3c7;
+}
+-->
+</style>
+<script type="text/javascript">
+<!--
+/*
+ * Função responsável pela exibição ou ocultamento de conteúdo,
+ * mudando a imagem.
+ **/
+
+function abrirDinamico(elemento, obj) {
+    if($(elemento).css('display') == 'none') {
+        $(elemento).fadeIn('fast', function() {
+            $('img', $(obj)).attr('src','<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png');
+        });
+    } else {
+        $(elemento).fadeOut('fast', function() {
+            $('img', $(obj)).attr('src','<?php echo $this->baseUrl(); ?>/public/img/navigation-baixo.PNG');
+        });
+    }
+}
+function toogleAjax(id, url){
+    if(!url) {
+        $('#'+id).toggle('slow');
+    } else {
+        elemento = '#'+id;
+        if($(elemento).css('display') == 'none') {
+            $(elemento).html('<img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /> ');
+            $(elemento).fadeIn('fast');
+            $.ajax({
+                type: "POST",
+                data: {
+                    teste: 'testando'
+                },
+                url: url,
+                success: function(data) {
+                    $(elemento).html(data);
+                }
+            });
+        } else {
+            $(elemento).fadeOut('fast');
+        }
+    }
+};
+//-->
+</script>
+<div id="conteudo">
+    <br />
+    <table class="tabela">
+        <tr>
+            <th align="center">Imprimir Etiqueta de Processo de PRONAC</th>
+        </tr>
+        <tr>
+            <td align="center">
+                <b>PRONAC </b>
+                <input type="text" name="idPronac" id="idPronac" class="input_simples2" />
+            </td>
+        </tr>
+        <tr>
+            <td align="center">
+            	<input type="button" class="btn_confirmar" title="Confirmar" value=" " onclick="window.open('<?php echo $this->baseUrl(); ?>/admissibilidade/imprimiretiquetaprojeto?idPronac=102647');" />
+            </td>
+        </tr>
+    </table>
+    <br />
+    <div align="center">
+    </div>
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

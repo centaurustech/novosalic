@@ -1,0 +1,714 @@
+<?php include_once 'inc/menuitemcusto.inc.php'; ?>
+
+<script type="text/javascript">
+
+    function analise(functionsim, functionnao){
+        $("#alert").dialog({
+            resizable: true,
+            title: 'Confirma',
+            width:300,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'Não': functionnao
+                ,
+                'Sim': functionsim
+            }
+        });
+        $("#ok").dialog({
+            resizable: true,
+            title:'Alerta',
+            width:350,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'Não': function(){
+                    $(this).dialog('close');
+                }
+            }
+        });
+        
+        $("#alert").dialog('open');
+        $(".ui-dialog-titlebar-close").remove();
+    }
+
+    function envia()
+    {
+        dsObservacao = $('#justificativaencaminha').val();
+        if ( dsObservacao == "Digite a observação..." || dsObservacao == "") {
+            $("#alert").dialog("destroy");
+            $("#alert").html('Preencha a observação');
+            $("#alert").dialog({
+                height: 170,
+                width: 300,
+                modal: true,
+                title: 'Alerta!',
+                draggable: false,
+                resizable: false,
+                closeOnEscape: false,
+                buttons: {
+                    'Ok': function() {
+                        $(this).dialog('close');
+                    }
+                }
+            });
+            $('.ui-dialog-titlebar-close').remove();
+            return false;
+
+        } else {
+            $('#obervacaoDaAvaliacao').val(dsObservacao);
+            $('#finalizarAvaliacaoItens').submit();
+        }
+    }
+
+    $(document).ready(function(){
+        $("#analise").change(function(){
+
+            if($(this).val() == 3){
+                var valida = true;
+                $(".required").each(function(){
+                    if($(this).attr('stavaliacao') == 'EA') {
+                        valida = false;
+                    }
+                });
+
+                if(valida == false){
+                    $("#alertStatus").dialog({
+                        resizable: true,
+                        title:'Alerta',
+                        width:350,
+                        height:150,
+                        modal: true,
+                        autoOpen:false,
+                        buttons: {
+                            'OK': function(){
+                                $(this).dialog('close');
+                                    $("#analise :first").attr('selected', 'selected');
+                            }
+                        }
+                    });
+                    $("#alertStatus").dialog('open');
+                    return valida;
+                }
+
+                $("#alert").html('Deseja finalizar a Análise?')
+                analise(function(){
+                    $("#encaminhar").dialog({
+                        resizable: true,
+                        title: 'Confirma',
+                        width:450,
+                        height:250,
+                        modal: true,
+                        autoOpen:false,
+                        buttons: {
+                            'Cancelar' : function(){
+                                $("#analise").find("option[value='2']").attr('selected','selected');
+                                $(this).dialog('close');
+                            },
+                            'Enviar': envia
+                        }
+                    }).dialog('open');
+                    $(this).dialog('close');
+                    $(".ui-dialog-titlebar-close").remove();
+                
+                    }, function() {
+                        $("#analise").find("option[value='2']").attr('selected','selected');
+                        $(this).dialog('close');
+                    }
+                );
+                $("#alert").dialog('open');
+            
+            } else if($(this).val() == 2){
+                $("#alert").dialog("destroy");
+                $("#alert").html('Deseja alterar o status da solicitaç&atilde;o?');
+                $("#alert").dialog({
+                    height: 170,
+                    width: 300,
+                    modal: true,
+                    title: 'Alerta!',
+                    draggable: false,
+                    resizable: false,
+                    closeOnEscape: false,
+                    buttons: {
+                        'Não': function() {
+                            $("#analise").find("option[value='1']").attr('selected','selected');
+                            $(this).dialog('close');
+                        },
+                        'Sim': function() {
+                            redirecionar('<?php echo $this->url(array('controller' => 'verificarsolicitacaodereadequacoes', 'action' => 'alterar-status-itens')); ?>?idpronac=<?php echo $_GET['idPronac']; ?>');
+                        }
+                    }
+                });
+                $('.ui-dialog-titlebar-close').remove();
+            }
+        });
+    });
+</script>
+
+<form id="finalizarAvaliacaoItens" name="finalizarAvaliacaoItens" method="post" action="<?php echo $this->url(array('controller' => 'verificarsolicitacaodereadequacoes', 'action' => 'finalizar-avaliacao-itens')); ?>">
+    <input type="hidden" value="" name="obervacaoDaAvaliacao" id="obervacaoDaAvaliacao">
+    <input type="hidden" value="<?php echo $_GET['idPronac']; ?>" name="idPronacProjeto" id="idPronacProjeto">
+</form>
+
+<div id="alert"></div>
+<div id="ok"></div>
+<div id="alertStatus" style="display: none">Analise todos os itens orçamentários antes de finalizar!</div>
+<div id="alertaObs" class="sumir"></div>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li>Acompanhamento</li>
+        <li class="last">Readequaç&atilde;o: itens de custo</li>
+    </ul>
+</div>
+
+<div style="display:none;" id="encaminhar" title="Observaç&otilde;es de Encaminhamento" >
+    <textarea name="justificativa" id="justificativaencaminha" rows="6" cols="50" style="width:95%;" onclick="limpar_campo(this, 'Digite a observação...');" onkeypress=" " onblur="restaurar_campo(this, 'Digite a observação...');">Digite a observação...</textarea>
+</div>
+
+<!-- inãcio: #titulo -->
+<div id="titulo">
+    <div>Readequa&ccedil;&atilde;o: itens de custo
+        <span class="voltar">
+            <a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a>
+        </span>
+    </div>
+</div>
+<!-- final: #titulo -->
+
+
+<!-- inãcio: ãrea principal #conteudo -->
+<div id="conteudo">
+    <div id="miolo">
+        <?php
+        $resultado = $this->buscaprojeto;
+        $idPronac = $this->escape($resultado[0]->IdPRONAC);
+        ?>
+
+        <table class="tabela">
+            <thead>
+                <tr>
+                    <th align="center">Nº PRONAC</th>
+                    <th align="center">Nome do Projeto</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="linha">
+                    <td align="center"><?php echo $this->escape($resultado[0]->pronac); ?></td>
+                    <td align="center"><?php echo $this->escape($resultado[0]->NomeProjeto); ?></td>
+                </tr>
+            </tbody>
+            <tr>
+                <th align="center">CPNJ/CPF</th>
+                <th align="center">Proponente</th>
+            </tr>
+            <tbody>
+                <tr class="linha">
+                    <td align="center">
+                        <?php
+                            $valor = $this->escape($resultado[0]->CgcCpf);
+                            echo Validacao::mascaraCPFCNPJ($valor);
+                        ?>
+                    </td>
+                    <td align="center"><?php echo $this->escape($resultado[0]->Descricao); ?></td>
+                </tr>
+            </tbody>
+        </table>
+
+
+
+        <?php require_once 'inc/menuabas.inc'; ?>
+
+        <table class="tabela">
+        	<tr>
+                    <?php $cols = 11;
+                        if( !empty ( $this->AvaliacaoAnalise ) ) {
+                            $cols = 12; 
+                        } ?>
+                    <th colspan="<?php echo $cols; ?>">
+                        <span style="float:right; text-align:right;">
+                            <?php if ($this->status == "AP" || $this->status == "IN" ) {  ?>
+                            <select disabled="disable" id="analise" class="select_simples">
+                                <option value="1">Finalizado</option>
+                            </select>
+                            <?php } else { ?>
+                            <select id="analise" class="select_simples">
+                                <?php if ($this->status == "EA") { ?>
+                                    <option value="2">Em Análise</option>
+                                    <option value="3">Finalizar</option>
+                                <?php } else { ?>
+                                    <option value="1">Aguardando Análise</option>
+                                    <option value="2">Em Análise</option>
+                                <?php } ?>
+                            </select>
+                            <?php } ?>
+                        </span>
+                        Planilha Orçamentária
+                    </th>
+        	</tr>
+
+                <?php $classPai = 'tr_f_AP'; ?>
+
+                <tr>
+                    <div  id="orcamento">
+                        <?php
+                            foreach ($this->buscaorcamento as $orcamento) {
+                                if( !empty ( $this->AvaliacaoAnalise ) ) {
+                                    echo "<td style='color:red; font-size:1.4em; text-align:center;' colspan='12'>";
+                                } else {
+                                    echo "<td style='color:red; font-size:1.4em; text-align:center;' colspan='11'>";
+                                }
+                                echo "<div id='abrir_fechar' class='icn_mais' style='width:175px; float:right; text-align:right;'><a href='#' onclick='abrirFecharFilhos();' style='font-size:0.8em;'>Expandir/Recolher Planilha</a></div>";
+                                echo $this->tipoReadeq; // complementação, redução ou remanejamento
+                                echo "</td>";
+                            }
+                        ?>
+                    </div>
+                </tr>
+                <tr class="tr_f_PCA">
+                    <?php $cols = 11;
+                        if( !empty ( $this->AvaliacaoAnalise ) ) {
+                            $cols = 12;
+                        }
+                    ?>
+                    <td colspan="<?php echo $cols; ?>">
+                        <div class="icn_mais trpai" idFilho="<?php echo $classPai; ?>" style="width:90%; margin-left:4%; font-size:1.4em;"><span class="orange del_link">Administração do Projeto</span></div>
+                    </td>
+                </tr>
+                <?php
+                        $count = 0;
+                        foreach ($this->buscaetapa as $etapa) {
+                            if ($count > 2) {
+                                $classfilho = $classPai . '_' . $etapa->idPlanilhaEtapa;
+                ?>
+
+                <tr class="tr_f_AP trFilho" style="display: none;">
+                    <td align="left" colspan="12">
+                        <?php echo '<div class="icn_mais trpai" idFilho="' . $classfilho . '"  style="width:90%; margin-left:8%; font-size:1.2em;"><span class="orange del_link">' . $etapa->Descricao . '</span></div>'; ?>
+                    </td>
+                </tr>
+
+                <?php $z = 0;
+                    foreach ($this->buscaprodutositensadm[$etapa->idPlanilhaEtapa] as $itens) {
+                        if ($z == 0) {
+                            echo '<tr class="' . $classfilho . ' idFilhoTitulo"  style="display:none">';
+                            echo '<td style="width:120px;"></td>';
+                            if( !empty ( $this->AvaliacaoAnalise ) )
+                            {
+                                echo '<td align="left" colspan="12" class="bold">';
+                            }
+                            else
+                            {
+                                echo '<td align="left" colspan="10" class="bold">';
+                            }
+                            echo $itens->DescricaoUF . ' - ' . $itens->DescricaoMunicipio;
+                            echo '</td>';
+                            echo '</tr>';
+                            echo '<tr class="' . $classfilho . ' idFilhoTitulo" style="display:none">';
+                            echo '<td style="width:120px;"></td>';
+                            echo '<th>';
+                            echo 'Item';
+                            echo '</th>';
+                            echo '<th>';
+                            echo 'Dias';
+                            echo '</th>';
+                            echo '<th>';
+                            echo 'Unidade';
+                            echo '</th>';
+                            echo '<th>';
+                            echo 'Qtde.';
+                            echo '</th>';
+                            echo '<th>';
+                            echo 'Ocor.';
+                            echo '</th>';
+                            echo '<th>';
+                            echo 'Vl. Unit&aacute;rio';
+                            echo '</th>';
+                            echo '<th>';
+                            echo 'Vl. Solicitado';
+                            echo '</th>';
+                            echo '<th>';
+                            echo 'Justificativa Proponente';
+                            echo '</th>';
+                            if ( !empty ( $this->AvaliacaoAnalise ) ){
+                                echo '<th>';
+                                 echo 'Justificativa Técnica';
+                                echo '</th>';
+                            }
+                            echo '<th>';
+                            echo 'Status';
+                            echo '</th>';
+                            echo '<th>';
+                            echo 'Acão';
+                            echo '</th>';
+                            echo '</tr>';
+                        }
+                        echo '<tr class="' . $classfilho . ' trFilho" style="display:none; font-size:1.2em;">';
+                        echo '<td style="width:120px;"></td>';
+                        echo '<td>';
+                        if (!empty($this->status)) { ?>
+                            <a href="<?php echo $this->url(array('controller' => 'verificarsolicitacaodereadequacoes', 'action' => 'formulario')); ?>?idPronac=<?php echo $itens->IdPRONAC ?>&idAprovacao=<?php echo $itens->idPlanilhaAprovacao ?>&idItem=<?php echo $itens->idPlanilhaItem ?>&idProduto=<?php echo 0 ?>&tpAcao=<?php echo $itens->tpAcao ?>">
+                                <?php echo $itens->DescricaoItem; ?>
+                            </a>
+                        <?php } else { echo $itens->DescricaoItem; }
+                                    echo '</td>';
+                                    echo '<td>';
+                                    echo $itens->qtDias;
+                                    echo '</td>';
+                                    echo '<td>';
+                                    echo $itens->Unidade;
+                                    echo '</td>';
+                                    echo '<td>';
+                                    echo $itens->qtItem;
+                                    echo '</td>';
+                                    echo '<td>';
+                                    echo $itens->nrOcorrencia;
+                                    echo '</td>';
+                                    echo '<td>';
+                                    echo $itens->vlUnitario;
+                                    echo '</td>';
+                                    echo '<td>';
+                                    echo $this->formatarReal($itens->Total);
+                                    echo '</td>';
+                                    echo '<td>';
+                                    echo $itens->dsjustificativa;
+                                    echo '</td>';
+                                    if ( !empty ( $this->AvaliacaoAnalise ) )
+                                    {
+                                        $verificaAnalise = VerificarSolicitacaodeReadequacoesDAO::verificaAnalise($itens->idPlanilhaAprovacao);
+                                        if ( !empty ( $verificaAnalise[0]->dsAvaliacaoSubItemPedidoAltera ) )
+                                        {
+                                            echo '<td>';
+                                            echo $verificaAnalise[0]->dsAvaliacaoSubItemPedidoAltera;
+                                            echo '</td>';
+                                        }
+                                        else
+                                        {
+                                            echo '<td>';
+                                            echo "N&atilde;o avaliado";
+                                            echo '</td>';
+                                        }
+                                    }
+                                    
+                                    $verificaAnalise = VerificarSolicitacaodeReadequacoesDAO::verificaAnalise($itens->idPlanilhaAprovacao);
+                                    ?><td class="required" stAvaliacao="<?php echo (!empty( $verificaAnalise[0]->stAvaliacao ) )? $verificaAnalise[0]->stAvaliacao:"" ?>">
+                                    <?php
+                                    if ($verificaAnalise ) {
+                                        echo (trim($verificaAnalise[0]->stAvaliacao) == 'D') ? 'Deferido' : 'Indeferido';
+                                    } else {
+                                    	if ($this->status == 'EA') {
+                                        	echo "Em análise";
+                                    	} else {
+                                    		echo "Aguardando análise";
+                                    	}
+                                    }
+                                    echo '</td>';
+                                    echo '<td>';
+
+                                    if ($itens->tpAcao == "A") {
+                                        echo '<img src="../public/img/bola_verde.gif" alt="< 10 dias de atraso no recebimento da solicitação (data inicial)" />';
+                                    } elseif ($itens->tpAcao == "I") {
+                                        echo '<img src="../public/img/bola_amarelo.gif" alt=">= 10 e < 20 dias de atraso no recebimento da solicitação (data inicial)" />';
+                                    } elseif ($itens->tpAcao == "E") {
+                                        echo '<img src="../public/img/bola_vermelho.gif" alt=">= 20 dias de atraso no recebimento da solicitação (data inicial)" />';
+                                    }
+                                    else
+                                    {
+                                        echo "Item analisado";
+                                    }
+                                    echo '</td>';
+                                    echo '</tr>';
+                                    $z++;
+                                }
+                            }
+                            $count++;
+                        }
+                ?>
+
+
+                        <tr class="tr_f_PCA">
+                        <?php if( !empty ( $this->AvaliacaoAnalise ) ) {?>
+                            <td colspan="12">
+                        <?php } else { ?>
+                            <td colspan="11">
+                        <?php } ?>
+                                <div class="icn_mais trpai" idFilho="tr_f_CP"  style="width:90%; margin-left:4%; font-size:1.4em;"><span class="orange del_link">Custo por Produto</span></div>
+                            </td>
+                        </tr>
+<?php
+                        $i = 0;
+                        foreach ($this->buscaproduto as $value) {
+
+                            $classPai = 'tr_f_' . $value->idProduto;
+?>
+                            <tr class="tr_f_CP trFilho" style="display: none;">
+                                <?php if( !empty ( $this->AvaliacaoAnalise ) ) {?>
+                                <th align="left" colspan="12">
+                                <?php } else { ?>
+                                    <th align="left" colspan="11">
+                                <?php } ?>
+                <?php
+                            echo '<div class="icn_mais trpai" idFilho="' . $classPai . '" style="width:90%; margin-left:6%; font-size:1.2em;"><span class="orange del_link">' . $value->produto . '</span></div>';
+                ?>
+                                </th>
+                            </tr>
+<?php $countSoliticao = 0 ?>
+<?php
+                            foreach ($this->buscaetapa as $etapa) {
+                                if ($countSoliticao <= 2) {
+                                    $classfilho = $classPai . '_' . $etapa->idPlanilhaEtapa;
+?>
+                            <tr class="<?php echo $classPai; ?> trFilho" style="display: none;">
+                                <?php if( !empty ( $this->AvaliacaoAnalise ) ) {?>
+                                <td align="left" colspan="12">
+                                <?php } else { ?>
+                                    <td align="left" colspan="11">
+                                <?php } ?>
+                <?php
+                                    echo '<div class="icn_mais trpai" idFilho="' . $classfilho . '" style="width:90%; margin-left:8%; font-size:1.2em;"><span class="orange del_link">' . $etapa->Descricao . '</span></div>';
+                ?>
+                                        </td>
+                                    </tr>
+<?php
+                                    $z = 0;
+                                    $cidadeUf = null;
+
+                                    foreach ($this->buscaprodutositens[$value->idProduto][$etapa->idPlanilhaEtapa] as $itens) {
+
+                                        if($z == 0 || $cidadeUf != $itens->DescricaoUF . ' - ' . $itens->DescricaoMunicipio){
+                                            $cidadeUf = $itens->DescricaoUF . ' - ' . $itens->DescricaoMunicipio;
+                                            echo '<tr class="' . $classfilho . ' trFilho"  style="display:none">';
+                                            echo '<td style="width:120px;"></td>';
+                                            if( !empty ( $this->AvaliacaoAnalise ) ) {
+                                                echo '<td align="left" colspan="11" class="bold">';
+                                            }
+                                            else
+                                            {
+                                                echo '<td align="left" colspan="10" class="bold">';
+                                            }
+                                            echo $itens->DescricaoUF . ' - ' . $itens->DescricaoMunicipio;
+                                            echo '</td>';
+                                            echo '</tr >';
+                                        }
+
+                                        if ($z == 0) {
+
+
+                                            if ($value->idProduto == $itens->idProduto) {
+                                                echo '<tr class="' . $classfilho . ' trFilho idFilhoTitulo" style="display:none">';
+                                                echo '<td style="width:120px;"></td>';
+                                                echo '<th>';
+                                                echo 'Item';
+                                                echo '</th>';
+                                                echo '<th>';
+                                                echo 'Dias';
+                                                echo '</th>';
+                                                echo '<th>';
+                                                echo 'Unidade';
+                                                echo '</th>';
+                                                echo '<th>';
+                                                echo 'Qtde.';
+                                                echo '</th>';
+                                                echo '<th>';
+                                                echo 'Ocor.';
+                                                echo '</th>';
+                                                echo '<th>';
+                                                echo 'Vl. Unit&aacute;rio';
+                                                echo '</th>';
+                                                echo '<th>';
+                                                echo 'Vl. Solicitado';
+                                                echo '</th>';
+                                                echo '<th>';
+                                                echo 'Justificativa Proponente';
+                                                echo '</th>';
+                                                if ( !empty ( $this->AvaliacaoAnalise ) ){
+                                                    echo '<th>';
+                                                     echo 'Justificativa Técnica';
+                                                    echo '</th>';
+                                                }
+                                                echo '<th>';
+                                                echo 'Status';
+                                                echo '</th>';
+                                                echo '<th>';
+                                                echo 'Acão';
+                                                echo '</th>';
+                                                echo '</tr>';
+                                            }
+                                        }
+                                        echo '<tr class="' . $classfilho . ' trFilho" style="display:none; font-size:1.2em;">';
+                                        echo '<td style="width:120px;"></td>';
+                                        echo '<td>';
+                                        if (!empty($this->status)) {
+?>
+                                        	<a href="<?php echo $this->url(array('controller' => 'verificarsolicitacaodereadequacoes', 'action' => 'formulario')); ?>?idPronac=<?php echo $itens->IdPRONAC ?>&idAprovacao=<?php echo $itens->idPlanilhaAprovacao ?>&idItem=<?php echo $itens->idPlanilhaItem ?>&idProduto=<?php echo $itens->idProduto ?>&tpAcao=<?php echo $itens->tpAcao ?>">
+                                        	<?php echo $itens->DescricaoItem; ?>
+                                        	</a>
+                <?php
+                                        } else {
+                                        	echo $itens->DescricaoItem;
+                                        }
+                                        echo '</td>';
+                                        echo '<td>';
+                                        echo $itens->qtDias;
+                                        echo '</td>';
+                                        echo '<td>';
+                                        echo $itens->Unidade;
+                                        echo '</td>';
+                                        echo '<td>';
+                                        echo $itens->qtItem;
+                                        echo '</td>';
+                                        echo '<td>';
+                                        echo $itens->nrOcorrencia;
+                                        echo '</td>';
+                                        echo '<td>';
+                                        echo $itens->vlUnitario;
+                                        echo '</td>';
+                                        echo '<td>';
+                                        echo $this->formatarReal($itens->Total);
+                                        echo '</td>';
+                                        echo '<td>';
+                                        echo $itens->dsjustificativa;
+                                        echo '</td>';
+                                        if ( !empty ($this->AvaliacaoAnalise ) )
+                                        {
+                                            $verificaAnalise = VerificarSolicitacaodeReadequacoesDAO::verificaAnalise($itens->idPlanilhaAprovacao);
+                                            if ( !empty ( $verificaAnalise[0]->dsAvaliacaoSubItemPedidoAltera ) )
+                                            {
+                                                echo '<td>';
+                                                echo $verificaAnalise[0]->dsAvaliacaoSubItemPedidoAltera;
+                                                echo '</td>';
+                                            }
+                                            else
+                                            {
+                                                echo '<td>';
+                                                echo "N&atilde;o avaliado";
+                                                echo '</td>';
+                                            }
+                                        }
+                                        ?>
+                                        <?php $verificaAnalise = VerificarSolicitacaodeReadequacoesDAO::verificaAnalise($itens->idPlanilhaAprovacao); ?>
+                                        <td class="required" stAvaliacao="<?php echo (!empty( $verificaAnalise[0]->stAvaliacao ) )?$verificaAnalise[0]->stAvaliacao:"" ?>">
+                                        <?php
+                                            if ($verificaAnalise) {
+                                                echo (trim($verificaAnalise[0]->stAvaliacao) == 'D') ? 'Deferido' : 'Indeferido';
+                                            } else {
+                                            	if ($this->status == 'EA') {
+                                                	echo "Em análise";
+                                            	} else {
+                                            		echo "Aguardando análise";
+                                            	}
+                                            }
+                                            echo '</td>';
+                                        echo '<td>';
+                                         if ($itens->tpAcao == "A") {
+                                        echo '<img src="../public/img/bola_verde.gif" alt="< 10 dias de atraso no recebimento da solicitação (data inicial)" />';
+                                    } elseif ($itens->tpAcao == "I") {
+                                        echo '<img src="../public/img/bola_amarelo.gif" alt=">= 10 e < 20 dias de atraso no recebimento da solicitação (data inicial)" />';
+                                    } elseif ($itens->tpAcao == "E") {
+                                        echo '<img src="../public/img/bola_vermelho.gif" alt=">= 20 dias de atraso no recebimento da solicitação (data inicial)" />';
+                                    }
+                                    else
+                                    {
+                                        echo "Item analisado";
+                                    }
+                                        echo '</td>';
+                                        echo '</tr>';
+                ?>
+
+
+                <?php
+                                        $z++;
+                                    }
+                                }
+                                $i++;
+                                $countSoliticao++;
+                            }
+                        }
+                ?>
+<?php //} ?>
+
+                    </table>
+
+                    <!--
+                    <table>
+                        <form name='formulario' id="formulario" method='post' action='<?php echo $this->url(array('controller' => 'verificarsolicitacaodereadequacoes', 'action' => 'formulario')); ?>'>
+<tr>
+<td>
+<input type="button" class="input_simpes" value="Finalizar">
+</td>
+</tr>
+</form>
+</table>
+            -->
+
+
+    </div>
+
+
+
+</div>
+
+<script type="text/javascript">
+    <!--
+    $('.trpai').click(function()
+    {
+        filhos(this);
+    });
+
+    function filhos(pai)
+    {
+        var idtr = '.'+$(pai).attr('idFilho');
+        $(idtr).toggle();
+        if ($(pai).hasClass('icn_mais'))
+        {
+            $(pai).addClass('icn_menos');
+            $(pai).removeClass('icn_mais');
+        }
+        else
+        {
+            $(pai).addClass('icn_mais');
+            $(pai).removeClass('icn_menos');
+        }
+
+        if ($(idtr).attr('idFilho')!= undefined)
+        {
+            filhos($(idtr).attr('idFilho'));
+        }
+    }
+
+    function abrirFecharFilhos()
+    {
+        $('.trFilho, .idFilhoTitulo').toggle();
+
+        $('.trpai').each(function()
+        {
+            if ($(this).hasClass('icn_mais'))
+            {
+                $(this).addClass('icn_menos');
+                $(this).removeClass('icn_mais');
+                $('#abrir_fechar').addClass('icn_menos');
+                $('#abrir_fechar').removeClass('icn_mais');
+            }
+            else
+            {
+                $(this).addClass('icn_mais');
+                $(this).removeClass('icn_menos');
+                $('#abrir_fechar').addClass('icn_mais');
+                $('#abrir_fechar').removeClass('icn_menos');
+            }
+        });
+    }
+    //-->
+</script>
+<!-- ========== FIM CONTEãDO ========== -->
+
+
+
+<!-- ========== INãCIO RODAPã DO CONTEãDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPã DO CONTEãDO ========== -->
+
+<br clear="all" />

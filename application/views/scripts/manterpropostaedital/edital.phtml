@@ -1,0 +1,83 @@
+<!-- ========== INï¿½CIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="menuContexto"></div>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'),'',true);?>" title="Ir para Início">Início</a></li>
+        <li>Projetos</li>
+        <li class="last">Edital</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INï¿½CIO Tï¿½TULO ========== -->
+<div id="titulo">
+    <div>Edital <span class="voltar"><a href="javascript:voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM Tï¿½TULO ========== -->
+
+<script type="text/javascript">
+    function abrir_fechar(id_div){
+        $('#'+id_div).toggle();
+        $('#maiss'+id_div).toggle().focus();
+        $('#menoss'+id_div).toggle().focus();
+    }
+</script>
+
+<!-- ========== INï¿½CIO CONTEï¿½DO ========== -->
+
+<div id="conteudo">
+    <?php if(count($this->edital)>0) { foreach($this->edital as $nomeProponente => $tbedital) { ?>
+    <form name="form" action="<?php echo $this->url(array('controller' => 'manterpropostaedital','action' => 'editalnovo')); ?>" method="post">
+        <input type="hidden"  name="idAgente" value="<?php echo $tbedital['idAgente']; ?>" />
+        <table class="tabela" border="0" cellpadding="0" cellspacing="1">
+            <tr>
+                <td>
+                    <input type="button" id="" class="btn_adicionar" onclick="return abrir_fechar('<?php echo $tbedital['idPreProjeto']; ?>')" onkeypress="return abrir_fechar('<?php echo $tbedital['idPreProjeto']; ?>')"/>
+                    <b>Proponente:</b>
+                    <?php echo $nomeProponente;?>
+                </td>
+            </tr>
+        </table>
+        <div id="<?php echo $tbedital['idPreProjeto']; ?>" style="display: none">
+            <table class="tabela">
+                <tr class="titulo_tabela">
+                    <th>Nome do Edital</th>
+                    <th>Nome da proposta</th>
+                    <th>Mecanismo</th>
+                </tr>
+                <?php foreach($tbedital as $chave => $item) { if(is_numeric($chave)) { ?>
+                <tr class="fundo">
+                    <td class="centro"><?php echo $item['Edital']; ?></td>
+                    <td class="centro"><a href="<?php echo $this->baseUrl(); ?>/manterpropostaedital/dadospropostaedital?idPreProjeto=<?php echo $item['idPreProjeto']; ?>"><?php echo $item['NomeProjeto']; ?> </a></td>
+                    <td class="centro"><?php echo $item['MecanismoDesc']; ?></td>
+                </tr>
+                <?php } } ?>
+                <tr class="fundo">
+                    <td class="centro" colspan="5"><input type="submit" style="width: 88px" class="btn_novo" value="" /></td>
+                </tr>
+            </table>
+        </div>
+    </form>
+    <?php } } else { ?>
+    <table class="tabela">
+        <tr>
+            <td align="center">Nenhum Edital encontrado.</td>
+        </tr>
+    </table>
+    <?php } ?>
+
+    <table class="tabela" border="0" cellpadding="0" cellspacing="0">
+        <tr>
+            <td align="center">
+                <input type="button" id="btn_imprimir" name="inicio" class="btn_imprimir" onclick="window.print()"/>
+                <input type="button" id="btn_sair" name="sair" class="btn_sair" />
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div id="rodapeConteudo"></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+
+<br clear="all" />

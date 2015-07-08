@@ -1,0 +1,110 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#frmPesquisaConta").validate({
+            rules: {
+                pronac: { required: true }
+            },
+            messages: {
+                pronac: { required: " <br><br>Campo obrigat&oacute;rio n&atilde;o informado." }
+            },
+            submitHandler: function(form) {
+
+                form.submit();
+            }
+        });
+        
+        $(".btn_xls").click(function(){
+            $('#conteudoXLS_PDF').val($('#conteudoImprimivel').html());
+            $('#formGerarXlsPdf').attr("action",'<?php echo $this->url(array('controller' => 'manterbloqueioconta', 'action' => 'gerar-xls')); ?>');
+            $('#formGerarXlsPdf').submit();
+        });
+        $(".btn_imprimir").click(function(){
+            $('#conteudoXLS_PDF').val($('#conteudoImprimivel').html());
+            $('#formGerarXlsPdf').attr("action",'<?php echo $this->url(array('controller' => 'manterbloqueioconta', 'action' => 'imprimir')); ?>');
+            $('#formGerarXlsPdf').submit();
+        });
+        
+    });
+</script>
+<?php 
+    require_once 'scripts/controlarmovimentacaobancaria/inc/menu.inc.php';
+?>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li>Contas bloqueadas</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Contas bloqueadas</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="conteudo" style="width: 98%; ">
+
+    <form method="POST" id="formGerarXlsPdf" name="formGerarXlsPdf" action="" style="display:none" target="_blank">
+        <textarea name="html" id="conteudoXLS_PDF"></textarea>
+        <input type="hidden" name="titulo" value="Contas Bloqueadas">
+    </form>
+    <!-- RESULTADO DO AJAX -->
+        <div class="conteudoImprimivel" id="conteudoImprimivel" >
+            <table class="tabela">
+                <?php if (count($this->contasBloqueadas) <= 0) : ?>
+                    <tr>
+                        <td align="center" colspan="6"><em>Nenhum projeto com conta bloqueada</em></td>
+                    </tr>
+                <?php else: ?>
+                    <thead>
+                        <tr class="">
+                            <th width="10%">Pronac</th>
+                            <th width="20%">Nome do Projeto</th>
+                            <!--<th width="10%" nowrap="">Agência</th>
+                            <th width="10%" nowrap="">Conta</th>-->
+                            <th width="15%" nowrap="">Período de execução</th>
+                            <th width="15%" nowrap="">Período de captação</th>
+                            <th width="10%" nowrap="">Status regularidade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($this->contasBloqueadas as $projeto) : ?>
+                        <tr class="">
+                            <td align="center"><a target="_blank" href="<?php echo $this->url ( array ('controller' => 'consultardadosprojeto', 'action' => '' ),'',true ) . '?idPronac=' . $projeto->IdPRONAC; ?>" ><?php echo $projeto->PRONAC;?> </a></td>
+                            <td><?php echo $projeto->NomeProjeto;?></td>
+                            <!--<td align="center">18015</td>
+                            <td align="center">000000225169</td>-->
+                            <td align="center">
+                                <?php echo $this->escape(Data::tratarDataZend($projeto->DtInicioExecucao, 'brasileiro')); ?> a 
+                                <?php echo $this->escape(Data::tratarDataZend($projeto->DtFimExecucao, 'brasileiro')); ?>
+                            </td>
+                            <td align="center">
+                                <?php echo $this->escape(Data::tratarDataZend($projeto->DtInicioCaptacao, 'brasileiro')); ?> a 
+                                <?php echo $this->escape(Data::tratarDataZend($projeto->DtFimCaptacao, 'brasileiro')); ?>
+                            </td>
+                            <td align="center" class="<?php echo (empty($projeto->Habilitado) || $projeto->Habilitado == "S") ? "green" : "red";?>">
+                                <?php echo (empty($projeto->Habilitado) || $projeto->Habilitado == "S") ? "Proponente regular" : "Proponente irregular";?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                <?php endif; ?>
+            </table>
+        </div>
+        <div>
+            <br>
+            <center>
+                <input type="button" style="width: 44px" class="btn_xls" id="btn_xls" />
+                <input type="button" style="width: 88px" class="btn_imprimir" id="btn_imprimir" />
+            </center>
+            <br>
+        </div>
+</div>
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

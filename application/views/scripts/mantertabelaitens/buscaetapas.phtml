@@ -1,0 +1,16 @@
+<td>
+    <table width="100%" style="margin: 0px; padding: 0px;  padding-left: 25px;">
+        <?php foreach($this->etapas as $e): ?>
+        <tr>
+            <td>
+                <input type="button" class="btn_adicionar" id="mostraItens_<?php echo $this->idProduto; ?><?php echo $e->idEtapa; ?>" onclick="mostraOcultaElemento('mostraItens_<?php echo $this->idProduto; ?><?php echo $e->idEtapa; ?>'), buscaItens('<?php echo $this->idProduto; ?>', '<?php echo $e->idEtapa; ?>');"/><?php echo utf8_decode(htmlentities($e->Etapa));?>
+            </td>
+        </tr>
+        <tr id="item_<?php echo $this->idProduto; ?><?php echo $e->idEtapa; ?>" class="mostraItens_<?php echo $this->idProduto; ?><?php echo $e->idEtapa; ?>" style="width:100%; display:none;">
+            <td id="divMsg2"></td>
+        </tr>
+        <?php endforeach; ?>
+    </table>
+</td>
+
+

@@ -1,0 +1,124 @@
+
+<!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== 
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'propostas')); ?>" title="Ir para Propostas">Propostas</a></li>
+        <li class="last">Produtos / Etapas / Itens  </li>
+    </ul>
+</div>-->
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+<?php require_once "scripts/manterpropostaincentivofiscal/inc/menu.inc.php"; // menu ?>
+<script type="text/javascript">
+
+    function buscaEtabas(idProduto){
+        var id = idProduto,
+            divMsg = $('#divMsg');
+        divMsg.show();
+        divMsg.html('<center><img src="../public/img/ajax.gif" /><br />Carregando...<center>');
+
+        $.ajax({
+            type: 'POST',
+            url: '<?php echo $this->url(array('controller' => 'mantertabelaitens', 'action' => 'buscaetapas')); ?>?idPreProjeto=<?php if(isset($_GET['idPreProjeto']))echo $_GET['idPreProjeto'];?>',
+            data:{
+                idProduto: id
+            },
+            success: function(data){
+                divMsg.hide();
+                $('#etapa_'+id).html(data);
+
+            },
+            error: function (data){
+                divMsg.html("Falha na recuperação dos dados.\nNão foi possível carregar agente!");
+            }
+        });
+    }
+
+    function buscaItens(idProduto, idEtapa){
+        var idP = idProduto,
+            idE = idEtapa;
+
+        var divMsg = $('#divMsg2');
+        divMsg.show();
+        divMsg.html('<center><img src="../public/img/ajax.gif" /><br />Carregando...<center>');
+
+        $.ajax({
+            type: 'POST',
+            url: '<?php echo $this->url(array('controller' => 'mantertabelaitens', 'action' => 'buscaitens')); ?>?idPreProjeto=<?php if(isset($_GET['idPreProjeto']))echo $_GET['idPreProjeto'];?>',
+            data:{
+                idProduto: idP,
+                idEtapa: idE
+            },
+            success: function(data){
+                divMsg.hide();
+                $('#item_'+idP+idE).html(data);
+
+            },
+            error: function (data){
+                divMsg.html("Falha na recuperação dos dados.\nNão foi possível carregar agente!");
+            }
+        });
+    }
+
+    function mostraOcultaElemento(elemento){
+        $('.' + elemento).toggle();
+        if ($('#' + elemento).hasClass('btn_adicionar')){
+            $('#' + elemento).addClass('btn_remover');
+            $('#' + elemento).removeClass('btn_adicionar');
+        } else {
+            $('#' + elemento).addClass('btn_adicionar');
+            $('#' + elemento).removeClass('btn_remover');
+        }
+    }
+</script>
+
+<!-- ========== INICIO TITULO ========== -->
+<div id="titulo">
+    <div>Produtos / Etapas / Itens<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+
+<div id="conteudo">
+
+    <div class="conteudoImprimivel" id="conteudoImprimivel">
+        <?php if(count($this->pretitem)>0){ ?>
+        <table class="tabela">
+            <?php foreach($this->pretitem as $Produto){ ?>
+            <tr>
+                <td><input type="button" class="btn_adicionar" id="mostraEtapas_<?php echo $Produto->idProduto; ?>" onclick="mostraOcultaElemento('mostraEtapas_<?php echo $Produto->idProduto; ?>'), buscaEtabas('<?php echo $Produto->idProduto; ?>');" /><?php echo $Produto->Produto; ?></td>
+            </tr>
+            <tr id="etapa_<?php echo $Produto->idProduto; ?>" class="mostraEtapas_<?php echo $Produto->idProduto; ?>" style="display:none;">
+                <td id="divMsg"></td>
+            </tr>
+            <?php } ?>
+        </table>
+
+        <?php } else { ?>
+            <br />
+            <div class="centro">Nenhum Produto/Etapa/Item</div>
+            <br />
+        <?php } ?>
+        <br /><br />
+
+        <form id="frmBusca" method="post" name="frmBusca" action="<?php echo $this->url(array('controller' => 'mantertabelaitens', 'action' => 'gerarpdf')); ?>?idPreProjeto=<?php if(isset($_GET['idPreProjeto']))echo $_GET['idPreProjeto'];?>">
+            <input type="hidden" name="tipoPesquisa" value="<?php echo $this->tipopesquisa;?>">
+            <input type="hidden" name="produto" value="<?php echo $this->produto;?>">
+            <input type="hidden" name="etapa" value="<?php echo $this->etapa;?>">
+            <input type="hidden" name="item" value="<?php echo $this->item;?>">
+        </form>
+    </div>
+
+    <form method="POST" id="formGerarPdf" name="formGerarPdf" action="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'gerarpdf')); ?>" style="display:none">
+        <textarea name="html" id="conteudoImprimir"></textarea>
+    </form>
+
+    <table class="tabela centro">
+        <tr>
+            <td>
+                <!--<input type="button" name="voltar" class="btn_voltar" value="" onclick="window.location='<?php echo $this->url(array('controller' => 'mantertabelaitens', 'action' => 'consultartabelaitens')); ?>?idPreProjeto=<?php if(isset($_GET['idPreProjeto']))echo $_GET['idPreProjeto'];?>'">-->
+                <input  type="button" name="imprimir" class="btn_imprimir" onclick='$("#conteudoImprimir").val($(".conteudoImprimivel").html()); $("#formGerarPdf").submit();'>
+            </td>
+        </tr>
+    </table>
+</div>
+<br clear="all" />

@@ -1,0 +1,411 @@
+<script type="text/javascript">
+    function sumiraqui(id){
+        $('img[class='+id+']').toggle();
+        $('tr[class='+id+']').toggle();
+    }
+
+    function salvarjustificativa(){
+        if($('#justificativa').val()==''){
+            $("#confirm1").dialog("destroy");
+            $("#confirm1").dialog({
+                width:350,
+                height:150,
+                EscClose:false,
+                modal:true,
+                buttons:{
+                    'OK':function(){
+                        $(this).dialog('close');
+                        return false;
+                    }
+                }
+            });
+            return false;
+        } else {
+            $("#confirm2").dialog("destroy");
+            $("#confirm2").dialog({
+                width:350,
+                height:150,
+                EscClose:false,
+                modal:true,
+                buttons:{
+                    'Não':function(){
+                        $(this).dialog('close');
+                    },
+                    'Sim':function(){
+                        document.forms["formencaminhar"].submit();
+                    }
+                }
+            });
+            return false;
+        }
+    }
+
+    $(document).ready(function(){
+        $(".abrir").click(function () {
+            $(".recebidos").slideToggle("slow");
+        });
+
+        $('.salvararquivamento').click(function(){
+            if($('#inicial').val()== '' &&  $('#final').val()== ''){
+                $("#confirm1").dialog("destroy");
+                $("#confirm1").dialog({
+                    width:350,
+                    height:150,
+                    EscClose:false,
+                    modal:true,
+                    buttons:{
+                        'OK':function(){
+                            $(this).dialog('close');
+                            return false;
+                        }
+                    }
+                });
+                return false;
+                
+            } else {
+                if($("#final").val() <= 0 || $("#inicial").val() <= 0){
+                    $("#confirm5").dialog("destroy");
+                    $("#confirm5").dialog({
+                        width:350,
+                        height:150,
+                        EscClose:false,
+                        modal:true,
+                        buttons:{
+                            'OK':function(){
+                                $(this).dialog('close');
+                                return false;
+                            }
+                        }
+                    });
+                    return false;
+                }
+
+                if($("#final").val() < $("#inicial").val()){
+                    $("#confirm6").dialog("destroy");
+                    $("#confirm6").dialog({
+                        width:350,
+                        height:150,
+                        EscClose:false,
+                        modal:true,
+                        buttons:{
+                            'OK':function(){
+                                $(this).dialog('close');
+                                return false;
+                            }
+                        }
+                    });
+                    return false;
+                }
+
+                $("#confirm4").dialog("destroy");
+                $("#confirm4").dialog({
+                    width:350,
+                    height:150,
+                    EscClose:false,
+                    modal:true,
+                    buttons:{
+                        'Não':function(){
+                            $(this).dialog('close');
+                        },
+                        'Sim':function(){
+                            document.forms["formcx"].submit();
+                        }
+                    }
+                });
+                return false;
+            }
+        });
+    });
+
+    function visualizarDespacho(text){
+        $("#VisualizarDespacho").dialog("destroy");
+        $("#VisualizarDespacho").html(text);
+        $("#VisualizarDespacho").dialog({
+            resizable: true,
+            modal: true,
+            autoOpen:true,
+            EscClose:false,
+            buttons: {
+                'OK':function(){
+                    $(this).dialog('close'); // fecha a modal
+                }
+            }
+        });
+        $("#VisualizarDespacho").dialog('open');
+    }
+
+    function recusar_projeto(idPronac, idDestino, Pronac, NomeProjeto, lote, idOrigem){
+        $("#idPro").val(idPronac);
+        $("#idDes").val(idDestino);
+        $("#Pro").html(Pronac);
+        $("#nome").html(NomeProjeto);
+        $("#lote").val(lote);
+        $("#idOrigem").val(idOrigem);
+        document.getElementById("modalJustificativa").title = "Justificativa para a Solcitação";
+
+        // modal com os ddos do dirigente
+        $("#modalJustificativa").dialog("destroy");
+        $("#modalJustificativa").dialog({
+            width:600,
+            EscClose:false,
+            modal:true,
+            buttons:{
+                'Fechar':function(){
+                    $(this).dialog('close'); // fecha a modal
+                },
+                'Salvar':function(){
+                    salvarjustificativa();
+                    return false;
+                }
+            }
+        });
+        return false;
+    }
+
+    function arquivar(idPronac, idDestino, Pronac, NomeProjeto, lote, idOrigem){
+        $("#idPro2").val(idPronac);
+        $("#idDes2").val(idDestino);
+        $("#Pro1").html(Pronac);
+        $("#Pro2").val(Pronac);
+        $("#nome2").html(NomeProjeto);
+        $("#lote2").val(lote);
+        $("#idOrigem2").val(idOrigem);
+        document.getElementById("modalcx").title = "Informe a Caixa Inicial e a Caixa Final";
+
+        $("#modalcx").dialog("destroy");
+        $("#modalcx").dialog({
+            width:500,
+            height:360,
+            EscClose:false,
+            modal:true,
+            buttons:{
+                'Fechar':function(){
+                    $(this).dialog('close'); // fecha a modal
+                }
+            }
+        });
+        return false;
+    }
+</script>
+
+<?php require_once "inc/menu.inc.php"; // menu ?>
+
+<div id="confirm1" title="Alerta!" class="sumir">Favor preencher os dados obrigatórios!</div>
+<div id="confirm2" title="Alerta!" class="sumir">Tem certeza que deseja recusar este projeto?</div>
+<div id="confirm3" title="Alerta!" class="sumir">Tem certeza que deseja cancelar o recebimento deste Projeto?</div>
+<div id="confirm4" title="Alerta!" class="sumir">Tem certeza que deseja arquivar este projeto?</div>
+<div id="confirm5" title="Alerta!" class="sumir">O número da caixa deve ser maior que 0.</div>
+<div id="confirm6" title="Alerta!" class="sumir">A caixa inicial não poder ser maior que a final!</div>
+<div id="VisualizarDespacho" title="Vizualizar Despacho" class="sumir"></div>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para p&aacute;gina inicial">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'tramitarprojetos', 'action' => 'index')); ?>" title="Ir para Tramitar projetos">Tramitar projetos</a></li>
+        <li class="last">Receber projetos</li>
+    </ul>
+</div>
+<!-- ========== FIM BRADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Receber projetos <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<!-- Modal para encaminhar o projeto -->
+
+<div class="sumir" id="modalJustificativa" title="Justificativa de Recusa do Projeto" >
+    <form name="formencaminhar" id="" method="post">
+        <table class="tabela">
+            <tr>
+                <td class="destacar bold" align="center">PRONAC</td>
+                <td class="destacar bold" align="center">Nome do Projeto</td>
+            </tr>
+            <tr>
+                <td id="Pro" align="center"></td>
+                <td id="nome"></td>
+            </tr>
+       	</table>
+
+        <table class="tabela">
+            <tr>
+                <td><span style="color: red;">*</span> Por favor informe uma justificativa da solicitação de cancelamento de envio.</td>
+            </tr>
+       	</table>
+
+        <table class="tabela">
+            <tr>
+                <td class="destacar bold">Justificativa</td>
+            </tr>
+            <tr>
+                <td>
+                    <textarea name="justificativa" id="justificativa" class="textarea_simples" rows="6" cols="50" style="width:98%;"></textarea>
+                </td>
+            </tr>
+       	</table>
+        <input type="hidden" name="idPro" id="idPro"/>
+        <input type="hidden" name="idDes" id="idDes"/>
+        <input type="hidden" name="lote" id="lote"/>
+        <input type="hidden" name="idOrigem" id="idOrigem"/>
+    </form>
+</div>
+
+<div style="display:none;" id="modalcx" title="Informar Caixa Inicial e Caixa Final" >
+    <form name="formcx" id="" method="post">
+        <table class="tabela">
+            <tr>
+                <th width="50%">PRONAC</th>
+                <th width="50%">Nome do Projeto</th>
+            </tr>
+            <tr>
+                <td id="Pro1"></td>
+                <td id="nome2"></td>
+            </tr>
+       	</table>
+
+       	* Por favor informe a Caixa Inicial e a Caixa Final para o arquivamento do Projeto:
+       	<br />	<br><label for="cx">Informações Adicionais</label><br>
+        <table class="tabela">
+            <tr>
+                <td width="120"><label for="name">Cx Inicial *</label></td>
+                <td width="120">
+                    <input type="text" class="input_simples valida numero" name="inicial" id="inicial" value="" size="10" maxlength="6" />
+                </td>
+                <td width="120"><label for="name">Cx Final *</label></td>
+                <td>
+                    <input type="text" class="input_simples valida numero" name="final" id="final" value="" size="10" maxlength="6" />
+                </td>
+            </tr>
+        </table>
+        <table class="tabela">
+            <tr>
+                <td class="esquerda">
+                    <input type="submit"  value=" " class="btn_salvar salvararquivamento" value=" " />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type="reset"  value=" " class="btn_limpar" />
+                    <input type="hidden" name="Pro2" id="Pro2" />
+                    <input type="hidden" name="idPro2" id="idPro2" />
+                    <input type="hidden" name="idDes2" id="idDes2" />
+                    <input type="hidden" name="lote2" id="lote2" />
+                    <input type="hidden" name="idOrigem2" id="idOrigem2" />
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<?php $y = 0; ?>
+<div id="conteudo">
+    <?php
+    if(isset($this->projetoRecebido) && $this->projetoRecebido == 'true') {
+        $historicodocumento = new HistoricoDocumento();
+        ?>
+        <table class="tabela">
+                <?php $x = 0;
+                $idAtual    = 0;
+                $idAnterior = 1;
+                if($this->Destino) {
+                    foreach($this->Destino as $destinos) {
+                        $nomeOrigem = '';
+                        if(!empty($destinos->idOrigem)){
+                            $Orgao = TramitarprojetosDAO::buscaOrgao ($destinos->idOrigem);
+                            foreach ($Orgao as $nomeOrgao) {
+                                $nomeOrigem = $nomeOrgao->Sigla;
+                            }
+                        }
+                        $despachos[] = $historicodocumento->projetosDespachados(array(2), $destinos->idDestino, $destinos->lote, null);
+                        if($despachos) {
+                            $y = 1;
+                        }
+                        if($y) {
+                            foreach($despachos as $desp) {
+                                foreach($desp as $teste) {
+                                    $novoDesp[] = $teste;
+                                }
+                            }
+                        }
+                        if($y) {
+                            if($x > 0) {
+                    $idAtual = $destinos->idDestino;
+                }?>
+            <tr class="fundo_linha2">
+                <td colspan="9" align="left">
+                    <img src="<?php echo $this->baseUrl(); ?>/public/img/icn_menos.gif" class="<?php echo $destinos->idDestino; ?>" style="cursor:pointer;" onclick="sumiraqui('<?php echo $destinos->idDestino; ?>');" />
+                    <img src="<?php echo $this->baseUrl(); ?>/public/img/icn_mais.gif" class="<?php echo $destinos->idDestino; ?>" style="cursor:pointer; display:none;" onclick="sumiraqui('<?php  echo $destinos->idDestino; ?>');" />
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <strong>Lote Nr:</strong> &nbsp;<?php echo $destinos->lote; ?> &nbsp;-&nbsp;
+                    <strong>Origem:</strong> <?php echo $nomeOrigem; ?>&nbsp;&nbsp; | &nbsp;
+                    <a href="<?php echo $this->url(array('controller' => 'tramitarprojetos', 'action' => 'receberprojetos', 'Destino'=>$destinos->idDestino, 'Lote'=>$destinos->lote)); ?>">Receber Projetos</a>
+                </td>
+            </tr>
+            <tr class="<?php echo $destinos->idDestino; ?>">
+                <th width="120">Processo</th>
+                <th width="50">PRONAC</th>
+                <th width="150">Nome do Projeto</th>
+                <th width="10">Despacho</th>
+                <th width="70">Data Envio</th>
+                <th width="70">Situa&ccedil;&atilde;o</th>
+                <th width="70">Usu&aacute;rio</th>
+                <th width="70">Recusar</th>
+                                <?php if ($this->grupoAtivo == 109) { ?>
+                <th width="70">Arquivar</th>
+                                <?php } ?>
+            </tr>
+                <?php foreach($novoDesp as $despacho) {
+                    if (($despacho->idDestino == $destinos->idDestino) and ($despacho->idLote == $destinos->lote)) {?>
+            <tr class="<?php echo $destinos->idDestino; ?>">
+                <td align="center"><?php echo $despacho->Processo; ?></td>
+                <td align="center"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')); ?>?idPronac=<?php echo $despacho->idPronac; ?>" title="Consultar dados do projeto" target="_blank"><?php echo $despacho->Pronac; ?></a></td>
+                <td align="center"><?php echo $despacho->NomeProjeto; ?></td>
+                <td align="center">
+                    <img src="<?php echo $this->baseUrl(); ?>/public/img/table_multiple.png" style="cursor:pointer;" onclick="visualizarDespacho('<?php echo $despacho->despacho; ?>');" alt="Visualizar" />
+                </td>
+                <td align="center"><?php echo  $despacho->dtEnvio;  ?></td>
+                <td align="center" ><?php echo $despacho->Situacao ?></td>
+                <td align="center" ><?php echo $despacho->Emissor ?></td>
+                <td align="center">
+                    <img src="<?php echo $this->baseUrl(); ?>/public/img/btn_excluir.gif" style="cursor:pointer;" onclick="recusar_projeto(<?php echo $despacho->idPronac ?>, <?php echo $destinos->idDestino; ?>, '<?php echo $despacho->Pronac; ?>', '<?php echo $despacho->NomeProjeto; ?>', '<?php echo $destinos->lote; ?>', '<?php echo $destinos->idOrigem; ?>')" />
+                </td>
+                        <?php if ($this->grupoAtivo == 109) { ?>
+                <td align="center">
+                    <img src="<?php echo $this->baseUrl(); ?>/public/img/btn_excluir.gif" style="cursor:pointer;" onclick="arquivar(<?php echo $despacho->idPronac ?>, <?php echo $destinos->idDestino; ?>, '<?php echo $despacho->Pronac; ?>', '<?php echo $despacho->NomeProjeto; ?>', '<?php echo $destinos->lote; ?>')" />
+                </td>
+                                        <?php } ?>
+            </tr>
+                                    <?php }
+                                $idAnterior = $destinos->idDestino;
+                                $x++;
+                            }
+                        }
+        }
+    }?>
+
+        </table>
+
+    <?php if(!$y) {?>
+        <table class="tabela">
+            <tr>
+                <td class="centro">
+				Não há Projetos para serem Recebidos!
+                </td>
+            </tr>
+        </table>
+            <?php }?>
+        <?php
+}
+    ?>
+    <!-- ============ PAGINAÇÃO ============ -->
+<?php if ($this->qtdDoc > 5) {
+    echo $this->Destino;
+} ?>
+    <!-- ========== FIM PAGINAÇÃO ========== -->
+
+
+</div><!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

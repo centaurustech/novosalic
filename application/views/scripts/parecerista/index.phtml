@@ -1,0 +1,352 @@
+<?php include_once 'scripts/parecerista/inc/menu-coordenador.inc.php'; ?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'),'',true); ?>" title="Ir para Início">Início</a></li>
+        <li class="last">Consulta</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<div id="dialog"></div>
+ 
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Consulta <span class="voltar"><a href="javascript:voltar();" title="Página Anterior">Voltar</a></span></div>
+</div>
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+
+<div id="conteudo">
+    
+    <div class="pesquisaParecerista">
+        
+    
+        <form name="formPesquisa" id="formPesquisa" action="<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'index'), '',true);?>" method="GET">
+            <input type="hidden" name="ordem" value="<?php echo $this->ordem; ?>"/>
+            <input type="hidden" name="campo" value="<?php echo $this->campo; ?>"/>
+            <input type="hidden" name="qtde" value="<?php echo $this->intTamPag; ?>"/>
+            <table class="tabela">
+                <tr>
+                    <th colspan="12"> Filtro de Pesquisa </th>
+                </tr>
+                <tr class="divFiltroPesquisa">
+                    <td class="destacar bold" width="70">PRONAC</td>
+                    <td>
+                        <input type="text" class="input_simples" name="pronacPesquisa" maxlength="7" style="width: 70px;" value="<?php echo $this->pronacPesquisa;?>">
+                    </td>
+                    <td class="destacar bold">Situa&ccedil;&atilde;o</td>
+                    <td>
+                        <select name="situacaoPesquisa" style="width: 245px;" class="input_simples">
+                            <!--option value="2">Aguardando Pagamento</option-->
+                            <option value="1" <?php echo $this->situacaoPesquisa == 1 ? 'selected':''; ?> >Despachos Gerados</option>
+                            <option value="4" <?php echo $this->situacaoPesquisa == 4 ? 'selected':''; ?> >Enviado para o Parecerista</option>
+                            <option value="5" <?php echo $this->situacaoPesquisa == 5 ? 'selected':''; ?> >Devolvido ao Minc pelo Parecerista</option>
+                            <option value="7" <?php echo $this->situacaoPesquisa == 7 ? 'selected':''; ?> >Pagamento Finalizado</option>
+                        </select>
+                    </td>
+                    <td class="destacar bold">CPF:</td>
+                    <td>
+                        <input type="text" class="input_simples" id="nrCPFPesquisa" name="nrCPFPesquisa" maxlength="14" style="width: 100px;" value="<?php echo $this->nrCPFPesquisa;?>">
+                    </td>
+                    <td class="destacar bold">Dt Início:</td>
+                    <td>
+                        <input type="text" class="input_simples" id="dtInicioPesquisa" name="dtInicioPesquisa" maxlength="10" style="width: 70px;" value="<?php echo $this->dtInicioPesquisa;?>">
+                    </td>
+                    <td class="destacar bold">Dt Fim:</td>
+                    <td>
+                        <input type="text" class="input_simples" id="dtFimPesquisa" name="dtFimPesquisa" maxlength="10" style="width: 70px;" value="<?php echo $this->dtFimPesquisa;?>">
+                    </td>
+                    <td colspan="6" align="center">
+                        <input type="submit" id="btn_pesquisar" class="btn_pesquisar" value="">
+                    </td>
+                </tr>
+            </table>
+        </form>
+
+        <!-- ========== PAGINAÇ?O ========== -->
+        <?php if(count($this->dados)>0){ ?>
+        <!-- ============ PAGINAÇÃO ============ -->
+        <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+            <tbody>
+                <tr>
+                    <td align="center">
+                    <form name="form1" id="form1" action="<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'index'));?>" method="get">
+                        <?php if($this->paginacao['pag']>1) { ?>
+                        <input class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'index')).'?pag=1'."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&situacaoPesquisa='.$this->situacaoPesquisa.'&pronacPesquisa='.$this->pronacPesquisa.'&dtInicioPesquisa='.$this->dtInicioPesquisa.'&dtFimPesquisa='.$this->dtFimPesquisa; ?>'">
+                        <?php } ?>
+                        <input id="btn_p_anterior" type="button"
+                        <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                        <?php }else { ?>
+                               class="btn_p_anterior" onclick="location.href='<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'index')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&situacaoPesquisa='.$this->situacaoPesquisa.'&pronacPesquisa='.$this->pronacPesquisa.'&dtInicioPesquisa='.$this->dtInicioPesquisa.'&dtFimPesquisa='.$this->dtFimPesquisa; ?>'"
+                        <?php } ?>>
+                        <input id="btn_p_proximo" type="button"
+                               <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                               class="btn_p_proximo-off"
+                        <?php }else { ?>
+                               class="btn_p_proximo" onclick="location.href='<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'index')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&situacaoPesquisa='.$this->situacaoPesquisa.'&pronacPesquisa='.$this->pronacPesquisa.'&dtInicioPesquisa='.$this->dtInicioPesquisa.'&dtFimPesquisa='.$this->dtFimPesquisa; ?>'"
+                        <?php } ?>>
+                        <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                        <input class="btn_ultimo" id="btn_ultimo" type="button"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'index')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&situacaoPesquisa='.$this->situacaoPesquisa.'&pronacPesquisa='.$this->pronacPesquisa.'&dtInicioPesquisa='.$this->dtInicioPesquisa.'&dtFimPesquisa='.$this->dtFimPesquisa; ?>'">
+                        <?php } ?>
+                        Pág.:<select name="pag" id="pag" onchange="$('#form1').submit()" class="input_simples">
+                            <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                            <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                            <?php endfor; ?>
+                        </select>
+                        &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>"><input type="submit" class="btn_recarregar" value="">
+                        <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                        <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                        <input type="hidden" name="situacaoPesquisa" value="<?php echo $this->situacaoPesquisa;?>">
+                        <input type="hidden" name="pronacPesquisa" value="<?php echo $this->pronacPesquisa;?>">
+                        <input type="hidden" name="nrCPFPesquisa" value="<?php echo $this->nrCPFPesquisa;?>">
+                        <input type="hidden" name="dtInicioPesquisa" value="<?php echo $this->dtInicioPesquisa;?>">
+                        <input type="hidden" name="dtFimPesquisa" value="<?php echo $this->dtFimPesquisa;?>">
+                        <input type="button" class="btn_imprimir">
+                     </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <center>
+            <?php
+                echo $this->paginacao['inicio']." a ";
+                echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+                echo " de ". $this->paginacao['total']. " Projetos listados";
+            ?>
+        </center>
+        <?php } ?>
+        <!-- ========== FIM PAGINAÇ?O ========== -->
+        
+    </div>
+    
+    <?php if(count($this->dados) > 0): ?>
+    <table class="tabela tablesorter" id="tabela">
+        <thead>
+            <tr>
+                <th><a href="<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'index', 'ordem' => 'ASC', 'campo' => 'nome')).'?pag='.($this->paginacao['pag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronacPesquisa='.$this->pronacPesquisa.'&nrCPFPesquisa='.$this->nrCPFPesquisa.'&situacaoPesquisa='.$this->situacaoPesquisa.'&dtInicioPesquisa='.$this->dtInicioPesquisa.'&dtFimPesquisa='.$this->dtFimPesquisa;?>">Parecerista</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'index', 'ordem' => 'ASC', 'campo' => 'nrDespacho')).'?pag='.($this->paginacao['pag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronacPesquisa='.$this->pronacPesquisa.'&nrCPFPesquisa='.$this->nrCPFPesquisa.'&situacaoPesquisa='.$this->situacaoPesquisa.'&dtInicioPesquisa='.$this->dtInicioPesquisa.'&dtFimPesquisa='.$this->dtFimPesquisa;?>">Nº despacho</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'index', 'ordem' => 'ASC', 'campo' => 'dtGeracaoPagamento')).'?pag='.($this->paginacao['pag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronacPesquisa='.$this->pronacPesquisa.'&nrCPFPesquisa='.$this->nrCPFPesquisa.'&situacaoPesquisa='.$this->situacaoPesquisa.'&dtInicioPesquisa='.$this->dtInicioPesquisa.'&dtFimPesquisa='.$this->dtFimPesquisa;?>">Dt geração pagamento</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'index', 'ordem' => 'ASC', 'campo' => 'dtEfetivacaoPagamento')).'?pag='.($this->paginacao['pag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronacPesquisa='.$this->pronacPesquisa.'&nrCPFPesquisa='.$this->nrCPFPesquisa.'&situacaoPesquisa='.$this->situacaoPesquisa.'&dtInicioPesquisa='.$this->dtInicioPesquisa.'&dtFimPesquisa='.$this->dtFimPesquisa;?>">Dt efetivação pagamento</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'index', 'ordem' => 'ASC', 'campo' => 'nrOrdemBancaria')).'?pag='.($this->paginacao['pag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronacPesquisa='.$this->pronacPesquisa.'&nrCPFPesquisa='.$this->nrCPFPesquisa.'&situacaoPesquisa='.$this->situacaoPesquisa.'&dtInicioPesquisa='.$this->dtInicioPesquisa.'&dtFimPesquisa='.$this->dtFimPesquisa;?>">Dt Ordem bancária</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'index', 'ordem' => 'ASC', 'campo' => 'pronac')).'?pag='.($this->paginacao['pag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronacPesquisa='.$this->pronacPesquisa.'&nrCPFPesquisa='.$this->nrCPFPesquisa.'&situacaoPesquisa='.$this->situacaoPesquisa.'&dtInicioPesquisa='.$this->dtInicioPesquisa.'&dtFimPesquisa='.$this->dtFimPesquisa;?>">Pronac</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'index', 'ordem' => 'ASC', 'campo' => 'NomeProjeto')).'?pag='.($this->paginacao['pag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronacPesquisa='.$this->pronacPesquisa.'&nrCPFPesquisa='.$this->nrCPFPesquisa.'&situacaoPesquisa='.$this->situacaoPesquisa.'&dtInicioPesquisa='.$this->dtInicioPesquisa.'&dtFimPesquisa='.$this->dtFimPesquisa;?>">Projeto</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'index', 'ordem' => 'ASC', 'campo' => 'Sigla')).'?pag='.($this->paginacao['pag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronacPesquisa='.$this->pronacPesquisa.'&nrCPFPesquisa='.$this->nrCPFPesquisa.'&situacaoPesquisa='.$this->situacaoPesquisa.'&dtInicioPesquisa='.$this->dtInicioPesquisa.'&dtFimPesquisa='.$this->dtFimPesquisa;?>">Vinculada</a></th>
+                <th>RPA</th>
+                <th width="120">Valor pagamento</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php  
+                $nmPa       = '';
+                $nrDe       = '';
+                $nmProjeto  = '';
+                $nmPronac   = '';
+                $vinc       = '';
+                $vt         = 0;
+                $i          = 0;
+                $idArquivo  = 0;
+            ?>
+            <?php foreach($this->dados as $p): ?>
+            <?php if(($nmPa != $p->Parecerista && $nmPa != '')): ?>
+            <tr>
+                <td class="fundo_linha3" colspan="9" style="text-align: right;">Valor Total:</td>
+                <td class="fundo_linha3" width="120"><?php echo $this->formatarReal($vt); ?></td>
+            </tr>
+            <?php $vt = 0; ?>
+            <?php endif; ?>
+            <tr>
+                <td><?php echo $nmPa == $p->Parecerista ? '' : $p->Parecerista; ?></td>
+                <td style="text-align: center;"><?php echo $nrDe == $p->nrDespacho ? '' : $p->nrDespacho; ?></td>
+                <td style="text-align: center;"><?php echo $p->dtGeracaoPagamento; ?></td>
+                <td style="text-align: center;"><?php echo $p->dtEfetivacaoPagamento; ?></td>
+                <td style="text-align: center;"><?php echo $p->dtOrdemBancaria; ?></td>
+                <td style="text-align: center;">
+                    <a target="_blank" href="<?php echo $this->url(array('controller' => '', 'action' => 'consultardadosprojeto')); ?>?idPronac=<?php echo $p->idPronac; ?>"><?php echo $nmPronac == $p->Pronac ? '' : $p->Pronac; ?></a>
+                </td>
+                <td><?php echo $nmProjeto == $p->NomeProjeto ? '' : $p->NomeProjeto; ?></td>
+                <td><?php echo $vinc == $p->Vinculada ? '' : $p->Vinculada; ?></td>
+                <td>
+                    <?php if ($idArquivo != $p->idArquivo && $p->idArquivo != 0) : ?>
+                    <a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id=<?php echo $p->idArquivo; ?>">
+                        <?php echo $p->nomeArquivo; ?>
+                    </a>
+                    <?php endif; ?>
+                </td>
+                <td><?php echo $this->formatarReal($p->vlPagamento); ?></td>
+            </tr>
+            <?php  
+                $nmPa       = $p->Parecerista;
+                $nrDe       = $p->nrDespacho;
+                $nmProjeto  = $p->NomeProjeto;
+                $nmPronac   = $p->Pronac;
+                $vinc       = $p->Vinculada;
+                $vt         = $vt+$p->vlPagamento;
+                $idArquivo  = $p->idArquivo;
+            ?>
+            <?php $i++; ?>
+            <?php if($i == count($this->dados)): ?>
+            <tr>
+                <td class="fundo_linha3" colspan="9" style="text-align: right;">Valor Total:</td>
+                <td class="fundo_linha3" width="120"><?php echo $this->formatarReal($vt); ?></td>
+            </tr>
+            <?php endif; ?>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+    <?php else: ?>
+    <table class="tabela">
+        <tr>
+            <td>Nenhum registro encontrado!</td>
+        </tr>
+    </table>
+    <?php endif; ?>
+    
+    <div class="pesquisaParecerista">
+        
+
+        <!-- ========== PAGINAÇ?O ========== -->
+        <?php if(count($this->dados)>0){ ?>
+        <!-- ============ PAGINAÇÃO ============ -->
+        <center>
+            <?php
+                echo $this->paginacao['inicio']." a ";
+                echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+                echo " de ". $this->paginacao['total']. " Projetos listados";
+            ?>
+        </center>
+        <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+            <tbody>
+                <tr>
+                    <td align="center">
+                    <form name="form2" id="form2" action="<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'index'));?>" method="get">
+                        <?php if($this->paginacao['pag']>1) { ?>
+                        <input class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'index')).'?pag=1'."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&situacaoPesquisa='.$this->situacaoPesquisa.'&pronacPesquisa='.$this->pronacPesquisa.'&nrCPFPesquisa='.$this->nrCPFPesquisa.'&dtInicioPesquisa='.$this->dtInicioPesquisa.'&dtFimPesquisa='.$this->dtFimPesquisa; ?>'">
+                        <?php } ?>
+                        <input id="btn_p_anterior" type="button"
+                        <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                        <?php }else { ?>
+                               class="btn_p_anterior" onclick="location.href='<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'index')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&situacaoPesquisa='.$this->situacaoPesquisa.'&pronacPesquisa='.$this->pronacPesquisa.'&nrCPFPesquisa='.$this->nrCPFPesquisa.'&dtInicioPesquisa='.$this->dtInicioPesquisa.'&dtFimPesquisa='.$this->dtFimPesquisa; ?>'"
+                        <?php } ?>>
+                        <input id="btn_p_proximo" type="button"
+                               <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                               class="btn_p_proximo-off"
+                        <?php }else { ?>
+                               class="btn_p_proximo" onclick="location.href='<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'index')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&situacaoPesquisa='.$this->situacaoPesquisa.'&pronacPesquisa='.$this->pronacPesquisa.'&dtInicioPesquisa='.'&nrCPFPesquisa='.$this->nrCPFPesquisa.$this->dtInicioPesquisa.'&dtFimPesquisa='.$this->dtFimPesquisa; ?>'"
+                        <?php } ?>>
+                        <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                        <input class="btn_ultimo" id="btn_ultimo" type="button"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'index')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&situacaoPesquisa='.$this->situacaoPesquisa.'&pronacPesquisa='.$this->pronacPesquisa.'&nrCPFPesquisa='.$this->nrCPFPesquisa.'&dtInicioPesquisa='.$this->dtInicioPesquisa.'&dtFimPesquisa='.$this->dtFimPesquisa; ?>'">
+                        <?php } ?>
+                        Pág.:<select name="pag" id="pag" onchange="$('#form2').submit()" class="input_simples">
+                            <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                            <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                            <?php endfor; ?>
+                        </select>
+                        &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>"><input type="submit" class="btn_recarregar" value="">
+                        <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                        <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                        <input type="hidden" name="situacaoPesquisa" value="<?php echo $this->situacaoPesquisa;?>">
+                        <input type="hidden" name="pronacPesquisa" value="<?php echo $this->pronacPesquisa;?>">
+                        <input type="hidden" name="nrCPFPesquisa" value="<?php echo $this->nrCPFPesquisa;?>">
+                        <input type="hidden" name="dtInicioPesquisa" value="<?php echo $this->dtInicioPesquisa;?>">
+                        <input type="hidden" name="dtFimPesquisa" value="<?php echo $this->dtFimPesquisa;?>">
+                        <input type="button" class="btn_imprimir">
+                     </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <?php } ?>
+        <!-- ========== FIM PAGINAÇ?O ========== -->
+        
+    </div>
+    
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />
+
+<script>
+    
+    $(document).ready(function(){
+        
+        $('#nrCPFPesquisa').mask('999.999.999-99');
+        $('#dtInicioPesquisa').mask('99/99/9999');
+        $('#dtFimPesquisa').mask('99/99/9999');
+//        $('#tabela').tablesorter();
+        
+        $('.btn_imprimir').click(function(){
+            <?php
+                $printUrl = $this->url(array('controller' => 'parecerista', 'action' => 'index-imprimir'), '',true) . "?{$_SERVER['QUERY_STRING']}";
+                echo "window.open('{$printUrl}');";
+            ?>
+        });
+        
+        $('#btnAddAssinante').click(function(){
+            
+            $("#dialog").html('Deseja adicionar a assinatura?');
+        
+            $("#dialog").dialog("destroy");
+            $("#dialog").dialog({
+                width: '400px',
+                modal: true,
+                draggable: false,
+                resizable: false,
+                closeOnEscape: false,
+                title: 'Confirmação',
+                buttons: { 
+                    Cancelar:function() {
+                        $(this).dialog('close');
+                    },
+                    Confirmar:function() {
+                        $('#formConfigurarPagamento').attr('action','add-assinantes');
+                        $('#formConfigurarPagamento').submit();
+                    }
+                }
+            });
+
+            $('.ui-dialog-titlebar-close').remove();
+
+            
+            
+        });
+        
+    });
+
+    function removeAssinante(valor){
+        
+        $("#dialog").html('Deseja desabilitar o assinante?');
+        
+        $("#dialog").dialog("destroy");
+        $("#dialog").dialog({
+            width: '400px',
+            modal: true,
+            draggable: false,
+            resizable: false,
+            closeOnEscape: false,
+            title: 'Confirmação',
+            buttons: { 
+                Cancelar:function() {
+                    $(this).dialog('close');
+                },
+                Confirmar:function() {
+                    $('#idAssinantes').val(valor);
+                    $('#formAssinantes').submit();
+                }
+            }
+        });
+        
+        $('.ui-dialog-titlebar-close').remove();
+
+        
+    }
+    
+</script>

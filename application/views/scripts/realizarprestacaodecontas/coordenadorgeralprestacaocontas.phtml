@@ -1,0 +1,320 @@
+<?php 
+/**
+ * Prestação de Contas (UC45)
+ * @author Equipe RUP - Politec
+ * @since 28/01/2011
+ * @version 1.0
+ * @subpackage application.view.scripts.prestacaodeocontas
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->baseUrl (); ?>" title="Início">Início</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => '')); ?>" title="Ir para Presta&ccedil;&atilde;o de contas">Presta&ccedil;&atilde;o de contas</a></li>
+        <li class="last">Analisar presta&ccedil;&atilde;o de contas</li>
+    </ul>
+</div>
+ 
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Analisar presta&ccedil;&atilde;o de contas <span class="voltar"><a href="<?php echo $this->url ( array ('controller' => 'realizarprestacaodecontas', 'action' => '' ));?>" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<script>
+    
+    $(document).ready(function() {
+
+    });
+    
+    function JSMostraOcultaElemento(elemento)
+    {
+        //$('.' + elemento).toggle('slow');
+        $('.' + elemento).toggle();
+
+        if ($('#' + elemento).hasClass('btn_adicionar'))
+        {
+                $('#' + elemento).addClass('btn_remover');
+                $('#' + elemento).removeClass('btn_adicionar');
+        }
+        else
+        {
+                $('#' + elemento).addClass('btn_adicionar');
+                $('#' + elemento).removeClass('btn_remover');
+        }
+
+        //CARREGA - PROJETOS EM ANALISE
+        if(elemento == 'aguardandoanalise' && $('#aguardandoanalise_resultado').html() == ''){
+            jqAjaxForm(document.getElementById("frm1"), "aguardandoanalise_resultado");
+            /*$('#aguardandoanalise_resultado').html('<br><center>Aguarde, carregando dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br>');*/
+        }
+        //CARREGA - PROJETOS DEVOLVIDOS APOS ANALISE
+        if(elemento == 'devolvidosaposanalise' && $('#devolvidosaposanalise_resultado').html() == ''){
+            jqAjaxForm(document.getElementById("frm2"), "devolvidosaposanalise_resultado");
+        }
+        //CARREGA - PROJETOS DILIGENCIADOS
+        if(elemento == 'projetosdiligenciados' && $('#projetosdiligenciados_resultado').html() == ''){
+            jqAjaxForm(document.getElementById("frm3"), "projetosdiligenciados_resultado");
+        }
+        //CARREGA - PROJETOS TCE
+        if(elemento == 'projetostce' && $('#projetostce_resultado').html() == ''){
+            jqAjaxForm(document.getElementById("frm4"), "projetostce_resultado");    
+        }
+        //CARREGA - PROJETOS em OUTRAS SITUACOES
+        if(elemento == 'projetosoutrassituacoes' && $('#projetosoutrassituacoes_resultado').html() == ''){
+            jqAjaxForm(document.getElementById("frm5"), "projetosoutrassituacoes_resultado");
+        }
+    }
+    
+    
+    //HISTORICO DO PROJETO
+    function consultahistorico() {
+        $("#analisar").dialog("destroy");
+        $('html').css('overflow', 'hidden');
+        $("#analisar-confirm").dialog
+        ({
+            width:650,
+            height:430,
+            modal: true,
+            draggable: true,
+            resizable: true,
+            closeOnEscape: false,
+            buttons: {
+                'OK': function(){
+                    $(this).dialog('close');
+                }
+            }
+        });
+        $('.ui-dialog-titlebar-close').open();
+    } // fecha função logout()
+
+    function JSRecuperarDataSituacao(NrPronac){
+
+        $('#dataSituacao'+NrPronac).html("<center>Carregando dados...</center>");
+            setTimeout(function(){
+                $.ajax({
+                    url : '<?php echo $this->url ( array ('controller' => 'realizarprestacaodecontas', 'action' => 'recuperardataultimasituacao' ));?>?NrPronac='+NrPronac,
+                    data :
+                        {
+                        NrPronac : NrPronac
+                    },
+                    success: function(data){
+
+                        if(data.dias < 10){
+                            $('#icnSituacao'+NrPronac).html("<img src='../public/img/bola_verde.gif'></img>");
+                        } else if (data.dias >= 10 && data.dias < 20) {
+                            $('#icnSituacao'+NrPronac).html("<img src='../public/img/bola_amarelo.gif'></img>");
+                        } else if (data.dias >= 20) {
+                            $('#icnSituacao'+NrPronac).html("<img src='../public/img/bola_vermelho.gif'></img>");
+                        }
+                        $('#dataSituacao'+NrPronac).html(data.dataImpressao);
+                    },
+                    type : 'post',
+                    dataType : 'json'
+
+                });
+            },1000);
+    }
+</script>
+
+<script>
+    <?php if(isset($_REQUEST['tipoMsg'])):?>
+        $("#novas_mensagens", document).append("<div class='msg<?php echo $_REQUEST['tipoMsg']; ?>'><div class='float_right'><input type='button' class='btn_close' title='Fechar mensagem' id='msg<?php echo $_REQUEST['tipoMsg']; ?>' onclick='$(\".msg<?php echo $_REQUEST['tipoMsg']; ?>\").hide();' onkeypress='$(\".msg<?php echo $_REQUEST['tipoMsg']; ?>\").hide();'/></div><div><?php echo $_REQUEST['msg'] ?></div></div>");
+    <?php endif;?>
+</script>
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+<?php if($this->bln_envioufiltro == 'false' && $this->totalAguardandoAnalise==0 &&  $this->totalDevolvidosAposAnalise==0 &&  $this->totalDiligenciados==0 &&  $this->totalProjetosTCE==0): ?>
+
+    <div class="msgALERT">
+        <div class="float_right" style="cursor: pointer;"><input type="button" class="btn_close" title="Fechar mensagem" id="msg-ALERT" onclick="$('.msgALERT').hide();" onkeypress="$('.msgALERT').hide();"/></div>
+        <div>Não há projetos na fase de Prestação de Contas. <br /></div>
+    </div>
+<?php elseif(!empty($this->parametrosBuscaPrestacaoContas['pronac']) && $this->bln_pronacValido == "false"): ?>
+    <div class="msgALERT">
+        <div class="float_right" style="cursor: pointer;"><input type="button" class="btn_close" title="Fechar mensagem" id="msg-ALERT" onclick="$('.msgALERT').hide();" onkeypress="$('.msgALERT').hide();"/></div>
+        <div>Nenhum projeto encontrado com o n&uacute;mero de Pronac informado. <br /></div>
+    </div>
+<?php elseif(!empty($this->parametrosBuscaPrestacaoContas['pronac']) && $this->totalProjetosOS <= 0): ?>
+    <div class="msgALERT">
+        <div class="float_right" style="cursor: pointer;"><input type="button" class="btn_close" title="Fechar mensagem" id="msg-ALERT" onclick="$('.msgALERT').hide();" onkeypress="$('.msgALERT').hide();"/></div>
+        <div>Este projeto não está na fase de Prestação de Contas. <br /></div>
+    </div>
+<?php else: ?>
+    <?php if( !empty($this->parametrosBuscaPrestacaoContas['pronac']) || !empty($this->parametrosBuscaPrestacaoContas['situacao'])): //so mostra as 4 grids se nao enviar Pronac e Situacao no filtro?>
+            <!-- ===================================================================== -->
+            <!-- ============ PROJETOS DE PESQUISA por PRONAC e SITUACAO ============= -->
+            <!-- ===================================================================== -->
+            <table class="tabela">
+                <tr>
+                    <td><input type="button" id="projetosoutrassituacoes" class="btn_adicionar" onclick="JSMostraOcultaElemento('projetosoutrassituacoes')"/><?php echo $this->parametroPesquisado;?></td>
+                    <td width="100" align="right" >Quantidade: <?php echo $this->totalProjetosOS; ?></td>
+                </tr>
+            </table>
+            <!-- RESULTADO DO AJAX -->
+            <div class="projetosoutrassituacoes sumir"><div id="projetosoutrassituacoes_resultado"></div></div>
+
+            <!-- form para manter os parametros de pesquisa enviados da tela anterior e que e capturado pelo ajax para abrir o painel -->
+            <form action="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'projetos-outras-situacoes')); ?>" method="post" name="frm5" id="frm5">
+                <input type="hidden" class="input_simples" name="idPronac" id="idPronac" value="<?php echo $this->idPronac; ?>"/>
+                <?php if(!empty($this->parametrosBuscaPrestacaoContas)) foreach($this->parametrosBuscaPrestacaoContas as $name=>$value):?>
+                    <?php if(!is_array($value)): ?>
+                    <input type="hidden" name="<?php echo $name?>" id="<?php echo $name?>" value="<?php echo $value?>"/>
+                    <?php else: ?>
+                        <?php foreach($value as $valor):?>
+                    <input type="hidden" name="<?php echo $name?>[]" id="<?php echo $name?>" value="<?php echo $valor?>"/>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </form>
+    <?php else: ?>
+    
+    <!-- ===================================================================== -->
+    <!-- ================= AGUARDANDO ANALISE ================================ -->
+    <!-- ===================================================================== -->
+        <table class="tabela">
+            <tr>
+                <td><input type="button" id="aguardandoanalise" class="btn_adicionar" title="Expandir" onclick="JSMostraOcultaElemento('aguardandoanalise')" />AGUARDANDO AN&Aacute;LISE</td>
+                <td width="100" align="right" >Quantidade: <?php echo $this->totalAguardandoAnalise; ?></td>
+            </tr>
+        </table>
+
+        <!-- RESULTADO DO AJAX -->
+        <div class="aguardandoanalise sumir"><div id="aguardandoanalise_resultado"></div></div>
+
+        <!-- form para manter os parametros de pesquisa enviados da tela anterior e que e capturado pelo ajax para abrir o painel -->
+        <form action="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'projetos-aguardando-analise')); ?>" method="post" name="frm1" id="frm1">
+            <input type="hidden" class="input_simples" name="idPronac" id="idPronac" value="<?php echo $this->idPronac; ?>"/>
+            <?php if(!empty($this->parametrosBuscaPrestacaoContas)) foreach($this->parametrosBuscaPrestacaoContas as $name=>$value):?>
+                <?php if(!is_array($value)): ?>
+                <input type="hidden" name="<?php echo $name?>" id="<?php echo $name?>" value="<?php echo $value?>"/>
+                <?php else: ?>
+                    <?php foreach($value as $valor):?>
+                <input type="hidden" name="<?php echo $name?>[]" id="<?php echo $name?>" value="<?php echo $valor?>"/>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </form>
+
+    <!-- ===================================================================== -->
+    <!-- ================= DEVOLVIDOS APOS ANALISE =========================== -->
+    <!-- ===================================================================== -->
+
+        <table class="tabela">
+            <tr>
+
+                <td><input type="button" id="devolvidosaposanalise" class="btn_adicionar"  onclick="JSMostraOcultaElemento('devolvidosaposanalise')" />DEVOLVIDOS APÓS ANÁLISE</td>
+                <td width="100" align="right" >Quantidade: <?php echo $this->totalDevolvidosAposAnalise;?></td>
+            </tr>
+        </table>
+
+        <!-- RESULTADO DO AJAX -->
+        <div class="devolvidosaposanalise sumir"><div id="devolvidosaposanalise_resultado"></div></div>
+
+        <!-- form para manter os parametros de pesquisa enviados da tela anterior e que e capturado pelo ajax para abrir o painel -->
+        <form action="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'projetos-devolvidos-apos-analise')); ?>" method="post" name="frm2" id="frm2">
+            <input type="hidden" class="input_simples" name="idPronac" id="idPronac" value="<?php echo $this->idPronac; ?>"/>
+            <?php if(!empty($this->parametrosBuscaPrestacaoContas)) foreach($this->parametrosBuscaPrestacaoContas as $name=>$value):?>
+                <?php if(!is_array($value)): ?>
+                <input type="hidden" name="<?php echo $name?>" id="<?php echo $name?>" value="<?php echo $value?>"/>
+                <?php else: ?>
+                    <?php foreach($value as $valor):?>
+                <input type="hidden" name="<?php echo $name?>[]" id="<?php echo $name?>" value="<?php echo $valor?>"/>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </form>
+    <!-- ===================================================================== -->
+    <!-- ================= DILIGENCIADOS ===================================== -->
+    <!-- ===================================================================== -->
+
+        <table class="tabela">
+            <tr>
+                <td><input type="button" id="projetosdiligenciados" class="btn_adicionar" onclick="JSMostraOcultaElemento('projetosdiligenciados')" />PROJETOS DILIGENCIADOS</td>
+                <td width="100" align="right" >Quantidade: <?php echo $this->totalDiligenciados; ?></td>
+            </tr>
+        </table>
+        <!-- RESULTADO DO AJAX -->
+        <div class="projetosdiligenciados sumir"><div id="projetosdiligenciados_resultado"></div></div>
+
+        <!-- form para manter os parametros de pesquisa enviados da tela anterior e que e capturado pelo ajax para abrir o painel -->
+        <form action="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'projetos-diligenciados')); ?>" method="post" name="frm3" id="frm3">
+            <input type="hidden" class="input_simples" name="idPronac" id="idPronac" value="<?php echo $this->idPronac; ?>"/>
+            <?php if(!empty($this->parametrosBuscaPrestacaoContas)) foreach($this->parametrosBuscaPrestacaoContas as $name=>$value):?>
+                <?php if(!is_array($value)): ?>
+                <input type="hidden" name="<?php echo $name?>" id="<?php echo $name?>" value="<?php echo $value?>"/>
+                <?php else: ?>
+                    <?php foreach($value as $valor):?>
+                <input type="hidden" name="<?php echo $name?>[]" id="<?php echo $name?>" value="<?php echo $valor?>"/>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </form>
+
+    <!-- ===================================================================== -->
+    <!-- ================= PROJETOS TCE ====================================== -->
+    <!-- ===================================================================== -->
+
+        <table class="tabela">
+            <tr>
+                <td><input type="button" id="projetostce" class="btn_adicionar" onclick="JSMostraOcultaElemento('projetostce')"/>PROJETOS EM TCE</td>
+                <td width="100" align="right" >Quantidade: <?php echo $this->totalProjetosTCE; ?></td>
+            </tr>
+        </table>
+        <!-- RESULTADO DO AJAX -->
+        <div class="projetostce sumir"><div id="projetostce_resultado"></div></div>
+
+        <!-- form para manter os parametros de pesquisa enviados da tela anterior e que e capturado pelo ajax para abrir o painel -->
+        <form action="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'projetos-tce')); ?>" method="post" name="frm4" id="frm4">
+            <input type="hidden" class="input_simples" name="idPronac" id="idPronac" value="<?php echo $this->idPronac; ?>"/>
+            <?php if(!empty($this->parametrosBuscaPrestacaoContas)) foreach($this->parametrosBuscaPrestacaoContas as $name=>$value):?>
+                <?php if(!is_array($value)): ?>
+                <input type="hidden" name="<?php echo $name?>" id="<?php echo $name?>" value="<?php echo $value?>"/>
+                <?php else: ?>
+                    <?php foreach($value as $valor):?>
+                <input type="hidden" name="<?php echo $name?>[]" id="<?php echo $name?>" value="<?php echo $valor?>"/>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </form>
+
+    <!-- ===================================================================== -->
+    <!-- ================= PROJETOS EM OUTRAS SITUACOES ====================== -->
+    <!-- ===================================================================== -->
+        <?php if ((isset($this->parametrosBuscaPrestacaoContas['tpPeriodoExecucao']) && !empty($this->parametrosBuscaPrestacaoContas['tpPeriodoExecucao'])) || !empty($this->parametrosBuscaPrestacaoContas['pronac']) || !empty($this->parametrosBuscaPrestacaoContas['NomeProjeto']) || !empty($this->parametrosBuscaPrestacaoContas['uf']) || !empty($this->parametrosBuscaPrestacaoContas['mecanismo']) || !empty($this->parametrosBuscaPrestacaoContas['situacao'])){ ?>
+            <table class="tabela">
+                <tr>
+                    <td><input type="button" id="projetosoutrassituacoes" class="btn_adicionar" onclick="JSMostraOcultaElemento('projetosoutrassituacoes')"/>OUTRAS SITUAÇÕES</td>
+                    <td width="100" align="right" >Quantidade: <?php echo $this->totalProjetosOS; ?></td>
+                </tr>
+            </table>
+            <!-- RESULTADO DO AJAX -->
+            <div class="projetosoutrassituacoes sumir"><div id="projetosoutrassituacoes_resultado"></div></div>
+
+            <!-- form para manter os parametros de pesquisa enviados da tela anterior e que e capturado pelo ajax para abrir o painel -->
+            <form action="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'projetos-outras-situacoes')); ?>" method="post" name="frm5" id="frm5">
+                <input type="hidden" class="input_simples" name="idPronac" id="idPronac" value="<?php echo $this->idPronac; ?>"/>
+                <?php if(!empty($this->parametrosBuscaPrestacaoContas)) foreach($this->parametrosBuscaPrestacaoContas as $name=>$value):?>
+                    <?php if(!is_array($value)): ?>
+                    <input type="hidden" name="<?php echo $name?>" id="<?php echo $name?>" value="<?php echo $value?>"/>
+                    <?php else: ?>
+                        <?php foreach($value as $valor):?>
+                    <input type="hidden" name="<?php echo $name?>[]" id="<?php echo $name?>" value="<?php echo $valor?>"/>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </form>
+        <?php } // se enviou algum parametro de pesquisa ?>
+    <?php endif; //fecha IF que so mostra as 4 grids se nao enviar Pronac e Situacao no filtro ?>
+<?php endif; // nenhum projeto na prestacao de contas?>
+
+</div><!-- fecha div conteudo -->
+
+<!-- início: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+<br clear="all" />

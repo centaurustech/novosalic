@@ -1,0 +1,636 @@
+<?php
+/**
+ * Análise de Cortes Sugeridos
+ * @author Equipe RUP - Politec
+ * @since 07/06/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.controller.realizaranaliseprojeto
+ * @link http://www.cultura.gov.br
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ */
+require_once "inc/menu.inc.php"; // menu 
+?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb"> 
+    <ul>
+        <li class="first"><a href="<?php echo $this->baseUrl(); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'areadetrabalho', 'action' => 'index')); ?>" title="Ir para An&aacute;lise do Membro da Comiss&atilde;o">An&aacute;lise do Membro da Comiss&atilde;o</a></li>
+        <li class="last">An&aacute;lise de Cortes Sugeridos</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>An&aacute;lise de Cortes Sugeridos <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+
+
+    <?php require_once "inc/menu_abas.inc.php"; // menu   ?>
+
+    <!-- ========== SCRIPT MODAL ========== -->
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(".reintegrar").click(function(){
+                var quantidade = $(this).attr('quantidade');
+                var valorunitario = $(this).attr('valorunitario').replace('.',',');
+                var dias = $(this).attr('dias');
+                var ocorrencia = $(this).attr('ocorrencia');
+                var idplanilhaaprovacao = $(this).attr('idplanilhaaprovacao');
+                $("#confirma").html("Os valores que voc&ecirc; selecionou ser&atilde;o reintegrados. Tem certeza que deseja continuar?");
+                confirma(
+                function(){
+                    abreAlerta();
+                    $("#qtd"+idplanilhaaprovacao).val(quantidade)
+                    $("#vlunitario"+idplanilhaaprovacao).val(valorunitario)
+                    $("#dias"+idplanilhaaprovacao).val(dias)
+                    $("#ocorrencia"+idplanilhaaprovacao).val(ocorrencia)
+                    calcular_planilha_projeto(idplanilhaaprovacao)
+                    validar_val_parec_relat(idplanilhaaprovacao)
+                    $("#confirma").dialog('close');  
+                }
+                ,
+                function(){
+                    $("#confirma").dialog('close');  
+                }
+                )
+                $("#confirma").dialog('open');  
+            })
+            $(".linkplanilha").click(function(){
+                $('.fundo_linha4').removeClass('fundo_linha4');
+                var idplanilhaaprovacao = $(this).attr('idPlanilhaAprovacao');
+                $("#form" + idplanilhaaprovacao).each(function() // necessário para resetar o formulário, pois, quando a modal é fechada o mesmo não é resetado
+                {
+                    this.reset();
+                    calcular_planilha_projeto(idplanilhaaprovacao); // recalcula o valor total do produto
+                    buscar_val_pred_parec_relat(idplanilhaaprovacao); // busca os valores predefinidos dos campos
+                });
+                $(".tela[idPlanilhaAprovacao='"+idplanilhaaprovacao+"']").dialog({
+                    title:"Planilha",
+                    resizable: true,
+                    width:1000,
+                    height:700,
+                    modal: true,
+                    autoOpen:false,
+                    buttons:
+                        {
+                        'Cancelar': function()
+                        {
+                            $(this).dialog('close');
+                        },
+                        'Salvar': function()
+                        {
+                            if(($.trim($('#qtd'+idplanilhaaprovacao).val())== '') || ($.trim($('#justificativa'+idplanilhaaprovacao).val())== '') || ($.trim($('#qtd'+idplanilhaaprovacao).val())== '')|| ($.trim($('#ocorrencia'+idplanilhaaprovacao).val())== '') || ($.trim($('#vlunitario'+idplanilhaaprovacao).val())== '') || ($.trim($('#dias'+idplanilhaaprovacao).val())== ''))
+                            {
+                                $("#error").html('Dados Obrigat&oacute;rios n&atilde;o informados!');
+                                $("#error").dialog('open');
+                            }
+                            else
+                            {
+                                $("#form" + idplanilhaaprovacao).submit(); // envia o formulário
+                            }
+                        }
+                    }
+                });
+                $(".tela[idPlanilhaAprovacao='"+idplanilhaaprovacao+"']").dialog('open')
+            })
+        })
+     function confirma(functionsim, functionnao){
+            $("#confirma").dialog({
+                title:"Confirma",
+                resizable: true,
+                width:300,
+                height:200,
+                modal: true,
+                autoOpen:false,
+                buttons:
+                    {
+                    'Nao':functionnao,
+                    'Sim':functionsim
+                    }
+                });
+            }
+     function abreAlerta(){
+        $("#dialog-alerta").dialog("destroy");
+        $("#dialog-alerta").dialog
+        ({
+                width:400,
+                height:230,
+                resizable:false,
+                EscClose:false,
+                modal:false,
+                buttons:
+                {
+                        'Ok':function()
+                        {
+                                $(this).dialog('close'); // fecha a modal
+                        }
+                }
+        });
+        $('.ui-dialog-titlebar-close').remove();
+    }
+        //-->
+    </script>
+    <div id="erro"></div>
+    <div id="confirma"></div>
+    <div id="loader" class="carregando sumir" style="width:100%; height:100%;" title="Carregando..."><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" alt="carregando"><br/><br/>Salvando alteraï¿½ï¿½es....<br>Por Favor, aguarde!!</div>
+    <div id="dialog-valor" class="sumir" title="Valor Inv&aacute;lido">
+        <div class="msgERROR">
+            <div>Valor de remanejamento maior que o permitido! M&aacute;ximo : <?php echo $this->formatarReal($this->totalproponente - $this->totalcomponente);?></div>
+        </div>
+    </div>
+    <div id="dialog-alerta" class="sumir" title="Valor Reintegrado">
+        <div class="msgALERT">
+            <div>Os campos ter&atilde;o seus valores redefinidos!</div>
+        </div>
+    </div>
+    <!-- ========== INÍCIO TÍTULO PÁGINA ========== -->
+    <table class="tabela">
+
+        <tr>
+            <th>
+        <p>An&aacute;lise de Cortes Sugeridos</p>
+        <p>PRONAC: <?php echo $this->pronac['AnoProjeto'] . $this->pronac['Sequencial']; ?> - <?php echo $this->pronac['NomeProjeto']; ?></p>
+        </th>
+        </tr>
+
+    </table>
+    <!-- ========== FIM TÍTULO PÁGINA ========== -->
+
+
+
+    <!-- ========== INÍCIO TABELA DE CORTES SUGERIDOS ========== -->
+    <table class="tabela">
+        <tr>
+            <th colspan="8" align="center">Cortes Sugeridos</th>
+        </tr>
+
+
+
+        <!-- ========== INÍCIO ITEM REDUZIDO ========== -->
+        <?php
+        if (count($this->itemReduzido) == 0) {
+            echo "<tr>";
+            echo "<td colspan=\"8\" class='centro'>N&atilde;o existe cortes para esse projeto!</td>";
+            echo "</tr>";
+        }
+        if ($this->itemReduzido) :
+            ?>
+            <tr>
+                <td colspan="8">&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="8" class="red"><strong> &raquo; ITEM REDUZIDO</strong></td>
+            </tr>
+            <tr>
+                <th>Item</th>
+                <th width="12%">Vl. Solicitado</th>
+                <th width="12%">Vl. Sugerido do Parecerista</th>
+                <th>Justificativa do Parecerista</th>
+                <th width="12%">Vl. Sugerido do Relator</th>
+                <th width="12%">Vl. Reduzido pelo Relator</th>
+                <th>Justificativa do Relator</th>
+            </tr>
+
+            <?php
+            $totalValRed = (float) 0; // valor total da página
+            $totalItensRed = (int) 0; // total itens da página
+            // caso tenha projetos
+            if (count($this->analiseReduzido) > 0) {
+                foreach ($this->analiseReduzido as $resposta) :
+                    $i = $resposta['idPlanilhaAprovacao']; // criará id únido
+                    ?>
+
+                    <tr onmouseover="over_tr(this);" onfocus="over_tr(this);" onmouseout="out_tr(this);" onblur="out_tr(this);" onclick="click_tr(this);" onkeypress="click_tr(this);"
+                        class="
+                        <?php
+                        if (isset($_GET['Ativo']) && $i == $_GET['Ativo']) {
+                            echo "fundo_linha4";
+                        } else {
+                            echo $this->corLinha($totalItensRed);
+                        }
+                        if ($resposta['vlparecerista'] != $resposta['vlcomponente']) {
+                            echo " red";
+                        }
+                        ?>">
+                        <td>
+                            <a <?php echo $resposta['nrFonteRecurso'] == 109 ? "class='linkplanilha' valor='" . $resposta['idPlanilhaAprovacao'] . "' style='text-decoration: underline; cursor:pointer;'" : '' ?> idPlanilhaAprovacao ="<?php echo $resposta['idPlanilhaAprovacao']; ?>" ><?php echo $resposta['item']; ?></a>
+                                <!-- Inicio Modal-->
+                                <div class="sumir tela" title="Atualizacao da Planilha de Projeto" idPlanilhaAprovacao ="<?php echo $resposta['idPlanilhaAprovacao']; ?>">
+                                    <form id='form<?php echo $resposta['idPlanilhaAprovacao']; ?>' class="form" action="<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'analisedeconta')); ?>" method="post">
+                                        <input type="hidden" name="idPlanilha" id="idPlanilha" value="<?php echo $resposta['idPlanilhaAprovacao']; ?>"/>
+                                        <input type="hidden" name="idpronac" id="idPlanilha" value="<?php echo $this->idpronac; ?>"/>
+                                        <table class="tabela">
+                                            <tr valign="top">
+                                                <td colspan="3"><strong>PRONAC:</strong><br /><?php echo $this->pronac['AnoProjeto'] . $this->pronac['Sequencial']; ?></td>
+                                                <td colspan="4"><strong>Nome do Projeto:</strong><br /><?php echo $this->pronac['NomeProjeto']; ?></td>
+                                            </tr>
+                                            <tr valign="top">
+                                                <td colspan="2"><strong>Produto:</strong><br />
+                                                    <?php echo $resposta['Produto']; ?>
+                                                </td>
+                                                <td colspan="2">
+                                                    <strong>Etapa:</strong><br />
+                                                    <?php echo $resposta['idEtapa'].' - '.$resposta['Etapa']; ?>
+                                                </td>
+                                                <td colspan="4"><strong>Item:</strong><br />
+                                                    <?php echo $resposta['item']; ?>
+                                                </td>
+                                            </tr>
+                                            <!-- DADOS DO PROPONENTE-->
+                                            <tr>
+                                                <th colspan="7"> Valores Solicitados</th>
+                                            </tr>
+                                            <tr valign="top">
+                                                <td class="centro">
+                                                    <label for="unidade"><strong>Unidade:</strong></label><br />
+                                                    <?php echo $resposta['UnidadeProposta']; ?>
+                                                </td>
+                                                <td class="centro w100">
+                                                    <strong>Qtd.:</strong><br />
+                                                    <?php echo (int) $resposta['qtdSolicitado']; ?>
+                                                </td>
+                                                <td class="centro">
+                                                    <strong>Ocorr&ecirc;ncia:</strong><br />
+                                                    <?php echo (int) $resposta['ocoSolicitado']; ?>
+                                                </td>
+                                                <td class="centro">
+                                                    <strong>Vl. Unit&aacute;rio:</strong><br />
+                                                    <?php echo $this->formatarReal($resposta['vlunitarioSolicitado']); ?>
+                                                </td>
+                                                <td class="centro">
+                                                    <strong>Dias:</strong><br />
+                                                    <?php echo (int) $resposta['diasSolicitado']; ?>
+                                                </td>
+                                                <td class="centro">
+                                                    <strong>Total:</strong><br />
+                                                    <?php echo $this->formatarReal($resposta['qtdSolicitado'] * $resposta['ocoSolicitado'] * $resposta['vlunitarioSolicitado']); ?>
+                                                </td>
+                                                <td class="centro" valign="center">
+                                                    <img style="cursor: pointer" class="reintegrar" title="Reintegrar Item (Solicitado)" src="<?php echo $this->baseUrl(); ?>/public/img/refresh.gif" idplanilhaaprovacao="<?php echo $resposta['idPlanilhaAprovacao']; ?>" ocorrencia="<?php echo (int) $resposta['ocoSolicitado']; ?>" dias="<?php echo (int) $resposta['diasSolicitado']; ?>" valorunitario="<?php echo $resposta['vlunitarioSolicitado']; ?>"  quantidade=" <?php echo (int) $resposta['qtdSolicitado']; ?>"/>
+                                                </td>
+                                            </tr>
+                                            <!-- FIM DADOS DO PROPONENTE-->
+                                            <!-- DADOS DO PARECERISTA-->
+                                            <tr>
+                                                <th colspan="7"> Valores Parecerista</th>
+                                            </tr>
+                                            <tr>
+                                                <td class="centro">
+                                                    <label for="unidade"><strong>Unidade:</strong></label><br />
+                                                    <?php echo $resposta['UnidadeProjeto']; ?>
+                                                </td>
+                                                <td class="centro w100">
+                                                    <strong>Qtd.:</strong><br />
+                                                    <?php echo $resposta['qtdParecer']; ?>
+                                                </td>
+                                                <td class="centro">
+                                                    <strong>Ocorr&ecirc;ncia:</strong><br />
+                                                    <?php echo $resposta['ocoParecer']; ?>
+                                                </td>
+                                                <td class="centro">
+                                                    <strong>Vl. Unit&aacute;rio:</strong><br />
+                                                    <?php echo $this->formatarReal($resposta['vlunitarioparecerista']); ?>
+                                                </td>
+                                                <td class="centro">
+                                                    <strong>Dias:</strong><br />
+                                                    <?php echo $resposta['diasParecerista']; ?>
+                                                </td>
+                                                <td class="centro">
+                                                    <strong>Total:</strong><br />
+                                                    <?php echo $this->formatarReal($resposta['qtdParecer'] * $resposta['ocoParecer'] * $resposta['vlunitarioparecerista']); ?>
+                                                </td>
+                                                <td class="centro" valign="center">
+                                                    <img style="cursor: pointer" class="reintegrar"  title="Reintegrar Item (Parecerista)" src="<?php echo $this->baseUrl(); ?>/public/img/refresh.gif" idplanilhaaprovacao="<?php echo (int) $resposta['idPlanilhaAprovacao']; ?>"  ocorrencia="<?php echo (int) $resposta['ocoParecer']; ?>" dias="<?php echo (int) $resposta['diasParecerista']; ?>" valorunitario="<?php echo $resposta['vlunitarioparecerista']; ?>"  quantidade=" <?php echo (int) $resposta['qtdParecer']; ?>"/>
+                                                </td>
+                                            </tr>
+                                            <!-- FIM DADOS DO PARECERISTA-->
+                                            <!-- DADOS DO RELATOR-->
+                                            <tr>
+                                                <th colspan="7"> Valores Relator</th>
+                                            </tr>
+                                            <tr valign="top">
+                                                <td>
+                                                    <label for="unidade"><strong>Unidade:</strong></label><br />
+                                                    <select class="input_simples" name="unidade" id="unidade">
+                                                        <?php foreach ($this->planilhaUnidade as $unidade) : ?>
+                                                            <option value="<?php echo $unidade->idUnidade; ?>" <?php if ($unidade->idUnidade == $resposta['idUnidade'])
+                                                echo "selected=\"selected\""; ?>>
+                                                                        <?php echo $this->escape($unidade->Descricao); ?>
+                                                            </option>
+                                                        <?php endforeach; ?>
+                                                    </select>
+                                                </td>
+                                                <td class="w50">
+                                                    <label for="qtd<?php echo $resposta['idPlanilhaAprovacao']; ?>"><strong>Qtd.:</strong></label><br />
+                                                    <input class="input_simples w50" type="text" onkeyup="calcular_planilha_projeto(<?php echo $resposta['idPlanilhaAprovacao']; ?>); validar_val_parec_relat(<?php echo $resposta['idPlanilhaAprovacao']; ?>); mascara(this, format_num);" onkeydown="calcular_planilha_projeto(<?php echo $resposta['idPlanilhaAprovacao']; ?>); mascara(this, format_num);" name="qtd" id="qtd<?php echo $resposta['idPlanilhaAprovacao']; ?>" maxlength="5" value="<?php echo (int) $resposta['qtdRelator']; ?>" />
+                                                </td>
+                                                <td>
+                                                    <label for="ocorrencia<?php echo $resposta['idPlanilhaAprovacao']; ?>"><strong>Ocorr&ecirc;ncia:</strong></label><br />
+                                                    <input class="input_simples w50" type="text" onkeyup="calcular_planilha_projeto(<?php echo $resposta['idPlanilhaAprovacao']; ?>); validar_val_parec_relat(<?php echo $resposta['idPlanilhaAprovacao']; ?>); mascara(this, format_num);" onkeydown="calcular_planilha_projeto(<?php echo $resposta['idPlanilhaAprovacao']; ?>); mascara(this, format_num);" name="ocorrencia" id="ocorrencia<?php echo $resposta['idPlanilhaAprovacao']; ?>" maxlength="5" value="<?php echo (int) $resposta['ocorrenciaRelator'] ?>" />
+                                                </td>
+                                                <td>
+                                                    <label for="vlunitario<?php echo $resposta['idPlanilhaAprovacao']; ?>"><strong>Vl Unit&aacute;rio:</strong></label><br />
+                                                    <input class="input_simples w100" type="text" onkeyup="calcular_planilha_projeto(<?php echo $resposta['idPlanilhaAprovacao']; ?>); validar_val_parec_relat(<?php echo $resposta['idPlanilhaAprovacao']; ?>); mascara(this, format_moeda);" onkeydown="calcular_planilha_projeto(<?php echo $resposta['idPlanilhaAprovacao']; ?>); mascara(this, format_moeda);" name="vlunitario" id="vlunitario<?php echo $resposta['idPlanilhaAprovacao']; ?>" maxlength="13" value="<?php echo str_replace("R$ ", "", $this->formatarReal($resposta['vlunitarioRelator'])); ?>" />
+                                                </td>
+                                                <td>
+                                                    <label for="dias<?php echo $resposta['idPlanilhaAprovacao']; ?>"><strong>Dias:</strong></label><br />
+                                                    <input class="input_simples w50" type="text" onkeyup="mascara(this, format_num);" name="dias" id="dias<?php echo $resposta['idPlanilhaAprovacao']; ?>" maxlength="4" value="<?php echo $resposta['diasRelator']; ?>" />
+                                                </td>
+                                                <td colspan="2">
+                                                    <strong>Total:</strong><br />
+                                                    <div id="calcular_total<?php echo $resposta['idPlanilhaAprovacao']; ?>" style="height:2%"></div>
+                                                    <input type="hidden" id="totalcalculos<?php echo $resposta['idPlanilhaAprovacao']; ?>" value="<?php echo $resposta['qtdRelator'] * $resposta['ocorrenciaRelator'] * $resposta['vlunitarioRelator'] ?>"/>
+                                                </td>
+                                            </tr>
+                                            <tr valign="top">
+                                                <td colspan="7">
+                                                    <label for="justificativa<?php echo $resposta['idPlanilhaAprovacao']; ?>"><strong>Justificativa</strong></label><br />
+                                                    <textarea class="textarea_simples w900 h180" name="justificativa" id="justificativa<?php echo $resposta['idPlanilhaAprovacao']; ?>" cols="70" rows="10" <?php echo $this->contadorTextarea('form.justificativa', 'form.exibirContadorTextarea', 5000); ?>><?php echo $resposta['justcomponente']; ?></textarea>
+                                        <?php echo $this->exibirContadorTextarea('exibirContadorTextarea', 4, 5000, strlen($resposta['justcomponente'])); ?>
+                                                </td>
+                                           </tr>
+                                        </table>
+                                    </form>
+                                </div>
+                                    <!-- FIM DADOS DO RELATOR-->
+                                <!-- Fim Modal-->
+                        </td>
+                        <td class="direita blue"><?php echo $this->formatarReal($this->escape($resposta['vltotalsolicitado'])); ?></td>
+                        <td class="direita red"><?php echo $this->formatarReal($this->escape($resposta['vltotalparecerista'])); ?></td>
+                        <td><?php echo $this->escape($this->LimitadorCaracteres($resposta['justparecerista'])); ?></td>
+                        <td class="direita red"><?php echo $this->formatarReal($this->escape($resposta['vltotalcomponente'])); ?></td>
+                        <td class="direita red"><?php echo $this->formatarReal($this->escape($resposta['vlreduzidoComp'])); ?></td>
+                        <td><?php echo $this->escape($this->LimitadorCaracteres($resposta['justcomponente'])); ?></td>
+                        </tr>
+                        <?php
+                        // ===== TOTAL DE VALOR REDUZIDO =====
+                        $totalValRed+= (float) $resposta['vltotalsolicitado'] - $resposta['vltotalcomponente'];
+                        $totalItensRed++;
+                    endforeach; // fecha foreach
+                } // fecha if
+                ?>
+
+                <tr>
+                    <td colspan="8">&nbsp;</td>
+                </tr>
+
+                <!-- ========== TOTAL ========== -->
+                <tr>
+                    <td colspan="2" class="red"><strong>Total por Item Reduzido</strong></td>
+                    <td class="direita red"><strong><?php echo $this->formatarReal($totalValRed); ?></strong></td>
+                    <td colspan="4">&nbsp;</td>
+                </tr>
+                <tr>
+                    <th class="esquerda" colspan="2"><strong>Total Geral por Item Reduzido (<?php echo $this->totItemRed; ?>)</strong></th>
+                    <th class="direita red"><strong><?php echo $this->formatarReal($this->totValRed); ?></strong></th>
+                    <th colspan="4">&nbsp;</th>
+                </tr>
+                <!-- ========== FIM ITEM REDUZIDO ========== -->
+            <?php endif; ?>
+
+
+
+
+
+            <!-- ========== INÍCIO ITEM RETIRADO ========== -->
+            <?php if ($this->itemRetirado) : ?>
+                <tr>
+                    <td colspan="8">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan="8" class="red"><strong> &raquo; ITEM RETIRADO</strong></td>
+                </tr>
+                <tr>
+                    <th>Item</th>
+                    <th width="12%">Vl. Solicitado</th>
+                    <th width="12%">Vl. Sugerido do Parecerista</th>
+                    <th>Justificativa do Parecerista</th>
+                    <th width="12%">Vl. Sugerido do Relator</th>
+                    <th width="12%">Vl. Reduzido pelo Relator</th>
+                    <th>Justificativa do Relator</th>
+                </tr>
+
+                <?php
+                $totalValRet = (float) 0; // valor total da página
+                $totalItensRet = (int) 0; // total itens da página
+                // caso tenha projetos
+                if (count($this->analiseRetirado) > 0) {
+                    foreach ($this->analiseRetirado as $resposta) :
+                        $i = $resposta['idPlanilhaAprovacao']; // criará id únido
+                        ?>
+                        <tr onmouseover="over_tr(this);" onmouseout="out_tr(this);" onclick="click_tr(this);" class="red">
+                            <td><a <?php echo $resposta['nrFonteRecurso'] == 109 ? "class='linkplanilha' valor='" . $resposta['idPlanilhaAprovacao'] . "' style='text-decoration: underline; cursor:pointer;'" : '' ?> idPlanilhaAprovacao ="<?php echo $resposta['idPlanilhaAprovacao']; ?>" ><?php echo $resposta['item']; ?></a>
+                                                            <!-- Inicio Modal-->
+                                <div class="sumir tela" title="Atualizacao da Planilha de Projeto" idPlanilhaAprovacao ="<?php echo $resposta['idPlanilhaAprovacao']; ?>">
+                                    <form id='form<?php echo $resposta['idPlanilhaAprovacao']; ?>' class="form" action="<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'analisedeconta')); ?>" method="post">
+                                        <input type="hidden" name="idPlanilha" id="idPlanilha" value="<?php echo $resposta['idPlanilhaAprovacao']; ?>"/>
+                                        <input type="hidden" name="idpronac" id="idPlanilha" value="<?php echo $this->idpronac; ?>"/>
+                                        <table class="tabela">
+                                            <tr valign="top">
+                                                <td colspan="3"><strong>PRONAC:</strong><br /><?php echo $this->pronac['AnoProjeto'] . $this->pronac['Sequencial']; ?></td>
+                                                <td colspan="4"><strong>Nome do Projeto:</strong><br /><?php echo $this->pronac['NomeProjeto']; ?></td>
+                                            </tr>
+                                            <tr valign="top">
+                                                <td colspan="2"><strong>Produto:</strong><br />
+                                                    <?php echo $resposta['Produto']; ?>
+                                                </td>
+                                                <td colspan="2">
+                                                    <strong>Etapa:</strong><br />
+                                                    <?php echo $resposta['idEtapa'].' - '.$resposta['Etapa']; ?>
+                                                </td>
+                                                <td colspan="4"><strong>Item:</strong><br />
+                                                    <?php echo $resposta['item']; ?>
+                                                </td>
+                                            </tr>
+                                            <!-- DADOS DO PROPONENTE-->
+                                            <tr>
+                                                <th colspan="7"> Valores Solicitados</th>
+                                            </tr>
+                                            <tr valign="top">
+                                                <td class="centro">
+                                                    <label for="unidade"><strong>Unidade:</strong></label><br />
+                                                    <?php echo $resposta['UnidadeProposta']; ?>
+                                                </td>
+                                                <td class="centro w100">
+                                                    <strong>Qtd.:</strong><br />
+                                                    <?php echo (int) $resposta['qtdSolicitado']; ?>
+                                                </td>
+                                                <td class="centro">
+                                                    <strong>Ocorr&ecirc;ncia:</strong><br />
+                                                    <?php echo (int) $resposta['ocoSolicitado']; ?>
+                                                </td>
+                                                <td class="centro">
+                                                    <strong>Vl. Unit&aacute;rio:</strong><br />
+                                                    <?php echo $this->formatarReal($resposta['vlunitarioSolicitado']); ?>
+                                                </td>
+                                                <td class="centro">
+                                                    <strong>Dias:</strong><br />
+                                                    <?php echo (int) $resposta['diasSolicitado']; ?>
+                                                </td>
+                                                <td class="centro">
+                                                    <strong>Total:</strong><br />
+                                                    <?php echo $this->formatarReal($resposta['qtdSolicitado'] * $resposta['ocoSolicitado'] * $resposta['vlunitarioSolicitado']); ?>
+                                                </td>
+                                                <td class="centro" valign="center">
+                                                    <img style="cursor: pointer" class="reintegrar" title="Reintegrar Item (Solicitado)" src="<?php echo $this->baseUrl(); ?>/public/img/refresh.gif" idplanilhaaprovacao="<?php echo $resposta['idPlanilhaAprovacao']; ?>" ocorrencia="<?php echo (int) $resposta['ocoSolicitado']; ?>" dias="<?php echo (int) $resposta['diasSolicitado']; ?>" valorunitario="<?php echo $resposta['vlunitarioSolicitado']; ?>"  quantidade=" <?php echo (int) $resposta['qtdSolicitado']; ?>"/>
+                                                </td>
+                                            </tr>
+                                            <!-- FIM DADOS DO PROPONENTE-->
+                                            <!-- DADOS DO PARECERISTA-->
+                                            <tr>
+                                                <th colspan="7"> Valores Parecerista</th>
+                                            </tr>
+                                            <tr>
+                                                <td class="centro">
+                                                    <label for="unidade"><strong>Unidade:</strong></label><br />
+                                                    <?php echo $resposta['UnidadeProjeto']; ?>
+                                                </td>
+                                                <td class="centro w100">
+                                                    <strong>Qtd.:</strong><br />
+                                                    <?php echo $resposta['qtdParecer']; ?>
+                                                </td>
+                                                <td class="centro">
+                                                    <strong>Ocorr&ecirc;ncia:</strong><br />
+                                                    <?php echo $resposta['ocoParecer']; ?>
+                                                </td>
+                                                <td class="centro">
+                                                    <strong>Vl. Unit&aacute;rio:</strong><br />
+                                                    <?php echo $this->formatarReal($resposta['vlunitarioparecerista']); ?>
+                                                </td>
+                                                <td class="centro">
+                                                    <strong>Dias:</strong><br />
+                                                    <?php echo $resposta['diasParecerista']; ?>
+                                                </td>
+                                                <td class="centro">
+                                                    <strong>Total:</strong><br />
+                                                    <?php echo $this->formatarReal($resposta['qtdParecer'] * $resposta['ocoParecer'] * $resposta['vlunitarioparecerista']); ?>
+                                                </td>
+                                                <td class="centro" valign="center">
+                                                    <img style="cursor: pointer" class="reintegrar"  title="Reintegrar Item (Parecerista)" src="<?php echo $this->baseUrl(); ?>/public/img/refresh.gif" idplanilhaaprovacao="<?php echo (int) $resposta['idPlanilhaAprovacao']; ?>"  ocorrencia="<?php echo (int) $resposta['ocoParecer']; ?>" dias="<?php echo (int) $resposta['diasParecerista']; ?>" valorunitario="<?php echo $resposta['vlunitarioparecerista']; ?>"  quantidade=" <?php echo (int) $resposta['qtdParecer']; ?>"/>
+                                                </td>
+                                            </tr>
+                                            <!-- FIM DADOS DO PARECERISTA-->
+                                            <!-- DADOS DO RELATOR-->
+                                            <tr>
+                                                <th colspan="7"> Valores Relator</th>
+                                            </tr>
+                                            <tr valign="top">
+                                                <td>
+                                                    <label for="unidade"><strong>Unidade:</strong></label><br />
+                                                    <select class="input_simples" name="unidade" id="unidade">
+                                                        <?php foreach ($this->planilhaUnidade as $unidade) : ?>
+                                                            <option value="<?php echo $unidade->idUnidade; ?>" <?php if ($unidade->idUnidade == $resposta['idUnidade'])
+                                                echo "selected=\"selected\""; ?>>
+                                                                        <?php echo $this->escape($unidade->Descricao); ?>
+                                                            </option>
+                                                        <?php endforeach; ?>
+                                                    </select>
+                                                </td>
+                                                <td class="w50">
+                                                    <label for="qtd<?php echo $resposta['idPlanilhaAprovacao']; ?>"><strong>Qtd.:</strong></label><br />
+                                                    <input class="input_simples w50" type="text" onkeyup="calcular_planilha_projeto(<?php echo $resposta['idPlanilhaAprovacao']; ?>); validar_val_parec_relat(<?php echo $resposta['idPlanilhaAprovacao']; ?>); mascara(this, format_num);" onkeydown="calcular_planilha_projeto(<?php echo $resposta['idPlanilhaAprovacao']; ?>); mascara(this, format_num);" name="qtd" id="qtd<?php echo $resposta['idPlanilhaAprovacao']; ?>" maxlength="5" value="<?php echo (int) $resposta['qtdRelator']; ?>" />
+                                                </td>
+                                                <td>
+                                                    <label for="ocorrencia<?php echo $resposta['idPlanilhaAprovacao']; ?>"><strong>Ocorr&ecirc;ncia:</strong></label><br />
+                                                    <input class="input_simples w50" type="text" onkeyup="calcular_planilha_projeto(<?php echo $resposta['idPlanilhaAprovacao']; ?>); validar_val_parec_relat(<?php echo $resposta['idPlanilhaAprovacao']; ?>); mascara(this, format_num);" onkeydown="calcular_planilha_projeto(<?php echo $resposta['idPlanilhaAprovacao']; ?>); mascara(this, format_num);" name="ocorrencia" id="ocorrencia<?php echo $resposta['idPlanilhaAprovacao']; ?>" maxlength="5" value="<?php echo (int) $resposta['ocorrenciaRelator'] ?>" />
+                                                </td>
+                                                <td>
+                                                    <label for="vlunitario<?php echo $resposta['idPlanilhaAprovacao']; ?>"><strong>Vl Unit&aacute;rio:</strong></label><br />
+                                                    <input class="input_simples w100" type="text" onkeyup="calcular_planilha_projeto(<?php echo $resposta['idPlanilhaAprovacao']; ?>); validar_val_parec_relat(<?php echo $resposta['idPlanilhaAprovacao']; ?>); mascara(this, format_moeda);" onkeydown="calcular_planilha_projeto(<?php echo $resposta['idPlanilhaAprovacao']; ?>); mascara(this, format_moeda);" name="vlunitario" id="vlunitario<?php echo $resposta['idPlanilhaAprovacao']; ?>" maxlength="13" value="<?php echo str_replace("R$ ", "", $this->formatarReal($resposta['vlunitarioRelator'])); ?>" />
+                                                </td>
+                                                <td>
+                                                    <label for="dias<?php echo $resposta['idPlanilhaAprovacao']; ?>"><strong>Dias:</strong></label><br />
+                                                    <input class="input_simples w50" type="text" onkeyup="mascara(this, format_num);" name="dias" id="dias<?php echo $resposta['idPlanilhaAprovacao']; ?>" maxlength="4" value="<?php echo $resposta['diasRelator']; ?>" />
+                                                </td>
+                                                <td colspan="2">
+                                                    <strong>Total:</strong><br />
+                                                    <div id="calcular_total<?php echo $resposta['idPlanilhaAprovacao']; ?>" style="height:2%"></div>
+                                                    <input type="hidden" id="totalcalculos<?php echo $resposta['idPlanilhaAprovacao']; ?>" value="<?php echo $resposta['qtdRelator'] * $resposta['ocorrenciaRelator'] * $resposta['vlunitarioRelator'] ?>"/>
+                                                </td>
+                                            </tr>
+                                            <tr valign="top">
+                                                <td colspan="7">
+                                                    <label for="justificativa<?php echo $resposta['idPlanilhaAprovacao']; ?>"><strong>Justificativa</strong></label><br />
+                                                    <textarea class="textarea_simples w900 h180" name="justificativa" id="justificativa<?php echo $resposta['idPlanilhaAprovacao']; ?>" cols="70" rows="10" <?php echo $this->contadorTextarea('form.justificativa', 'form.exibirContadorTextarea', 5000); ?>><?php echo $resposta['justcomponente']; ?></textarea>
+                                        <?php echo $this->exibirContadorTextarea('exibirContadorTextarea', 4, 5000, strlen($planilha['justcomponente'])); ?>
+                                                </td>
+                                           </tr>
+                                        </table>
+                                    </form>
+                                </div>
+                                    <!-- FIM DADOS DO RELATOR-->
+                                <!-- Fim Modal-->
+                            
+                            </td>
+                            <td class="direita blue"><?php echo $this->formatarReal($this->escape($resposta['vltotalsolicitado'])); ?></td>
+                            <td class="direita red"><?php echo $this->formatarReal($this->escape($resposta['vltotalparecerista'])); ?></td>
+                            <td><?php echo $this->escape($resposta['justparecerista']); ?></td>
+                            <td class="direita"><?php echo $this->formatarReal($this->escape($resposta['vltotalcomponente'])); ?></td>
+                            <td class="direita red"><?php echo $this->formatarReal($this->escape($resposta['vltotalparecerista'])); ?></td>
+                            <td><?php echo $this->escape($resposta['justcomponente']); ?></td>
+                        </tr>
+
+                        <?php
+                        // ===== TOTAL DE VALOR REDUZIDO =====
+                        $totalValRet+= (float) $resposta['vltotalsolicitado'] - $resposta['vltotalcomponente'];
+                        $totalItensRet++;
+                    endforeach; // fecha foreach
+                } // fecha if
+                ?>
+
+                <tr>
+                    <td colspan="8">&nbsp;</td>
+                </tr>
+
+                <!-- ========== TOTAL ========== -->
+                <tr>
+                    <td colspan="2" class="red"><strong>Total por Item Retirado</strong></td>
+                    <td class="right red"><strong><?php echo $this->formatarReal($totalValRet); ?></strong></td>
+                    <td colspan="4">&nbsp;</td>
+                </tr>
+                <tr>
+                    <th class="left" colspan="2"><strong>Total Geral por Item Retirado (<?php echo $this->totItemRet; ?>)</strong></th>
+                    <th class="right red"><strong><?php echo $this->formatarReal($this->totValRet); ?></strong></th>
+                    <th colspan="4">&nbsp;</th>
+                </tr>
+            <?php endif; ?>
+            <!-- ========== FIM ITEM RETIRADO ========== -->
+
+    </table>
+    <!-- ========== FIM TABELA DE CORTES SUGERIDOS ========== -->
+
+
+
+    <!-- ========== BOTÕES ========== -->
+    <br />
+    <p class="centro">
+        <input type="button" class="btn_p_anterior" value=" " onclick="redirecionar('<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'parecerconsolidado')); ?>')" onkeypress="redirecionar('<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'parecerconsolidado')); ?>');"/>
+        <input type="button" class="btn_p_proximo" value=" " onclick="redirecionar('<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'analisedeconteudo')); ?>')" onkeypress="redirecionar('<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'analisedeconteudo')); ?>');"/>
+        <input type="button" class="btn_imprimir" value=" " onclick="imprimir();"  onkeypress="imprimir();" />
+    </p>
+    <br />
+
+<input id="valorpossivel" value="<?php echo $this->totalproponente - $this->totalcomponente;?>" type="hidden"/>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

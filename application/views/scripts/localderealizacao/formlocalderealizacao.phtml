@@ -1,0 +1,320 @@
+<?php
+$edital = "";
+if(isset($_GET['edital'])) {
+    require_once 'scripts/manterpropostaedital/inc/menu.inc.php'; // menu de manter proposta por edital
+    $edital = "&edital=s";
+}else {
+    require_once "scripts/manterpropostaincentivofiscal/inc/menu.inc.php"; // menu de manter proposta por incentivo fiscal
+}
+$cod = null;
+if(isset($_GET['cod'])){
+	$cod = $_GET['cod'];
+}
+
+?>
+
+<script>
+    $(document).ready(function()
+    {
+    	 $("#frmLocalDeRealizacao").validate({
+            rules: {
+                blnInformouQtdeMinimadeRegistros: {verificaQtdeLocaisInformados: true}
+            },
+            messages: {
+                blnInformouQtdeMinimadeRegistros: {verificaQtdeLocaisInformados:"Informe ao menos um Local de Realização"}
+            },
+            submitHandler: function(form) {
+                form.submit();
+            }
+        });
+
+        $("#btn_adicionar").click(function() {
+                adicionarLinhaLocalDeRealizacao("qtdeLocais", "addLocaisDeRealizacao",'','','','');
+        });
+
+        <?php if((count($this->localizacoes)>0)){ ?>
+        <?php $ct=500; //CONTADOR UTILIZADO PARA DEFINIR A QTDE DE SEGUNDOS QUE CADA COMBO DE CIDADE DEVERA SER CARREGADA?>
+        <?php foreach ($this->localizacoes as $localizacao): ?>
+
+            //setTimeout("adicionarLinhaLocalDeRealizacao(\"qtdeLocais\", \"addLocaisDeRealizacao\" ,\"<?php echo $localizacao->idAbrangencia;?>\",\"<?php echo $localizacao->idPais;?>\",\"<?php echo $localizacao->idUF;?>\",\"<?php echo $localizacao->idMunicipioIBGE;?>\", \"<?php echo $ct;?>\");",<?php echo $ct;?>);
+            adicionarLinhaLocalDeRealizacao("qtdeLocais",
+                                            "addLocaisDeRealizacao",
+                                            <?php echo $localizacao->idAbrangencia;?>,
+                                            <?php echo $localizacao->idPais;?>,
+                                            <?php echo $localizacao->idUF;?>,
+                                            <?php echo $localizacao->idMunicipioIBGE;?>,
+                                            <?php echo $ct;?>
+                                            );
+
+
+
+            <?php $ct +=500;?>
+         <?php endforeach; ?>
+    <?php }else{ ?>
+            adicionarLinhaLocalDeRealizacao("qtdeLocais","addLocaisDeRealizacao","","","","",0);
+    <?php } ?>
+
+
+    });
+
+    //ADICIONA LINHA DE LOCAIS DE REALIZACAO
+    function adicionarLinhaLocalDeRealizacao(campoQtde,destino,idAbrangencia,idPais,idUf,idCidade, ct)
+    {
+        numLocais = parseInt($("#" + campoQtde).attr("value")) + 1;
+        $("#" + campoQtde).attr("value", numLocais);
+
+        indice = parseInt($("#indiceFinal").attr("value")) + 1;
+        $("#indiceFinal").attr("value", indice);
+
+        if (numLocais==1)
+        {
+           $("#" + destino).append( "<tr>" +
+                                        "<th width='30%' valign='top'>Pais</th>" +
+                                        "<th width='30%' valign='top'>UF</th>" +
+                                        "<th width='30%' valign='top'>Cidade</th>" +
+                                        "<th width='10%' valign='top'>Excluir</th>" +
+                                    "</tr>");
+        }
+        $("#" + destino).append("<tr id='linha_locais_" + numLocais + "'>" +
+                                    "<td>"+
+                                        "<select id='pais_" + numLocais + "' name='pais_" + numLocais + "' class='select_simples w240' onchange='ativarDesativarUfCidade(this.value," + numLocais + ")'>"+
+                                             "<option value='' selected>- Selecione -</option>"+
+                                             "<?php foreach ($this->paises as $pais): ?>"+
+                                                "<option value='<?php echo $pais->idPais; ?>'>"+
+                                                    "<?php echo $pais->Descricao; ?>"+
+                                                "</option>"+
+                                             "<?php endforeach; ?>"+
+                                         "</select>"+
+                                    "</td>" +
+                                    "<td>"+
+                                        "<select id='uf_" + numLocais + "' name='uf_" + numLocais + "' class='select_simples w240' onchange='carregar_combo(this.value,\"cidade_" + numLocais + "\",\"<?php echo $this->url(array('controller'=>'cidade', 'action'=>'combo')); ?>\",\" - Selecione uma UF - \");'>"+
+                                            "<option value='' selected>- Selecione -</option>"+
+                                            "<?php foreach ($this->estados as $estado): ?>"+
+                                                "<option value='<?php echo $estado->id;?>'>"+
+                                                    "<?php echo $estado->descricao; ?> "+
+                                                "</option>"+
+                                             "<?php endforeach; ?>"+
+                                         "</select>"+
+                                    "</td>" +
+                                    "<td>"+
+                                        "<select id='cidade_" + numLocais + "' name='cidade_" + numLocais + "' class='select_simples w240'>"+
+                                            "<option value=''>- Selecione uma UF -</option>"+
+                                         "</select>"+
+                                    "</td>" +
+                                    "<td align='center'><input type='button' style='width: 88px' class='btn_exclusao' id='btn_excluir_reg_add' onclick='apagarLinhaLocalDeRealizacao(\"" + campoQtde + "\",\"" + numLocais + "\");'/></td>" +
+                                "</tr>");
+
+        //ATRIBUI VALOR DA COMBO PAIS
+        if(idPais !="" || idPais >0){
+            $("#pais_" + numLocais).val(idPais);
+        }else{
+            $("#pais_" + numLocais).val('31');
+        }
+
+        //ATRIBUI VALOR DA COMBO UF
+        $("#uf_" + numLocais).val(idUf);
+
+        //ATRIBUI VALOR DA COMBO CIDADE
+        var url = "<?php echo $this->url(array("controller"=>"cidade", "action"=>"combo")); ?>";
+
+        if(idUf !="" || idUf >0){
+            setTimeout("carregar_combo(\""+ idUf +"\", \"cidade_" + numLocais + "\" ,\""+ url +"\",\"\",\""+ idCidade +"\");",ct);
+        }
+
+        ativarDesativarObrigatoriedade("pais_" + numLocais,"uf_" + numLocais,"cidade_" + numLocais);
+
+        if(idPais != 31 && idPais != "")
+        {
+            ativarDesativarUfCidade(idPais,numLocais);
+        }
+
+        <?php if(isset($this->movimentacaoAtual) && $this->movimentacaoAtual != '95'): ?>
+             //DESABILITA ALTERACOES NOS DADOS DO FORMULARIO (INCLUIR/ALTERAR/EXCLUIR)
+             JSBloquearAlteracaoFormulario();
+        <?php endif; ?>
+    }
+
+
+    //REMOVE LINHA DE LOCAIS
+    function apagarLinhaLocalDeRealizacao(campoQtde,indice)
+    {
+        <?php
+	        if(isset($_GET['cod'])){
+	        	$cod = $_GET['cod'];
+	        }
+        ?>
+        $("#modalConfirmaExclusao").html("Tem certeza que deseja excluir o registro?");
+        // modal com os ddos do dirigente
+        $("#modalConfirmaExclusao").dialog("destroy");
+        $("#modalConfirmaExclusao").dialog
+        ({
+            width:400,
+            height:150,
+            EscClose:false,
+            modal:true
+            ,buttons:
+                {
+                'Cancelar':function()
+                {
+                    $(this).dialog('close'); // fecha a modal
+                },
+                'Confirmar':function()
+                {
+               	 	$("#linha_locais_"+indice).remove();
+
+	                //decrementa indice final
+	                valor = parseInt($("#indiceFinal").attr("value")) - 1;
+	                $("#indiceFinal").attr("value", valor);
+	                $(this).dialog('close'); // fecha a modal
+	                ident = "<?php echo $cod;?>";
+	                if(ident == ''){
+						ident = ident;
+	                }
+	                else{
+	                	window.location.href="<?php echo $this->url(array('controller'=>'localderealizacao', 'action'=>'excluir')); ?>?cod=<?php if(isset($_GET['cod'])){ echo $_GET['cod']; } ?>&idPreProjeto=<?php echo $_GET['idPreProjeto'] ?>";
+	                }
+                }
+            }
+        });
+        return false;
+    }
+
+    function ativarDesativarUfCidade(idPais,indice)
+    {
+
+        //SE PAIS == BRASIL, LIBERA AS COMBOS UF E CIDADE
+        if(idPais == 31)
+        {
+            $("#uf_"+indice).val("");
+            $("#uf_"+indice).attr("disabled", false);
+            $("#uf_"+indice).show();
+
+            $("#cidade_"+indice).val("");
+            $("#cidade_"+indice).attr("disabled", false);
+            $("#cidade_"+indice).show();
+
+            //RECARRGA COMBO DE CIDADE
+            carregar_combo("0","cidade_" + indice,"<?php echo $this->url(array('controller'=>'cidade', 'action'=>'combo')); ?>"," - Selecione uma UF - ");
+        }
+        else
+        {
+            $("#uf_"+indice).val("0");
+            $("#uf_"+indice).attr("disabled", true);
+            $("#uf_"+indice).hide();
+
+            $("#cidade_"+indice).val("0");
+            $("#cidade_"+indice).attr("disabled", true);
+            $("#cidade_"+indice).hide();
+        }
+    }
+
+    function ativarDesativarObrigatoriedade(idComboPais,idComboUf,idComboCidade)
+    {
+        //REGRAS E MENSAGENS PARA OS CAMPOS CRIADOS
+        $("#" + idComboPais).rules("add", {
+                 required: true,
+                 messages: {
+                   required: "Obrigat&oacute;rio"
+                 }
+        });
+
+        //SE PAIS IGUAL A BRASIL(31)
+        if($("#" + idComboPais).val() == 31)
+        {
+           $("#" + idComboUf).rules("add", {
+                 required: true,
+                 messages: {
+                   required: "Obrigat&oacute;rio"
+                 }
+            });
+            $("#" + idComboCidade).rules("add", {
+                     required: true,
+                     messages: {
+                       required: "Obrigat&oacute;rio"
+                     }
+            });
+        }else{
+            $("#" + idComboUf).rules("remove");
+            $("#" + idComboCidade).rules("remove");
+        }
+    }
+
+    jQuery.validator.addMethod("verificaQtdeLocaisInformados", function(value, element)
+    {
+        if($("#indiceFinal").val() > 0)
+        {
+            return true;
+        }else{
+            return false;
+        }
+    });
+</script>
+
+<style>
+	label.error{ color:red; font-weight: normal; }
+</style>
+<?php
+    $edital = "";
+    if(isset($_GET['edital'])){
+        require_once 'scripts/manterpropostaedital/inc/menu.inc.php'; // menu de manter proposta por edital
+        $edital = "&edital=s";
+    }else{
+        require_once "scripts/manterpropostaincentivofiscal/inc/menu.inc.php"; // menu de manter proposta por incentivo fiscal
+    }
+?>
+<!-- ========== INICIO TITULO ========== -->
+<div id="titulo">
+    <div>Local de Realiza&ccedil;&atilde;o<span class="voltar"><a href="#" onclick=voltar();>Voltar</a></span></div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+<div title="Confirma&ccedil;&atilde;o" id="modalConfirmaExclusao"></div>
+<!-- ========== INICIO CONTEUDO ========== -->
+<div id="conteudo">
+
+<form action="<?php echo $this->acao; ?>?edit=<?php if($_GET['edit'])echo $_GET['edit'];?>&idPreProjeto=<?php if($_GET['idPreProjeto'])echo $_GET['idPreProjeto'];?><?php echo $edital;?>" name="frmLocalDeRealizacao" id="frmLocalDeRealizacao" method="post">
+    <input type="hidden" name="qtdeLocais" id="qtdeLocais" value="0">
+    <input type="hidden" name="indiceFinal" id="indiceFinal" value="0">
+    <input type="hidden" name="cod" id="cod" value="<?php echo $this->idAbrangencia;?>">
+
+<!-- ========== IN?CIO TABELA DADOS ========== -->
+<table id="tabDados" class="tabela">
+
+        <tr>
+            <th colspan="4" align="center">Abrang&ecirc;ncia geogr&aacute;fica da proposta cultural</th>
+        </tr>
+
+	<tr>
+            <td colspan="3">
+            	<?php if(!isset ( $_GET['cod']) ){?>
+                <label for="1">Insira uma ou mais locais de realiza&ccedil;&atilde;o</label><br />
+                <input type="button" style="width: 88px" class="btn_novo" id="btn_adicionar"/><br><br>
+                <?php }?>
+                <input type="hidden" name="blnInformouQtdeMinimadeRegistros" id="blnInformouQtdeMinimadeRegistros" value="false">
+                <table width="100%" id="addLocaisDeRealizacao">
+                   <!-- ESPACO QUE RECEBERA AS LINHAS ADICIONADAS DE LOCAIS DE RALIZACAO -->
+                </table>
+            </td>
+        </tr>
+
+</table>
+<!-- ========== FIM TABELA DADOS ========== -->
+<div id="miolo"> <!-- ========== INICIO MIOLO IDENTIFICACAO ========== -->
+    <table class="tabela" style="width: 100%;" border="0" cellpadding="0" cellspacing="0">
+        <tr>
+            <td align="center">
+                <input type="submit" style="width: 88px" class="btn_salvar" id="btn_salvar" name="Salvar" value=""/>
+                <!--<input type="button" style="width: 88px" class="btn_sair" id="btn_sair" name="sair" onclick="window.location.href='<?php //echo $this->url(array('controller'=>'localderealizacao', 'action'=>'index')); ?>'">-->
+<!--                <input type="button" style="width: 88px" class="btn_voltar" id="btn_sair" name="sair" onclick="voltar()"/>-->
+            </td>
+        </tr>
+    </table>
+</div>
+
+</form>
+
+</div><!-- ========== FIM CONTEUDO ========== -->
+
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

@@ -1,0 +1,89 @@
+<style>
+    table caption {
+        background: none repeat scroll 0 0 #ABDA5D;
+        color: #3A7300;
+        font-size: 11px;
+        padding: 8px;
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+</style>
+<?php header('Content-Type: text/plain; charset=ISO-8859-1'); ?>
+<script type="text/javascript">
+    $(document).ready(function(){
+        //ATUALIZA TITULO DA PAGINA
+        window.parent.$("#titulo").html("<div>Plano de Divulga&ccedil;&atilde;o</div>");
+        window.parent.$("#caminhoLocalAtual").html("Plano de Divulga&ccedil;&atilde;o");
+    });
+</script>
+
+<table class="tabela">
+    <tr class="destacar">
+        <td align="center"><b>PRONAC</b></td>
+        <td align="center"><b>Nome do Projeto</b></td>
+    </tr>
+    <tr>
+        <td align="center"><?php echo $this->projeto->AnoProjeto.$this->projeto->Sequencial; ?></td>
+        <td align="center"><?php echo $this->projeto->NomeProjeto; ?></td>
+    </tr>
+</table>
+
+<center>
+<?php if(is_array($this->dados) && count($this->dados)>0){ ?>
+    <table class="tabela">
+        <tr class="destacar">
+            <td align="center" width="60%"><b>Pe&ccedil;a</b></td>
+            <td align="center" width="40%"><b>Ve&iacute;culo</b></td>
+        </tr>
+        <?php foreach($this->dados as $divulgacao){ ?>
+        <tr>
+            <td align="left"><?php echo $divulgacao->Peca; ?></td>
+            <td align="center"><?php echo $divulgacao->Veiculo; ?></td>
+        </tr>
+        <?php } ?>
+    </table>
+<?php } else { ?>
+    <table class="tabela">
+        <tr>
+            <td align="center"><em>Dados n&atilde;o informados!</em></td>
+        </tr>
+    </table>
+<?php } ?>
+
+<table class="tabela">
+<caption>Marcas Anexadas</caption>
+<?php if(count($this->marcas) > 0) : ?>
+<tr>
+    <td class="destacar bold">Observações</td>
+    <td class="destacar bold">Arquivo</td>
+    <td class="destacar bold">Dt. Envio</td>
+    <td class="destacar bold">Estado</td>
+</tr>
+<?php foreach ($this->marcas as $marca) : ?>
+    <tr>
+        <td><?php echo $marca->dsDocumento; ?></td>
+        <td><a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id=<?php echo $marca->idArquivo; ?>"><?php echo $marca->nmArquivo ?></a></td>
+        <td><?php echo Data::tratarDataZend($marca->dtEnvio, 'Brasileira'); ?></td>
+        <td>
+            <?php
+                if($marca->stAtivoDocumentoProjeto == 'D'){
+                    echo 'Deferido';
+                } else if($marca->stAtivoDocumentoProjeto == 'I'){
+                    echo 'Indeferido';
+                } else if($marca->stAtivoDocumentoProjeto == 'E'){
+                    echo 'Enviado';
+                } else {
+                    echo '';
+                }
+            ?>
+        </td>
+    </tr>
+<?php 
+        endforeach; 
+    else:
+?>
+    <tr><td align="center">Nenhum registro encontrado</td></tr>
+<?php endif; ?>
+</table>
+</center>
+<br>

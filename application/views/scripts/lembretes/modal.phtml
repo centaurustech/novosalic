@@ -1,0 +1,37 @@
+<html>
+<head>
+	<link rel="stylesheet" href="./styles/smoothness/jquery-ui-1.7.2.custom.css" type="text/css" media="screen" />
+	<script type="text/javascript" src="./scripts/jquery-1.3.2.min.js"></script>
+	<script type="text/javascript" src="./scripts/jquery-ui-1.7.2.custom.min.js"></script>
+	<script type="text/javascript">
+	$(function() {
+		$('a').click(function(e) {
+			e.preventDefault();
+			var $this = $(this);
+			var horizontalPadding = 30;
+			var verticalPadding = 30;
+	        $('<iframe id="externalSite" class="externalSite" src="' + this.href + '" />').dialog({
+	            title: ($this.attr('title')) ? $this.attr('title') : 'External Site',
+	            autoOpen: true,
+	            width: 1200,
+	            height: 500,
+	            modal: true,
+	            resizable: true,
+				autoResize: true,
+	            overlay: {
+	                opacity: 0.5,
+	                background: "black"
+	            }
+	        }).width(1200 - horizontalPadding).height(500 - verticalPadding);	        
+		});
+	});
+	</script>
+</head>
+<body>
+	<ul>
+		<li><a href="http://localhost/NovoSalic/" title="NovoSalic">Salc</a></li>
+		<li><a href="http://localhost/NovoSalic/index/abas" title="ABAS">ABAS</a></li>
+		<li><a href="http://localhost/NovoSalic/index/gri" title="GRIS">GRIDSI</a></li>
+	</ul>
+</body>
+</html>

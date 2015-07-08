@@ -1,0 +1,69 @@
+<?php if(isset ($this->listaPerguntas) && count($this->listaPerguntas)>0){ ?>
+<table class="tabela">
+    <tr>
+        <th>Forma de Pagamento</th>
+        <th colspan="2" width="10%">Opera&ccedil;&atilde;o</th>
+    </tr>
+    <?php foreach ($this->listaPerguntas as $Perguntas){ ?>
+        <tr class="overtr">
+            <td>
+                <?php echo utf8_encode($Perguntas['dsPergunta']);?>
+            </td>
+            <td class="centro">
+                <img class="alterar" alt="Alterar" nrPergunta="<?php echo $Perguntas['nrPergunta'];?>" nrFormDocumentoPagamento="<?php echo $Perguntas['nrFormDocumento'];?>"  nrVersaoDocumento="<?php echo $Perguntas['nrVersaoDocumento'];?>" src="<?php echo $this->baseUrl(); ?>/public/img/botaoEditarNovo.gif" style="cursor: pointer;" />
+            </td>
+            <td class="centro">
+                <img class="excluir" alt="Excluir" nrPergunta="<?php echo $Perguntas['nrPergunta'];?>" nrFormDocumentoPagamento="<?php echo $Perguntas['nrFormDocumento'];?>"  nrVersaoDocumento="<?php echo $Perguntas['nrVersaoDocumento'];?>" idEdital="<?php echo $this->idEdital;?>" idUsuario="<?php echo $this->idUsuario;?>" src="<?php echo $this->baseUrl(); ?>/public/img/botaoExcluir.png" style="cursor: pointer;" />
+            </td>
+        </tr>
+        <?php } ?>
+</table>
+<?php } ?>
+<script>
+    $('.overtr').mouseover(function(){
+        $(this).css('backgroundColor','#E7E7E7');
+    })
+    .mouseout(function(){
+        $(this).css('backgroundColor','#ffffff');
+    });
+
+    $('.alterar').click(function(){
+        var obj = this;
+        var dados={
+            nrFormDocumentoPagamento:$(obj).attr('nrFormDocumentoPagamento'),
+            nrVersaoDocumento:$(obj).attr('nrVersaoDocumento'),
+            nrPergunta:$(obj).attr('nrPergunta'),
+            operacao:'pesquisafp'
+        };
+       
+        $.post('<?php  echo $this->url(array('controller'=>'Cadastraredital','action'=>'formapagamentoopcoes'))?>',
+        dados,
+        function(data){
+            $("#operacao").val('alterarPergunta');
+            $("#nrPergunta").val(data.nrPergunta);
+            $("#dsPergunta").val(data.dsPergunta);
+            $(".btn_salvar").css('display','none');
+            $("#btAlterar").css('display','');
+            $("#btCancelar").css('display','');
+        }
+        , 'json'
+        ); 
+    });
+    $('.excluir').click(function(){	
+
+        mudancaDeOperacaoIncFP();
+        $("#dialog_confirm_pagamento").dialog('open');
+        $("#dialog_confirm_pagamento").attr('nrFormDocumentoPagamento',$(this).attr('nrFormDocumentoPagamento'));
+        $("#dialog_confirm_pagamento").attr('nrVersaoDocumento',$(this).attr('nrVersaoDocumento'));
+        $("#dialog_confirm_pagamento").attr('nrPergunta',$(this).attr('nrPergunta'));
+        $("#dialog_confirm_pagamento").attr('idEdital',$(this).attr('idEdital'));
+        $("#dialog_confirm_pagamento").attr('idUsuario',$(this).attr('idUsuario'));
+        $("#dialog_confirm_pagamento").attr('nrOpcao','');
+        $("#dialog_confirm_pagamento").attr('operacao','excluirfp');
+
+        formulario.montarEnvio.funcaoRetorno = function(data){
+             carregarFormaPagamento();
+        }
+
+    });
+</script>

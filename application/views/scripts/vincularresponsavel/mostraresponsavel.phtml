@@ -1,0 +1,116 @@
+<script> 
+    function alerta(msg, functionsim, functionnao){
+        $("#mostraresponsavel[id='alerta']").remove();
+        $("#mostraresponsavel").append("<div id='alerta'></div>")
+        $("#alerta").html(msg)
+        $("#alerta").dialog({
+            resizable: true,
+            width:450,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            closeOnEscape : false,
+            title : 'Alerta',
+            buttons: {
+                'Não': functionnao,
+                'Sim': functionsim
+            }
+        });
+        $("#alerta").dialog('open');
+    }
+    function confirma(msg, functionok){
+        $("#mostraresponsavel[id='confirm']").remove();
+        $("#mostraresponsavel").append("<div id='confirm'></div>")
+        $("#confirm").html(msg)
+        $("#confirm").dialog({
+            resizable: true,
+            width:450,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            closeOnEscape : false,
+            title : 'Alerta',
+            buttons: {
+                'OK': functionok
+            }
+        });
+        $("#confirm").dialog('open');
+    }
+    $(document).ready(function(){
+        $(".vincular").click(function(){
+            $("#error").addClass('sumir');
+            var idVinculoProposta = $(this).attr('idVinculoPropostaResponsavelProjeto');
+            var stVinculo = $(this).attr('stVinculo');
+            alerta('Deseja continuar?',
+            function(){
+                            $.ajax({
+                async: true,
+                dataType: 'json',
+                type: "post",
+                url: "<?php echo $this->url(array('controller' => 'vincularresponsavel', 'action' => 'vinculo')); ?>",
+                data:{
+                    idVinculoProposta: idVinculoProposta, 
+                    stVinculoProposta : stVinculo,
+                    aceitevinculo : '1'
+                },
+                success: function(data)
+                {
+                    if(!data.error){
+                        confirma('Sua solicita&ccedil;&atilde;o foi enviada com sucesso.', 
+                        function(){
+                            window.location = 'vincularresponsavel/consultarresponsavel';
+                        }
+                    )
+                    }
+                    else{
+                        confirma('Falha na recupera&ccedil;&atilde;o dos dados!', 
+                        function(){
+                            $("#confirm").dialog("close")
+                        }
+                    )
+                    }
+                }
+            });
+            }, function(){
+                $("#alerta").dialog("close")
+            })
+        })
+    })
+</script>
+<?php
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>  
+<fieldset>
+    <legend>Vincular ao Respons&aacute;vel</legend>
+    <table class="tabela">
+        <tr>
+            <td colspan="4" class="titulo_tabela">Respons&aacute;vel</td>
+        </tr>
+        <tr>
+            <th>projeto/pronac</th>
+            <th>CPF</th>
+            <th>Nome</th>
+            <th>Vincular</th>
+        </tr>
+        <?php foreach ($this->vinculo as $vinculo) { ?>
+            <tr class="centro">
+                <td><?php echo !empty($vinculo->pronac) ? $vinculo->idPreProjeto.' / '.$vinculo->pronac  : $vinculo->idPreProjeto.'/ - ';  ?></td>
+                <td><?php echo Validacao::mascaraCPFCNPJ($vinculo->CNPJCPF); ?></td>
+                <td><?php echo $vinculo->NomeAgente ?></td>
+                <td style="font-weight: 600;">
+                    <?php if ($vinculo->siVinculoProposta == 0) { ?>
+                        <img style="cursor: pointer;"class="vincular" stVinculo='2' idVinculoPropostaResponsavelProjeto="<?php echo $vinculo->idVinculoProposta; ?>" src="<?php echo $this->baseUrl(); ?>/public/img/passed.gif"/>
+                        <?php
+                    } else if($vinculo->siVinculoProposta == 2){
+                        echo "{$this->stVinculo($vinculo->siVinculoProposta)}<br/> <img stVinculo='3' style='cursor: pointer;' class='vincular' idVinculoPropostaResponsavelProjeto='{$vinculo->idVinculoProposta}' src='{$this->baseUrl()}/public/img/btn_excluir.gif'/>";
+                    }
+                    else{
+                        echo $this->stVinculo($vinculo->siVinculoProposta);
+                    }
+                    ?>
+                </td>
+            </tr>
+        <?php } ?>
+    </table>
+</fieldset>
+</div>

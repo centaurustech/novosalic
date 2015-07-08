@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<?php
+include_once 'scripts/manterorcamento/inc/menu.inc.php';
+?>
+
+<!-- ========== INÃCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+<ul>
+	<li class="first"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'propostas')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+	<li class="last">Or&ccedil;amento</li>
+	<li class="first"><a href="<?php echo $this->url(array('controller' => 'manterorcamento', 'action' => 'produtoscadastrados')); ?>" title="Ir para In&iacute;cio">Produtos Cadastrados</a></li>
+	<li class="last">Planilha Or&ccedil;ament&aacute;ria</li>
+</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INÃCIO TÃTULO ========== -->
+<div id="titulo">
+<div>Cadastrar Planilha por Produto <span class="voltar"><a href="#"
+	onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÃTULO ========== -->
+<!-- ========== INÃCIO CONTEÃšDO ========== -->
+<div id="conteudo"><!-- ========== INÃCIO TABELA DADOS ========== -->
+	<div style="float: left; width: 50%">
+        <fieldset>
+            <legend>LOCALIZAÇÃO</legend>
+            <table cellpadding="0" cellspacing="0" width="100%">
+                  <tr>
+                    <td align="justify" width="20%">
+                    	<label for="uf">UF:</label> <br />
+                    		<select class="select_simples">
+                    			<option value="12">- - -</option>
+                    			<option value="12">AC</option>
+                    			<option value="12">AM</option>
+                    		</select> 
+                    </td>
+                    <td align="left">
+                    	<label for="cidade">MUNIC&Iacute;PIO:</label><br />
+                    		<select class="select_simples" style="width: 80%">
+                    			<option>Selecione</option>
+                    		</select> 
+                    </td>
+                    <td align="center">
+                    	<br />
+                    	<label><input type="button" class="btn_alterar"></input></label>
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    </div>
+    
+    <div style="float: left; width: 50%">
+        <fieldset>
+            <legend>ETAPA/META</legend>
+            <table cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td align="justify" width="40%">
+                    	<label for="uf">ETAPA/META:</label> <br />
+                    		<select class="select_simples">
+                    			<option value="12">Pré-Produ&ccedil;&atilde;o/Prepara&ccedil;&atilde;o</option>
+                    			<option value="12">Produ&ccedil;&atilde;o/Execu&ccedil;&atilde;o</option>
+                    			<option value="12">Pré-Producao</option>
+                    		</select> 
+                    </td>
+                    <td align="left">
+                    	<label for="cidade">&Iacute;TEM:</label><br />
+                    		<select class="select_simples" style="width: 90%">
+                    			<option>SelecioneSelecioneSelecione</option>
+                    		</select> 
+                    </td>
+                    <td align="center">
+                    	<br />
+                    	<label><input type="button" class="btn_alterar"></input></label>
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    </div>
+
+    <div style="float: left; width: 24%">
+        <fieldset>
+            <legend>DESPESAS</legend>
+            <table cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td align="justify">
+                    	<label for="uf">FONTE DE RECURSO:</label> <br />
+                    		<select class="select_simples" style="width: 90%">
+                    			<option value="0">Incentivo Fiscal Federal</option>
+                    			<option value="0">Incentivo Fiscal Estadual</option>
+                    			<option value="0">Incentivo Fiscal Municipal</option>
+                    		</select> 
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    </div>
+    <div style="float: left; width: 26%">
+        <fieldset style="width: 60%">
+            <legend>INDICADORES FÍSICOS</legend>
+            <table cellpadding="0" cellspacing="0" width="100%">
+                <tr align="left" lang="">
+                    <td>
+                    	<label for="uf">UNIDADE:</label> <br />
+                    		<select class="select_simples">
+                    			<option value="0">Selecione</option>
+                    			<option value="12">Kilograma/Metro 2</option>
+                    			<option value="12">Filme</option>
+                    			<option value="12">Filha</option>
+                    		</select>  
+                    </td>
+                    <td>
+                    	<label for="municipio">QTD:</label><br />
+                    		<input type="text" class="input_simples" size="1"></input>
+                    </td>
+                    <td>
+                    	<label for="municipio">OCORR&Ecirc;NCIA:</label><br />
+                    		<input type="text" class="input_simples" size="1"></input>
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    </div>
+    <div style="float: left; width: 25%">
+        <fieldset>
+            <legend>INDICADORES FINANCEIROS</legend>
+            <table cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td>
+                    	<label for="uf">VALOR UNIT&Aacute;RIO:</label> <br />
+                    		<input type="text" class="input_simples" size="10"></input>
+                    </td>
+                    <td>
+                    	<label for="uf">TOTAL:</label> <br />
+                    		<input type="text" value="" class="input_simples" size="15"></input> 
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    </div>
+    
+    <div style="float: left; width: 25%">
+        <fieldset>
+            <legend>TEMPO DE DURA&Ccedil;&Atilde;O</legend>
+            <table cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td align="justify">
+                    	<label for="uf">QTD DE DIAS:</label> <br />
+                    		<input type="text" value="" class="input_simples" size="15"></input> 
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    </div>
+    
+    <div style="float: left; width: 100%">
+        <fieldset>
+        <legend>DETALHAMENTO / JUSTIFICATIVA / OBSERVAÇÕES</legend>
+            <table cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td align="justify">
+                    	<!-- ========== EDITOR 1 ========== -->
+                    <script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/ckeditor.js"></script>
+                    <script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.js"></script>
+
+                    <label for="editor1"> </label>
+                    <textarea cols="80" id="editor1" name="editor1" rows="10">&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;&lt;p&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</textarea>
+                    <script type="text/javascript">
+                        //<![CDATA[
+                        CKEDITOR.replace('editor1', {	fullPage : true });
+                        //]]>
+                    </script>
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    </div>
+ 
+            <table class="tabela" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td align="center">
+                    	<input type="button" class="btn_salvar"></input>
+                    	<input type="button" class="btn_novo"></input>
+                    	<input type="button" class="btn_editar"></input>
+                    </td>
+                </tr>
+            </table>
+
+</div>
+<!-- ========== FIM CONTEÃšDO ========== --> <!-- ========== INÃCIO RODAPÃ‰ DO CONTEÃšDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÃ‰ DO CONTEÃšDO ========== --> <br clear="all" />

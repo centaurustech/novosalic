@@ -1,0 +1,80 @@
+<?php include_once 'scripts/admissibilidade/inc/menu.inc.php'; ?>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.js"></script>
+<div id="titulo">
+    <div>Admissibilidade de propostas - Alterar a unidade de análise da proposta <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<script type="text/javascript">
+<!--
+$(document).ready(function() {
+    $("#data").datepicker();
+});
+//-->
+</script>
+<div id="conteudo">
+    <table class="tabela">
+        <tr>
+            <th colspan="2">Alterar unidade de análise da proposta</th>
+        </tr>
+        <tr>
+            <td align="center" colspan="2">
+            	<input type="button" class="btn_salvar" title="Salvar" value=" " /> 
+            	<input type="button" class="btn_voltar" title="Voltar" value=" " />
+            </td>
+        </tr>
+        <tr>
+            <th colspan="2">Identificação</th>
+        </tr>
+        <tr>
+            <td align="center"><b>Nr. Proposta</b><br />23.855</td>
+            <td align="center"><b>Nome da Proposta</b><br />DESENHAR UMA EXPERIÊNCIA POSSÍVEL</td>
+        </tr>
+        <tr>
+            <th colspan="2">Sintese de Proposta</th>
+        </tr>
+        <tr>
+            <td align="center" colspan="2">
+                Este projeto se propõe a realizar exercícios práticos de desenho criativo que possibilitam o entendimento e a compreensão da arte pela apreciação de trabalhos de diferentes artistas.Ao término do projeto será realizada uma mostra com os trabalhos produzidos na oficina.
+            </td>
+        </tr>
+        <tr>
+            <th colspan="2">Alterar a localização da proposta</th>
+        </tr>
+        <tr>
+            <td align="center">
+                <b>
+                    Localização atual
+                </b>
+            </td>
+            <td align="center">
+                Secretaria de Fomento e Incentivo à Cultura
+            </td>
+        </tr>
+        <tr>
+            <td align="center">
+                <b>
+                    Enviar para a Secretaria *
+                </b>
+            </td>
+            <td align="center">
+                <input type="radio" name="secretaria" />
+                do Audiovisual
+                <input type="radio" name="secretaria" />
+                de Fomento e Incentivo à Cultura
+            </td>
+        </tr>
+    </table>
+    <table class="tabela">
+        <tr>
+            <td class="centro">
+            	<input type="button" class="btn_salvar" title="Salvar" value=" " /> 
+            	<input type="button" class="btn_voltar" title="Voltar" value=" " />
+            </td>
+        </tr>
+    </table>
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

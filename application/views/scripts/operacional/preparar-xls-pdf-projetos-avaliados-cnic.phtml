@@ -1,0 +1,55 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#conteudoXLS').val($('#conteudoImprimivel').html());
+        $('#formGerarXls').submit();
+    });
+</script>
+<form method="POST" id="formGerarXls" name="formGerarXls" action="<?php echo $this->url(array('controller' => 'relatorio', 'action' => ($this->tipo == 'xls')?'gerar-xls':'html2-pdf' , 'orientacao' => ($this->tipo == 'pdf' && $this->orientacao)?'L':'P' )); ?>" style="display:none">
+    <textarea name="html" id="conteudoXLS"></textarea>
+</form>
+<div class="conteudoImprimivel" id="conteudoImprimivel" style="display:none">
+<table class="tabela" >
+    <tbody>
+    <tr>
+        <th valign="middle" align="center" bgcolor="#D0D0D0">Proponente</th>
+        <th valign="middle" align="center" bgcolor="#D0D0D0">PRONAC</th>
+        <th valign="middle" align="center" bgcolor="#D0D0D0">Nome do Projeto</th>
+        <th valign="middle" align="center" bgcolor="#D0D0D0">&Aacute;rea Cultural</th>
+        <th valign="middle" align="center" bgcolor="#D0D0D0">Segmento Cultural</th>
+        <th valign="middle" align="center" bgcolor="#D0D0D0">Resultado da Avalia&ccedil;&atilde;o</th>
+        <th valign="middle" align="center" bgcolor="#D0D0D0">Entidade Vinculada</th>
+        <th valign="middle" align="center" bgcolor="#D0D0D0">Componente</th>
+        <th valign="middle" align="center" bgcolor="#D0D0D0">Vl. Aprovado</th>
+    </tr>
+    <?php $auxSituacao = ""; ?>
+    <?php if(count($this->registros) > 0):?>
+    <?php foreach($this->registros as $registro):?>
+    <?php $qtd = $this->arrQtdeRegistros[$registro->DescSituacao];?>
+    <?php if($registro->DescSituacao != $auxSituacao):?>
+    <tr class="destacar">
+        <td valign="top" align="left" colspan="9"><b><?php echo $registro->DescSituacao?> (<?php echo $qtd; ?>)</b></td>
+    </tr>
+    <?php endif; ?>
+    <tr>
+        <td valign="top" align="left"><?php echo $registro->Proponente?></td>
+        <td valign="top" align="center"><?php echo $registro->Pronac?></td>
+        <td valign="top" align="left"><?php echo $registro->NomeProjeto?></td>
+        <td valign="top" align="left" nowrap="nowrap"><?php echo $registro->DescArea?></td>
+        <td valign="top" align="left" nowrap="nowrap"><?php echo $registro->DescSegmento?></td>
+        <td valign="top" align="left"><?php $arrRA = array("AC"=>"Aprovado-Componente", "AS"=>"Aprovado-Plen&aacute;ria", "IC"=>"Indeferido-Componente", "IS"=>"Indeferido-Plen&aacute;ria", "AR"=>""); echo $arrRA[$registro->stAnalise]?></td>
+        <td valign="top" align="center"><?php echo $registro->Orgao?></td>
+        <td valign="top" align="left"><?php echo $registro->Componente?></td>
+        <td valign="top" align="right"><?php echo number_format($registro->VlAprovado, 2, ",", ".")?></td>
+    </tr>
+    <?php $auxSituacao = $registro->DescSituacao; ?>
+    <?php endforeach; ?>
+    <?php else: ?>
+    <tr>
+        <td colspan="16" valign="top" align="center">Nenhum Registro Encontrado</td>
+    </tr>
+    <?php endif; ?>
+</tbody>
+</table>
+</div>
+
+

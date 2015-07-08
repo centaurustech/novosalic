@@ -1,0 +1,441 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+
+        // carrega a combo de segmentos culturais
+        $('#areaCultural').change(function() {
+            $('#segmentoCultural').html('<option value=""> - Carregando - </option>');
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo $this->url(array('controller' => 'segmento', 'action' => 'combo')); ?>',
+                data: {
+                    id: $('#areaCultural').val()
+                },
+                success: function(dados) {
+                    $('#segmentoCultural').find('option').remove();
+                    $('#segmentoCultural').append(dados);
+                }
+            });
+        });
+
+        <?php if(isset($this->movimentacaoAtual) && $this->movimentacaoAtual != '95'): ?>
+             //DESABILITA ALTERACOES NOS DADOS DO FORMULARIO (INCLUIR/ALTERAR/EXCLUIR)
+             JSBloquearAlteracaoFormulario();
+        <?php endif; ?>
+        
+
+        $("#patrocinador").numeric();
+        $("#divulgacao").numeric();
+        $("#beneficiarios").numeric();
+        $("#qtdenormal").numeric();
+        $("#qtdepromocional").numeric();
+        $("#preconormal").priceFormat();
+//        $("#previstonormal").priceFormat();
+        $("#precopromocional").priceFormat();
+
+        //CARREGAR COMBO DE SEGMENTOS DE ACORDO COM A COMBO DE AREAS
+        <?php if(!empty($this->planoDistribuicao->Area)): ?>
+            $('#segmentoCultural').html('<option value=""> - Carregando - </option>');
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo $this->url(array('controller' => 'segmento', 'action' => 'combo')); ?>',
+                data: {
+                    id: $('#areaCultural').val()
+                },
+                success: function(dados) {
+                    $('#segmentoCultural').find('option').remove();
+                    $('#segmentoCultural').append(dados);
+                    $('#segmentoCultural option').each(function(){
+                       if($(this).val() == '<?php echo $this->planoDistribuicao['Segmento']; ?>'){
+                           $(this).attr('selected',true);
+                       }
+                   });
+                }
+            });
+        <?php endif; ?>
+
+        $("#qtdenormal").keyup(function(){
+            somaValores('qtdenormal', 'qtdepromocional', 'nexemplares', 0, true);
+            somaValores('nexemplares', 'patrocinador', 'nexemplares', 0, true);
+            somaValores('nexemplares', 'divulgacao', 'nexemplares', 0, true);
+            somaValores('nexemplares', 'beneficiarios', 'nexemplares', 0, true);
+            multiplicaValores('qtdenormal', 'preconormal', 'previstonormal', 2, true);
+            somaValores('previstonormal', 'previstopromocional', 'totalprevisto', 2, true);
+        });
+
+        $("#qtdepromocional").keyup(function(){
+            somaValores('qtdenormal', 'qtdepromocional', 'nexemplares', 0, true);
+            somaValores('nexemplares', 'patrocinador', 'nexemplares', 0, true);
+            somaValores('nexemplares', 'divulgacao', 'nexemplares', 0, true);
+            somaValores('nexemplares', 'beneficiarios', 'nexemplares', 0, true);
+            multiplicaValores('qtdepromocional', 'precopromocional', 'previstopromocional', 2, true);
+            somaValores('previstonormal', 'previstopromocional', 'totalprevisto', 2, true);
+        });
+
+        $("#patrocinador,#divulgacao,#beneficiarios").keyup(function(){
+            somaValores('qtdenormal', 'qtdepromocional', 'nexemplares', 0, true);
+            somaValores('nexemplares', 'patrocinador', 'nexemplares', 0, true);
+            somaValores('nexemplares', 'divulgacao', 'nexemplares', 0, true);
+            somaValores('nexemplares', 'beneficiarios', 'nexemplares', 0, true);
+        });
+
+        $("#preconormal").keyup(function(){
+            multiplicaValores('qtdenormal', 'preconormal', 'previstonormal', 2, true);
+            somaValores('previstonormal', 'previstopromocional', 'totalprevisto', 2, true);
+        });
+
+        $("#precopromocional").keyup(function(){
+            multiplicaValores('qtdepromocional', 'precopromocional', 'previstopromocional', 2, true);
+            somaValores('previstonormal', 'previstopromocional', 'totalprevisto', 2, true);
+        });
+
+        //===========================================================================================================
+
+        $("#qtdenormal").blur(function(){
+            somaValores('qtdenormal', 'qtdepromocional', 'nexemplares', 0, true);
+            somaValores('nexemplares', 'patrocinador', 'nexemplares', 0, true);
+            somaValores('nexemplares', 'divulgacao', 'nexemplares', 0, true);
+            somaValores('nexemplares', 'beneficiarios', 'nexemplares', 0, true);
+            multiplicaValores('qtdenormal', 'preconormal', 'previstonormal', 2, true);
+            somaValores('previstonormal', 'previstopromocional', 'totalprevisto', 2, true);
+        });
+
+        $("#qtdepromocional").blur(function(){
+            somaValores('qtdenormal', 'qtdepromocional', 'nexemplares', 0, true);
+            somaValores('nexemplares', 'patrocinador', 'nexemplares', 0, true);
+            somaValores('nexemplares', 'divulgacao', 'nexemplares', 0, true);
+            somaValores('nexemplares', 'beneficiarios', 'nexemplares', 0, true);
+            multiplicaValores('qtdepromocional', 'precopromocional', 'previstopromocional', 2, true);
+            somaValores('previstonormal', 'previstopromocional', 'totalprevisto', 2, true);
+        });
+
+        $("#patrocinador,#divulgacao,#beneficiarios").blur(function(){
+            somaValores('qtdenormal', 'qtdepromocional', 'nexemplares', 0, true);
+            somaValores('nexemplares', 'patrocinador', 'nexemplares', 0, true);
+            somaValores('nexemplares', 'divulgacao', 'nexemplares', 0, true);
+            somaValores('nexemplares', 'beneficiarios', 'nexemplares', 0, true);
+        });
+
+        $("#preconormal").blur(function(){
+            multiplicaValores('qtdenormal', 'preconormal', 'previstonormal', 2, true);
+            somaValores('previstonormal', 'previstopromocional', 'totalprevisto', 2, true);
+        });
+
+        $("#precopromocional").blur(function(){
+            multiplicaValores('qtdepromocional', 'precopromocional', 'previstopromocional', 2, true);
+            somaValores('previstonormal', 'previstopromocional', 'totalprevisto', 2, true);
+        });
+        
+        
+        $('.btn_salvar').click(function(){
+            
+            var i=0,
+                erros = null,
+                nExemplares = parseInt($('input#nexemplares').val()),
+                patrocinador = parseInt($('input#patrocinador').val()),
+                divulgacao = parseInt($('input#divulgacao').val()),
+                baixarenda = parseInt($('input#beneficiarios').val()),
+                qtdenormal = parseInt($('input#qtdenormal').val()),
+                qtdepromocional = parseInt($('input#qtdepromocional').val()),
+                preconormal = parseInt($('input#preconormal').val().replace(',', '')),
+                precopromocional = parseInt($('input#precopromocional').val().replace(',', ''));
+            
+            if( patrocinador > (nExemplares/10) ){
+                i++;
+                erros = erros + i+' - A quantidade destinada ao patrocinador n&atilde;o pode ser maior do que 10% do n&uacute;mero Exemplares/Ingressos.<br />';
+            }
+            if( divulgacao > (nExemplares/10) ){
+                i++;
+                erros = erros + i+' - A quantidade destinada &agrave; divulga&ccedil;&atilde;o n&atilde;o pode ser maior do que 10% do n&uacute;mero Exemplares/Ingressos.<br />';
+            }
+            if( baixarenda < (nExemplares/10) ){
+                i++;
+                erros = erros + i+' - A quantidade destinada &agrave; popula&ccedil;&atilde;o de baixa renda n&atilde;o pode ser menor do que 10% do n&uacute;mero Exemplares/Ingressos.<br />';
+            }
+            if( precopromocional > preconormal){
+                i++;
+                erros = erros + i+' - Valor normal n&atilde;o pode ser menor do que o valor promocional.<br />';
+            }
+            if( qtdenormal == null ){
+                i++;
+                erros = erros + i+' - Favor preencher o campo Normal(Qntd).<br />';
+            }
+            if( qtdepromocional == null ){
+                i++;
+                erros = erros + i+' - Favor preencher o campo Promocional(Qntd).<br />';
+            }
+            if( patrocinador==0 && divulgacao==0 && baixarenda==0 && qtdenormal==0 && qtdepromocional==0){
+                i=0;
+            }
+            
+            var preenchimento = true;
+            $('.obrigatorio').each(function(){
+                if($.trim($(this).val()) == ''){
+                    preenchimento = false;
+                }
+            });
+            
+            if(!preenchimento){
+                i++;
+                erros = erros + i+' - Favor preencher os campos obrigatórios.';
+            }
+            
+            if(i>0){
+                $("#msgAlerta").dialog("destroy");
+                $("#msgAlerta").html(erros);
+                $("#msgAlerta").dialog({
+                    resizable: false,
+                    title: 'Alerta!',
+                    width: 440,
+                    modal: true,
+                    buttons : {
+                        'OK' : function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+                $('.ui-dialog-titlebar-close').remove();
+            } else {
+                $("#frmPlanoDistribuicao").submit();
+            }
+                
+        });
+        
+    });
+
+    //SOMA VALORES NUMERICOS
+    function somaValores(id1, id2, idDestino, precisao, tratarMascara){
+        var cmp1 = $("#" + id1).val();
+        var cmp2 = $("#" + id2).val();
+        var valor1 = 0;
+        var valor2 = 0;
+        var soma_valores = 0;
+
+        if(!cmp1){ cmp1 = "0"; }
+        if(!cmp2){ cmp2 = "0"; }
+
+        if(tratarMascara == true){
+            valor1 = cmp1.replace(".","");
+            valor1 = valor1.replace(",", ".");
+            valor2 = cmp2.replace(".", "");
+            valor2 = valor2.replace(",", ".");
+        } else {
+            valor1 = cmp1;
+            valor2 = cmp2;
+        }
+
+        soma_valores = parseFloat(valor1) + parseFloat(valor2);
+        soma_valores = Math.abs(soma_valores);
+        soma_valores = soma_valores.toFixed(precisao);
+        if (precisao == 0) {
+            $('#' + idDestino).val(soma_valores);
+        } else {
+            $('#' + idDestino).val(soma_valores).priceFormat();
+        }
+    }
+
+    //MULTIPLICA VALORES NUMERICOS
+    function multiplicaValores(id1, id2, idDestino, precisao, tratarMascara){
+        var cmp1 = $("#" + id1).val();
+        var cmp2 = $("#" + id2).val();
+        var valor1 = 0;
+        var valor2 = 0;
+        var soma_valores = 0;
+
+        if(!cmp1){ cmp1 = "0"; }
+        if(!cmp2){ cmp2 = "0"; }
+
+        if(tratarMascara == true){
+            valor1 = cmp1.replace(".","");
+            valor1 = valor1.replace(",",".");
+            valor2 = cmp2.replace(".","");
+            valor2 = valor2.replace(",",".");
+        }else{
+            valor1 = cmp1;
+            valor2 = cmp2;
+        }
+
+        soma_valores = parseFloat(valor1) * parseFloat(valor2);
+        soma_valores = Math.abs(soma_valores);
+        soma_valores = soma_valores.toFixed(precisao);
+        $('#'+idDestino).val(soma_valores).priceFormat();
+    }
+</script>
+
+<style type="text/css">
+    label.error{ color:red; font-weight: normal; }
+</style>
+
+<!-- ========== INICIO CONTEUDO ========== -->
+<div id="confirma" class="sumir"></div>
+<div id="msgAlerta" class="sumir"></div>
+
+<form action="<?php echo $this->acaoSalvar; ?>" name="frmPlanoDistribuicao" id="frmPlanoDistribuicao" method="post">
+    <input type="hidden" name="idPlanoDistribuicao" id="idPlanoDistribuicao" value="<?php echo $this->planoDistribuicao['idPlanoDistribuicao']; ?>">
+    <input type="hidden" name="idProjeto" id="idProjeto" value="<?php echo $this->planoDistribuicao['idProjeto']; ?>">
+    <!-- ========== INÍCIO TABELA DADOS ========== -->
+    <table  class="tabela">
+        <tr>
+            <th colspan="4" align="center">Nome do Evento / Produto</th>
+        </tr>
+        <tr>
+            <td class="destacar bold w150">Produto <span style="color: red;">*</span></td>
+            <td>
+                <select class="input_simples w300 obrigatorio" name="produto" id="produto" <?php echo (!empty($this->planoDistribuicao->idProduto)) ? " disabled='disabled'" : ""; ?>>
+                    <option value=""> - Selecione - </option>
+                    <?php foreach ($this->comboprodutos as $produto): ?>
+                        <option value="<?php echo $produto['Codigo']; ?>" <?php echo ($produto['Codigo'] == $this->planoDistribuicao['idProduto']) ? " selected='selected'" : ""; ?>>
+                            <?php echo $produto['Descricao']; ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </td>
+            <td class="destacar bold w150">Produto Principal? <span style="color: red;">*</span></td>
+            <td>
+                <?php if (($this->bln_exitePP == "false") || isset($this->planoDistribuicao['idPlanoDistribuicao'])): //Verifica se existe produto principal ja cadastrado ?>
+                    <select class="input_simples w100 obrigatorio" name="prodprincipal" id="prodprincipal">
+                        <option value="" selected>- Selecione -</option>
+                        <option value="0" <?php echo ($this->planoDistribuicao['stPrincipal'] == "0") ? " selected='selected'" : ""; ?>>N&atilde;o</option>
+                        <option value="1" <?php echo ($this->planoDistribuicao['stPrincipal'] == "1") ? " selected='selected'" : ""; ?>>Sim</option>
+                    </select>
+                <?php else: ?>
+                    <select class="input_simples w100" name="prodprincipal" id="prodprincipal">
+                        <option value="0" selected>N&atilde;o</option>
+                    </select>
+                <?php endif; ?>
+            </td>
+        </tr>
+        <tr>
+            <td class="destacar bold" style="width: 1px;">&Aacute;rea <span style="color: red;">*</span></td>
+            <td>
+                <select class="input_simples obrigatorio" name="areaCultural" id="areaCultural">
+                    <option value=""> - Selecione uma área cultural - </option>
+                    <?php foreach ($this->comboareasculturais as $comboareacultural): ?>
+                        <option value="<?php echo $comboareacultural->id; ?>" <?php echo ($comboareacultural->id == $this->planoDistribuicao['Area']) ? " selected='selected'" : ""; ?>>
+                            <?php echo $comboareacultural->descricao; ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </td>
+            <td class="destacar bold" style="width: 1px;">Segmento <span style="color: red;">*</span></td>
+            <td>
+                <select class="input_simples obrigatorio" name="segmentoCultural" id="segmentoCultural">
+                    <option value=""> <?php echo " - Selecione um segmento cultural - "; ?> </option>
+                </select>
+            </td>
+        </tr>
+    </table>
+
+    <table class="tabela">
+        <tr>
+            <th colspan="2" align="center">Posi&ccedil;&atilde;o da Logomarca</th>
+        </tr>
+        <tr>
+            <td class="destacar bold w150">Posi&ccedil;&atilde;o da Logomarca <span style="color: red;">*</span></td>
+            <td>
+                <select class="input_simples obrigatorio" name="logomarca" id="logomarca" onchange="">
+                    <option value=""> - Selecione - </option>
+                    <?php foreach ($this->combologomarcas as $logomarca): ?>
+                        <option value="<?php echo $logomarca['idVerificacao']; ?>" <?php echo ($logomarca['idVerificacao'] == $this->planoDistribuicao['idPosicaoDaLogo']) ? " selected='selected'" : ""; ?>>
+                            <?php echo $logomarca['Descricao']; ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </td>
+        </tr>
+    </table>
+
+    <table class="tabela">
+        <tr>
+            <th align="center" colspan="3"><?php echo "Distribui&ccedil;&atilde;o Gratuita"; ?> (Qtde)</th>
+        </tr>
+        <tr>
+            <td class="destacar bold" width="33%" align="center">Patrocinador</td>
+            <td class="destacar bold" width="33%" align="center">Divulga&ccedil;&atilde;o</td>
+            <td class="destacar bold" width="34%" align="center">Popula&ccedil;&atilde;o de Baixa Renda</td>
+        </tr>
+        <tr>
+            <td align="center">
+                <input class="input_simples" type="text" name="patrocinador" id="patrocinador" value="<?php echo $this->planoDistribuicao['QtdePatrocinador']; ?>" maxlength="8" size="10">
+            </td>
+            <td align="center">
+                <input class="input_simples" type="text" name="divulgacao" id="divulgacao" value="<?php echo $this->planoDistribuicao['QtdeProponente']; ?>" maxlength="8" size="10">
+            </td>
+            <td align="center">
+                <input class="input_simples" type="text" name="beneficiarios" id="beneficiarios" value="<?php echo $this->planoDistribuicao['QtdeOutros']; ?>" maxlength="8" size="10">
+            </td>
+        </tr>
+    </table>
+
+    <table class="tabela">
+        <tr>
+            <th align="center" colspan="2">Total para a Venda (Qtde)</th>
+            <th align="center">Quantidade</th>
+        </tr>
+        <tr>
+            <td class="destacar bold" width="33%" align="center">Normal <span style="color: red;">*</span></td>
+            <td class="destacar bold" width="33%" align="center">Promocional <span style="color: red;">*</span></td>
+            <td class="destacar bold" width="34%" align="center">N&ordm; Exemplares / Ingressos</td>
+        </tr>
+        <tr>
+            <td align="center">
+                <input class="input_simples obrigatorio" type="text" name="qtdenormal" id="qtdenormal" value="<?php echo $this->planoDistribuicao['QtdeVendaNormal']; ?>" maxlength="8" size="10">
+            </td>
+            <td align="center">
+                <input class="input_simples obrigatorio" type="text" name="qtdepromocional" id="qtdepromocional" value="<?php echo $this->planoDistribuicao['QtdeVendaPromocional']; ?>" maxlength="8" size="10">
+            </td>
+            <td align="center">
+                <input disabled="disabled"  name="nexemplares" id="nexemplares" class="input_simples" type="text" maxlength="10" value="<?php echo $this->planoDistribuicao['QtdeProduzida']; ?>">
+            </td>
+        </tr>
+    </table>
+
+    <table class="tabela">
+        <tr>
+        <tr>
+            <th align="center" colspan="2"><?php echo utf8_encode("Pre&ccedil;o Unit&aacute;rio (R$)"); ?></th>
+            <th align="center" colspan="2">Receita Prevista (R$)</th>
+            <th align="center">Total Receita Prevista (R$)</th>
+        </tr>
+        <tr>
+            <td class="destacar bold" align="center">Normal <span style="color: red;">*</span></td>
+            <td class="destacar bold" align="center">Promocional <span style="color: red;">*</span></td>
+            <td class="destacar bold" align="center">Normal <span style="color: red;">*</span></td>
+            <td class="destacar bold" align="center">Promocional <span style="color: red;">*</span></td>
+            <td class="destacar bold" align="center">Total</td>
+        </tr>
+        <tr>  
+            <td align="center">
+                <input class="input_simples obrigatorio" type="text" name="preconormal" id="preconormal" value="<?php echo $this->planoDistribuicao['PrecoUnitarioNormal']; ?>" maxlength="9" size="10">
+            </td>
+            <td align="center">
+                <input class="input_simples obrigatorio" type="text" name="precopromocional" id="precopromocional" value="<?php echo $this->planoDistribuicao['PrecoUnitarioPromocional']; ?>" maxlength="9" size="10">
+            </td>
+            <td align="center">
+                <input   name="previstonormal"  disabled="disabled"  id="previstonormal" class="input_simples" type="text" maxlength="10" value="<?php echo number_format($this->planoDistribuicao['QtdeVendaNormal'] * $this->planoDistribuicao['PrecoUnitarioNormal'], 2, ',', '.'); ?>" size="10">
+            </td>
+            <td align="center">
+                <input class="input_simples"  disabled="disabled"  name="previstopromocional" id="previstopromocional" type="text" maxlength="10" value="<?php echo $this->planoDistribuicao['QtdeVendaPromocional'] * str_replace(",", ".", $this->planoDistribuicao['PrecoUnitarioPromocional']); ?>" size="10">
+            </td>
+            <td align="center">
+                <input disabled="disabled"  name="totalprevisto" id="totalprevisto" class="input_simples" type="text" maxlength="10" value="<?php echo number_format($this->planoDistribuicao['QtdeVendaNormal'] * $this->planoDistribuicao['PrecoUnitarioNormal'] + $this->planoDistribuicao['QtdeVendaPromocional'] * $this->planoDistribuicao['PrecoUnitarioPromocional'], 2, ',', '.'); ?>">
+            </td>
+        </tr>
+    </table>
+
+    <table class="tabela">
+        <tr>
+            <th colspan="5">Justificativa</th>
+        </tr>
+        <tr>
+            <td colspan="5">
+                <textarea class="textarea_simples" style="width: 99%" id="dsJustificativaPosicaoLogo" name="dsJustificativaPosicaoLogo" cols="" rows="6"><?php echo $this->planoDistribuicao['dsJustificativaPosicaoLogo']; ?></textarea>
+            </td>
+        </tr>
+    </table>
+
+    <div style="width: 100%">
+        <!--<p align="center"><input type="submit" style="width: 88px" value="" class="btn_salvar" id="btn_salvar" /></p>-->
+        <p align="center"><input type="button" value="" class="btn_salvar" id="btn_salvar" /></p>
+    </div>
+    <br clear="all" />
+</form>

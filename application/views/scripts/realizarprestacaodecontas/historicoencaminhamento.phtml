@@ -1,0 +1,35 @@
+<table class="tabela">
+    <tr>
+        <th width="1%">PRONAC</th>
+        <th>Nome do Projeto</th>
+    </tr>
+    <tr>
+        <td id="HPronac"><?php echo $this->PRONAC; ?></td>
+        <td id="HnomeProjeto"><?php echo utf8_decode(htmlentities($this->NomeProjeto)); ?></td>
+    </tr>
+</table>
+<br />
+<table class="tabela">
+    <thead>
+        <tr>
+            <th>Data de Envio</th>
+            <th>Nome do Remetente</th>
+            <th>Nome do Destinat&aacute;rio</th>
+            <!--<th>Mensagem</th>-->
+        </tr>
+        <?php if(count($this->Historico)>0){
+                foreach ($this->Historico as $chave => $dadosHis ) { ?>
+                <tr>
+                    <td id="Pronac"><?php echo ConverteData($dadosHis->dtInicioEncaminhamento,5); ?></td>
+                    <td id="nomeProjeto"><?php echo utf8_decode(htmlentities($dadosHis->NomeOrigem)); ?></td>
+                    <td id="remetente"><?php echo utf8_decode(htmlentities($dadosHis->NomeDestino)); ?></td>
+                    <!--<td id="destinatario"><?php echo utf8_decode(htmlentities($dadosHis->dsJustificativa)); ?></td>-->
+                </tr>
+        <?php   } ?>
+        <?php }else{ ?>
+                <tr>
+                    <td colspan="3">Nenhum registro encontrado</td>
+                </tr>
+        <?php } ?>
+    </thead>
+</table>

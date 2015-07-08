@@ -1,0 +1,201 @@
+<?php 
+/**
+ * Formulário com o Relatório de Contas Rejeitadas
+ * @author emanuel.sampaio - Politec
+ * @since 08/02/2011
+ * @version 1.0
+ * @package application
+ * @subpackage application.views.scripts.movimentacaodeconta
+ * @copyright © 2011 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+
+/* menu lateral */
+require_once 'scripts/controlarmovimentacaobancaria/inc/menu.inc.php';
+?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'), '', true); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second">Movimenta&ccedil;&atilde;o banc&aacute;ria</li>
+        <li class="last">Relat&oacute;rio de inconsist&ecirc;ncias de conta capta&ccedil;&atilde;o</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Relat&oacute;rio de inconsist&ecirc;ncias de conta capta&ccedil;&atilde;o</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+    <div id="dialog-data1" class="sumir">Na Data do Recibo, a Data Final, quando preenchida, deve ser <strong>maior ou igual</strong> &agrave; Data Inicial!</div>
+    <div id="dialog-data2" class="sumir">Na Data de Cr&eacute;dito, a Data Final, quando preenchida, deve ser <strong>maior ou igual</strong> &agrave; Data Inicial!</div>
+
+    <script type="text/javascript">
+        /**
+         * Função para verificar se a data final é menor que a data inicial
+         */
+        function verificar_data(x){
+            if (x == 1){ // data do recibo
+                // pega a data inicial
+                var dia1  = $('#data1').val().substr(0,2);
+                var mes1  = $('#data1').val().substr(3,2);
+                var ano1  = $('#data1').val().substr(6,4);
+
+                // pega a data final
+                var dia2  = $('#data2').val().substr(0,2);
+                var mes2  = $('#data2').val().substr(3,2);
+                var ano2  = $('#data2').val().substr(6,4);
+   
+            } else if (x == 2) {
+                // pega a data inicial
+                var dia1  = $('#data3').val().substr(0,2);
+                var mes1  = $('#data3').val().substr(3,2);
+                var ano1  = $('#data3').val().substr(6,4);
+
+                // pega a data final
+                var dia2  = $('#data4').val().substr(0,2);
+                var mes2  = $('#data4').val().substr(3,2);
+                var ano2  = $('#data4').val().substr(6,4);
+            }
+            var data1 = ano1 + mes1 + dia1;
+            var data2 = ano2 + mes2 + dia2;
+
+            if (data1.length == 8 && data2.length == 8 && data1 > data2){
+                alertModal("ERRO!", "dialog-data" + x, 300, 180);
+                return false;
+            } else {
+                return true;
+            }
+        } // fecha função validar_data()
+
+        /**
+         * Funções que são chamadas após a página ser carregada
+         */
+        $(document).ready(function(){
+            // máscaras dos campos
+            $('#nr_pronac').keyup(function(){
+                mascara(this, format_num); // somente números
+            });
+            $('#data1, #data2, #data3, #data4').keyup(function(){
+                mascara(this, format_data); // data
+            });
+            $('#proponente, #incentivador').keyup(function(){
+                mascaraCnpjCpf(this);
+            });
+
+            // passa para a data final assim que a data inicial for preenchida
+            $('#data1').keyup(function(){
+                if (document.getElementById('data1').value.length == '10'){
+                    $('#data2').focus();
+                }
+            });
+            $('#data3').keyup(function(){
+                if (document.getElementById('data3').value.length == '10'){
+                    $('#data4').focus();
+                }
+            });
+
+            // validações antes do envio do formulário
+            $('#enviar').click(function(){
+                // validação da data final meno que a inicial
+                if (!verificar_data(1) || !verificar_data(2)){
+                    return false;
+                }
+            });
+
+            // calendário
+            $.datepicker.regional['pt-BR'] = {
+                closeText: 'Fechar',
+                prevText: '&#x3c;Anterior',
+                nextText: 'Pr&oacute;ximo&#x3e;',
+                currentText: 'Hoje',
+                monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+                monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+                dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','S&aacute;bado'],
+                dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                weekHeader: 'Sm',
+                dateFormat: 'dd/mm/yy',
+                firstDay: 0,
+                isRTL: false,
+                showMonthAfterYear: false,
+                yearSuffix: ''
+            };
+            $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+            $('#data1, #data2, #data3, #data4').datepicker($.datepicker.regional['pt-BR']);
+        }); // fim $(document).ready()
+    </script>
+
+    <br />
+
+    <!-- ========== INÍCIO FORMULÁRIO DE CONSULTA ========== -->
+    <form name="formBuscar" id="formBuscar" method="post"
+          action="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'listar-inconsistencias')); ?>"
+          enctype="multipart/form-data">
+
+        <table class="tabela w700">
+            <tr>
+                <td class="destacar w150" align="left"><label for="nr_pronac">PRONAC</label></td>
+                <td>
+                    <input type="text" class="input_simples w200" name="nr_pronac" id="nr_pronac" maxlength="7" />
+                </td>
+            </tr>
+            <!--<tr>
+                <td class="destacar bold w150" align="left"><label for="data_recibo">Dt. Recibo</label></td>
+                <td>
+                    <label for="data1">De</label> <input type="text" class="select_simples btn_calendario" name="data_recibo[]" id="data1" maxlength="10" title="Selecione uma data v&aacute;lida!" />
+                    <label for="data2">a</label> <input type="text" class="select_simples btn_calendario" name="data_recibo[]" id="data2" maxlength="10" title="Selecione uma data v&aacute;lida!" />
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold w150" align="left"><label for="proponente">CPF/CNPJ Proponente</label></td>
+                <td>
+                    <input type="text" class="input_simples w200" name="proponente" id="proponente" maxlength="18" />
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold w150" align="left"><label for="incentivador">CPF/CNPJ Incentivador</label></td>
+                <td>
+                    <input type="text" class="input_simples w200" name="incentivador" id="incentivador" maxlength="18" />
+                </td>
+            </tr>-->
+            <tr>
+                <td class="destacar bold w150" align="left"><label for="data_credito">Dt. Crédito</label></td>
+                <td>
+                    <label for="data3">De</label> <input type="text" class="select_simples btn_calendario" name="data_credito[]" id="data3" maxlength="10" title="Selecione uma data v&aacute;lida!" />
+                    <label for="data4">a</label> <input type="text" class="select_simples btn_calendario" name="data_credito[]" id="data4" maxlength="10" title="Selecione uma data v&aacute;lida!" />
+                </td>
+            </tr>
+        </table>
+
+        <table class="tabela w700">
+            <tr>
+                <td align="center">
+                    <input type="submit" id="enviar" title="Gerar Relatório de Captações não Identificadas" class="btn_localizar" value=" " /> &nbsp;
+                    <input type="reset" title="Limpar" class="btn_limpar" value=" " />
+                </td>
+            </tr>
+        </table>
+
+    </form>
+    <!-- ========== FIM FORMULÁRIO DE CONSULTA ========== -->
+
+    <br />
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

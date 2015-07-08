@@ -1,0 +1,199 @@
+<?php
+    $SalvarHref                 = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'cadastrarlicitacao')).'?idusuario='.$this->idusuario;
+    $VoltarHref               = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'licitacao')).'?idusuario='.$this->idusuario;
+    $ExcluirDocumentoHref       = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'excluirdocumento')).'?idusuario='.$this->idusuario;
+    $AnexarHref                 = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'anexar')).'?idusuario='.$this->idusuario;
+    $ExcluirItensCustoHref      = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'excluiritenscusto')).'?idusuario='.$this->idusuario;
+    $SalvarItensCustoHref       = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'incluiritenscusto')).'?idusuario='.$this->idusuario;
+    $DescreverItensCustoHref    = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'descreveritenscusto')).'?idusuario='.$this->idusuario;
+    $carregarSelectHref         = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'carregaselectajax')).'?idusuario='.$this->idusuario;
+    $SalvarFornecedorHref       = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'inserirfornecedor')).'?idusuario='.$this->idusuario;
+    $ExcluirFornecedorHref      = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'removerfornecedor')).'?idusuario='.$this->idusuario;
+    $FornecedorVencedorHref     = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'fornecedorvencedor')).'?idusuario='.$this->idusuario;
+
+    $corpo          = 'alterarlicitacaoAjax';
+    $idformulario   = 'formularioLicitacao';
+    $idNome         = 'idlicitacao';
+    $inputID        = '<input type="hidden" name="'.$idNome.'" id="'.$idNome.'" value="'.$this->idlicitacao.'"/><input type="hidden" name="idpronac" id="idpronac" value="'.$this->idpronac.'"/>';
+
+    $verificacao = true;
+    if($this->idlicitacao != '')
+        $verificacao = false;
+    
+    include_once 'scripts/comprovarexecucaofinanceira/inc/menu.inc.php';
+?>
+<style>
+<!--
+    table caption {
+        background: none repeat scroll 0 0 #ABDA5D;
+        color: #3A7300;
+        font-size: 11px;
+        padding: 8px;
+        text-transform: uppercase;
+    }
+-->
+</style>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principalproponente', 'action' => ''), null, true); ?>" title="Ir para p&aacute;gina inicial" onclick="carregandoModal();">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')) . '?idPronac=' . Seguranca::encrypt($this->idpronac); ?>" title="Ir para In&iacute;cio">Consultar dados do Projeto</a></li>
+        <li>Comprovar Execu&ccedil;&atilde;o Financeira</li>
+        <li><a href="<?php echo $this->link_menu_lateral; ?>" title="Pagamento" onclick="carregandoModal();">Licita&ccedil;&atilde;o</a></li>
+        <li class="last">Detalhar Licita&ccedil;&atilde;o</li>
+    </ul>
+</div> <!-- final: #breadcrumb -->
+
+<div id="titulo">
+    <div>Detalhar Licita&ccedil;&atilde;o<span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+
+<div id="conteudo" align="center">
+    <div id="<?php echo $corpo;?>">
+
+        <form id="<?php echo $idformulario;?>" >
+            <table class="tabela">
+                <tr>
+                    <th>Dados da Licita&ccedil;&atilde;o</th>
+                </tr>
+            </table>
+
+            <table class="tabela">
+                <tr>
+                    <td class="destacar w200 bold">Tipo de Compra</td>
+                    <td class="destacar w200 bold">Modalidade</td>
+                    <td class="destacar w200 bold">Tipo de Licita&ccedil;&atilde;o</td>
+                    <td class="destacar w200 bold">N&uacute;mero de Processo</td>
+                </tr>
+                <tr>
+                    <td><?php if($this->tipoCompra == 1) echo 'Material';if($this->tipoCompra == 2) echo 'Servi&ccedil;o';if($this->tipoCompra == 3) echo 'Material/Servi&ccedil;o';?></td>
+                    <td>
+                        <?php if(is_array($this->modalidadeConteudo) and count($this->modalidadeConteudo)>0)
+                            foreach ($this->modalidadeConteudo as $key=>$modalidadeConteudo){
+                                if($this->modalidade==$key) echo $modalidadeConteudo;
+                        } ?>
+                    </td>
+                    <td>
+                        <?php if(is_array($this->tipoLicitacaoConteudo) and count($this->tipoLicitacaoConteudo)>0)
+                            foreach ($this->tipoLicitacaoConteudo as $key=>$tipoLicitacaoConteudo){
+                                if($this->tipoLicitacao==$key) echo $tipoLicitacaoConteudo;
+                            }
+                        ?>
+                    </td>
+                    <td><?php echo $this->nrProcesso;?></td>
+                </tr>
+                <tr>
+                    <td class="destacar w200 bold">Objeto</td>
+                    <td colspan="3"><?php echo $this->objeto;?></td>
+                </tr>
+                <tr>
+                    <td class="destacar w200 bold">N&uacute;mero de Licita&ccedil;&atilde;o</td>
+                    <td class="destacar w200 bold">Fundamento Legal</td>
+                    <td class="destacar w200 bold">Data Publica&ccedil;&atilde;o do Edital</td>
+                    <td class="destacar w200 bold">Data Abertura Licita&ccedil;&atilde;o</td>
+                </tr>
+                <tr>
+                    <td><?php echo $this->nrLicitacao;?></td>
+                    <td><?php echo $this->fundamentoLegal;?></td>
+                    <td><?php echo $this->dataPublicacaoEdital;?></td>
+                    <td><?php echo $this->dataAberturaLicitacao;?></td>
+                </tr>
+                <tr>
+                    <td class="destacar w200 bold">Data Encerramento Licita&ccedil;&atilde;o</td>
+                    <td class="destacar w200 bold">Valor Licita&ccedil;&atilde;o</td>
+                    <td colspan="2" class="destacar w200 bold">Data Homologa&ccedil;&atilde;o</td>
+                </tr>
+                <tr>
+                    <td><?php echo $this->dataEncerramentoLicitacao;?></td>
+                    <td><?php echo $this->valorLicitacao;?></td>
+                    <td colspan="2"><?php echo $this->dataHomologacao;?></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="destacar w200 bold">UF</td>
+                    <td colspan="2" class="destacar w200 bold">Munic&iacute;pio</td>
+                </tr>
+                <tr>
+                    <td colspan="2"><?php echo $this->dsEstado;?></td>
+                    <td colspan="2"><?php echo $this->dsMunicipio;?></td>
+                </tr>
+                <tr>
+                    <td class="destacar w200 bold">Justificativa</td>
+                    <td colspan="3"><?php echo $this->justificativa;?></td>
+                </tr>
+            </table>
+
+            <br clear="left"/>
+
+            <table id="tableItensCusto" class="tabela linhaMaior1">
+                <caption>Itens de Custo Vinculados</caption>
+                <tr>
+                    <td class="destacar bold" align="center">Produto</td>
+                    <td class="destacar bold" align="center">Etapa</td>
+                    <td class="destacar bold" align="center">Item</td>
+                </tr>
+                <?php foreach ($this->itensVinculados as $itensVinculados) { ?>
+                <tr>
+                    <td><?php echo $itensVinculados->dsProduto ? $itensVinculados->dsProduto : 'Administração do Projeto'; ?></td>
+                    <td><?php echo $itensVinculados->dsEtapa; ?></td>
+                    <td><?php echo $itensVinculados->dsItem; ?></td>
+                </tr>
+                <?php } ?>
+            </table>
+        </form>
+
+        <br clear="left"/>
+
+        <table id="tbFornecedores" class="tabela linhaMaior1 <?php if($verificacao) echo 'displayNone';?>">
+            <caption>Fornecedores</caption>
+            <?php if (count($this->fornecedores) > 0) { ?>
+            <tr>
+                <td class="destacar bold" align="center">Vencedor</td>
+                <td class="destacar bold" align="center">CNPJ/CPF</td>
+                <td class="destacar bold" align="center">Nome Fornecedor</td>
+            </tr>
+            <?php foreach ($this->fornecedores as $key=>$fornecedor){ ?>
+            <tr id="trFornecedor<?php echo $fornecedor->idAgente; ?>" class="centro">
+                <td style="text-align: center;">
+                    <?php if($fornecedor->stVencedor){?><input type="radio" checked /><?php }?>
+                </td>
+                <td>
+                    <?php echo Validacao::mascaraCPFCNPJ($fornecedor->CNPJCPF);?>
+                </td>
+                <td class="esquerda">
+                    <?php echo $fornecedor->Descricao;?>
+                </td>
+            </tr>
+            <?php } } else { ?>
+            <tr>
+                <td class="centro" colspan="3" style="color: red;">Nenhum fornecedor cadastrado.</td>
+            </tr>
+            <?php } ?>
+        </table>
+    </div>
+    <br clear="left"/>
+</div>
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />
+
+
+<script type="text/javascript">
+    function acaoLink(este){
+        var info = {
+            este        :   este,
+            corpo       :   '<?php echo $corpo;?>',
+            parametros  :   {<?php echo $idNome;?>:$('#<?php echo $corpo;?> #<?php echo $idNome;?>').val(),idpronac:'<?php echo $this->idpronac;?>'}
+        };
+        acoesLink(info);
+        return false;
+    }
+    $(document).ready(function(){
+        $('#<?php echo $corpo;?> a').click(function(){
+            if($(this).attr('retorna')==undefined){
+                acaoLink(this);
+                return false;
+            }
+        });
+    });
+</script>
+

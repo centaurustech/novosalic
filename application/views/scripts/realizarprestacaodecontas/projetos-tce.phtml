@@ -1,0 +1,200 @@
+
+<?php
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+<script>
+    $(document).ready(function(){
+        $(".orderByTCE").click(function(){
+            var campo = $(this).attr("valorOrdenacaoTCE");
+
+            if("ASC" == $("#tipoOrdenacaoTCE").val()){
+                tipo = "DESC";
+            }else{
+                tipo = "ASC";
+            }
+
+            ordenarTCE(campo, tipo);
+        });
+
+        $(".orderByTCE").each(function(){
+            if($("#ordenacaoTCE").val() == $(this).attr("valorOrdenacaoTCE")){
+                if($("#tipoOrdenacaoTCE").val() == "ASC"){
+                    $(this).after('<span style="padding-left:4px;"><img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-baixo.PNG" align="absmiddle"></span>');
+                }else{
+                    $(this).after('<span style="padding-left:4px;"><img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-cima.PNG" align="absmiddle"></span>');
+                }
+            }
+        });
+    });
+
+    function ordenarTCE(campo, tipo){
+        $("#ordenacaoTCE").val(campo);
+        $("#tipoOrdenacaoTCE").val(tipo);
+        paginarProjetosTCE(1);
+    }
+
+    function paginarProjetosTCE(pag){
+        $("#pagTCE").val(pag);
+        jqAjaxForm(document.getElementById("frmProjetosTCE"), "projetostce_resultado");
+        $("#projetostce_resultado").html("");
+        $('#projetostce_resultado').html('<br><center>Aguarde, carregando dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br>');
+    }
+
+
+    function JSEncaminharParaConsultoriaTCE(idPronac,idOrgaoDestino)
+    {
+
+        $('html').css('overflow', 'hidden');
+        $("body").append("<div id='divDinamica'></div>");
+        $("#divDinamica").html("");
+        $('#divDinamica').html("<br><br><center>Carregando dados...</center>");
+        $.ajax({
+            url : '<?php echo $this->url ( array ('controller' => 'realizarprestacaodecontas', 'action' => 'encaminharprestacaodecontas' ));?>',
+            data :
+                {
+                idPronac : idPronac,
+                idOrgaoDestino : idOrgaoDestino,
+                idSituacaoPrestContas : 1,
+                pag : <?php echo $this->pagTCE;?>
+            },
+            success: function(data){
+                $('#divDinamica').html(data);
+            },
+            type : 'post'
+
+        });
+
+        var title = '';
+        if(idOrgaoDestino == 177){
+            title = 'Consultoria - AECI';
+        }else if(idOrgaoDestino == 12){
+            title = 'Consultoria - CONJUR';
+        }else{
+            title = 'Encaminhar Projeto para Análise';
+        }
+        //jqAjaxLink("<?php echo $this->baseUrl()?>/operacional/resultado-projetos-por-situacao?situacao=" + situacao, null, "divDinamica");
+        $("#divDinamica").dialog({
+            resizable: true,
+            width:750,
+            height:600,
+            modal: true,
+            autoOpen:true,
+            draggable:false,
+            title: title,
+            buttons: {
+                'Cancelar': function() {
+                    $("#divDinamica").remove();
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');
+                }
+            },
+            close: function() {
+                    $("#divDinamica").remove();
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');
+                }
+        });
+    }
+</script>
+
+
+<div id="resultadoConsultaProjetosTCE">
+<!-- ===================================================================== -->
+<!-- ================= PROJETOS TCE ====================================== -->
+<!-- ===================================================================== -->
+
+    <?php $idPronac = null; if (is_object($this->registrosTCE) &&  $this->registrosTCE->count() > 0){ ?>
+
+        <!-- MODAL PARA ENCAMINHAMENTO PARA ANALISE -->
+        <div style="display: none;" id="modal_encaminhar" title=""></div>
+        <!-- FIM DO MODAL PARA ENCAMINHAMENTO PARA ANALISE -->
+        
+        <table class="tabela">
+            <thead>
+                <tr class="titulo_tabela">
+                    <th width="60">Número</th>
+                    <th width="60"><a href="#resultadoConsultaProjetosTCE" class="orderByTCE" valorOrdenacaoTCE="1">Pronac</a></th>
+                    <th width="220"><a href="#resultadoConsultaProjetosTCE" class="orderByTCE" valorOrdenacaoTCE="5">Nome do Projeto</a></th>
+                    <th width="150"><a href="#resultadoConsultaProjetosTCE" class="orderByTCE" valorOrdenacaoTCE="10">Área / Segmento</a></th>
+                    <th width="60"><a href="#resultadoConsultaProjetosTCE" class="orderByTCE" valorOrdenacaoTCE="7">Data de Recebimento</a></th>
+                    <th width="60"><a href="#resultadoConsultaProjetosTCE" class="orderByTCE" valorOrdenacaoTCE="4">Cidade</a></th>
+                    <th width="60"><a href="#resultadoConsultaProjetosTCE" class="orderByTCE" valorOrdenacaoTCE="12">Mecanismo</a></th>
+                    <th width="60">Consultoria AECI</th>
+                    <th width="60">Consultoria CONJUR</th>
+                </tr>
+            </thead>
+           <?php
+                $i = 1;
+                foreach ( $this->registrosTCE as $chave => $prescontas ) : if($idPronac!=$prescontas->IdPRONAC) {?>
+                        <tr>
+                            <td align="center"><?php echo $i;?></td>
+                            <td class="centro">
+                                <a target="_blank" href="<?php echo $this->url ( array ('controller' => 'consultardadosprojeto', 'action' => '' ) ) . '?idPronac=' . $prescontas->IdPRONAC; ?>" class="itenspronac" style="text-decoration: underline; cursor: pointer;">
+                                    <?php echo $prescontas->AnoProjeto . '' . $prescontas->Sequencial;?>
+                                </a>
+                            </td>
+                            <td align="left"><?php echo $prescontas->NomeProjeto;?></td>
+                            <td align="left"><?php echo $prescontas->Area . ' / ' . $prescontas->Segmento;?></td>
+                            <td class="centro"><?php echo $datasituacao = date('d/m/Y',strtotime($prescontas->DtSituacao));  ?></td>
+                            <td class="centro"><?php echo $prescontas->UfProjeto;?></td>
+                            <td class="centro"><?php  $mecanismo = $prescontas->Mecanismo; if ($mecanismo == 'Mecenato'){ echo "Incentivo Fiscal"; }else{ echo $prescontas->Mecanismo;} ?></td>
+                            <td align="center"><img style="cursor: pointer;" src="../public/img/user_gray.png" onclick="return JSEncaminharParaConsultoriaTCE('<?php echo $prescontas->IdPRONAC;?>','177')" alt="Encaminhar" /></td>
+                            <td align="center"><img style="cursor: pointer;" src="../public/img/user_gray.png" onclick="return JSEncaminharParaConsultoriaTCE('<?php echo $prescontas->IdPRONAC;?>','12')" alt="Encaminhar" /></td>
+                        </tr>
+            <?php $i ++; $idPronac=$prescontas->IdPRONAC; }//feacha if idpronac
+                  endforeach; ?>
+        </table>
+    <?php } else { ?>
+            <table class="tabela">
+                <tr>
+                    <td align="center"><em>Não foram encontrados projetos de acordo com os parâmetros de pesquisa.</em></td>
+                </tr>
+            </table>
+            <script>$('#paginacaoTCE').hide();</script>
+    <?php } ?>
+    <form action="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'projetos-tce')); ?>" method="post" name="frmProjetosTCE" id="frmProjetosTCE">
+        <input type="hidden" class="input_simples" name="idPronac" id="idPronac" value="<?php echo $this->idPronac; ?>"/>
+    <?php if(!empty($this->parametrosBuscaTCE)) foreach($this->parametrosBuscaTCE as $name=>$value):?>
+        <?php if(!is_array($value)): ?>
+        <input type="hidden" name="<?php echo $name?>" id="<?php echo $name?>" value="<?php echo utf8_decode($value)?>"/>
+        <?php else: ?>
+            <?php foreach($value as $valor):?>
+                <input type="hidden" name="<?php echo $name?>[]" id="<?php echo $name?>" value="<?php echo utf8_decode($valor)?>"/>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    <?php endforeach; ?>
+        <?php if(empty($this->parametrosBuscaTCE["pagTCE"])):?>
+        <input type="hidden" name="pagTCE" id="pagTCE" value="<?php echo $this->pagTCE; ?>"/>
+        <?php endif; ?>
+        <?php if(empty($this->parametrosBuscaTCE["ordenacaoTCE"])):?>
+        <input type="hidden" name="ordenacaoTCE" id="ordenacaoTCE" value="<?php echo (!empty($this->parametrosBuscaTCE["ordenacaoTCE"]))?$this->parametrosBuscaTCE["ordenacaoTCE"]:""; ?>"/>
+        <?php endif; ?>
+        <?php if(empty($this->parametrosBuscaTCE["tipoOrdenacaoTCE"])):?>
+        <input type="hidden" name="tipoOrdenacaoTCE" id="tipoOrdenacaoTCE" value="<?php echo (!empty($this->parametrosBuscaTCE["tipoOrdenacaoTCE"]))?$this->parametrosBuscaTCE["tipoOrdenacaoTCE"]:""; ?>"/>
+        <?php endif; ?>
+    </form>
+    <table class="tabela" id="paginacaoTCE">
+        <tr>
+            <td align="center">
+                Exibindo de <b><?php echo $this->inicioTCE; ?></b> a <b><?php echo $this->fimTCE; ?></b> de um total de <b><?php echo $this->totalTCE; ?></b><br>
+                <?php if($this->pagTCE<=1): ?>
+                <input type="button" style="width: 88px" class="btn_p_anterior-off" id="btn_p_anterior">
+                <?php else: ?>
+                <input type="button" style="width: 88px" class="btn_inicio" id="btn_inicio" onclick="paginarProjetosTCE('1')"/>
+                <input type="button" style="width: 88px" class="btn_p_anterior" id="btn_p_anterior" onclick="paginarProjetosTCE('<?php echo ($this->pagTCE > 1)?$this->pagTCE-1:1; ?>')"/>
+                <?php endif; ?>
+                <select name="pagina" id="pagina" class="input_simples" onchange="paginarProjetosTCE(this.value)">
+                    <?php for($i=1; $i<$this->totalPagTCE+1; $i++): ?>
+                    <option value="<?php echo $i; ?>" <?php if($i == $this->pagTCE){ echo " selected='selected' "; } ?>><?php echo $i; ?></option>
+                    <?php endfor; ?>
+                </select>
+                <?php if($this->pagTCE+1 > $this->totalPagTCE): ?>
+                <input type="button" style="width: 88px" class="btn_p_proximo-off" id="btn_p_proximo"/>
+                <?php else: ?>
+                <input type="button" style="width: 88px" class="btn_p_proximo" id="btn_p_proximo" onclick="paginarProjetosTCE('<?php echo ($this->pagTCE < $this->totalPagTCE)?$this->pagTCE+1:$this->totalPagTCE; ?>')"/>
+                <input type="button" style="width: 88px" class="btn_ultimo" id="btn_ultimo" onclick="paginarProjetosTCE('<?php echo $this->totalPagTCE; ?>')"/>
+                <?php endif; ?>
+            </td>
+        </tr>
+    </table>
+</div>

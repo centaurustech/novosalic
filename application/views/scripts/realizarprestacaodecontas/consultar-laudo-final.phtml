@@ -1,0 +1,74 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#btn_pesquisar").click(function(){
+            var pronac = $('#pronacPesquisa').val();
+            if(pronac == ''){
+                $("#msgAlerta").dialog("destroy");
+                $("#msgAlerta").html("Favor informar o número do Pronac.");
+                $("#msgAlerta").dialog({
+                    resizable: false,
+                    title: 'Alerta!',
+                    width:320,
+                    modal: true,
+                    buttons : {
+                        'OK' : function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+                $('.ui-dialog-titlebar-close').remove();
+                
+            } else {
+                $('#formImpressao').submit();
+            }
+        });
+
+        $('#pronacPesquisa').keydown(function(event){
+            if(event.keyCode == 13){
+                $("#btn_pesquisar").click();
+            }
+        });
+    });
+</script>
+
+<div id="msgAlerta"></div>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'), '', true); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'painel'), '', true); ?>" title="Ir para Prestação de contas">Prestação de contas</a></li>
+        <li class="last">Consultar Laudo Final</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Consultar Laudo Final</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+    <form name="formImpressao" id="formImpressao" action="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'imprimir-laudo-final'));?>" method="post" target="_blank">
+        <table class="tabela">
+            <tr>
+                <td class="destacar bold" width="1" align="center" style="width: 130px;">PRONAC <span class="red bold">*</span></td>
+                <td>
+                    <input type="text" class="input_simples" name="pronacPesquisa" id="pronacPesquisa" maxlength="7" style="width: 90px;">
+                    <input type="button" name="btn_pesquisar" id="btn_pesquisar" class="btn_pesquisar" value="" style="margin-left: 10px;">
+                </td>
+            </tr>
+        </table>
+    </form>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

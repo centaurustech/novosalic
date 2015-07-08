@@ -1,0 +1,338 @@
+<script>
+    $(document).ready(function(){
+        $(".btn_pesquisar").click(function(){
+            $(".colorpicker").html("");
+            //jqAjaxLink("<?php echo $this->baseUrl()?>/operacional/tabelas?consulta="+$("#consulta").val(), null, "resultadoConsulta");
+            $("#resultadoConsulta").html("");
+            selecionarOptions();
+            jqAjaxForm(document.getElementById("frmExtratoPauta"), "resultadoConsulta");
+        });
+
+        $(".cmpNumerico").numeric().attr("maxlength", "9");
+        $(".cmpNome").attr("maxlength", "50");
+
+        $("#tpDtDistribuicao").change(function(){
+            if($("#spanDtDistribuicao").css("display")=="none" && $(this).val() == "entre"){
+                $("#spanDtDistribuicao").show();
+            }else{
+                $("#spanDtDistribuicao").hide();
+            }
+        });
+
+        $("#area").change(function(){
+            carregar_combo(this.value, 'segmento', '<?php echo $this->url(array('controller' => 'segmentocultural', 'action' => 'combo-z')); ?>', ' - Selecione uma &Aacute;rea Cultural - ');
+        });
+
+        $(function()
+        {
+            $.datepicker.regional['pt-BR'] = {
+                closeText: 'Fechar',
+                prevText: '&#x3c;Anterior',
+                nextText: 'Pr&oacute;ximo&#x3e;',
+                currentText: 'Hoje',
+                monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+                monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+                dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+                dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                weekHeader: 'Sm',
+                dateFormat: 'dd/mm/yy',
+                firstDay: 0,
+                isRTL: false,
+                showMonthAfterYear: false,
+                yearSuffix: ''};
+            $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+            $(".cmpData").datepicker($.datepicker.regional['pt-BR']);
+        });
+
+    });
+
+     function addTodos() // adiciona todos os options da esquerda para direita
+    {
+        visao       = document.getElementById("visao"); // select de origem
+        visaoAgente = document.getElementById("visaoAgente"); // select de destino
+        for (i = 0; i < visao.length; i++) // varre todo o option de origem
+        {
+            var novoOption = document.createElement("option"); // cria um novo option
+            novoOption.text  = visao.options[i].text; // texto do option
+            novoOption.value = visao.options[i].value; // valor do option
+            visaoAgente.options.add(novoOption); // adiciona o novo option no select de destino
+            visao.remove(i); // remove o option do select de origem
+            i--;
+        }
+    } // fecha funç?o addTodos()
+
+
+    function delTodos() // deleta todos os options da direita
+    {
+        visao       = document.getElementById("visao"); // select de origem
+        visaoAgente = document.getElementById("visaoAgente"); // select de destino
+        for (i = 0; i < visaoAgente.length; i++) // varre todo o option de origem
+        {
+            if (visaoAgente.options[i].value != "144")
+            {
+                var novoOption = document.createElement("option"); // cria um novo option
+                novoOption.text  = visaoAgente.options[i].text; // texto do option
+                novoOption.value = visaoAgente.options[i].value; // valor do option
+                visao.options.add(novoOption); // adiciona o novo option no select de destino
+                visaoAgente.remove(i); // remove o option do select de origem
+                i--;
+            }
+        }
+    } // fecha funç?o delTodos()
+
+
+    function addSelecionado() // adiciona o option selecionado da esquerda para direita
+    {
+        visao       = document.getElementById("visao"); // select de origem
+        visaoAgente = document.getElementById("visaoAgente"); // select de destino
+        for (i = 0; i < visao.length; i++) // varre todo o option de origem
+        {
+            if (visao.options[i].selected == true) // caso o option esteja selecionado
+            {
+                var novoOption = document.createElement("option"); // cria um novo option
+                novoOption.text  = visao.options[i].text; // texto do option
+                novoOption.value = visao.options[i].value; // valor do option
+                visaoAgente.options.add(novoOption); // adiciona o novo option no select de destino
+                visao.remove(i); // remove o option do select de origem
+                i--;
+            }
+        }
+    } // fecha funç?o addSelecionado()
+
+
+    function delSelecionado() // deleta o option selecionado da direita
+    {
+        visao       = document.getElementById("visao"); // select de origem
+        visaoAgente = document.getElementById("visaoAgente"); // select de destino
+        for (i = 0; i < visaoAgente.length; i++) // varre todo o option de origem
+        {
+            if (visaoAgente.options[i].selected == true && visaoAgente.options[i].value != "144") // caso o option esteja selecionado
+            {
+                var novoOption = document.createElement("option"); // cria um novo option
+                novoOption.text  = visaoAgente.options[i].text; // texto do option
+                novoOption.value = visaoAgente.options[i].value; // valor do option
+                visao.options.add(novoOption); // adiciona o novo option no select de destino
+                visaoAgente.remove(i); // remove o option do select de origem
+                i--;
+            }
+        }
+    } // fecha funç?o delSelecionado()
+
+
+    function selecionarOptions() // funç?o para selecionar todos os options antes do envio do formulário
+    {
+        visaoAgente = document.getElementById("visaoAgente"); // select de destino
+        for (i = 0; i < visaoAgente.length; i++) // varre todo o option de origem
+        {
+            visaoAgente.options[i].selected = true; // adiciona o novo option no select de destino
+        }
+    } // fecha funç?o selecionarOptions()
+
+    function abrirModal(conteudo){
+        $("body").append("<div id='divDinamica'></div>");
+        $("#divDinamica").html(conteudo);
+        $("#divDinamica").dialog({
+            title: "Resumo do Projeto",
+            resizable: true,
+            width:$(window).width() - 500,
+            height:$(window).height() - 400,
+            modal: true,
+            autoOpen:true,
+            draggable:false,
+            buttons: {
+                'OK': function() {
+                    $("#divDinamica").remove();
+                    $(this).dialog('close');
+                }
+            }
+        });
+    }
+</script>
+
+<?php include("scripts/operacional/inc/menu.inc.php"); ?>
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Pauta por Componente da Comiss&atilde;o</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="conteudo" align="center">
+
+    <fieldset>
+        <legend> Filtros de pesquisa </legend>
+        <form action="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-projetos-em-pauta-reuniao-cnic')); ?>" method="post" name="frmExtratoPauta" id="frmExtratoPauta">
+               <table class="tabela" style="width:90%">
+                <tbody>
+                <tr>
+                    <th colspan="3">Selecionar campos para pesquisa</th>
+                </tr>
+                <tr>
+                        <td align="left">Componente</td>
+                        <td align="left" colspan="2">
+                            <select name="tipoPesqComponente" id="tipoPesqComponente" style="width: 140px;" class="input_simples">
+                                <option value="EIG">Exatamente igual</option>
+                                <option value="DI">Diferente</option>
+                            </select>
+                            <select name="componente" id="componente" style="width: 200px;" class="input_simples">
+                                <option value="">- Selecione -</option>
+                                <?php foreach($this->agentes as $item):?>
+                                <option value="<?php echo $item->idAgente; ?>"><?php echo $item->nomeConselheiro; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+                </tr>
+
+                <tr>
+                        <td align="left">Status</td>
+                        <td align="left" colspan="2">
+                            <div style="float: left; width: 140px" >Exatamente igual &nbsp;</div>
+                            <select name="statusAnalise" id="statusAnalise" style="width: 140px;" class="input_simples">
+                                <option value="">- Selecione - </option>
+                                <option value="SA">Analisado</option>
+                                <option value="SNA">N&atilde;o analisado</option>
+                            </select>
+                        </td>
+                </tr>
+                <tr>
+                        <td align="left" width="120">PRONAC</td>
+                        <td align="left" colspan="2">
+                            <div style="float: left; width: 140px" >Exatamente igual &nbsp;</div>
+                            <input class="input_simples cmpNumerico" name="pronac" id="pronac" maxlength="10" type="text">
+                        </td>
+                </tr>
+                <tr>
+                        <td align="left">Nome do Projeto</td>
+                        <td align="left" colspan="2">
+                            <select name="tipoPesqNomeProjeto" id="tipoPesqNomeProjeto" style="width: 140px;" class="input_simples">
+                                <option value="QC">Que contenha</option>
+                                <option value="EIG">Exatamente igual</option>
+                                <option value="IIG">In&iacute;cio igual</option>
+                            </select>
+                            <input type="text" name="nomeProjeto" id="nomeProjeto" class="input_simples w200 cmpNome" />
+                        </td>
+                </tr>
+                <!--<tr>
+                        <td align="left">Dt. Distribui&ccedil;&atilde;o</td>
+                        <td width="220" align="center">
+                            <select name="tpDtDistribuicao" id="tpDtDistribuicao" class="select_simples cmpDesabilitar" onchange="if($(this).val()=='OT' || $(this).val()=='U7' || $(this).val()=='SP' || $(this).val()=='MM' || $(this).val()=='UM'){$('#camposDatadtDistribuicao').css('display','none');}else{$('#camposDatadtDistribuicao').css('display','');}">
+                                <OPTGROUP LABEL="Normais">
+                                    <option value="">Selecione</option>
+                                    <option value="igual">Exatamente Igual</option>
+                                    <option value="entre">Entre dois valores</option>
+                                    <option value="maior">Maior ou igual a </option>
+                                    <option value="menor">Menor ou igual a</option>
+                                </OPTGROUP>
+                                <OPTGROUP LABEL="Especiais">
+                                   <option value="OT">Ontem</option>
+                                   <option value="U7">&Uacute;ltimos 7 dias</option>
+                                   <option value="SP">Semana Passada (seg-dom)</option>
+                                   <option value="MM">Este m&ecirc;s</option>
+                                   <option value="UM">&Uacute;ltimo m&ecirc;s</option>
+                                </OPTGROUP>
+                            </select>
+                        <td align="left">
+                            <span id="camposDatadtDistribuicao">
+                                <input name="dtDistribuicao" id="dtDistribuicao" value="" class="input_simples cmpData"/> (dd/mm/aaaa)
+                                <span id="spanDtDistribuicao" style="display: none;">&nbsp;e&nbsp;<input name="dtDistribuicao_Final" id="dtDistribuicao_Final" value="" class="input_simples cmpData"/></span>
+                            </span>
+                        </td>
+                </tr>-->
+                <tr>
+                        <td align="left">&Aacute;rea Cultural</td>
+                        <td align="left" colspan="2">
+                            <select name="tipoPesqArea" id="tipoPesqArea" style="width: 140px;" class="input_simples">
+                                <option value="EIG">Exatamente igual</option>
+                                <option value="DI">Diferente</option>
+                            </select>
+                            <select name="area" id="area" style="width: 200px;" class="input_simples">
+                                <option value="">- Selecione - </option>
+                                <?php foreach($this->areas as $area):?>
+                                <option value="<?php echo $area->Codigo; ?>"><?php echo $area->Descricao; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+                </tr>
+                <tr>
+                    <td align="left" width="120">Segmento Cultural</td>
+                    <td align="left" colspan="2">
+                        <div style="float: left; width: 140px" >Exatamente igual &nbsp;</div>
+                        <select name="segmento" id="segmento" style="width: 200px;" class="input_simples">
+                            <option selected="selected" value=""> - Selecione uma &Aacute;rea Cultural - </option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+
+                    <th colspan="3">Escolher campos da consulta</th>
+                </tr>
+                <tr>
+                    <td colspan="3" align="left">
+                        <table width="100%" align="left">
+                            <tbody><tr>
+                                <td width="10%" nowrap><b>Selecione as colunas</b></td>
+                                <td class="centro" valign="top" width="40%">
+
+                                        <label for="visao"> </label>
+                                        <select class="select w200" name="visao[]" id="visao" multiple="multiple" size="7">
+                                        </select>
+                                </td>
+                                <td class="centro" valign="middle" width="10px">
+                                        <p><input class="btn" value=" &gt;&gt; " style="width: 30px;" onkeypress=" " onclick="addTodos();" title="Adicionar todas as vis&otilde;es para o Agente" type="button"></p>
+                                        <p><input class="btn" value=" &gt; " style="width: 30px;" onkeypress=" " onclick="addSelecionado();" title="Adicionar a vis&atilde;o selecionada para o Agente" type="button"></p>
+                                        <p><input class="btn" value=" &lt; " style="width: 30px;" onkeypress=" " onclick="delSelecionado();" title="Remover a vis&atilde;o selecionada do Agente" type="button"></p>
+
+                                        <p><input class="btn" value=" &lt;&lt; " style="width: 30px;" onkeypress=" " onclick="delTodos();" title="Remover todas as vis&otilde;es do Agente" type="button"></p>
+                                </td>
+                                <td class="centro" valign="top" width="40%">
+                                        <label for="visaoAgente"> </label>
+                                        <select class="select w200" name="visaoAgente[]" id="visaoAgente" multiple="multiple" size="7">
+                                            <option value="cmpsOrd_Proponente">Proponente</option>
+                                            <option value="cmpsOrd_Pronac">PRONAC</option>
+                                            <option value="cmpsOrd_NomeProjeto">Nome do Projeto</option>
+                                            <option value="cmpsOrd_ResumoProjeto">Resumo do Projeto</option>
+                                            <option value="cmpsOrd_Situacao">Situa&ccedil;&atilde;o</option>
+                                            <option value="cmpsOrd_DtInicio">Dt. In&iacute;cio Execu&ccedil;&atilde;o</option>
+                                            <option value="cmpsOrd_DtFim">Dt. Fim Execu&ccedil;&atilde;o</option>
+                                            <option value="cmpsOrd_DtDistribuicao">Dt. Distribui&ccedil;&atilde;o</option>
+                                            <option value="cmpsOrd_Area">Área Cultural</option>
+                                            <option value="cmpsOrd_Segmento">Segmento Cultural</option>
+                                            <option value="cmpsOrd_Avaliacao">Avalia&ccedil;&atilde;o</option>
+                                            <option value="cmpsOrd_SolicitadoReal">Vl. Solicitado</option>
+                                            <option value="cmpsOrd_SugeridoReal">Vl. Sugerido</option>
+                                        </select>
+                                </td>
+                            </tr>
+                        </tbody></table>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">&nbsp;</td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="tabela" style="width: 90%">
+            <tr>
+                <td align="center">
+                    <input type="button" style="width: 88px" class="btn_pesquisar" id="btn_pesquisar"/>
+                    <input type="reset" style="width: 88px" class="btn_limpar" id="btn_limpar" value="" onclick="$('#resultadoConsulta').html(''); $('.colorpicker').html(''); addTodos();"/>
+                    <!--<input type="button" style="width: 88px" class="btn_voltar" id="btn_voltar"/>-->
+                </td>
+            </tr>
+        </table>
+        </form>
+</fieldset>
+
+<div id="resultadoConsulta"></div>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

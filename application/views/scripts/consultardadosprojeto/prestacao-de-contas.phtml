@@ -1,0 +1,75 @@
+<?php header('Content-Type: text/plain; charset=ISO-8859-1'); ?>
+<script type="text/javascript">
+    $(document).ready(function(){
+        //ATUALIZA TITULO DA PAGINA
+        window.parent.$("#titulo").html("<div>Presta&ccedil;&atilde;o de Contas</div>");
+        window.parent.$("#caminhoLocalAtual").html("Presta&ccedil;&atilde;o de Contas");
+    });
+</script>
+
+<table class="tabela">
+    <tr class="destacar">
+        <td align="center"><b>PRONAC</b></td>
+        <td align="center"><b>Nome do Projeto</b></td>
+    </tr>
+    <tr>
+        <td align="center"><?php echo $this->projeto->AnoProjeto.$this->projeto->Sequencial; ?></td>
+        <td align="center"><?php echo $this->projeto->NomeProjeto; ?></td>
+    </tr>
+</table>
+
+<?php if(is_object($this->parecerCoordenador) && count($this->parecerCoordenador)>0):?>
+<table cellspacing="1" class="tabela">
+    <tr>
+        <td class="destacar" align="center"><b>Parecer Técnico</b></td>
+    </tr>
+    <tr>
+        <td><?php echo !empty($this->parecerTecnico)? $this->parecerTecnico->meRelatorio : 'Dados n&atilde;o informados'; ?></td>
+    </tr>
+    <tr>
+        <td class="destacar" align="center"><b>Parecer Chefe de Divis&atilde;o</b></td>
+    </tr>
+    <tr>
+        <td><?php echo !empty($this->parecerChefe)? $this->parecerChefe->meRelatorio : 'Dados n&atilde;o informados'; ?></td>
+    </tr>
+    <tr>
+        <td class="destacar" align="center"><b>Parecer Coordenador - Laudo Final</b></td>
+    </tr>
+    <tr>
+        <td><?php echo !empty($this->parecerCoordenador)? $this->parecerCoordenador->meRelatorio : 'Dados n&atilde;o informados'; ?></td>
+    </tr>
+</table>
+
+<table cellspacing="1" class="tabela">
+    <tr>
+        <td class="destacar" align="center" width="50%"><b>Conforme IN nº 1 de 05/10/2010.&nbsp;&nbsp;Seção III Art. 76 a Art. 80</b></td>
+        <?php if(!empty($this->tipoInabilitacao)) { ?>
+            <td class="destacar" align="center"><b>Conforme IN nº 1 de 05/10/2010. Art. 88</b></td>
+        <?php } ?>
+    </tr>
+    <tr>
+        <td><?php echo (!empty($this->resultadoParecer)) ? "<b>".$this->resultadoParecer."</b>" : 'Dados n&atilde;o informados';?></td>
+        <?php if(!empty($this->tipoInabilitacao)) { ?>
+         <td><?php echo (!empty($this->tipoInabilitacao)) ? "Inabilita&ccedil;&atilde;o: <b>".$this->tipoInabilitacao."</b>" : 'Dados n&atilde;o informados';?></td>
+        <?php } ?>
+    </tr>
+</table>
+<?php else: ?>
+    <table class="tabela">
+        <tr>
+            <td align="center"><em>Dados n&atilde;o informados!</em></td>
+        </tr>
+    </table>
+<?php endif; ?>
+
+
+
+
+
+
+
+
+
+
+
+

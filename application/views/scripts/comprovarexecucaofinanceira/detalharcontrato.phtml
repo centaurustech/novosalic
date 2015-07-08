@@ -1,0 +1,110 @@
+<?php
+    $SalvarHref                 = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'cadastrarcontrato')).'?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $ExcluirItensCustoHref      = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'excluiritenscusto')).'?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $AnexarHref                 = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'anexar')).'?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $VoltarHref               = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'contrato')).'?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $ExcluirDocumentoHref       = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'excluirdocumento')).'?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $carregarSelectHref         = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'carregaselectajax')).'?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $idNome = 'idcontrato';
+    $corpo  = 'incluircontratoAjax';
+    $idformulario = 'formularioContrato';
+    $verificacao = true;
+    if($this->idcontrato != '')
+        $verificacao = false;
+
+    include_once 'scripts/comprovarexecucaofinanceira/inc/menu.inc.php';
+?>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principalproponente', 'action' => ''), null, true); ?>" title="Ir para p&aacute;gina inicial" onclick="carregandoModal();">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')) . '?idPronac=' . Seguranca::encrypt($this->idpronac); ?>" title="Ir para In&iacute;cio">Consultar dados do Projeto</a></li>
+        <li>Comprovar Execu&ccedil;&atilde;o Financeira</li>
+        <li><a href="<?php echo $this->link_menu_lateral; ?>" title="Pagamento" onclick="carregandoModal();">Contrato</a></li>
+        <li class="last">Detalhar Contrato</li>
+    </ul>
+</div> <!-- final: #breadcrumb -->
+
+<div id="titulo">
+    <div>Detalhar Contrato<span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+
+<div id="conteudo" align="center">
+    <div id="<?php echo $corpo;?>">
+
+        <table class="tabela">
+            <tr>
+                <th>Dados do Contrato</th>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <td class="destacar w200 bold" align="right">Número do Contrato</td>
+                <td colspan="2"><?php echo $this->numeroDoContratoSequencial;?> / <?php echo $this->numeroDoContratoAno;?> [Sequencial/Ano]</td>
+            </tr>
+            <tr>
+                <td class="bold" align="center" colspan="3">Identifica&ccedil;&atilde;o do Contratado</td>
+            </tr>
+            <tr>
+                <td class="destacar w200 bold">CNPJ/CPF</td>
+                <td class="destacar w200 bold">Nome/Raz&atilde;o Social</td>
+                <td class="destacar w200 bold">Tipo de Aquisi&ccedil;&atilde;o</td>
+            </tr>
+            <tr>
+                <td><?php echo $this->CNPJCPF;?></td>
+                <td><?php echo $this->Descricao;?></td>
+                <td>
+                    <?php foreach ($this->tipoAquisicaoConteudo as $key=>$tipoAquisicao){
+                            if($this->tipoAquisicao == $key)
+                                echo $tipoAquisicao;
+                    } ?>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar w200 bold">Objeto do Contrato</td>
+                <td class="destacar w200 bold">Valor Global</td>
+                <td class="destacar w200 bold">Data de Vig&ecirc;ncia</td>
+            </tr>
+            <tr>
+                <td><?php echo $this->objetoDoContrato;?></td>
+                <td><?php echo $this->valorGlobal;?></td>
+                <td><?php echo $this->dataVingenciaInicial;?> a <?php echo $this->dataVingenciaFinal;?></td>
+            </tr>
+            <tr>
+                <td class="destacar w200 bold" align="right">Data de Assinatura</td>
+                <td colspan="3"><?php echo $this->dataAssinatura;?></td>
+            </tr>
+        </table>
+
+        <br clear="left"/>
+
+        <table class="tabela">
+            <tr>
+                <th>Itens de Custo Vinculados</th>
+            </tr>
+        </table>
+
+        <table id="tableItensCusto" class="tabela linhaMaior1">
+            <tr>
+                <td class="destacar bold" align="center">Produto</td>
+                <td class="destacar bold" align="center">Etapa</td>
+                <td class="destacar bold" align="center">Item</td>
+            </tr>
+            <?php foreach ($this->itensVinculados as $itensVinculados) { ?>
+            <tr>
+                <td><?php echo $itensVinculados->dsProduto ? $itensVinculados->dsProduto : 'Administração do Projeto'; ?></td>
+                <td><?php echo $itensVinculados->dsEtapa; ?></td>
+                <td><?php echo $itensVinculados->dsItem; ?></td>
+            </tr>
+            <?php } ?>
+        </table>
+
+        <br clear="left"/>
+
+    </div>
+    <br clear="left"/>
+</div>
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

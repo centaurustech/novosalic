@@ -1,0 +1,83 @@
+<!-- início: #breadcrumb -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="#" title="Início">Início</a></li>
+		<li><a href="#" title="Consulta">Consulta</a></li>
+		<li><a href="#" title="Requerente">Requerente</a></li>
+		<li class="last">Proponente</li>
+	</ul>
+</div>
+<!-- final: #breadcrumb -->
+
+<!-- início: #titulo -->
+<div id="titulo">
+	<div>Titulo da Página <span>ID #23A</span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- final: #titulo -->
+
+<!-- início: área principal #conteudo -->
+<div id="conteudo">
+	<div id="miolo">
+
+
+
+		<!-- ========== INÍCIO FORMULÁRIO ========== -->
+		<form name="formBuscar" id="formBuscar" action="" method="post" class="form">
+			<table class="tabela">
+				<tr>
+					<th><label for="cpf">CPF</label></th>
+					<td>
+						<div class="left"></div>
+						<input type="text" name="cpf" id="cpf" class="input w200" tabindex="1" maxlength="14" value="Digite o CPF..." 
+							onclick="limpar_campo(this, 'Digite o CPF...');" 
+							onblur="restaurar_campo(this, 'Digite o CPF...');" 
+							onkeypress="mascara(this, format_cpf);" />
+						<div class="right_busca"><a href="#" onclick="document.formBuscar.submit();" title=" Buscar "></a></div>
+					</td>
+				</tr>
+			</table>
+
+			<br />
+
+			<table class="tabela">
+				<thead>
+					<tr>
+						<th>Código</th>
+						<th>Situação</th>
+						<th>Quantidade</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr class="linha">
+						<td>C20</td>
+						<td><a href="#">Análise técnica concluída</a></td>
+						<td>1</td>
+					</tr>
+					<tr class="linha">
+						<td>C21</td>
+						<td>Análise técnica concluída</td>
+						<td>2</td>
+					</tr>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="3"><img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-left.png" alt="Anterior" title="Anterior" /> <a href="#">1</a> <a href="#"><strong>2</strong></a> <a href="#">3</a> <img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png" alt="Próximo" title="Próximo" /></td>
+					</tr>
+				</tfoot>
+			</table>
+
+			<br clear="all" />
+		</form>
+		<!-- ========== FIM FORMULÁRIO ========== -->
+
+
+
+	</div>
+</div>
+<!-- final: conteúdo principal #conteudo -->
+
+<!-- início: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+<br clear="all" />

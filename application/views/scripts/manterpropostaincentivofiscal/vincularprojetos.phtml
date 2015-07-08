@@ -1,0 +1,143 @@
+<script type="text/javascript"> 
+
+	function mostraresponsavel(mostra)
+	{
+		if(mostra)
+		{
+			$(".mostraresponsavel").show();
+			$("#btnvincular").show();
+			$("#btndesvincular").hide();
+		}
+		else
+		{
+			$(".mostraresponsavel").hide();
+			$("#btnvincular").hide();
+			$("#btndesvincular").show();
+		}
+	}
+
+
+	function validaform() 
+	{
+		var checado = false;
+		$('.propostas').each(function(indice, elemento) {
+			if($(elemento).attr('checked')) {
+				checado = true;
+			}
+         });
+		if(!checado) {
+			alertar("Selecione um Projeto!");
+			return false;
+		}
+
+		confirmaracaopro();
+		
+	} 
+
+	function confirmaracaopro()
+	{
+		
+		$("#confirmartroca").html("Deseja desvincular o responsável do Projeto?");
+				
+		$("#confirmartroca").dialog({
+        	resizable: true,
+            width:450,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            closeOnEscape : false,
+            title : 'Alerta',
+            buttons: {
+                'NÃO': function()
+                {
+                    $(this).dialog('close');
+                },
+                'SIM': function()
+                {
+                	$("#formvincularproposta").submit();
+                }
+            }
+        });
+        $("#confirmartroca").dialog('open');
+	}
+
+</script>
+
+<?php
+    require_once "inc/menu_responsavel.inc.php"; // menu
+?>
+
+
+<!-- ========== INï¿½CIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para Início">Início</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'manterpropostaincentivofiscal', 'action' => 'listar-propostas')); ?>" title="Ir para  Lista propostas">Lista propostas</a></li>
+        <li class="last">Vincular Projetos </li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INï¿½CIO Tï¿½TULO ========== -->
+<div id="titulo">
+    <div>Desvincular Projetos  <span class="voltar"><a href="#" onclick="voltar();"></a></span></div>
+</div>
+<!-- ========== FIM Tï¿½TULO ========== -->
+
+<div id="conteudo">
+
+<div id="confirmartroca"></div>
+<div id="confirma"></div>
+
+<form id="formvincularproposta" action="<?php echo $this->url(array('controller' => 'vincularresponsavel', 'action' => 'vincularprojetos')); ?>" method="post">	
+
+	<?php if(count($this->projetos) > 0):?>
+	
+	<table class="tabela">
+		<tr>
+			<th width="80" class="titulo_tabela">PRONAC</th>
+			<th class="titulo_tabela">Nome do Projeto</th>
+			<th width="130" class="titulo_tabela">CPF do responsável</th>
+			<th class="titulo_tabela">Nome do responsável</th>
+			<th class="titulo_tabela"></th>
+		</tr>
+		<?php foreach ($this->projetos as $p):?>
+		<tr>
+			<td align="center"><?php echo $p->PRONAC;?></td>
+			<td><?php echo $p->NomeProjeto;?></td>
+			<td><?php echo (!empty($p->Cpf)) ? Mascara::addMaskCPF($p->Cpf) : '<em>Não informado</em>';?></td>
+			<td><?php echo (!empty($p->Nome)) ? $p->Nome : '<em>Não informado</em>';?></td>
+			<td align="center"><input type="radio" name="propostas" class="propostas" value="<?php echo $p->idPreProjeto;?>" /></td>
+		</tr>
+		<?php endforeach; ?>
+	</table>
+
+	<table class="tabela">	
+		<tr>
+			<td align="center">
+				<input type="button" value=" " class="btn_desvincular" id="btndesvincular" style="width:87px;" onclick="validaform();" />
+			</td>
+		</tr>
+	</table>
+	
+	<?php else:?>
+	<table class="tabela">
+		<tr>
+			<td>Nenhum Projeto encontrado!</td>
+		</tr>
+	</table>
+	<?php endif;?>
+	
+	
+
+</form>	
+
+    
+</div>
+<!-- ========== INï¿½CIO RODAPï¿½ DO CONTEï¿½DO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPï¿½ DO CONTEï¿½DO ========== -->
+
+<br clear="all" />

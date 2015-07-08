@@ -1,0 +1,64 @@
+<?php include_once('inc/menu.inc.php')?>
+
+<script>
+    $(document).ready(function (){
+        $('#abrir_fechar23').click(function(){
+            $('#localizacao').toggle('slow');
+        });
+    });
+</script>
+
+<!----------------------------------Bloco de Informações: Local Projeto-------------------------------------------------------- -->
+
+<div id="titulo"><div>Local Projeto</div>
+</div>
+
+<div id="conteudo">
+
+    <div id="miolo">
+
+        <table class="tabela">
+            <tr>
+                <td>
+                    <input id="abrir_fechar23" class="btn_adicionar" type="button" />Localização Atual do Projeto
+            </tr>
+        </table>
+        <div id="localizacao" style="display:none">
+            <table class="tabela">
+                <tr>
+                    <th colspan="6" >Localização Atual do Projeto</th>
+                </tr>
+                <?php if (empty($this->dadosprojeto)) {
+                    ?>
+                <tr>
+                    <td colspan="8" align= "center">Informação não cadastrada no projeto!</td>
+                </tr>
+                    <?php }
+                else {?>
+                    <?php
+                    foreach ($this->dadosprojeto as $tbdadosprojeto): ?>
+                <tr>
+                    <td colspan="6" align="center"><?php if ($tbdadosprojeto->Localizacao != " ") {
+                                    echo  $this->escape($tbdadosprojeto->Localizacao);
+        }
+        else {
+                            echo $this->escape('Informação não cadastrada no projeto!');
+                        }?></td>
+
+                </tr>
+    <?php endforeach;?>
+    <?php }?>
+
+            </table>
+        </div>
+        <br>
+    </div>
+</div>
+<br>
+
+
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+
+<br clear="all" />

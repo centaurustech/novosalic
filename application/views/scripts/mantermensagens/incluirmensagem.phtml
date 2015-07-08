@@ -1,0 +1,131 @@
+<script>
+    function confirma (){
+        $("#confirm").dialog({
+            title :'Confirma',
+            resizable: false,
+            width:400,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'Não': function(){
+                    $('#confirm').dialog('close');
+                },
+                'Sim': function(){
+                    $('#formulario')[0].submit();
+                    $('#confirm').dialog('close');
+                }
+            }
+        });
+    }
+    $(document).ready(function(){
+        $(".btn_cancelar").click(function(){
+            window.location = '<?php echo $this->url(array('controller' => 'mantermensagens', 'action' => 'consultarmensagem')); ?>'
+        })
+        $("#error").dialog({
+            title :'Erro',
+            resizable: false,
+            width:400,
+            height:170,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'OK': function() {
+                    $(this).dialog('close');
+                }
+            }
+        });
+        $("#enviar").click(function(){
+            var justificativa = $("#Mensagem").val();
+            var validar = true;
+            if((justificativa.length < 20)){
+                validar = false;
+                var msgError = 'Mensagem menor que 20 caracteres.'
+            }
+            else if((justificativa.length > 5000)){
+                validar = false;
+                var msgError = 'Mensagem maior que 5000 caracteres.'
+            }
+            else if(($("#encaminhar").val() == 0)){
+                validar = false;
+                var msgError = 'Dados Obrigatórios nao informados.'
+            }
+            if(!validar){
+                $('#error').html(msgError);
+                $('#error').dialog('open');
+            }
+            else{
+                $('#confirm').html('Tem certeza que deseja enviar essa mensagem?');       
+                confirma();
+                $('#confirm').dialog('open');
+            }
+
+        });
+    });
+</script>
+<?php require_once "inc/menu.inc.php"; // menu ?>
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Mensagens<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <div id="error"></div>
+    <div id="confirm"></div>
+    <table class="tabela">
+        <tr>
+            <th>PRONAC</th>
+            <th>Nome do projeto</th>
+        </tr>
+        <tr>
+            <td>
+                <?php echo $this->dadosProjeto['AnoProjeto'] . $this->dadosProjeto['Sequencial']; ?>
+            </td>
+            <td>
+                <?php echo $this->dadosProjeto['NomeProjeto']; ?>
+            </td>
+        </tr>
+    </table>
+
+    <form id="formulario" name="formulario" method="post" action="<?php echo $this->url(array('controller' => 'mantermensagens', 'action' => 'incluirmensagem'), '', true) ?>">
+        <input name="idpronac" type="hidden" value="<?php echo $this->idpronac; ?>"/>
+        <input name="tipomensagem" type="hidden" value="E"/>
+        <input name="idMensagemProjeto" type="hidden" id="idMensagemProjeto" value="<?php echo isset($this->mensagens[0]->idMensagemProjeto) ? $this->mensagens[0]->idMensagemProjeto : null; ?>"/>
+        <div>
+            <fieldset>
+                <legend>Mensagem:</legend>
+                <textarea class="input_simples validar" style="width: 97%; height: 20em;" name="dsMensagem" id="Mensagem"></textarea>
+            </fieldset>
+        </div>
+        <div class="centro">
+            <p>
+                Encaminhar para:
+                <select class="select_simples validar" id="encaminhar" name="idAgente">
+                    <option value='0'>--Selecione--</option>
+                    <?php
+                    foreach ($this->BuscarSelect as $select) {
+                    ?>
+                        <option value="<?php echo $select['idAgente'].'/'.$select['perfil']; ?>"><?php echo isset($select['orgao']) ? $select['orgao'] : "Á".'rea: '.$select['Area']; echo ' / '.$select['TipoUsuario'] . ' - ' . $select['nome'] ?></option>
+                        
+                    <?php } ?>
+                </select>
+            </p>
+        </div>
+        <div class="centro">
+            <input class="btn_salvar" id="salvar" type="button" />
+            <input class="btn_enviar" id="enviar" type="button" />
+        </div>
+    </form>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

@@ -1,0 +1,28 @@
+<?php if(count($this->deslocamentos) > 0) { ?>
+<table class="tabela">
+	<tr>
+            <th class="centro">Pa&iacute;s Origem:		</th>
+		<th class="centro">UF Origem:		</th>
+		<th class="centro">Cidade Origem:	</th>
+                <th class="centro">Pa&iacute;s Destino:	</th>
+		<th class="centro">UF Destino:		</th>
+		<th class="centro">Cidade Destino:	</th>
+		<th class="centro">Quantidade:		</th>
+	</tr>
+	<?php foreach($this->deslocamentos as $desloca): ?>
+	<tr>
+		<td class="centro"><?php echo utf8_decode(htmlentities($desloca->PO)); ?>	</td>
+		<td class="centro"><?php echo utf8_decode(htmlentities($desloca->UFO)) ; ?>	</td>
+		<td class="centro"><?php echo utf8_decode(htmlentities($desloca->MUO)) ; ?>	</td>
+		<td class="centro"><?php echo utf8_decode(htmlentities($desloca->PD)) ; ?>	</td>
+		<td class="centro"><?php echo utf8_decode(htmlentities($desloca->UFD)) ; ?>	</td>
+		<td class="centro"><?php echo utf8_decode(htmlentities($desloca->MUD)) ; ?>	</td>
+		<td class="centro"><?php echo utf8_decode(htmlentities($desloca->Qtde)) ; ?>	</td>
+	</tr>
+	<?php endforeach; ?>
+</table>
+<?php 
+} else {
+    echo '<div class="mensagem">Nenhum dado encontrado.</div>';
+}
+?>

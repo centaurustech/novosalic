@@ -1,0 +1,92 @@
+<?php include_once 'scripts/admissibilidade/inc/menu.inc.php'; ?>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second">Admissibilidade</li>
+        <li class="last">Propostas ainda n&atilde;o enviadas ao MinC</li>
+    </ul>
+</div>
+<div id="titulo">
+    <div>Propostas ainda n&atilde;o enviadas ao MinC <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<script type="text/javascript">
+<!--
+$(document).ready(function() {
+    $("#tabelaPropostasNaoEnviadas").tablesorter();
+});
+
+/*
+ * Função responsável pela exibição ou ocultamento de conteúdo,
+ * mudando a imagem.
+ **/
+function abrirDinamico(elemento, obj) {
+    if($(elemento).css('display') == 'none') {
+        $(elemento).fadeIn('fast', function() {
+            $('img', $(obj)).attr('src','<?php echo $this->baseUrl();?>/public/img/navigation-right.png');
+        });
+    } else {
+        $(elemento).fadeOut('fast', function() {
+            $('img', $(obj)).attr('src','<?php echo $this->baseUrl();?>/public/img/navigation-baixo.PNG');
+        });
+    }
+}
+//-->
+</script>
+<form method="POST" id="formGerarPdf" name="formGerarPdf" action="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'gerarpdf')); ?>" style="display:none">
+    <textarea name="html" id="conteudoImprimir"></textarea>
+</form>
+
+<div id="conteudo">
+    
+    <div class="conteudoImprimivel" id="conteudoImprimivel">
+    <?php if(!empty($this->propostasNaoEnviadas)): ?>
+    <table class="tabela" id="tabelaPropostasNaoEnviadas">
+        <thead>
+        <tr>
+            <th style="cursor:pointer" title="Clique aqui para ordenar">Número</th>
+            <th style="cursor:pointer" title="Clique aqui para ordenar">Nome</th>
+            <th width="5%">Outras</th>
+            <th width="5%">Imprimir</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach($this->propostasNaoEnviadas as $propostaNaoEnviada): ?>
+        <tr>
+            <td class="centro"><a href="<?php echo $this->baseUrl(); ?>/admissibilidade/exibirpropostacultural?idPreProjeto=<?php echo $propostaNaoEnviada->idProjeto; ?>" title="Abrir item"><?php echo $propostaNaoEnviada->idProjeto; ?></a></td>
+            <td><?php echo strip_tags($propostaNaoEnviada->NomeProposta); ?></td>
+            <td class="center">
+            	<input type="button" class="btn_ver" value=" " title="Visualizar" onclick="redirecionar('<?php echo $this->baseUrl();?>/admissibilidade/proposta-por-proponente?agente=<?php echo $propostaNaoEnviada->idAgente; ?>');" />
+            </td>
+            <td class="center">
+            	<input type="button" class="btn_imprimir" value=" " title="Imprimir" onclick="redirecionar('<?php echo $this->baseUrl();?>/admissibilidade/imprimirpropostacultural?idPreProjeto=<?php echo $propostaNaoEnviada->idProjeto; ?>');" />
+            </td>
+        </tr>
+    <?php endforeach; ?>
+        </tbody>
+    </table>
+    <?php endif; ?>
+    </div><!-- fecha conteudo imprimivel -->
+    <table class="tabela">
+        <tr>
+            <td align="center">
+                <input type="button" class="btn_inicio" id="btn_inicio" onclick="window.location.href='<?php echo $this->urlPaginacao; ?>&pag=1'" title="Ir para primeira p&aacute;gina" />
+                <input type="button" class="btn_p_anterior" id="btn_p_anterior" onclick="window.location.href='<?php echo $this->urlPaginacao; ?>&pag=<?php echo ($this->pag > 1)?$this->pag-1:1; ?>'" title="Ir para p&aacute;gina anterior" />
+                <select name="pagina" id="pagina" class="input_simples" onchange="window.location.href='<?php echo $this->urlPaginacao; ?>&pag='+this.value">
+                    <?php for($i=1; $i<$this->totalPag+1; $i++): ?>
+                    <option value="<?php echo $i; ?>" <?php if($i == $this->pag){ echo " selected='selected' "; } ?>><?php echo $i; ?></option>
+                    <?php endfor; ?>
+                </select>
+                <input type="button" class="btn_p_proximo" id="btn_p_proximo" onclick="window.location.href='<?php echo $this->urlPaginacao; ?>&pag=<?php echo ($this->pag < $this->totalPag)?$this->pag+1:$this->totalPag; ?>'" title="Ir para pr&oacute;xima p&aacute;gina" />
+                <input type="button" class="btn_ultimo" id="btn_ultimo" onclick="window.location.href='<?php echo $this->urlPaginacao; ?>&pag=<?php echo $this->totalPag; ?>'" title="Ir para &uacute;ltima p&aacute;gina" />
+                <input type="button" name="imprimir" class="btn_imprimir" onclick='$("#conteudoImprimir").val($(".conteudoImprimivel").html()); $("#formGerarPdf").submit();' title="Imprimir p&aacute;gina" />
+            </td>
+        </tr>
+    </table>
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+
+<div id="modalTransformarProposta" style="display:none"></div>
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

@@ -1,0 +1,298 @@
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.dataPicker').datepicker({
+            dateFormat: 'dd/mm/yy',
+            dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'],
+            dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
+            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb','Dom' ],
+            monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+            nextText: 'Próximo',
+            prevText: 'Anterior'
+        });
+
+        $("#error").dialog({
+            title:'Alerta!',
+            resizable: false,
+            width:300,
+            height:160,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'OK': function() {
+                    $(this).dialog('close');
+                }
+            }
+        });
+        $('.ui-dialog-titlebar-close').remove();
+
+        $('.unidades').change(function(){
+            if($(this).val()==''){
+                $('#unidadeRecebimento').removeAttr('disabled');
+                $('#unidadeEnvio').removeAttr('disabled');
+            } else {
+                if($(this).attr('name')=='origem'){
+                    $('#unidadeRecebimento').attr('disabled', 'disabled');
+                } else {
+                    $('#unidadeEnvio').attr('disabled', 'disabled');
+                }
+            }
+        });
+
+
+        //********************
+        //SE O USUÁRIO OPTAR POR FILTRAR PELO CAMPO DE PRONAC, O MESMO DESABILITA A OBRIGATORIEDADE DO CAMPO ESTADO.
+        $('#pronac').keyup(function(){
+            var campo = $(this);
+            if(campo.val().length > 0){
+                $('#formulario input:not(.btn_localizar,.btn_limpar), #formulario select').attr('disabled','disabled');
+                campo.removeAttr('disabled');
+                removeObrigatorio();
+            } else {
+                $('#formulario input:not(.btn_localizar,.btn_limpar), #formulario select').removeAttr('disabled');
+            }
+        });
+        $('#pronac').focusout(function(){
+            var campo = $(this);
+            if(campo.val().length > 0){
+                $('#formulario input:not(.btn_localizar,.btn_limpar), #formulario select').attr('disabled','disabled');
+                $('#pronac').removeAttr('disabled');
+                removeObrigatorio();
+            } else {
+                $('#formulario input:not(.btn_localizar,.btn_limpar), #formulario select').removeAttr('disabled');
+            }
+        });
+        //FIM ****************
+        
+        $('#cod_ect').keyup(function(){
+            var campo = $(this);
+            if(campo.val().length > 0){
+                $('#estado').removeClass('obrigatorio');
+                $('#spanEstado').hide();
+            } else {
+                $('#estado').addClass('obrigatorio');
+                $('#spanEstado').show();
+            }
+        });
+        $('#cod_ect').focusout(function(){
+            var campo = $(this);
+            if(campo.val().length > 0){
+                $('#estado').removeClass('obrigatorio');
+                $('#spanEstado').hide();
+            } else {
+                $('#estado').addClass('obrigatorio');
+                $('#spanEstado').show();
+            }
+        });
+
+
+        $('.btn_limpar').click(function(){
+            $('#unidadeRecebimento').removeAttr('disabled');
+            $('#unidadeEnvio').removeAttr('disabled');
+            $('#formulario input:not(.btn_localizar,.btn_limpar), #formulario select').removeAttr('disabled');
+        });
+
+        $(".btn_localizar").click(function(){
+            var valida = true;
+            var texto = '';
+            $(".dataPicker").each(function(){
+                if($.trim($(this).val()).length > 0){
+                    if($(this).val().length != 10){
+                        valida = false;
+                        texto = 'Data no formato incorreto!';
+                    }
+                }
+            });
+
+            $('.obrigatorio').each(function(){
+                if($.trim($(this).val()) == ''){
+                    valida = false;
+                    texto = 'Favor preencher os campos obrigatórios!';
+                }
+            });
+
+            if(!valida){
+                $("#error").html(texto);
+                $("#error").dialog('open');
+            } else{
+                $("#formulario").submit();
+            }
+        });
+
+        $('.numero').keydown(function(event){
+            if((event.keyCode >= 96 && event.keyCode <= 105) || (event.keyCode >= 48 && event.keyCode <= 57) || event.keyCode == 8 || event.keyCode ==9 ){
+                return true;
+            } else {
+                return false;
+            }
+        });
+    });
+
+    function modoconsulta(campo,valor){
+        // atamente igual
+        if(campo == 'tipo_dtEnvio' && valor == 1){
+            $('#dtEnvioI').show();
+            $('#dtEnvioF').hide();
+            $('#dtEnvioF').val('');
+        }
+
+        // Entre dois valores
+        if(campo == 'tipo_dtEnvio' && valor == 2){
+            $('#dtEnvioF').show();
+        }
+
+        // Exatamente igual
+        if(campo == 'tipo_dtRecebida' && valor == 1){
+            $('#dtRecebidoI').show();
+            $('#dtRecebidoF').hide();
+            $('#dtRecebidoF').val('');
+        }
+
+        // Entre dois valores
+        if(campo == 'tipo_dtRecebida' && valor == 2){
+            $('#dtRecebidoF').show();
+        }
+    }
+
+    function removeObrigatorio(){
+        if($('#pronac').val().length > 0){
+            $('#estado').removeClass('obrigatorio');
+            $('#spanEstado').hide();
+        } else {
+            $('#estado').addClass('obrigatorio');
+            $('#spanEstado').show();
+        }
+    }
+</script>
+
+<?php require_once "inc/menu.inc.php"; // menu ?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para p&aacute;gina inicial">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'index')); ?>" title="Ir para Tramitar documentos">Tramitar documentos</a></li>
+        <li class="last">Consultar documentos</li>
+    </ul>
+</div>
+<!-- ========== FIM BRADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Consultar documentos<span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <div id="error" class="sumir"></div>
+    <form action="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'consultardocumento')); ?>" method="get" id="formulario">
+        <table class="tabela">
+            <tr>
+                <td class="destacar bold" align="right">Estado <span style="color: red;" id="spanEstado">*</span></td>
+                <td width="170px">Exatamente igual</td>
+                <td>
+                    <select name="estado" id="estado" class="input_simples obrigatorio">
+                        <option value="" selected="selected"> - Selecione - </option>
+                        <option value="1">Cadastrado</option>
+                        <option value="2">Enviado</option>
+                        <option value="3">Recebido</option>
+                        <option value="4">Recusado</option>
+                        <option value="6">Anexado</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Pronac</td>
+                <td>Exatamente igual</td>
+                <td>
+                    <input type="text" class="input_simples numero" name="pronac" id="pronac" maxlength="10"/>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Unidade de Envio</td>
+                <td>Exatamente igual</td>
+                <td>
+                    <select name="origem" class="input_simples unidades" id="unidadeEnvio">
+                        <option value=""> - Selecione - </option>
+                        <?php foreach ($this->TodosDestinos as $destino): ?>
+                        <option value="<?php echo $destino->Codigo ?>"><?php echo $destino->Sigla; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Unidade de Recebimento</td>
+                <td>Exatamente igual</td>
+                <td>
+                    <select name="destino"  class="input_simples unidades" id="unidadeRecebimento">
+                        <option value=""> - Selecione - </option>
+                        <?php foreach ($this->TodosDestinos as $destino): ?>
+                        <option value="<?php echo $destino->Codigo ?>"><?php echo $destino->Sigla; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Dt. Tramita&ccedil;&atilde;o Envio</td>
+                <td>
+                    <select name="tipo_dtEnvio" style="width: 160px;" class="input_simples" onchange="modoconsulta('tipo_dtEnvio',this.value);">
+                        <option value="1">Exatamente igual</option>
+                        <option value="2">Entre dois valores</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" class="input_simples dataPicker" name="dtEnvioI" id="dtEnvioI" maxlength="10" onkeyup="mascara(this, format_data);"  />
+                    <input type="text" class="input_simples dataPicker" name="dtEnvioF" id="dtEnvioF" maxlength="10" onkeyup="mascara(this, format_data);" style="display:none;" />
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right" style="width: 150px;">Dt. Tramita&ccedil;&atilde;o Recebida</td>
+                <td>
+                    <select class="select_simples" style="width: 160px;" name="tipo_dtRecebida" onchange="modoconsulta('tipo_dtRecebida',this.value);">
+                        <option value="1" selected="selected">Exatamente igual</option>
+                        <option value="2">Entre dois valores</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" class="input_simples dataPicker" name="dtRecebidoI" id="dtRecebidoI" maxlength="10" onkeyup="mascara(this, format_data);"  />
+                    <input type="text" class="input_simples dataPicker" name="dtRecebidoF" id="dtRecebidoF" maxlength="10" onkeyup="mascara(this, format_data);" style="display:none;" />
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">Lote</td>
+                <td>Exatamente igual</td>
+                <td>
+                    <input type="text" class="input_simples numero" name="lote" id="lote" maxlength="10"/>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right">C&oacute;digo ECT</td>
+                <td>Exatamente igual</td>
+                <td>
+                    <input type="text" class="input_simples" name="cod_ect" id="cod_ect" maxlength="50" autocomplete="off"/>
+                </td>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <td align="center">
+                    <input type="button" value=" " class="btn_localizar" title="Localizar" /> &nbsp;&nbsp;
+                    <input type="reset" value=" " class="btn_limpar" title="Limpar" />
+                </td>
+            </tr>
+        </table>
+    </form>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

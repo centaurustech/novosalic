@@ -1,0 +1,240 @@
+<?php
+/**
+ * Alterar Projeto
+ * @author Equipe RUP - Politec
+ * @since 15/01/2011
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.alterarprojeto
+ * @copyright ? 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#telaencaminhar").dialog({
+            title : 'Encaminhar para Análise',
+            resizable: false,
+            width:800,
+            height:600,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'Cancelar': function() {
+                    $(this).dialog('close');
+                },
+                'Encaminhar': function() {
+                    var justificativa = $("#justificativaenvio").val();
+                    var orgao = $("#orgao").val();
+                    var destinatario = $("#destinatario").val();
+                    if($.trim(justificativa)=='' || orgao == '' ||  destinatario==''){
+                        $("#erro").html('Dados Obrigatórios n&atilde;o informados!');
+                        $("#erro").dialog('open');
+                    }
+                    else{
+                        $("#alerta").html('Tem certeza que deseja encaminhar o projeto para análise?');
+                        $("#alerta").dialog('open');
+                    }
+                }
+            }
+        });
+        $("#erro").dialog({
+            resizable: true,
+            width:450,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            closeOnEscape : false,
+            title : 'Erro',
+            buttons: {
+                'OK': function() {
+                    $(this).dialog('close');
+                }
+            }
+        });
+
+        $("#alerta").dialog({
+            resizable: true,
+            width:450,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            closeOnEscape : false,
+            title : 'Erro',
+            buttons: {
+                'Nao': function() {
+                    $(this).dialog('close');
+                },
+                'Sim': function() {
+                    $("#formulario").submit();
+                }
+            }
+        });
+        $(".encaminhar").click(function(){
+            var idpronac = $(this).attr('idpronac');
+            var pronac = $(this).parent().parent().find('.pronac').html();
+            var nomeprojeto = $(this).parent().parent().find('.nomeprojeto').html();
+            $("#idpronac").val(idpronac);
+            $("#valorpronac").html(pronac);
+            $("#valornomeprojeto").html(nomeprojeto);
+            $("#telaencaminhar").dialog('open');
+        });
+
+        $("#orgao").change(function(){
+            var idorgao = $(this).val();
+            $.ajax({
+                type : 'post',
+                url : '<?php echo $this->url(array('controller' => 'ajax', 'action' => 'agentes')); ?>',
+                data :
+                    {
+                    idorgao : idorgao
+                },
+                success: function(data){
+                    if(!data.error){
+                        $("#destinatario").find('option').remove();
+                        $("#destinatario").append("<option value=''>Selecione o agente</option>");
+                        for ( i in data)
+                        {
+                            $("#destinatario").append("<option value='"+data[i].idAgente+"'>"+data[i].perfil+" - "+data[i].usu_nome+"</option>");
+                        }
+                    }
+                    else{
+                        $("#destinatario").find('option').remove();
+                        $("#destinatario").append("<option value='0'>Nenhum registro encontrado</option>");
+                    }
+                }
+                , dataType : 'json'
+            });
+        })
+    });
+</script>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="index.html" title="Ir para Início">Início</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'analisarexecucaofisica', 'action' => 'filtroconsulta')); ?>" title="Ir para Analisar Projetos">Filtro para consulta</a></li>
+        <li class="last">Analisar Projetos</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<div id="titulo">
+    <div>Projetos
+        <span class="voltar"><a href="#" onkeypress="voltar()" onclick="voltar();">Voltar</a></span>
+    </div>
+</div>
+<div id="conteudo">
+    <div id="erro"></div>
+    <div id="alerta"></div>
+    <div id="telaencaminhar">
+        <form id="formulario" action="<?php echo $this->url(array('controller' => 'analisarexecucaofisica', 'action' => 'encaminharprojetoanalise')); ?>" method="post">
+            <input type="hidden" name="idpronac" id="idpronac"  value=""/>
+            <table class="tabela">
+                <tr>
+                    <th>PRONAC</th>
+                    <td id="valorpronac"></td>
+                </tr>
+                <tr>
+                    <th>Nome do Projeto</th>
+                    <td id="valornomeprojeto"></td>
+                </tr>
+                <tr>
+                    <td colspan="2"></td>
+                </tr>
+                <tr>
+                    <th colspan="2">
+                        Observa&ccedil;&atilde;o
+                    </th>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <textarea style="width: 700px; height: 150px;" class="input_simples" id="justificativaenvio" name="justificativaenvio"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2"></td>
+                </tr>
+                <tr>
+                    <th>Encaminhar para</th>
+                    <td>
+                        <select class="select_simples" style="width: 200px;" id="orgao" name="orgao">
+                            <option value="">--Selecione--</option>
+                            <?php foreach ($this->orgaosvinculadas as $orgaos) {
+                            ?>
+                                <option value="<?php echo $orgaos->Codigo ?>"><?php echo $orgaos->Sigla ?></option>
+                            <?php } ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Destinat&aacute;rio</th>
+                    <td>
+                        <select class="select_simples" style="width: 400px;" id="destinatario" name="destinatario">
+                            <option value="">--Selecione--</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </form>
+
+    </div>
+    <table class="tabela">
+        <tr>
+            <th>pronac</th>
+            <th>Nome Projeto</th>
+            <th>UF</th>
+            <th>Data In&iacute;cio Execu&ccedil;&atilde;o</th>
+            <th>Data Fim Execu&ccedil;&atilde;o</th>
+            <th>Dilig&ecirc;ncia</th>
+            <th>Analisar Relat&oacute;rio Trimestral</th>
+            <th>Encaminhar para an&aacute;lise</th>
+            <th>status</th>
+        </tr>
+        <?php
+                            if ($this->grid) {
+                                foreach ($this->relatorio as $relatorio) {
+        ?>
+                                    <tr>
+                                        <td class="pronac"><a href="<?php echo $this->baseUrl(); ?>/consultardadosprojeto?idPronac=<?php echo $relatorio->IdPRONAC; ?>"><?php echo $relatorio->AnoProjeto . $relatorio->Sequencial ?></a></td>
+                                        <td class="nomeprojeto"><?php echo $relatorio->NomeProjeto; ?></td>
+                                        <td><?php echo $relatorio->UfProjeto; ?></td>
+                                        <td><?php echo $relatorio->dtInicioExecucao; ?></td>
+                                        <td><?php echo $relatorio->dtFimExecucao; ?></td>
+                                        <td style="text-align: center;"><a href="<?php echo $this->url(array('controller'=>'diligenciar', 'action'=>'cadastrardiligencia'))?>?idPronac=<?php echo $relatorio->IdPRONAC;?>&situacao=E61&tpDiligencia=174"><img src="<?php echo $this->baseurl(); ?>/public/img/btn_publicar.gif" alt=""></a></td>
+                                        <td style="text-align: center;">
+                                            <a href="<?php echo $this->url(array('controller' => 'analisarexecucaofisica', 'action' => 'relatoriotrimestral', 'idpronac' => $relatorio->IdPRONAC, 'idrelatorio' => $relatorio->idRelatorio, 'idrelatoriotrimestral' => $relatorio->idRelatorioTrimestral)); ?>">
+                                            <img src="<?php echo $this->baseurl(); ?>/public/img/table_multiple.png" alt=""></a>
+                                        </td>
+                                        <td style="text-align: center;">
+                                        <?php if($relatorio->stRelatorioTrimestral != 1){?>
+                                            <img src="<?php echo $this->baseurl(); ?>/public/img/encaminhar22x22.jpg" title="Relat&oacute;rio j&aacute; analizado, n&atilde;o &eacute; permitido o encaminhamento!" alt="">
+                                        <?php } else {?>
+                                            <a class="encaminhar" style="cursor: pointer;" idpronac="<?php echo $relatorio->IdPRONAC; ?>">
+                                                <img src="<?php echo $this->baseurl(); ?>/public/img/encaminhar22x22.jpg" alt="">
+                                            </a>
+                                        <?php } ?>
+                                        <?php?>
+                                        </td>
+                                        <td><?php echo $this->statusProjetoRelatorio($relatorio->stRelatorioTrimestral); ?></td>
+                                    </tr>
+        <?php
+                                }
+                            } else {
+        ?>
+                                <tr>
+                                    <td colspan="10" style="text-align: center; font-size: 14pt;">Nenhum projeto encontrado</td>
+                                </tr>
+        <?php
+                            }
+        ?>
+    </table>
+</div><!-- final: conteudo principal #conteudo -->
+
+<!-- início: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+
+<br clear="all" />

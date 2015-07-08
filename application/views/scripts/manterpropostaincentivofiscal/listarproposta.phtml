@@ -1,0 +1,135 @@
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principalproponente', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="last">Listar Propostas</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<div id="titulo"> 
+    <div>Lista de Propostas<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+
+<!-- ========== FIM TITULO ========== -->
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.expandir').live('click', function(){
+            var elemento = $(this),
+                idAgente = elemento.attr('idAgente');
+
+            $('.mostraProposta_'+idAgente).toggle()
+            if (elemento.hasClass('btn_adicionar')){
+                elemento.addClass('btn_remover');
+                elemento.removeClass('btn_adicionar');
+            } else {
+                elemento.addClass('btn_adicionar');
+                elemento.removeClass('btn_remover');
+            }
+        });
+
+
+        $("#frmNovaProposta").validate({
+            rules: {
+                mecanismo: {required: true},
+                propronente: {required: true}
+            },
+            messages: {
+                mecanismo: {required:" Obrigat&oacute;rio"},
+                propronente: {required:" Obrigat&oacute;rio"}
+            },
+            submitHandler: function(form) {
+                //form.submit();
+                $("#msgValidaProponente").html("");
+                var nomeProponente = $('#propronente option:selected').text();
+                if(nomeProponente == "- TODOS -"){
+                    $("#msgValidaProponente").html("<font color='red'>Informe o nome de um Proponente.</font>");
+                    return false;
+                }
+                jqAjaxForm(form, 'propostasCadastradas');
+            }
+        });
+
+        $("#localizar").click(function() {
+
+            $("#msgValidaProponente").html("");
+            var url = "<?php echo $this->url(array('controller' => 'manterpropostaincentivofiscal', 'action' => 'localizar-proposta')); ?>?idAgente="+$('#propronente').val()+"&mecanismo="+$('#mecanismo').val();
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data:{
+                    //idProduto: id
+                },
+                success: function(data){
+                    $("#divMsg").hide();
+                    $('#propostasCadastradas').html(data);
+                },
+                error: function (data){
+                    $("#divMsg").html("Falha na recuperação dos dados!");
+                }
+            });
+
+                $("#propostasCadastradas").html("<br><br>Carregando dados...<br><img src='<?php echo $this->baseUrl(); ?>/public/img/ajax.gif'>");
+                //$("#tblResultPropostas").show();
+                //jqAjaxLinkSemLoading("<?php echo $this->url(array('controller' => 'manterpropostaincentivofiscal', 'action' => 'localizar-proposta')); ?>?idAgente="+$('#propronente').val()+"&mecanismo="+$('#mecanismo').val(), "", "propostasCadastradas");
+        });
+
+        //POPULA COMBO DE PROPONENTES
+        //jqAjaxLinkSemLoading("<?php echo $this->url(array('controller' => 'manterpropostaincentivofiscal', 'action' => 'buscar-proponentes-vinculados')); ?>?idResponsavel=<?php echo $this->idResponsavel; ?>", "", "propronente");
+
+    });
+   
+</script>
+<style type="text/css">
+    label.error{ color:red; font-weight: normal; }
+</style>
+<div id="conteudo" align="center">
+    <form name="frmNovaProposta" id="frmNovaProposta" action="<?php echo $this->url(array('controller' => 'manterpropostaincentivofiscal', 'action' => 'declaracaonovaproposta')); ?>" method="post">
+        <table  class="tabela">
+            <tr class="centro">
+                <th>Cadastro</th>
+            </tr>
+            <tr>
+                <td align="left">Mecanismo:&nbsp;
+                    <select name="mecanismo" id="mecanismo" class="input_simples w200">
+                        <!--<option value="">- Selecione -</option>-->
+                        <option value="1" <?php echo ($this->mecanismo == 1) ? 'selected="selected"' : ''; ?>>Incentivo Fiscal Federal</option>
+                        <!--<option value="2" <?php echo ($this->mecanismo == 2) ? 'selected="selected"' : ''; ?>>FNC</option>
+                        <option value="6" <?php echo ($this->mecanismo == 6) ? 'selected="selected"' : ''; ?>>Recurso do Tesouro</option>-->
+                    </select>
+                    &nbsp;&nbsp;&nbsp;CPF Proponente:&nbsp;
+                    <select name="propronente" id="propronente" class="input_simples">
+                        <option value="">- Selecione -</option>
+                        <?php if(!empty($this->dadosCombo)):?>
+                            <?php $idProponente = '';?>
+                                <?php foreach ($this->dadosCombo as $dc):?>
+                                    <?php if($dc['idAgenteProponente'] != $idProponente):?>
+                                    <option value="<?php echo $dc['idAgenteProponente']; ?>">[<?php echo $dc['CPF']; ?>] - <?php echo $dc['Nome']; ?></option>
+                                    <?php endif; ?>
+                                    <?php $idProponente = $dc['idAgenteProponente']; ?>
+                                <?php endforeach;?>
+                        <?php endif;?>
+                    </select>&nbsp;<span id="msgValidaProponente"></span>&nbsp;&nbsp;&nbsp;
+                    <input type="button" name="solicitar" id="solicitar" class="btn_novoproponente" style="width: 106px" onclick="window.location='<?php echo $this->usuarioLogado == 'prop'? $this->url(array('controller' => 'vincularresponsavel', 'action' => 'index')) : $this->url(array('controller' => 'vincularresponsavel', 'action' => 'index')); ?>'">
+                    <span style="padding-left:20px"><input type="submit" name="novo" id="novo" style="width: 95px" class="btn_novaproposta" value=""></span>
+                </td>
+            </tr>
+        </table>
+        <table  class="tabela">
+            <tr class="centro">
+                <th>Filtro</th>
+            </tr>
+            <tr>
+                <td align="center"><input type="button" name="localizar" id="localizar" class="btn_localizar"></td>
+            </tr>
+        </table>
+        <div  id="propostasCadastradas"></div>
+        <div id="divMsg"></div>
+        <br/><br/>
+    </form>
+</div>
+<!-- ========== FIM ======== -->
+<div id="rodapeConteudo"><span></span></div>
+<br clear="all" />

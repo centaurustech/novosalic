@@ -1,0 +1,362 @@
+<?php require_once "inc/menu.inc.php"; ?>
+
+<script type="text/javascript">
+    function cancelamentoferias(valor){
+        if(valor == 1){
+            $("#camposdatas").hide();
+        } else {
+            $("#camposdatas").show();
+        }
+    }
+
+    function verDias(){
+        var dtInicio = $("#dtinicio").val();
+        var diaI = dtInicio.substr(0, 2);
+        var mesI = dtInicio.substr(3, 2);
+        var anoI = dtInicio.substr(6, 4);
+        var dtFim = $("#dtfim").val();
+        var diaF = dtFim.substr(0, 2);
+        var mesF = dtFim.substr(3, 2);
+        var anoF = dtFim.substr(6, 4);
+        var data1 =  Date(anoI, mesI, diaI);
+        var data2 = new Date(anoF, mesF, diaF);
+
+        strDate1 = anoI + '/' + mesI + '/' + diaI;
+        strDate2 = anoF + '/' + mesF + '/' + diaF;
+
+        var total = (((Date.parse(strDate2))-(Date.parse(strDate1)))/(24*60*60*1000)).toFixed(0);
+
+        if(($("#dtinicio").val() == '') || ($("#dtfim").val() == '')){
+            $("#qtdDias").html('0');
+        } else {
+            $("#novosdias").val(total);
+            $("#qtdDias").html(total);
+        }
+    }
+
+    function verDiasR(){
+        var dtInicio = $("#dtinicioalteracao").val();
+        var diaI = dtInicio.substr(0, 2);
+        var mesI = dtInicio.substr(3, 2);
+        var anoI = dtInicio.substr(6, 4);
+        var dtFim = $("#dtfimalteracao").val();
+        var diaF = dtFim.substr(0, 2);
+        var mesF = dtFim.substr(3, 2);
+        var anoF = dtFim.substr(6, 4);
+        var data1 =  Date(anoI, mesI, diaI);
+        var data2 = new Date(anoF, mesF, diaF);
+
+        strDate1 = anoI + '/' + mesI + '/' + diaI;
+        strDate2 = anoF + '/' + mesF + '/' + diaF;
+
+        var total = (((Date.parse(strDate2))-(Date.parse(strDate1)))/(24*60*60*1000)).toFixed(0);
+
+        if(($("#dtinicioalteracao").val() == '') || ($("#dtfimalteracao").val() == '')){
+            $("#qtdDiasAlteracao").html('0');
+        } else {
+            $("#novosdias").val(total);
+            $("#qtdDiasAlteracao").html(total);
+        }
+    }
+
+    $(function(){
+        $.datepicker.regional['pt-BR'] = {
+            closeText: 'Fechar',
+            prevText: '&#x3c;Anterior',
+            nextText: 'Pr&oacute;ximo&#x3e;',
+            currentText: 'Hoje',
+            monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+            dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            weekHeader: 'Sm',
+            dateFormat: 'dd/mm/yy',
+            firstDay: 0,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: ''};
+        $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+        $("#dtinicio").datepicker($.datepicker.regional['pt-BR']);
+        $("#dtfim").datepicker($.datepicker.regional['pt-BR']);
+        $("#dtinicioalteracao").datepicker($.datepicker.regional['pt-BR']);
+        $("#dtfimalteracao").datepicker($.datepicker.regional['pt-BR']);
+    });
+
+    function validarForm(){
+
+        var novosdias = $("#novosdias").val();
+        var dias = $("#dias").val();
+        var somadias = ((parseInt(dias)) + (parseInt(novosdias)));
+
+        if(somadias > 60){
+            alertar('Total de dias superior ao permitido');
+            return false;
+        }
+
+        var dtInicio = $("#dtinicio").val();
+        var dtFim = $("#dtfim").val();
+        var dtAtual = $("#dtatual").val();
+        var arrAtual = dtAtual.split("/");
+        dtAtual = arrAtual[2]+arrAtual[1]+arrAtual[0];
+
+        if(dtInicio != ''){
+            var arrInicio = dtInicio.split("/");
+            dtInicio = arrInicio[2]+arrInicio[1]+arrInicio[0];
+        } else {
+            alertar('Informe a data inicial!');
+            return false;
+        }
+
+        if(dtFim != ''){
+            var arrFim = dtFim.split("/");
+            dtFim = arrFim[2]+arrFim[1]+arrFim[0];
+        } else {
+            alertar('Informe a data final!');
+            return false;
+        }
+
+        if((dtFim < dtInicio) || (dtFim == dtInicio)){
+            alertar('A data final deve ser maior que a data inicial!');
+            return false;
+        } else if(dtInicio < dtAtual) {
+            alertar('O período não pode ser inferior a data de hoje!');
+            return false;
+        } else {
+            $("#form").submit();
+        }
+    }
+
+    function validarFormR(){
+        var texto = CKEDITOR.instances['justificativa'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+        if (texto.length > 0){
+            $('#justificativa').val(CKEDITOR.instances['justificativa'].getData());
+        } else {
+            alertar('O Campo justificativa é obrigatório');
+            return false;
+        }
+
+        var tipoalteracao = $('input:radio[name=tipoalteracao]:checked').val();
+
+        if(tipoalteracao == 0){
+            var diasmarcados  = $("#diasmarcados").val();
+            var novosdias 	= $("#qtdDiasAlteracao").html();
+            var dias 			= $("#dias").val();
+            var diminuidias 	= ((parseInt(dias)) - (parseInt(diasmarcados)));
+            var disponiveis 	= (60) - (parseInt(diminuidias));
+
+            if((parseInt(novosdias)) > (disponiveis)){
+                alertar('Total de dias superior ao permitido');
+                return false;
+            }
+
+            var dtInicio = $("#dtinicioalteracao").val();
+            var dtFim = $("#dtfimalteracao").val();
+            var dtAtual = $("#dtatual").val();
+            var arrAtual = dtAtual.split("/");
+            dtAtual = arrAtual[2]+arrAtual[1]+arrAtual[0];
+
+            if(dtInicio != ''){
+                var arrInicio = dtInicio.split("/");
+                dtInicio = arrInicio[2]+arrInicio[1]+arrInicio[0];
+            } else {
+                alertar('Informe a data inicial!');
+                return false;
+            }
+
+            if(dtFim != ''){
+                var arrFim = dtFim.split("/");
+                dtFim = arrFim[2]+arrFim[1]+arrFim[0];
+            } else {
+                alertar('Informe a data final!');
+                return false;
+            }
+
+            if((dtFim < dtInicio) || (dtFim == dtInicio)){
+                alertar('A data final deve ser maior que a data inicial!');
+                return false;
+            } else if(dtInicio < dtAtual) {
+                alertar('O período não pode ser inferior a data de hoje!');
+                return false;
+            }
+        }
+        $("#formAlteracao").submit();
+    }
+
+    function verificaDataRepedita(){
+        var url = '<?php echo $this->url(array('controller' => 'mantercalendariocnic', 'action' => 'valida-data-inicio'));?>';
+        url = url +'?dtInicio='+$('#DtInicio').val()+'&dtFim='+$('#DtFinal').val();
+
+        if($('#DtInicio').val().length >= 10  || $('#DtFinal').val().length >= 10){
+            //funcao responsavel acessar a url via ajax e retornar os dados para o local indicado
+            jqAjaxLinkSemLoading(url, "", "DtInicioERROR");
+        }
+    }
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'),'',true);?>" title="Ir para Início">Início</a></li>
+        <li>Manter Agentes</li>
+        <li class="last">Principal</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Férias do Parecerista <span class="voltar"><a href="javascript:voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <input type="hidden" name="dtatual" id="dtatual" value="<?php echo Date("d/m/Y");?>" />
+    <input type="hidden" name="dias" id="dias" value="<?php echo $this->totalDias; ?>" />
+    <input type="hidden" name="novosdias" id="novosdias"  />
+
+    <?php require_once "inc/cabecalho.php";?>
+    <table class="tabela">
+        <tr>
+            <th colspan="2">Solicitação de Férias / Alteração </th>
+        </tr>
+        <tr>
+            <td><b>Quantidade de dias já tirados: <?php echo $this->totalDias; ?> do total de 60</b></td>
+            <?php if($this->grupoativo == "94"){ ?>
+                <?php if(((int)$this->totalDias) < 60){ ?>
+            <td width="100"><input type="button" class="btn_novo" value="" size="20" maxlength="10" onclick="novo();" /></td>
+                <?php } ?>
+            <?php } ?>
+        </tr>
+    </table>
+
+
+    <div id="formNovo" class="sumir">
+        <form id="form" action="<?php echo $this->url(array('controller' => 'agentes', 'action' => 'salvaferias'));?>" method="post">
+
+            <table class="tabela">
+                <tr>
+                    <th colspan="7">Nova solicitação</th>
+                </tr>
+                <tr>
+                    <td width="250">Quantidade de dias: <span id="qtdDias">0</span></td>
+                    <td width="150" align="center">Data das férias: </td>
+                    <td>
+                        <input type="text" name="dtinicio" id="dtinicio" class="input_simples w100" maxlength="10" value="" onkeyup="mascara(this, format_data);" onclick="limpar_campo(this, '');" onchange="verDias();" type="text">
+					 à 
+                        <input type="text" name="dtfim" id="dtfim" class="input_simples w100" maxlength="10" value="" onkeyup="mascara(this, format_data);" onclick="limpar_campo(this, '');" onchange="verDias();"  type="text">
+                    </td>
+                    <td width="120" align="center"><input type="button" class="btn_incluir" value="" size="20" maxlength="10" onclick="validarForm();" /></td>
+                    <td width="120" align="center"><input type="button" class="btn_cancelar" value="" size="20" maxlength="10" onclick="salvo();" /></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <?php if(count($this->dadosferias) != 0){ ?>
+    <table class="tabela" id="salvos">
+        <tr>
+            <th colspan="7">Pedidos</th>
+        </tr>
+        <?php foreach($this->dadosferias as $d){
+            $siAusencia = '';
+            $title = '';
+            if($d->siAusencia == 0) {
+                $siAusencia = 'bola_amarelo' ;
+                $title = 'Em aberto';
+            }
+            else if($d->siAusencia == 1) {
+                $siAusencia = 'bola_verde'   ;
+        $title = 'Aceito';
+        }
+        else if($d->siAusencia == 2) {
+            $siAusencia = 'bola_vermelho';
+            $title = 'Alterado';
+        }
+        else if($d->siAusencia == 3) {
+            $siAusencia = 'bola_vermelho';
+            $title = 'Cancelado';
+                        }
+                        else if($d->siAusencia == 4) {
+            $siAusencia = 'bola_vermelho';
+                            $title = 'Negado!';
+                        }
+        ?>
+
+        <tr>
+            <td width="180">Quantidade de dias: <span id="qtdDias"><?php echo $d->qtdDias; ?></span></td>
+            <td align="center">Data das férias: </td>
+            <td width="150" align="center"><?php echo $d->dtInicio; ?></td>
+            <td width="10" align="center">à</td>
+            <td width="150" align="center"><?php echo $d->dtFim; ?></td>
+            <td width="50" align="center" style="background: white;"><img src="<?php echo $this->baseUrl(); ?>/public/img/<?php echo $siAusencia; ?>.gif" title="<?php echo $title; ?>" border="0" style="cursor: pointer;" /></td>
+            <td width="50" align="center">
+            <?php if(($this->grupoativo == "94")){ ?>
+            <?php if(($d->siAusencia != 2) && ($d->siAusencia != 3) && ($d->siAusencia != 4)){ ?>
+                <img style="cursor:pointer;" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/cancelar-p.gif" title="Alterar férias" onclick="remarcarferias('<?php echo $d->idAusencia; ?>','<?php echo $d->qtdDias; ?>');"/>
+            <?php } ?>
+            <?php } ?>
+            </td>
+        </tr>
+        <tr class="<?php if($d->siAusencia != 4) { echo 'sumir'; } ?>">
+            <td colspan="7" class="fundo_linha"><b>JUSTIFICATIVA:</b> <br /> <?php echo $d->dsJustificativaAusencia; ?></td>
+        </tr>
+        <?php } ?>
+
+    </table>
+    <?php } ?>
+
+    <div id="modal" class="sumir">
+        <form id="formAlteracao" action="<?php echo $this->url(array('controller' => 'agentes', 'action' => 'alterarferias'));?>" method="post">
+            <input type="hidden" value="" name="idferias" id="idferias"  />
+            <input type="hidden" value="" name="diasmarcados" id="diasmarcados"  />
+            <table class="tabela">
+                <tr>
+                    <td class="fundo_linha3" colspan="3" align="center">
+                        <label id="diassubtraidos"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3" align="center">
+                        <input type="radio" value="0" id="alt1" name="tipoalteracao" checked="checked" onchange="cancelamentoferias(this.value);" />
+                        <label for="alt1">Alteração</label>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <input type="radio" value="1" id="alt2" name="tipoalteracao" onchange="cancelamentoferias(this.value);" />
+                        <label for="alt2">Cancelamento</label>
+                    </td>
+                </tr>
+                <tr id="camposdatas">
+                    <td align="center" >QTD dias: <span id="qtdDiasAlteracao">0</span></td>
+                    <td  align="center">Data das férias: </td>
+                    <td align="center">
+                        <input type="text" name="dtinicioalteracao" id="dtinicioalteracao" class="input_simples" style="width: 90px;" maxlength="10" value="" onkeyup="mascara(this, format_data);" onclick="limpar_campo(this, '');" onchange="verDiasR();" type="text">
+                        <input type="text" name="dtfimalteracao" id="dtfimalteracao" class="input_simples" style="width: 90px;" maxlength="10" value="" onkeyup="mascara(this, format_data);" onclick="limpar_campo(this, '');" onchange="verDiasR();"  type="text">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3" align="center">Justificativa: <br />
+                        <textarea name="justificativa" id="justificativa"></textarea>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<?php if($this->message_type == 'ALERT'){ ?>
+<script type="text/javascript">
+    novo();
+    $("#dtinicio").val("<?php echo $_GET['dtInicio'];?>");
+    $("#dtfim").val("<?php echo $_GET['dtFim'];?>");
+</script>
+<?php } ?>
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

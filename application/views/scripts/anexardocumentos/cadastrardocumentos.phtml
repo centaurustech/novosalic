@@ -1,0 +1,147 @@
+<?php
+/**
+ * Busca os documentos do PRONAC informado
+ * @author Equipe RUP - Politec
+ * @since 28/04/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.views.scripts.anexardocumentos
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+
+require_once "inc/menu.inc.php"; // menu
+?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para Início">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'areadetrabalho', 'action' => 'index')); ?>" title="Ir para Análise do Membro da Comissão">Análise do Membro da Comissão</a></li>
+		<li class="last">Documentos Anexados - Upload de Documentos</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Documentos Anexados  - Upload de Documentos <span>ID #23A</span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+
+
+	<?php if ($this->buscarcomprovantes) : ?>
+	<table class="tabela">
+		<tr class="titulo_tabela">
+			<th>Tipo Documento</th>
+			<th>Data de Envio</th>
+			<th>Arquivo</th>
+		</tr>
+
+		<?php foreach ($this->buscarcomprovantes as $doc): ?>
+		<tr class="fundo_linha2" <?php echo $this->corLinhaOnMouseOver(); ?>>
+			<td> <?php echo $doc->dsTipoDocumento; ?> </td>		
+			<td class="centro"><?php echo $doc->dtEnvioComprovante; ?></td>
+			<td class="centro"><a href="<?php echo $this->url(array('controller' => 'upload','action' => 'abrir')); ?>?id=<?php echo $doc->idArquivo; ?>"><?php echo $doc->nmArquivo; ?></a></td>
+		</tr>
+		<?php endforeach; ?>
+
+	</table>
+	<?php endif; ?>
+
+
+
+	<form name="formBuscar" id="formBuscar" method="post" 
+		action="cadastrardocumentos?pronac=<?php echo $getPronac; ?>" enctype="multipart/form-data">
+
+	<table class="tabela">
+		<tr>
+			<th colspan="2" class="titulo_tabela">Upload de Documentos</th>
+		</tr>
+		<tr>
+			<th>PRONAC</th>
+			<th>Nome do Projeto</th>
+		</tr>
+
+		<?php foreach ($this->buscarpronac as $p): ?>
+		<tr>
+			<td><?php echo $p->nrpronac; ?></td>
+			<td><?php echo $p->NomeProjeto; ?></td>
+			<input type="hidden" name="pronac" id"pronac" value="<?php echo $p->IdPRONAC; ?>" />
+		</tr>
+		<?php endforeach; ?>
+
+		<tr>
+			<th width="20%"><label for="tipoDocumento">Classificação de Documento</label></th>
+			<td>
+				<select name="tipoDocumento" id="tipoDocumento" class="input_simples">
+					<option value=""> <label for="tipoDocumento"> - Selecione - </label></option>
+
+					<?php foreach ($this->combotipodocumento as $comboTipoDocumento) : ?>
+					<option value="<?php echo $comboTipoDocumento->idTipoDocumento ?>" <?php echo (isset($this->tipoDocumento) && $this->tipoDocumento == $comboTipoDocumento->idTipoDocumento) ? 'selected="selected"' : ''; ?>><?php echo $comboTipoDocumento->dsTipoDocumento ?></option>
+					<?php endforeach; ?>
+
+				</select>		
+			</td>
+		</tr>
+		<tr>
+			<th><label for="descricao">Descrição</label></th>
+			<td>
+				<textarea class="textarea_simples" type="text" name="descricao" id="descricao" cols="60" rows="4" ><?php echo isset($this->descricao) ? $this->descricao : ''; ?></textarea>
+				<br />
+			</td>
+		</tr>
+		<tr>
+			<th><label for="arquivo">Arquivo</label></th>
+			<td>
+				<input class="input_simples" type="file" name="arquivo" id="arquivo" />
+			</td>
+		</tr>
+	</table>
+
+
+
+	<!-- ========== BOTÕES DE CADASTRO E ETC ========== -->
+	<table class="tabela">
+		<tr>
+			<td>
+				<div align="center">
+					<input type="submit" title="Salvar" class="btn_incluir" value=" " /> 	<input type="reset" title="Salvar" class="btn_cancelar" value=" " /> 
+				</div>
+			</td>
+		</tr>
+	</table>
+
+	</form>
+
+
+	
+	<!-- ========== FIM FORMULÁRIO DE CADASTRO ========== -->
+	
+	
+	<table class="tabela">
+		<tr>
+			<td class="centro"> 	<a href="javascript:window.print()"><img src="<?php echo $this->baseUrl(); ?>/public/img/imprimir.gif" alt="Imprimir"/> </a></td>
+		</tr>
+	</table>
+
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

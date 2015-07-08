@@ -1,0 +1,82 @@
+<?php 
+    $edital = "";
+    if(isset($_GET['edital']) && $_GET['edital']=="s"){
+        require_once 'scripts/manterpropostaedital/inc/menu.inc.php'; // menu de manter proposta por edital
+        $edital = "&edital=s";
+    }else{
+        require_once "scripts/manterpropostaincentivofiscal/inc/menu.inc.php"; // menu de manter proposta por incentivo fiscal
+    }
+?>
+
+<!-- ========== INULO ========== -->
+<div id="titulo">
+    <div>Encaminhar Proposta Cultural ao Ministério da Cultura</div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+
+<!-- ========== IDO ========== -->
+<div id="conteudo">
+
+    <!--<table class="tabela" >
+
+        <tr>
+            <th>Descri&Ccedil;&Atilde;o</th>
+            <th>Observa&ccedil;&atilde;o</th>
+        </tr>
+        <?php /*foreach ($this->resultado as $chave => $valor) { ?>
+            <?php if($chave!="erro"){ ?>
+            <tr class="fundo">
+                <td width="90%"><?php echo $valor['msg']; ?></td>
+                <td class="centro" width="10%" nowrap>
+                    <?php if($valor['erro'] == 1){?>
+                                <img alt="" src="<?php echo $this->baseUrl(); ?>/public/img/btn_excluir.gif" />
+                    <?php }else{ ?>
+                                <img alt="" src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png" />
+                   <?php  } ?>
+                </td>
+            </tr>
+            <?php } ?>
+        <?php }*/ ?>
+    </table>-->
+
+
+    <table class="tabela" >
+        <tr>
+            <th>Descri&Ccedil;&Atilde;o</th>
+            <th>Observa&ccedil;&atilde;o</th>
+        </tr>
+        <?php foreach ($this->resultado as $valor) { ?>
+            <tr class="fundo">
+                <td width="90%" <?php if($valor->Observacao != 'PENDENTE' && $valor->Observacao != 'OK'){ echo 'colspan="2" class="centro"'; } ?>><?php echo $valor->Descricao; ?></td>
+                <?php if($valor->Observacao == 'PENDENTE' || $valor->Observacao == 'OK'){ ?>
+                <td class="centro" width="10%" nowrap>
+                    <?php //echo $valor->Observacao; ?>
+                    <?php if($valor->Observacao == 'PENDENTE'){ ?>
+                        <img alt="" src="<?php echo $this->baseUrl(); ?>/public/img/btn_excluir.gif" />
+                    <?php } else if($valor->Observacao == 'OK'){ ?>
+                        <img alt="" src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png" />
+                   <?php } ?>
+                </td>
+                <?php } ?>
+            </tr>
+        <?php } ?>
+    </table>
+
+    <?php /*$idPreProjeto=""; if(isset($_GET['idPreProjeto'])){$idPreProjeto = $_GET['idPreProjeto'];}
+    if(count($arrayErro) == 0) { ?>
+    <table class="tabela" border="0" cellpadding="0" cellspacing="0">
+        <tr>
+            <td align="center">
+                <input type="button" id="btn_confirmar" name="sair" style="width: 88px" class="btn_confirmar" onclick="window.location.href='<?php echo $this->url(array('controller'=>'manterpropostaincentivofiscal', 'action'=>'confirmar-envio-proposta-ao-minc')); ?>?idPreProjeto=<?php echo $idPreProjeto.$edital;?>&valida=s'">
+                <!--<input type="button" id="btn_sair" name="sair" style="width: 88px" class="btn_sair" onclick="voltar();">-->
+            </td>
+        </tr>
+    </table>
+    <?php }*/ ?>
+
+</div><!-- ========== FIM CONTEUDO ========== -->
+
+<!-- ========== I ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RO ========== -->
+<br clear="all" />

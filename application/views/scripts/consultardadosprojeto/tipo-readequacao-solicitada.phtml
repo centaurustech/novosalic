@@ -1,0 +1,51 @@
+<?php
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+<script>
+   
+    function mostraOcultaTipoReadequacao(elemento,idPedidoAlteracao)
+    {
+        $('.' + elemento).toggle();
+
+        if ($('#' + elemento).hasClass('btn_adicionar'))
+        {
+                $('#' + elemento).addClass('btn_remover');
+                $('#' + elemento).removeClass('btn_adicionar');
+        }
+        else
+        {
+                $('#' + elemento).addClass('btn_adicionar');
+                $('#' + elemento).removeClass('btn_remover');
+        }
+
+        //CARREGA TIPOS DE READEQUACOES SOLICITADAS
+        //$("#resultReadequacaoAnalisada_"+elemento).html('<br><center>Aguarde, carregando dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br>');
+        //jqAjaxLinkSemLoading('<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'tipo-readequacao-solicitada')); ?><?php echo "?idPronac=".$this->idPronac;?>&idPedidoAlteracao='+idPedidoAlteracao, '', 'resultReadequacaoAnalisada');
+
+    }
+</script>
+<?php $ct=1; if(is_object($this->dados) && count($this->dados)>0):
+        foreach($this->dados as $tipoReadequacao) : ?>
+        <table class="tabela">
+            <tr>
+                <td align="left">
+                    <input type="button" class="btn_adicionar" id="tipo<?php echo $ct;?>" onclick="mostraOcultaTipoReadequacao('<?php echo "tipo".$ct;?>','<?php echo $tipoReadequacao->idPedidoAlteracao;?>');" /><b><?php echo $tipoReadequacao->dsAlteracaoProjeto;?></b>
+                </td>
+            </tr>
+            <tr class="tipo<?php echo $ct;?> sumir" align="left">
+                <td>
+                    <div id="resultReadequacaoAnalisada_tipo<?php echo $ct;?>"></div>
+                </td>
+            </tr>
+        </table>
+        <?php $ct++; endforeach; ?>
+<?php else: ?>
+    <table class="tabela">
+        <tr>
+            <td align="center"><em>Dados n&atilde;o informados!</em></td>
+        </tr>
+    </table>
+<?php endif; ?>
+
+
+

@@ -1,0 +1,420 @@
+<?php
+/**
+ * Alterar Projeto
+ * @author Equipe RUP - Politec
+ * @since 15/01/2011
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.alterarprojeto
+ * @copyright ? 2010 - Ministï¿½rio da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+
+<div id="msg-justificativa" class="sumir">Dados obrigat&oacute;rios n&atilde;o informados ou justificativa com menos de 20 caracteres!</div>
+<div id="msg-justificativa-fim" class="sumir">Deseja realmente finalizar a an&aacute;lise do Relat&oacute;rio?</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $('#salvar').click(function(){
+            if ($("#justificativa").val().length < 20)
+            {
+                alertModal("Alerta!", "msg-justificativa", 360, 180);
+                return false;
+            }
+            else
+            {
+                $('#stRelatorio').val(4);
+                $('#formAnalisar').submit();
+            }
+        });
+
+        $('#finalizar').click(function(){
+            if ($("#justificativa").val().length < 20)
+            {
+                alertModal("Alerta!", "msg-justificativa", 360, 180);
+                return false;
+            }
+            else
+            {
+                $('#stRelatorio').val(5);
+                confirmModal("Alerta!", "msg-justificativa-fim", 360, 180, null, null, 'formAnalisar', null, null, null);
+                return false;
+            }
+        });
+
+    });
+    function salvarparecer(strelatorio){
+        $.ajax({
+            async: true,
+            type: "POST",
+            url: "<?php echo $this->url(array('controller' => 'analisarexecucaofisica', 'action' => 'salvaranalise')); ?>",
+            data:{
+                idrelatorio : <?php echo $this->idrelatorio; ?>,
+                strelatoriotrimestral : strelatorio,
+                justificativa : CKEDITOR.instances['justificativa'].getData()
+            },
+            success: function(data)
+            {
+                if(!data.error){
+                    $("#ok").html('Parecer salvo com sucesso!');
+                    $("#ok").dialog('open');
+                }
+            }
+        });
+    }
+
+    function limitaTextarea(valor, id) {
+        quant = 1000; /* Total de caracteres */
+        total = valor.length;
+        document.getElementById(id).value = valor.substr(0,quant);
+    }
+</script>
+<!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== -->
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->baseUrl(); ?>/principal" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'analisarexecucaofisicatecnico', 'action' => ''),null,true); ?>">Grid principal</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'analisarexecucaofisicatecnico', 'action' => 'listarelatoriotrimestral', 'idPronac' => $this->dadosprojeto->IdPRONAC),null,true); ?>">Analisar Projetos</a></li>
+        <li class="last">An&aacute;lise de Relat&oacute;rio Trimestral</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<div id="titulo">
+    <div>An&aacute;lise de Relat&oacute;rio Trimestral
+        <span class="voltar"><a href="<?php echo $this->url(array('controller' => 'analisarexecucaofisicatecnico', 'action' => 'listarelatoriotrimestral', 'idPronac' => $this->dadosprojeto->IdPRONAC),null,true); ?>">Voltar</a></span>
+    </div>
+</div>
+<div id="conteudo">
+    <div id="ok"></div>
+    <div id="alert"></div>
+    <table class="tabela">
+        <tr>
+            <th colspan="2">Relat&oacute;rio Trimestral de Execu&ccedil;&atilde;o F&iacute;sica do projeto</th>
+        </tr>
+        <tr class="destacar" style="font-weight: bold; text-align: center;">
+            <td>PRONAC</td>
+            <td>Nome do Projeto</td>
+        </tr>
+        <tr style="text-align: center;">
+            <td><?php echo $this->dadosprojeto->AnoProjeto . $this->dadosprojeto->Sequencial; ?></td>
+            <td><?php echo $this->dadosprojeto->NomeProjeto; ?></td>
+        </tr>
+    </table>
+    <table class="tabela">
+        <tr>
+            <th>Objetivos e Metas</th>
+        </tr>
+        <tr>
+            <td><?php echo $this->dadosrelatoriotrimestral->dsObjetivosMetas; ?></td>
+        </tr>
+    </table>
+    <table class="tabela">
+        <tr>
+            <th>Medidas de Acessibilidade</th>
+        </tr>
+        <tr>
+            <td>
+                <table class="tabela">
+                    <tr>
+                        <th colspan="2">Como est&aacute; atingindo a acessibilidade</th>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><?php echo $this->dadosacessibilidade->dsAcesso ?></td>
+                    </tr>
+                    <tr>
+                        <td class="destacar" style="width: 15%;"><b>Quantas pessoas atingiram</b></td>
+                        <td><?php echo $this->dadosacessibilidade->qtPessoa ?></td>
+                    </tr>
+                    <tr>
+                        <td class="destacar"><b>P&uacute;blico Alvo</b></td>
+                        <td><?php echo $this->dadosacessibilidade->dsPublicoAlvo ?></td>
+                    </tr>
+                    <tr>
+                        <td class="destacar"><b>Local</b></td>
+                        <td><?php echo $this->dadosacessibilidade->dsLocal ?></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="destacar"><b>Estrutura/Solu&ccedil;&atilde;o</b></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><?php echo $this->dadosacessibilidade->dsEstruturaSolucao ?></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <table class="tabela">
+        <tr>
+            <th>Medidas de Democratiza&ccedil;&atilde;o</th>
+        </tr>
+        <tr>
+            <td>
+                <table class="tabela">
+                    <tr>
+                        <th colspan="2">Como est&aacute; atingindo a democratiza&ccedil;&atilde;o</th>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><?php echo $this->dadosdemocratizacao->dsAcesso ?></td>
+                    </tr>
+                    <tr>
+                        <td class="destacar" style="width: 15%;"><b>Quantas pessoas atingiram</b></td>
+                        <td><?php echo $this->dadosdemocratizacao->qtPessoa ?></td>
+                    </tr>
+                    <tr>
+                        <td class="destacar"><b>P&uacute;blico Alvo</b></td>
+                        <td><?php echo $this->dadosdemocratizacao->dsPublicoAlvo ?></td>
+                    </tr>
+                    <tr>
+                        <td class="destacar"><b>Local</b></td>
+                        <td><?php echo $this->dadosdemocratizacao->dsLocal ?></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="destacar"><b>Estrutura/Solu&ccedil;&atilde;o</b></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><?php echo $this->dadosdemocratizacao->dsEstruturaSolucao ?></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <table class="tabela">
+        <tr>
+            <th>Comprovantes de Execu&ccedil;&atilde;o</th>
+        </tr>
+        <tr>
+            <td>
+                <table class="tabela">
+                    <tr class="destacar" style="font-weight: bold;">
+                        <td>Tipo de Documento</td>
+                        <td>Nome</td>
+                        <td>Arquivo</td>
+                        <td>Tamanho</td>
+                        <td>Data de envio</td>
+                        <td>Observa&ccedil;&otilde;es</td>
+                    </tr>
+                    <?php if(count($this->documentoexecucao) > 0){
+                        foreach ($this->documentoexecucao as $documentos){
+                    ?>
+                    <tr>
+                        <td><?php echo $documentos['dsTipoDocumento'] ?></td>
+                        <td><?php echo $documentos['nmTitulo'] ?></td>
+                        <td><a href='<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir'), '', true) ?>?id=<?php echo $documentos['idArquivo'] ?>'><?php echo $documentos['nmArquivo'] ?></a></td>
+                        <td><?php echo $this->formatarMilhar($documentos['nrTamanho'] / 1024); ?> KB</td>
+                        <td><?php echo Data::tratarDataZend($documentos['dtEnvio'], 'Brasileiro', true); ?></td>
+                        <td><?php echo $documentos['dsDocumento'] ?></td>
+                    </tr>
+                    <?php } } else { ?>
+                    <tr>
+                        <td colspan="6" align="center">N&atilde;o h&aacute; arquivos anexados.</td>
+                    </tr>
+                    <?php } ?>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <table class="tabela">
+        <tr>
+            <th>Execu&ccedil;&atilde;o de Plano de distribui&ccedil;&Atilde;o</th>
+        </tr>
+        <tr>
+            <td>
+                <table class="tabela">
+                <?php foreach($this->distribuicaoproduto as $distribuicaoproduto){?>
+                    <tr>
+                        <td class="destacar" style="width: 20%"><b>Produto</b></td>
+                        <td colspan="5"><?php echo $distribuicaoproduto->Descricao; ?></td>
+                    </tr>
+                    <tr>
+                        <td class="destacar"><b>N&ordm; de Exemplares total</b></td>
+                        <td><?php echo $distribuicaoproduto->QtdeProduzida; ?></td>
+                        <td class="destacar" style="width: 20%"><b>N&ordm; de Exemplares distribui&ccedil;&atilde;o Gratuita</b></td>
+                        <td><?php echo $distribuicaoproduto->QtdePatrocinador; ?></td>
+                        <td class="destacar" style="width: 20%"><b>N&ordm; de Exemplares distribuidos</b></td>
+                        <td><?php echo $distribuicaoproduto->QtdeProponente; ?></td>
+
+                    </tr>
+                <?php } ?>
+                    <tr>
+                        <td class="destacar"><b>Benefici&aacute;rio</b></td>
+                        <td colspan="3"><?php echo $this->dadosbeneficiario->dsBeneficiario; ?></td>
+                        <td class="destacar"><b>CPF/CNPJ</b></td>
+                        <td><?php echo !empty($this->dadosbeneficiario->nrCPF) ? Validacao::mascaraCPFCNPJ($this->dadosbeneficiario->nrCPF) : Validacao::mascaraCPFCNPJ($this->dadosbeneficiario->nrCNPJ); ?></td>
+                    </tr>
+                    <tr class="destacar">
+                        <td colspan="6"><b>Publico alvo Beneficiado</b></td>
+                    </tr>
+                    <tr>
+                        <td colspan="6"><?php echo $this->dadosbeneficiario->dsPublicoAlvo; ?></td>
+                    </tr>
+                    <tr class="destacar">
+                        <td colspan="6"><b>Como foram entregues</b></td>
+                    </tr>
+                    <tr>
+                        <td colspan="6"><?php echo $this->dadosbeneficiario->dsEntrega; ?></td>
+                    </tr>
+                </table>
+                <table class="tabela">
+                    <tr>
+                        <th colspan="6">Comprovante recebimento benefici&aacute;rio</th>
+                    </tr>
+                    <tr class="destacar bold">
+                        <td>Tipo de Documento</td>
+                        <td>Nome</td>
+                        <td>Arquivo</td>
+                        <td>Tamanho</td>
+                        <td>Data de envio</td>
+                        <td>Observa&ccedil;&otilde;es</td>
+                    </tr>
+                    <?php if(count($this->documentosbeneficiarios) > 0){
+                        foreach ($this->documentosbeneficiarios as $documentosbeneficiarios){
+                    ?>
+                    <tr>
+                        <td><?php echo $documentosbeneficiarios['dsTipoDocumento'] ?></td>
+                        <td><?php echo $documentosbeneficiarios['nmTitulo'] ?></td>
+                        <td><a href='<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir'), '', true) ?>?id=<?php echo $documentosbeneficiarios['idArquivo'] ?>'><?php echo $documentosbeneficiarios['nmArquivo'] ?></a></td>
+                        <td><?php echo $this->formatarMilhar($documentosbeneficiarios['nrTamanho'] / 1024); ?> KB</td>
+                        <td><?php echo Data::tratarDataZend($documentosbeneficiarios['dtEnvio'], 'Brasileiro', true); ?></td>
+                        <td><?php echo $documentosbeneficiarios['dsDocumento'] ?></td>
+                    </tr>
+                    <?php } } else { ?>
+                    <tr>
+                        <td colspan="6" align="center">N&atilde;o h&aacute; arquivos anexados.</td>
+                    </tr>
+                    <?php } ?>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <table class="tabela">
+        <tr>
+            <th colspan="2">Execu&ccedil;&atilde;o do plano b&aacute;sico de divulga&ccedil;&atilde;o</th>
+        </tr>
+        <?php
+        if(count($this->planodistribuicao) > 0) {
+            foreach($this->planodistribuicao as $plano=>$planoDistribuicao){
+                foreach($this->planodistribuicao[$plano] as $planoDistribuicao){
+        ?>
+        <tr>
+            <td class="destacar bold">Ve&iacute;culo de divulga&ccedil;&atilde;o</td>
+            <td><?php echo $planoDistribuicao['Veiculo'].' - '.$planoDistribuicao['Peca']; ?></td>
+        </tr>
+        <tr>
+            <td class="destacar bold">Tamanho/Dura&ccedil;&atilde;o</td>
+            <td><?php echo !empty($planoDistribuicao['dsPosicao']) ? $planoDistribuicao['dsPosicao'] : 'N&atilde;o cadastrado'; ?></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table class="tabela">
+                    <?php
+                    if($planoDistribuicao['arquivos'] == null  ){
+                    ?>
+                    <tr>
+                        <td colspan="6" style="text-align: center;">NENHUM ARQUIVO CADASTRADO</td>
+                    </tr>
+                    <?php  }
+                        else{
+                    ?>
+
+                    <tr class="destacar bold">
+                        <td>Tipo de Documento</td>
+                        <td>Nome</td>
+                        <td>Arquivo</td>
+                        <td>Tamanho</td>
+                        <td>Formato</td>
+                        <td>Data de envio</td>
+                    </tr>
+
+                    <?php foreach ($planoDistribuicao['arquivos'] as $documentosmarca) {
+                        $extensaoArq = explode(".", $documentosmarca['nmArquivo']);
+                        $extensaoArq = array_reverse($extensaoArq);
+                        $extensaoArq = str_replace('\'', '', $extensaoArq[0]);
+                        $nmArq = str_replace('.'.$extensaoArq, '', $documentosmarca['nmArquivo']);
+                    ?>
+                    <tr>
+                        <td>Solicita&ccedil;&atilde;o do Proponente</td>
+                        <td><?php echo $nmArq; ?></td>
+                        <td><a href='<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir'), '', true) ?>?id=<?php echo $documentosmarca['idArquivo'] ?>'><?php echo $documentosmarca['nmArquivo'] ?></a></td>
+                        <td><?php echo $this->formatarMilhar($documentosmarca['nrTamanho'] / 1024); ?> KB</td>
+                        <td><?php echo $extensaoArq; ?></td>
+                        <td><?php echo Data::tratarDataZend($documentosmarca['dtEnvio'], 'Brasileiro', true); ?></td>
+                    </tr>
+                    <?php } } ?>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">&nbsp;</td>
+        </tr>
+        <?php
+                }
+
+            }
+        }
+        ?>
+        <tr>
+            <td class="destacar bold" colspan="2">Posição da logomarca</td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php echo $this->PosicaoLogo; ?></td>
+        </tr>
+        <tr>
+            <td class="destacar bold" colspan="2">Formato da logomarca do MINC</td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php echo $this->dsJustificativaPosicaoLogo; ?></td>
+        </tr>
+    </table>
+
+    <?php if($this->idAgenteLogado == $this->idAgenteAvaliador && ($this->dadosrelatoriotrimestral->stRelatorioTrimestral == 3 || $this->dadosrelatoriotrimestral->stRelatorioTrimestral == 4)){ ?>
+        <table class="tabela">
+            <tr>
+                <th>Parecer</th>
+            </tr>
+            <tr>
+                <td>
+                    <form name="formAnalisar" id="formAnalisar" method="post" action="<?php echo $this->url(array('controller' => 'analisarexecucaofisicatecnico', 'action' => 'salvaranalise')); ?>">
+                    <input type="hidden" name="idRelatorio" value="<?php echo $this->idrelatorio; ?>" />
+                    <input type="hidden" name="idRelatorioTrimestral" value="<?php echo $this->idrelatoriotrimestral; ?>" />
+                    <input type="hidden" name="stRelatorio" id="stRelatorio" value="4" />
+
+                    <textarea onkeyup="limitaTextarea(this.value, 'justificativa')" name="justificativa" id="justificativa" class="textarea_simples" style="width: 99%" cols="" rows="4"><?php echo!empty($this->dadosrelatoriotrimestral->dsParecer) ? $this->dadosrelatoriotrimestral->dsParecer : '' ?></textarea>
+                    <span style="font-size: 11px; color: red;">Quantidade m&aacute;xima de 1000 caracteres</span>
+<!--                    <script type="text/javascript">
+                        CKEDITOR.replace('justificativa', {	fullPage : true });
+                    </script>-->
+                    </form>
+                </td>
+            </tr>
+            <tr>
+                <td class="centro">
+                    <input type="button" class="btn_salvar" id="salvar"/>
+                    <input type="button" class="btn_finalizar" id="finalizar"/>
+                    <a href="<?php echo $this->url(array('controller' => 'analisarexecucaofisicatecnico', 'action' => 'listarelatoriotrimestral', 'idPronac' => $this->dadosprojeto->IdPRONAC),null,true); ?>"><input type="button" class="btn_cancelar"/></a>
+                </td>
+            </tr>
+        </table>
+    <?php } else { ?>
+        <table class="tabela">
+            <tr>
+                <th>Parecer</th>
+            </tr>
+            <tr>
+                <td><?php echo$this->dadosrelatoriotrimestral->dsParecer; ?></td>
+            </tr>
+        </table>
+    <?php } ?>
+</div><!-- final: conteudo principal #conteudo -->
+
+<!-- inï¿½cio: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+
+<br clear="all" />

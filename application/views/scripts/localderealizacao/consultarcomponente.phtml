@@ -1,0 +1,23 @@
+
+<?php if(count($this->localizacoes)>0) : ?>
+<table class="tabela">
+    <tr class="titulo_tabela">
+        <th align="left" width="25%">Pa&iacute;s</th>
+        <th align="left" width="25%">UF</th>
+        <th align="left" width="30%">Cidade</th>
+    </tr>
+    <?php foreach ($this->localizacoes as $localizacao) { ?>
+    <tr class="fundo">
+        <td align="left"><?php echo utf8_decode(htmlentities($localizacao->pais)); ?></td>
+        <td align="left"><?php echo utf8_decode(htmlentities($localizacao->uf)); ?></td>
+        <td align="left"><?php echo utf8_decode(htmlentities($localizacao->cidade)); ?></td>
+    </tr>
+    <?php } ?>
+</table>
+<?php else:?>
+<table class="tabela">
+    <tr class="fundo">
+        <td align="left">Nenhum registro encontrado.</td>
+    </tr>
+</table>
+<?php endif;?>

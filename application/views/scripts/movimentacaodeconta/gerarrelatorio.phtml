@@ -1,0 +1,177 @@
+<script type="text/javascript">
+    /**
+    * Função para gerar o pdf da planilha
+    */
+    function pdf()
+    {
+            $('#htmlpdf').val($('#imprimir').html());
+            $('#formpdf').submit();
+    }
+
+    function JSMostraOcultaElemento(idInconsistencia)
+    {
+        var campoIdInconsistencia = $("#frmRelatorio").find("input:[name='idTpInconsistencia']");
+            campoIdInconsistencia.val(idInconsistencia); //atualiza valor do tipo de inconsistencia a ser buscada
+        
+        $('.' + idInconsistencia).toggle();
+
+        if ($('#' + idInconsistencia).hasClass('btn_adicionar'))
+        {
+                $('#' + idInconsistencia).addClass('btn_remover');
+                $('#' + idInconsistencia).removeClass('btn_adicionar');
+        }
+        else
+        {
+                $('#' + idInconsistencia).addClass('btn_adicionar');
+                $('#' + idInconsistencia).removeClass('btn_remover');
+        }            
+        //CARREGA PROJETOS DE ACORDO COM O TIPO DE INCONSISTENCIA
+        if($('#'+idInconsistencia+'_resultado').html() == ''){
+            jqAjaxForm(document.getElementById("frmRelatorio"), idInconsistencia +"_resultado");
+        }
+    }
+    
+    $(document).ready(function() {
+        
+        
+        $(".btn_finalizar").click(function()
+        {
+            $("#resultadoFinalizar").html("");
+            $('#resultadoFinalizar').html('<br><center>Aguarde, atualizando dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br>');
+            $.ajax({
+                async: true,
+                type: "post",
+                url: "<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'finalizar')); ?>",
+                data:{
+                    modal : "s"
+                },
+                success: function(data)
+                {   
+                    if(data.error){
+                        message(data.msg, 'ERROR');
+                    }else{
+                        message(data.msg, 'CONFIRM');
+                        //realiza refresh na pagina apos 10seg
+                        setTimeout(function(){
+                            $("#frmInconsistencias").submit();
+                        }, '3000');
+                    }
+                },
+                error: function(data) {
+                    message('Ocorreu um erro ao tentar realizar a operção para atualizar as inconsistências.', 'ERROR');
+                },
+                complete: function(){
+                    $("#resultadoFinalizar").html("");
+                },
+                dataType : 'json'
+                
+            });
+             
+        });
+        
+    });//feach ready
+    
+        
+        
+     
+</script>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'relatorio')); ?>" title="Ir para Relat&oacute;rio de inconsist&ecirc;ncias de conta capta&ccedil;&atilde;o">Relat&oacute;rio de inconsist&ecirc;ncias de conta capta&ccedil;&atilde;o</a></li>
+		<li class="last">Resultado da consulta</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Relat&oacute;rio de inconsist&ecirc;ncias de conta capta&ccedil;&atilde;o <span class="voltar"><a href="<?php echo $this->url(array('controller'=>'movimentacaodeconta', 'action'=>'')); ?>" title="Ir para página anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+	<!-- INÍCIO GERAÇÃO .PDF -->
+	<form id="formpdf" name="formpdf" method="post" 
+		action="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'gerarpdf'),'',true); ?>" 
+		enctype="multipart/form-data">
+		<input type="hidden" name="html" value="" id="htmlpdf" />
+	</form>
+	<!-- FIM GERAÇÃO .PDF -->
+
+	<!-- ========== INÍCIO ÁREA DE IMPRESSÃO ========== -->
+	<div id="imprimir">
+            <?php foreach ($this->inconsistencias as $chave => $inconsistencia) : ?>
+                <!-- ================================================================-->
+                <!-- ================ TIPO DE INCONSISTENCIA ========================-->
+                <!-- ================================================================-->
+                <table class="tabela">
+                    <tr>
+                        <td><input type="button" id="<?php echo $inconsistencia->idTipoInconsistencia?>" class="btn_adicionar" title="Expandir" onclick="JSMostraOcultaElemento('<?php echo $inconsistencia->idTipoInconsistencia?>');" /><?php echo  $inconsistencia->dsTipoInconsistencia?></td>
+                    </tr>
+                </table>
+
+                <!-- RESULTADO DO AJAX -->
+                <div class="<?php echo $inconsistencia->idTipoInconsistencia?> sumir" ><div id="<?php echo $inconsistencia->idTipoInconsistencia?>_resultado"></div></div>
+            <?php endforeach; ?>
+	</div>
+	<!-- ========== FIM ÁREA DE IMPRESSÃO ========== -->
+        
+        <!-- FORMULARIO DE PAGINACAO/ORDENACAO -->
+        <form action="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'listar-projetos')); ?>" method="post" name="frmRelatorio" id="frmRelatorio">
+            <?php if(!empty($this->parametrosBusca)) foreach($this->parametrosBusca as $name=>$value):?>
+                <?php if(!is_array($value)): ?>
+                <input type="hidden" name="<?php echo $name?>" id="<?php echo $name?>" value="<?php echo utf8_decode($value)?>" class="input_simples"/>
+                <?php else: ?>
+                    <?php foreach($value as $valor):?>
+                        <input type="hidden" name="<?php echo $name?>[]" id="<?php echo $name?>" value="<?php echo utf8_decode($valor)?>" class="input_simples"/>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            <?php endforeach; ?>
+            <?php if(!isset($this->parametrosBusca["idTpInconsistencia"])):?>
+                  <input type="hidden" name="idTpInconsistencia" id="idTpInconsistencia" value="" class="input_simples"/>
+            <?php endif; ?>
+            <?php if(empty($this->parametrosBusca["ordenacao"])):?>
+                <input type="hidden" name="ordenacao" id="ordenacao" value="<?php echo (!empty($this->parametrosBusca["ordenacao"]))?$this->parametrosBusca["ordenacao"]:""; ?>"/>
+            <?php endif; ?>
+            <?php if(empty($this->parametrosBusca["tipoOrdenacao"])):?>
+                <input type="hidden" name="tipoOrdenacao" id="tipoOrdenacao" value="<?php echo (!empty($this->parametrosBusca["tipoOrdenacao"]))?$this->parametrosBusca["tipoOrdenacao"]:""; ?>"/>
+            <?php endif; ?>
+        </form>
+        <form action="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'gerarrelatorio')); ?>" method="post" name="frmInconsistencias" id="frmInconsistencias">
+            <?php if(!empty($this->parametrosBusca)) foreach($this->parametrosBusca as $name=>$value):?>
+                <?php if(!is_array($value)): ?>
+                <input type="hidden" name="<?php echo $name?>" id="<?php echo $name?>" value="<?php echo utf8_decode($value)?>" class="input_simples"/>
+                <?php else: ?>
+                    <?php foreach($value as $valor):?>
+                        <input type="hidden" name="<?php echo $name?>[]" id="<?php echo $name?>" value="<?php echo utf8_decode($valor)?>" class="input_simples"/>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            <?php endforeach; ?>
+            <?php if(!isset($this->parametrosBusca["idTpInconsistencia"])):?>
+                  <input type="hidden" name="idTpInconsistencia" id="idTpInconsistencia" value="" class="input_simples"/>
+            <?php endif; ?>
+        </form>
+        <br />
+        <?php if ($this->inconsistencias->count() > 0) : ?>
+            <center>
+                <div id="resultadoFinalizar"></div>
+                <input type="button" class="btn_finalizar" title="Finalizar" value=" " /> 
+            </center>
+        <?php endif; ?>
+        <br />
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

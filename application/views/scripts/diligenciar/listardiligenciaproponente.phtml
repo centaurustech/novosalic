@@ -1,0 +1,445 @@
+<?php
+    $visualizarDiligenciaHref   = $this->url(array('controller' => 'diligenciar', 'action' => 'visualizardiligencia'));
+    $alterarDiligenciaHref      = $this->url(array('controller' => 'diligenciar', 'action' => 'cadastrarrespostadiligencia'));
+    $prorrogarHref              = $this->url(array('controller' => 'diligenciar', 'action' => 'prorrogar'));
+    if($this->idPronac)
+        require_once "scripts/diligenciar/inc/menu.inc.php"; // menu de manter proposta por incentivo fiscal
+    if($this->idPreProjeto)
+        require_once "scripts/diligenciar/inc/menu.inc.php"; // menu de manter proposta por incentivo fiscal
+?>
+
+<div id="titulo">
+    <div>Listagem das Dilig&ecirc;ncias <span class="voltar"><a href="javascript:voltar();">Voltar</a></span></div>
+</div>
+
+<div id="conteudo">
+    <form id="frImprimir" action="<?php echo $this->url(array('controller'=>'diligenciar', 'action'=>'imprimir')); ?>" method="post" target="_blank" >
+        <input type="hidden" name="idPronac" value="<?php echo $this->idPronac;?>"/>
+        <input type="hidden" name="idPreProjeto" value="<?php echo $this->idPreProjeto;?>"/>
+        <?php if($this->diligenciasProposta) { ?>
+        <table class="tabela">
+            <tr>
+                <td><input type="button" name="grid1" id="g1_1" class="btn_remover" title="Expandir" />Dilig&ecirc;ncia Proposta</td>
+            </tr>
+        </table>
+
+        <div id="div_g1_1" class="miolo_grid_01">
+            <table class="tabela">
+                <tr>
+                    <th>IMPRIMIR</th>
+                    <th>VISUALIZAR</th>
+                    <th>RESPONDER</th>
+                    <th>NR PROPOSTA</th>
+                    <th>NOME DA PROPOSTA</th>
+                    <th>DATA DA SOLICITA&Ccedil;&Atilde;O</th>
+                    <? /*?><th>PRAZO DA RESPOSTA</th>
+                    <th>PRORROGAR PRAZO</th><? */ ?>
+                </tr>
+                <?php foreach ($this->diligenciasProposta as $value) { ?>
+                <tr>
+                    <td style="text-align: center;">
+                        <input type="checkbox" name="idAvaliacaoProposta[]" class="idDiligencia checkproposta" value="<?php echo $value->idDiligencia;?>" />
+                    </td>
+                    <td style="text-align: center;">
+                        <img class="visualizarProposta" idAvaliacaoProposta="<?php echo $value->idDiligencia;?>" src="<?php echo $this->baseUrl(); ?>/public/img/ico/kdict.png" width="20" style="cursor: pointer;"/>
+                    </td>
+                    <td style="text-align: center;">
+                        <?php
+                            $qtdia = 20;
+                            if($value->stProrrogacao == 'S')
+                                $qtdia+=20;
+                            $prazo = date('Y-m-d',strtotime($value->dataSolicitacao.' +'.$qtdia.' day'));
+                        ?>
+                        <?php if($value->stEnviado == 'N' and date('Y-m-d') <= $prazo and !$this->diligencias) {?><img title="" class="alterarProposta" idAvaliacaoProposta="<?php echo $value->idDiligencia;?>" src="<?php echo $this->baseUrl(); ?>/public/img/ico/edit.png" width="20" style="cursor: pointer;"/><?php }?>
+                    </td>
+                    <td align="center">
+                        <?php echo $value->pronac;?>
+                    </td>
+                    <td align="center">
+                        <?php echo $value->nomeProjeto;?>
+                    </td>
+                    <td align="center">
+                        <?php echo date('d/m/Y',strtotime($value->dataSolicitacao));?>
+                    </td>
+                    <? /*?><td align="center">
+                        <?php
+                            $qtdia = 40;
+                            echo date('d/m/Y',strtotime($value->dataSolicitacao.' +'.$qtdia.' day'));
+                        ?>
+                    </td>
+                    <td>Prorrogado</td><? */ ?>
+                </tr>
+                <?php } ?>
+            </table>
+        </div>
+        <?php } if($this->diligencias) { ?>
+        <table class="tabela">
+            <tr>
+                <td><input type="button" name="grid1" id="g1_2" class="btn_remover" title="Expandir" />Dilig&ecirc;ncia Projeto</td>
+            </tr>
+	</table>
+
+	<div id="div_g1_2" class="miolo_grid_01">
+            <table class="tabela">
+                <tr>
+                    <th>IMPRIMIR</th>
+                    <th>VISUALIZAR</th>
+                    <th>RESPONDER</th>
+                    <th>PRONAC</th>
+                    <th>NOME DO PROJETO</th>
+                    <th>PRODUTO</th>
+                    <th>TIPO DA DILIG&Ecirc;NCIA</th>
+                    <th>DATA DA SOLICITA&Ccedil;&Atilde;O</th>
+                    <th>DATA DA RESPOSTA</th>
+                    <th>PRAZO DA RESPOSTA</th>
+                    <th>PRORROGAR PRAZO</th>
+                </tr>
+                <?php foreach ($this->diligencias as $value) { ?>
+                <tr>
+                    <td style="text-align: center;">
+                        <input type="checkbox" name="idDiligencia[]" class="idDiligencia checkprojeto" value="<?php echo $value->idDiligencia;?>" />
+                    </td>
+                    <td style="text-align: center;">
+                        <img class="visualizar" idDiligencia="<?php echo $value->idDiligencia;?>" src="<?php echo $this->baseUrl(); ?>/public/img/ico/kdict.png" width="20" style="cursor: pointer;"/>
+                    </td>
+                    <td style="text-align: center;">
+                        <?php
+                            $qtdia = 20;
+                            if($value->stProrrogacao == 'S')
+                                $qtdia+=20;
+                            $prazo = date('Y-m-d-H-i',strtotime($value->dataSolicitacao.' +'.$qtdia.' day'));
+                            ?>
+                            <?php
+
+                            if( $this->verificarStatusDiligencia (null, $value->idDiligencia) == 'D') {?><img class="alterar" idDiligencia="<?php echo $value->idDiligencia;?>" src="<?php echo $this->baseUrl(); ?>/public/img/ico/edit.png" width="20" style="cursor: pointer;"/>  <?php  }
+                            else {
+                                echo '-';
+                            }
+                        ?>
+                    </td>
+                    <td>
+                        <?php echo $value->pronac;?>
+                    </td>
+                    <td>
+                        <?php echo $value->nomeProjeto;?>
+                    </td>
+                    <td align="center">
+                        <?php
+                            if($value->produto)
+                                echo $value->produto;
+                            else
+                                echo '-';
+                        ?>
+                    </td>
+                    <td>
+                        <?php echo $value->tipoDiligencia;?>
+                    </td>
+                    <td>
+                        <?php echo date('d/m/Y',strtotime($value->dataSolicitacao));?>
+                    </td>
+                    <td>
+                        <?php  if($value->stEnviado == 'S' && !empty($value->dataResposta)) echo date('d/m/Y',strtotime($value->dataResposta));?>
+                    </td>
+                    <td align="center">
+                        <?php
+                            $qtdia = 40;
+                            echo date('d/m/Y',strtotime($value->dataSolicitacao.' +'.$qtdia.' day'));
+                        ?>
+                    </td>
+                    <td>Prorrogado</td>
+                </tr>
+                <?php  } ?>
+            </table>
+        </div>
+        <?php } ?>
+        <table class="tabela">
+            <tr align="center">
+                <td><input type="submit" class="btn_imprimir" value="" /></td>
+            </tr>
+        </table>
+        <br clear="all" />
+    </form>
+</div><!-- final: conteúdo principal #conteudo -->
+<div id="rodapeConteudo" ><span></span></div>
+<br clear="all" />
+
+<form id="encaminhar" method="post">
+    <input type="hidden" name="idPronac" value="<?php echo $this->idPronac;?>"/>
+    <input type="hidden" name="idPreProjeto" value="<?php echo $this->idPreProjeto;?>" />
+    <input type="hidden" name="idProduto" value="<?php echo $this->idProduto;?>" />
+    <input type="hidden" name="idDiligencia" id="idDiligencia" value=""/>
+    <input type="hidden" name="retorno" value="listardiligenciaproponente"/>
+    <input type="hidden" name="idAvaliacaoProposta" value="" id="idAvaliacaoProposta" />
+</form>
+
+<script type="text/javascript">
+
+    $('.checkproposta').change(function(){
+        var i=0;
+        $('.checkproposta').each(function(){
+            if( $(this).attr("checked") ){
+                i++;
+            }
+        });
+        if(i>0){
+            $('.checkprojeto').attr('disabled', 'disabled');
+        } else {
+            $('.checkprojeto').removeAttr('disabled');
+        }
+    });
+
+    $('.checkprojeto').change(function(){
+        var i=0;
+        $('.checkprojeto').each(function(){
+            if( $(this).attr("checked") ){
+                i++;
+            }
+        });
+        if(i>0){
+            $('.checkproposta').attr('disabled', 'disabled');
+        } else {
+            $('.checkproposta').removeAttr('disabled');
+        }
+    });
+
+    $('#frImprimir').submit(function(){
+        var validar = false;
+        $(this).find('.idDiligencia').each(function(){
+            if($(this).attr('checked'))
+                validar = true;
+        });
+        if(!validar){
+            janelaAlerta('Selecione uma diligencia para imprimir!');
+        }
+        return validar;
+    });
+    $(".visualizar").click(function (){
+        $('#encaminhar').attr('action','<?php echo $visualizarDiligenciaHref;?>');
+        $('#encaminhar').find('#idDiligencia').val($(this).attr('idDiligencia'));
+        $('#encaminhar').submit();
+    });
+    $(".visualizarProposta").click(function (){
+        $('#encaminhar').attr('action','<?php echo $visualizarDiligenciaHref;?>');
+        $('#encaminhar').find('#idAvaliacaoProposta').val($(this).attr('idAvaliacaoProposta'));
+        $('#encaminhar').submit();
+    });
+    $(".alterar").click(function(){
+        $('#encaminhar').attr('action','<?php echo $alterarDiligenciaHref;?>');
+        $('#encaminhar').find('#idDiligencia').val($(this).attr('idDiligencia'));
+        $('#encaminhar').submit();
+    });
+
+    $(".alterarProposta").click(function(){
+        $('#encaminhar').attr('action','<?php echo $alterarDiligenciaHref;?>');
+        $('#encaminhar').find('#idAvaliacaoProposta').val($(this).attr('idAvaliacaoProposta'));
+        $('#encaminhar').submit();
+    });
+
+    $(".btn_voltar").click(function (){
+        //history.go(-1);
+    });
+    $(".prorrogarProposta").click(function(){
+        var este = this;
+        var nomeJanelaAlerta =   janelaObj({
+            parametros : {
+                width:      400,
+                autoOpen:   false,
+                resizable:  false,
+                modal:      true,
+                buttons: {
+                    'N\u00e3o': function() {
+                        $(this).dialog('close');
+                    },
+                    Sim: function() {
+                        var resp = buscarJson('<?php echo $prorrogarHref;?>',{operacao:'prorrogarDiligencia',idAvaliacaoProposta:$(este).attr('idAvaliacaoProposta'),idPronac:'<?php echo $this->idPronac;?>',idPreProjeto:'<?php echo $this->idPreProjeto;?>',idProduto:'<?php echo $this->idProduto;?>'});
+                        if(resp.result)
+                            $(este).parent().html('Prorrogado');
+                        janelaAlerta(resp.mensagem);
+                        $(this).dialog('close');
+                    }
+                }
+            },
+            removerBtFechar:true,
+            title : 'Alerta'
+        });
+        nomeJanelaAlerta.divConteudo.html('Deseja Prorrogar o prazo de resposta?');
+        nomeJanelaAlerta.abrirJanela();
+
+        return nomeJanelaAlerta;
+    });
+    $(".prorrogar").click(function(){
+        var este = this;
+        var nomeJanelaAlerta =   janelaObj({
+            parametros : {
+                width:      400,
+                autoOpen:   false,
+                resizable:  false,
+                modal:      true,
+                buttons: {
+                    'N\u00e3o': function() {
+                        $(this).dialog('close');
+                    },
+                    Sim: function() {
+                        var resp = buscarJson('<?php echo $prorrogarHref;?>',{operacao:'prorrogarDiligencia',idDiligencia:$(este).attr('idDiligencia'),idPronac:'<?php echo $this->idPronac;?>',idPreProjeto:'<?php echo $this->idPreProjeto;?>',idProduto:'<?php echo $this->idProduto;?>'});
+                        if(resp.result)
+                            $(este).parent().html('Prorrogado');
+                        janelaAlerta(resp.mensagem);
+                        $(this).dialog('close');
+                    }
+                }
+            },
+            removerBtFechar:true,
+            title : 'Alerta'
+        });
+        nomeJanelaAlerta.divConteudo.html('Deseja Prorrogar o prazo de resposta?');
+        nomeJanelaAlerta.abrirJanela();
+
+        return nomeJanelaAlerta;
+    });
+
+    $(".btn_enviar").click(function (){
+        var nomeJanelaAlerta =   janelaObj({
+            parametros : {
+                width:      400,
+                autoOpen:   false,
+                resizable:  false,
+                modal:      true,
+                buttons: {
+                    'N\u00e3o': function() {
+                        $(this).dialog('close');
+                    },
+                    Sim: function() {
+                        janelaAlerta('Sua solicita&ccedil;&atilde;o foi enviada com sucesso!');
+                        $(this).dialog('close');
+                    }
+                }
+            },
+            removerBtFechar:true,
+            title : 'Alerta'
+        });
+        nomeJanelaAlerta.divConteudo.html('Tem certeza que deseja prorrogar o prazo?');
+        nomeJanelaAlerta.abrirJanela();
+
+        return nomeJanelaAlerta;
+    });
+    function janelaAlerta(mensagem){
+        var nomeJanelaAlerta =   janelaObj({
+            parametros : {
+                width:      400,
+                autoOpen:   false,
+                resizable:  false,
+                modal:      true,
+                buttons: {
+                    OK: function() {
+                        $(this).dialog('close');
+                    }
+                }
+            },
+            removerBtFechar:true,
+            title : 'Alerta'
+        });
+        nomeJanelaAlerta.divConteudo.html(mensagem);
+        nomeJanelaAlerta.abrirJanela();
+
+        return nomeJanelaAlerta;
+    }
+    function janelaObj(dados){
+        var divConteudo = $('<div></div>')
+        .attr('title',dados.title)
+        .appendTo('body');
+        var novaJanela = {
+            divConteudo : divConteudo,
+            removerBtFechar: true,
+            parametros : {autoOpen: false},
+            iniciarJanela : function(dados){
+                this.refineParametrosObj(dados);
+
+                this.divConteudo.dialog(this.parametros);
+            },
+            abrirJanela:function(){
+                this.divConteudo.dialog('open');
+                if(this.removerBtFechar)
+                    $('.ui-dialog-titlebar-close').remove();
+            },
+            fecharJanela:function(){
+                this.divConteudo.dialog('close');
+                this.divConteudo.remove();
+            },
+            refineParametrosObj : function(data){
+                if(data!= undefined)
+                    for(var j in data){
+                        this[j]=data[j];
+                    }
+            }
+        }
+        novaJanela.iniciarJanela(dados);
+        return novaJanela;
+    }
+    function buscarJson(pagina,dados){
+        var retorno = '';
+        var select = requisicaoAjaxObj();
+        select.executar({
+            pagina          :   pagina,
+            parametros      :   dados,
+            resposta        :   undefined,
+            async           :   false,
+            funcaoRetorno   :   function (resposta){
+                retorno = resposta;
+            }
+            ,dataType        :   'json'
+        });
+        return retorno;
+    }
+    function buscarJsonAux(pagina,dados){
+        var retorno = '';
+        var select = requisicaoAjaxObj();
+        select.executar({
+            pagina          :   pagina,
+            parametros      :   dados,
+            resposta        :   undefined,
+            async           :   false,
+            funcaoRetorno   :   function (resposta){
+                alert(resposta);
+            }
+            //,dataType        :   'json'
+        });
+        //return retorno;
+    }
+    function requisicaoAjaxObj(){
+        var ajaxObj={
+            pagina          :   '',
+            parametros      :   {},
+            type            :   'post',
+            dataType        :   '',
+            resposta        :   '#conteudo',
+            async           :   true,
+            funcaoRetorno   :   function (resposta){
+                $(this.resposta).html(resposta);
+            },
+            executar        :   function(dados){
+                this.refineParametrosObj(dados);
+                var esteObj = this;
+                if(this.resposta != undefined && this.resposta != '')
+                    $(this.resposta).html('<img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" alt="carregando"><br/><br/>Carregando...<br>Por Favor, aguarde!!');
+                $.ajax({
+                    type      : esteObj.type,
+                    url       : esteObj.pagina,
+                    data      : esteObj.parametros,
+                    async     : esteObj.async,
+                    success   : function(resp){
+                        esteObj.funcaoRetorno(resp);
+                    }
+                    ,dataType  : esteObj.dataType
+                });
+            },
+            refineParametrosObj : function(data){
+                if(data!= undefined)
+                    for(var j in data){
+
+                        this[j]=data[j];
+                    }
+            }
+        }
+        return ajaxObj;
+    }
+</script>

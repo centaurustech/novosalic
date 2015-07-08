@@ -1,0 +1,184 @@
+<?php
+$SalvarHref                 = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'cadastrardescreveritenscusto')).'?idusuario='.$this->idusuario;
+$SalvarUpdateHref           = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'updatedescreveritenscusto')).'?idusuario='.$this->idusuario;
+
+
+$corpo          = 'alterarlicitacaoAjax';
+$idNome         = 'iditemcusto';
+$inputID        = '<input type="hidden" name="'.$idNome.'" id="'.$idNome.'" value="'.$this->iditemcusto.'"/><input type="hidden" name="idlicitacao" id="idlicitacao" value="'.$this->idlicitacao.'"/><input type="hidden" name="idpronac" id="idpronac" value="'.$this->idpronac.'"/>';
+$idformulario   = 'formularioItemCusto';
+
+$verificacao = true;
+if($this->iditemcusto != '')
+    $verificacao = false;
+?>
+<div id="miolo">
+    <fieldset><legend>Licita&ccedil;&atilde;o</legend>
+        <div id="<?php echo $corpo;?>">
+            <table class="tabela">
+                    <tr>
+                        <th>
+                            Licita&ccedil;&atilde;o
+                        </th>
+                    </tr>
+
+            </table>
+            <table  style="text-align: center; margin-left: auto; margin-right: auto;width: 97%;">
+                    <tr>
+                        <td>
+                            N&uacute;mero de Licita&ccedil;&atilde;o
+                        </td>
+                        <td>
+                            <?php echo $this->numLicitacao; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Modalidade
+                        </td>
+                        <td>
+                            <?php echo $this->modalidade; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            N&uacute;mero de Processo
+                        </td>
+                        <td>
+                            <?php echo $this->numProcesso; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Data Publica&ccedil;&atilde;o do Edital
+                        </td>
+                        <td>
+                            <?php echo $this->dataPubliEdital; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Objeto
+                        </td>
+                        <td>
+                            <?php echo $this->objeto; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Fundamental Legal
+                        </td>
+                        <td>
+                            <?php echo $this->fundamentoLegal; ?>
+                        </td>
+                    </tr>
+            </table>
+            <table class="tabela">
+                    <tr>
+                        <th>
+                            Inclus&atilde;o de Item
+                        </th>
+                    </tr>
+
+            </table>
+            <div style="margin-left: 20%;width: 80%;margin-top: 5px; margin-right: auto;">
+                <form id="formularioItemCusto">
+                    <?php
+                    echo $inputID;
+                    ?>
+                    <div style="float: left;width: 100%; margin-top: 5px;">
+                        <div style="float: left;width: 30%;">Etapa</div>
+                        <div style="float: left;"><?php echo $this->etapa;?></div>
+                    </div>
+                    <div style="float: left;width: 100%; margin-top: 5px;">
+                        <div style="float: left;width: 30%;">Item</div>
+                        <div style="float: left;"><?php echo $this->item;?></div>
+                    </div>
+                    <div style="float: left;width: 100%; margin-top: 5px;">
+                        <div style="float: left;width: 30%;">Descri&ccedil;&atilde;o</div>
+                        <div style="float: left;"><textarea name="descricao" null="false" id="descricao" cols="40" rows="3"></textarea></div>
+                    </div>
+                    <div style="float: left;width: 100%; margin-top: 5px;">
+                        <div style="float: left;width: 30%;">Marca</div>
+                        <div style="float: left;"><input id="marca" type="text" null="false" name="marca" size="42"></div>
+                    </div>
+                    <div style="float: left;width: 100%; margin-top: 5px;">
+                        <div style="float: left;width: 30%;">Fabricante</div>
+                        <div style="float: left;"><input id="fabricante" type="text" null="false" name="fabricante" size="42"></div>
+                    </div>
+                    <div style="float: left;width: 100%; margin-top: 5px;">
+                        <div style="float: left;width: 30%;">Unidade Fornecimento</div>
+                        <div style="float: left;"><input id="uniFornecimento" type="text" null="false" name="uniFornecimento" size="42"></div>
+                    </div>
+                    <div style="float: left;width: 100%; margin-top: 5px;">
+                        <div style="float: left;width: 30%;">Quantidade</div>
+                        <div style="float: left;"><input id="quantidade" sonumero="true" null="false" type="text" name="quantidade" size="42"></div>
+                    </div>
+                    <div style="float: left;width: 100%; margin-top: 5px;">
+                        <div style="float: left;width: 30%;">Pre&ccedil;o Unit&aacute;rio</div>
+                        <div style="float: left;"><input id="precoUni" type="text" null="false" dinheiro="true" name="precoUni" size="42"></div>
+                    </div>
+                    <div style="float: left;width: 100%; margin-top: 5px;">
+                        <div style="float: left;width: 30%;">Valor Total</div>
+                        <div style="float: left;"><input id="valorTotal" type="text" null="false" readonly name="valorTotal" size="42"></div>
+                    </div>
+                    <div style="float: left;width: 100%; margin-top: 5px;">
+                        <div style="float: left;width: 30%;">Observa&ccedil;&atilde;o</div>
+                        <div style="float: left;"><textarea name="observacao" id="observacao" cols="40" rows="3"></textarea></div>
+                    </div>
+                    <div style="float: left;width: 100%; margin-top: 5%;">
+                        <div style="float: left;margin-left: 25%"><a href="<?php  if($verificacao) echo $SalvarHref; else echo $SalvarUpdateHref;?>" id="gravar" ><img border="0" title="Gravar" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/salvar.gif"></a></div>
+                        <div style="float: left;margin-left: 1%"><img  id="fecharJanela" style="cursor: pointer;" border="0" title="Voltar" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/voltar.gif"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </fieldset>
+</div>
+<script language="javascript" type="text/javascript">
+    mascaras('#<?php echo $corpo;?>');
+
+    $('#quantidade , #precoUni').keyup(function(){
+       alert($(this).val());
+    });
+
+    $('#<?php echo $corpo;?> #fecharJanela').click(function(){
+       nomeJanelaAux.fecharJanela();
+    });
+    $('#<?php echo $corpo;?> #gravar').click(function(){
+        var este = this;
+        var form = '#<?php echo $corpo;?> #<?php echo $idformulario;?>';
+        if(validarFormulario(form,ag1)){
+            var pagina = requisicaoAjaxObj();
+            pagina.executar({
+                pagina: $(this).attr('href'),
+                parametros:$(form).serializeArray(),
+                resposta: undefined,
+                funcaoRetorno:function(resp){
+                    if(resp.result){
+                        $('#<?php echo $corpo;?> .displayNone').removeClass('displayNone');
+                        $('#<?php echo $corpo;?> #<?php echo $idformulario;?> #<?php echo $idNome;?>').val(resp.<?php echo $idNome;?>);
+                        $(este).attr('href','<?php echo $SalvarUpdateHref;?>');
+                    }
+                    var nomeJanelaAlerta =   janelaObj({
+                        parametros : {
+                            width:      400,
+                            autoOpen:   true,
+                            resizable:  false,
+                            modal:      true,
+                                buttons: {
+                                    Ok: function() {
+                                        $(this).dialog('close');
+                                    }
+                                }
+                        },
+                        title : 'Alerta'
+                    });
+                    nomeJanelaAlerta.divConteudo.html(resp.mensagem);
+                }
+                ,dataType:'json'
+            });
+        }
+        return false;
+    });
+</script>

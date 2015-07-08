@@ -1,0 +1,61 @@
+<?php
+require_once "inc/menu.inc.php"; // menu
+?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para p&aacute;gina inicial">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'tramitarprojetos', 'action' => 'index')); ?>" title="Ir para Tramitar projetos">Tramitar projetos</a></li>
+        <li class="last">Solicitar cancelamento de envio de projeto</li>
+    </ul>
+</div>
+<!-- ========== FIM BRADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Solicitar cancelamento de envio de projeto <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <table class="tabela">
+        <?php foreach ($this->TodosDestinos as $destinos) {?>
+            <tr>
+                <th colspan="7"><?php echo $destinos->Sigla; ?> - <?php echo $destinos->org_nomeautorizado; ?></th>
+            </tr>
+            <tr class="destacar bold centro">
+                <td>Processo</td>
+                <td>PRONAC</td>
+                <td>Nome do Projeto</td>
+                <td>Despacho</td>
+                <td>Situa&ccedil;&atilde;o</td>
+                <td>Usu&aacute;rio</td>
+                <td>Data</td>
+            </tr>
+            <?php foreach($this->Destino as $destinoenviado){?>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <?php }?>
+        <?php } ?>
+    </table>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

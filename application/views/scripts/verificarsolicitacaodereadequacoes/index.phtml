@@ -1,0 +1,73 @@
+<?php include_once 'inc/menuitemcusto.inc.php'; ?>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li>Acompanhamento</li>
+        <li class="last">Verificar solicita&ccedil;&atilde;o de readequa&ccedil;&atilde;o</li>
+    </ul>
+</div>
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Verificar solicita&ccedil;&atilde;o de readequa&ccedil;&atilde;o <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<!-- início: área principal #conteudo -->
+<div id="conteudo">
+    <div id="miolo">
+        <?php $resultado = $this->buscaprojeto;
+        $idPronac=$this->escape($resultado[0]->IdPRONAC);
+
+        ?>
+
+        <table class="tabela">
+            <thead>
+                <tr>
+                    <th align="center">N&nord; PRONAC:</th>
+                    <th align="center">Nome do Projeto:</th>
+
+                </tr>
+            </thead>
+            <tbody><tr class="linha">
+
+                    <td align="center"><?php echo $this->escape($resultado[0]->pronac); ?></td>
+                    <td align="center"><?php echo $this->escape($resultado[0]->NomeProjeto); ?></td>
+                </tr>
+            </tbody>
+
+            <tr>
+                <th align="center">CPNJ/CPF:</th>
+                <th align="center">Proponente:</th>
+
+            </tr>
+
+            <tbody><tr class="linha">
+
+                    <td align="center"><?php $valor = $this->escape($resultado[0]->CgcCpf);
+
+                        echo Validacao::mascaraCPFCNPJ($valor);
+                        ?></td>
+                    <td align="center"><?php echo $this->escape($resultado[0]->Descricao);?></td>
+                </tr>
+            </tbody>
+        </table>
+
+
+<?php include_once 'inc/menuabas.inc';?>
+    </div>
+
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+
+<br clear="all" />

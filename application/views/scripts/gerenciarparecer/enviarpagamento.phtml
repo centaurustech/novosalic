@@ -1,0 +1,295 @@
+<script type="text/javascript">
+
+    function habilitavalor(id){
+       $("#"+id).attr("disabled", !$("#chek"+id).attr("checked"));
+       $("#agente"+id).attr("disabled", !$("#chek"+id).attr("checked"));
+       $("#idpag"+id).attr("disabled", !$("#chek"+id).attr("checked"));
+       $("#idcomp"+id).attr("disabled", !$("#chek"+id).attr("checked"));
+    }
+
+    $(function(){
+        $('[type=checkbox]').click(function(){
+            var verifica = false;
+            var este = this;
+            $('[type=checkbox]').each(function(){
+               if($(this).attr('checked')){
+                   if($(this).attr('idAgente') != $(este).attr('idAgente')){
+                       verifica = true;
+                   }
+               }
+            });
+            
+            if(verifica){
+                $(this).attr('checked',!verifica);
+                var nomeJanelaAlerta = janelaObj({
+                    parametros : {
+                        width:      400,
+                        autoOpen:   false,
+                        resizable:  false,
+                        modal:      true,
+                        buttons: {
+                            'N\u00e3o': function() {
+                                $(this).dialog('close');
+                            },
+                            Sim: function() {
+                                $('[type=checkbox]').each(function(){
+                                    $(this).attr('checked',false);
+
+                                    $(este).attr('checked',true);
+                                });
+                                $(this).dialog('close');
+                            }
+                            
+                        }
+                    },
+                    removerBtFechar:true,
+                    title : 'Alerta'
+                });
+                nomeJanelaAlerta.divConteudo.html('Deseja selecionar outro Parecerista?');
+                nomeJanelaAlerta.abrirJanela();
+            }
+        });
+    });
+    
+    function janelaObj(dados){
+        var divConteudo = $('<div></div>').attr('title',dados.title).appendTo('body');
+        var novaJanela = {
+            divConteudo : divConteudo,
+            removerBtFechar: true,
+            parametros : {autoOpen: false},
+            iniciarJanela : function(dados){
+                this.refineParametrosObj(dados);
+                this.divConteudo.dialog(this.parametros);
+            },
+            abrirJanela:function(){
+                this.divConteudo.dialog('open');
+                if(this.removerBtFechar)
+                $('.ui-dialog-titlebar-close').remove();
+            },
+            fecharJanela:function(){
+                this.divConteudo.dialog('close');
+                this.divConteudo.remove();
+            },
+            refineParametrosObj : function(data){
+                if(data!= undefined)
+                    for(var j in data){
+                        this[j]=data[j];
+                    }
+            }
+        }
+        novaJanela.iniciarJanela(dados);
+        return novaJanela;
+    }
+
+    function janelaAlerta(mensagem,funcaoAdcional){
+        if(funcaoAdcional==undefined){
+            funcaoAdcional = function(){}
+        }
+        var nomeJanelaAlerta = janelaObj({
+            parametros : {
+                width:      400,
+                autoOpen:   false,
+                resizable:  false,
+                modal:      true,
+                buttons: {
+                    OK: function() {
+                        funcaoAdcional();
+                        $(this).dialog('close');
+                    }
+                }
+            },
+            removerBtFechar:true,
+            title : 'Alerta'
+        });
+        nomeJanelaAlerta.divConteudo.html(mensagem);
+        nomeJanelaAlerta.abrirJanela();
+        return nomeJanelaAlerta;
+    }
+
+    function confirmarpagamento(perfil){
+        var nrMemorando 		= $("#nrMemorando").val();
+        var nmCoordenador 		= $("#nmCoordenador").val();
+        var cargoCoordenador 	= $("#cargoCoordenador").val();
+        var nmSecretario 		= $("#nmSecretario").val();
+
+        if(nrMemorando == ''){
+            alertar('Informe o número do memorando');
+            return false;
+        } else if(nmCoordenador == ''){
+            alertar('Informe o nome do Coordenador');
+            return false;
+        } else if(cargoCoordenador == ''){
+            alertar('Informe o Cargo do Coordenador');
+            return false;
+        } else if(nmSecretario == ''){
+            alertar('Informe o nome do secretário');
+            return false;
+        } else {
+
+           <?php if($this->grupo == 137){ ?>
+                $("#modal").html("Deseja Gerar o Memorando?");
+            <?php } else { ?>
+            	$("#modal").html("Deseja Enviar Pagamento?");
+            <?php } ?>
+            
+            $("#modal").dialog({
+                title : 'Alerta',
+                resizable: false,
+                width:350,
+                height:180,
+                modal: true,
+                autoOpen:false,
+                buttons : {
+                    'N\u00e3o' : function(){
+                        $(this).dialog('close');
+                    },
+                    'Sim' : function(){
+                        if(perfil == 137){
+                            $("#form137").submit();
+                        } else {
+                            $("#form93").submit();
+                        }
+                    }
+                }
+            });
+            $("#modal").dialog('open');
+        }
+    }
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'),'',true); ?>" title="Ir para Início">Início</a></li>
+        <?php if($this->grupo == 93){ ?>
+        <li class="last">Enviar para Pagamento</li>
+        <?php } else { ?>
+        <li class="last">Gerar Memorando de Pagamento</li>
+        <?php } ?>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+<div id="modal"></div>
+<div id="confirma"></div>
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <?php if($this->grupo == 93){ ?>
+    <div>Enviar para Pagamento <span class="voltar"><a href="javascript:voltar();" title="Página Anterior">Voltar</a></span></div>
+     <?php } else { ?>
+    <div>Gerar Memorando de Pagamento <span class="voltar"><a href="javascript:voltar();" title="Página Anterior">Voltar</a></span></div>
+     <?php } ?>
+</div>
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+
+<div id="conteudo">
+<!--============================================INICIO GRID=====================================================================-->
+<?php if(count($this->dadospainel) != 0){ ?>
+
+    <?php if($this->grupo == 93){ ?>
+    <form id="form93" action="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'confirmapagamentoparecerista')); ?>" method="POST">
+    <?php } else { ?>
+    <form id="form137" action="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'gerarmemorando')); ?>" method="POST">
+        <table class="tabela">
+            <tr>
+                <td align="center" class="fundo_linha3"><b style="color: green"> É PERMITIDO GERAR MEMORANDO DE APENAS UM PARECERISTA POR VEZ!</b></td>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <th colspan="4">DADOS DO MEMORANDO</th>
+            </tr>
+            <tr>
+                <td width="200">
+                    <label for="nrMemorando">Nº Memorando</label><br />
+                    <input type="text" name="nrMemorando" id="nrMemorando"  class="input_simples" />
+                </td>
+                <td width="300">
+                    <label for="nmCoordenador">Nome Coordenador</label><br />
+                    <input type="text" name="nmCoordenador" id="nmCoordenador" value="Juliano Smith" class="input_simples" size="40" />
+                </td>
+                <td width="300">
+                    <label for="cargoCoordenador">Cargo Coordenador</label><br />
+                    <input type="text" name="cargoCoordenador" id="cargoCoordenador" value="Coordenador" class="input_simples" size="40" />
+                </td>
+                <td>
+                    <label for="nmSecretario">Secretário</label><br />
+                    <input type="text" name="nmSecretario" id="nmSecretario" value="Henilton Parente de Menezes" class="input_simples" size="40" />
+                </td>
+                <td>
+                    <label for="nmSecretario">Cargo Secretário</label><br />
+                    <input type="text" name="cargoSecretario" id="cargoSecretario" value="Secretário" class="input_simples" size="40" />
+                </td>
+            </tr>
+        </table>
+    <?php } ?>
+
+    <table class="tabela tablesorter">
+        <thead>
+            <tr class="titulo_tabela">
+                <th width="50">Nome Parecerista</th>
+                <th width="150">PRONAC / PROJETO </th>
+                <th width="150">PRODUTO </th>
+                <th width="70">Tipo do Produto</th>
+                <th width="50">Valor a ser Pago</th>
+                <th width="50">Selecione</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+                $nomeProjeto = '';
+                $pronac = '';
+                $produto = '';
+                $nomeParecerista = '';
+                foreach($this->dadospainel as $dp){
+               
+            ?>
+            <tr>
+                <td><?php if($dp->nomeParecerista != $nomeParecerista) {echo $dp->nomeParecerista;} ?></td>
+                <td><?php if($dp->NrProjeto != $pronac) {echo $dp->NrProjeto .' - '. $dp->NomeProjeto;} ?></td>
+                <td><?php if($dp->Produto != $produto) {echo $dp->Produto;} ?></td>
+                <td align="center"><?php if ($dp->stPrincipal == 1) { ?><img title="Produto Principal" src="<?php echo $this->baseUrl();?>/public/img/passed.gif" /><?php } ?></td>
+                <td><?php $vr = ValidacaoProjeto::nivelProjeto($dp->IdPRONAC); echo $this->formatarReal($vr['VrPagamentoParecerista']);  ?></td>
+                <td align="center">
+                    <input type="hidden" class="input_simples" disabled="disabled" value="<?php echo $dp->idAgenteParecerista; ?>" name="idAgente[]" id="<?php echo $dp->idDistribuirParecer; ?>" />
+                    <input type="hidden" class="input_simples" disabled="disabled" value="<?php echo $dp->idPagamentoParecerista; ?>" name="idPagamentoParecerista[]" id="idpag<?php echo $dp->idDistribuirParecer; ?>" />
+                    <input type="hidden" class="input_simples" disabled="disabled" value="<?php echo $dp->idComprovantePagamento; ?>" name="idComprovantePagamento[]" id="idcomp<?php echo $dp->idDistribuirParecer; ?>" />
+                    <input type="hidden" class="input_simples" disabled="disabled" value="<?php echo $vr['VrPagamentoParecerista']; ?>" name="valorPagamento[]"       id="agente<?php echo $dp->idDistribuirParecer; ?>" />
+                    <input type="checkbox" id="chek<?php echo $dp->idDistribuirParecer; ?>" name="confirmPagamento[]" <?php if($this->grupo == 137): ?>idAgente="<?php echo $dp->idAgenteParecerista; ?>" <?php endif; ?>  onchange="habilitavalor('<?php echo $dp->idDistribuirParecer; ?>');" value="<?php echo $dp->idDistribuirParecer; ?>">
+                </td>
+            </tr>
+	<tbody>
+        <?php
+            $nomeParecerista   = $dp->nomeParecerista;
+            $pronac            = $dp->NrProjeto;
+            $produto           = $dp->Produto;
+            }
+        ?>
+    </table>
+    <table class="tabela">
+        <tr>
+            <td align="center"><input type="button" class="btn_enviar" value=" " onclick="confirmarpagamento('<?php echo $this->grupo; ?>');"></td>
+        </tr>
+    </table>
+    </form>
+        <!--===============================================================PAGINAÇÂO============================================================================================-->
+
+<!-- ========== PAGINAÇ?O ========== -->
+<?php if($this->qtdDocumentos > 5){ echo "<p>" . $this->dadospainel . "</p>"; } ?>
+<!-- ========== FIM PAGINAÇ?O ========== -->
+
+<?php } else { ?>
+    <table class="tabela">
+        <tr>
+            <td align="center"><b style="color: green">NENHUM REGISTRO ENCONTRADO!</b></td>
+        </tr>
+    </table>
+<?php } ?>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

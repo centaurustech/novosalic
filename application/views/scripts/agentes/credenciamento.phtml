@@ -1,0 +1,179 @@
+<?php require_once "inc/menu.inc.php"; ?>
+<script type="text/javascript">
+    $(document).ready(function() {
+
+        $('#areaCultural').change(function() {
+            $('#segmentoCultural').html('<option value=""> - Carregando - </option>');
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo $this->url(array('controller' => 'segmento', 'action' => 'combo')); ?>',
+                data: {
+                    id: $('#areaCultural').val()
+                },
+                success: function(dados) {
+                    $('#segmentoCultural').find('option').remove();
+                    $('#segmentoCultural').append(dados);
+                }
+            });
+        });
+
+    });
+
+    function validaForm(){
+        var area = $('#areaCultural').find('option').filter(':selected').val();
+        var segmento = $('#segmentoCultural').find('option').filter(':selected').val();
+        var nivel = $('#nivel').find('option').filter(':selected').val();
+
+        if((area == 0) || (segmento == 0) || (nivel ==0)){
+            alertar('Favor preencher os dados obrigatórios!');
+        } else{
+            $("#form").submit();
+        }
+    }
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="#" title="Ir para Início">Início</a></li>
+        <li><a href="#" title="Tramitação de Documentos">Manter Agentes</a></li>
+        <li class="last">Principal</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Credenciamento <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <?php require_once "inc/cabecalho.php";?>
+    <?php if(($this->grupoativo == "137")): ?>
+    <table class="tabela">
+        <tr>
+            <td>Para credenciar uma nova área e segmento, clique em novo ao lado!</td>
+            <th width="150"><input type="button" class="btn_novo" value=" " onclick="novo();"/></th>
+        </tr>
+    </table>
+    <?php endif; ?>
+
+    <table class="tabela sumir">
+        <tr>
+            <td class="fundo_linha3" style="font-size: 14px; font-weight: bold;">O Parecerista tem <?php echo $this->anosexperiencia; ?> ano(s) de experiência profissional.</td>
+
+        </tr>
+    </table>
+
+    <div id="formNovo" class="sumir">
+        <form id="form" action="<?php echo $this->url(array('controller' => 'agentes', 'action' => 'salvacredenciamento'));?>" method="post">
+            <table class="tabela">
+                <tr class="titulo_tabela">
+                    <th colspan="6">LISTA DE ÁREA</th>
+                </tr>
+                <tr>
+                    <td colspan="2" valign="top" width="33%" align="center">
+                        <label for="areaCultural">Área Cultural *</label>
+                        <select class="input_simples" name="areaCultural" id="areaCultural">
+                            <?php if (!isset($this->areaCultural) || empty($this->areaCultural)) { ?>
+                            <option value="0"> - Selecione - </option>
+                            <?php } ?>
+
+                            <?php foreach ($this->comboareasculturais as $comboareacultural): ?>
+                            <option value="<?php echo $comboareacultural->id; ?>" <?php if ($this->areaCultural == $comboareacultural->id) echo "selected=\"selected\""; ?>><?php echo $comboareacultural->descricao; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        &nbsp; <span id="erroAreaCultural" class="spanError"></span>
+
+                        <span id="Q_titulares"></span>
+                        <span id="Q_suplentes"></span>
+                        <span id="msgAS"></span>
+                        <span id="TitularSuplente"></span>
+                    </td>
+                    <td colspan="2" valign="top" align="center">
+                        <label for="segmentoCultural">Segmento Cultural *</label>
+                        <select name="segmentoCultural" id="segmentoCultural" class="input_simples">
+
+                            <?php if (!isset($this->areaCultural) || empty($this->areaCultural)) { ?>
+                            <option value="0"> - Selecione uma Área Cultural - </option>
+                            <?php } else { ?>
+
+                            <?php if (!isset($this->segmentoCultural) || empty($this->segmentoCultural)) { ?>
+                            <option value=""> - Selecione - </option>
+                            <?php } ?>
+
+                            <?php foreach ($this->combosegmentosculturais as $combosegmentocultural): ?>
+                            <option value="<?php echo $combosegmentocultural->id; ?>" <?php if ($this->segmentoCultural == $combosegmentocultural->id) echo "selected=\"selected\""; ?>>
+                                <?php echo $combosegmentocultural->descricao; ?>
+                            </option>
+                            <?php endforeach; ?>
+
+                            <?php } ?>
+                        </select>
+                        &nbsp; <span id="erroSegmentoCultural" class="spanError"></span>
+                    </td>
+                    <td colspan="2" valign="top" align="center">
+                        <label for="nivel">Nível *</label>
+                        <select name="nivel" id="nivel" class="input_simples">
+                            <option value="0"> - Selecione um Nível - </option>
+                            <?php foreach ($this->Niveis as $nivel) { ?>
+                            <option value="<?php echo $nivel->idVerificacao; ?>"><?php echo $nivel->Descricao; ?></option>
+                            <?php } ?>
+                        </select>
+                        &nbsp; <span id="erroNivel" class="spanError"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6" align="center">
+                        <input type="button" value=" " class="btn_salvar" onclick="validaForm();" />
+                        <input type="button" value=" " class="btn_cancelar" onclick="salvo();" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+
+    <?php if(count($this->credenciados) != 0){ ?>
+    <table id="salvos" class="tabela">
+        <tr>
+            <th colspan="4">Áreas e segmentos já credenciado</th>
+        </tr>
+        <tr>
+            <td class="destacar bold" align="center">Área</td>
+            <td class="destacar bold" align="center"><b>Segmento</b></td>
+            <td class="destacar bold" align="center"><b>Nível</b></td>
+            <td class="destacar bold" align="center" width="130"><b></b></td>
+        </tr>
+        <?php foreach($this->credenciados as $c){ ?>
+        <tr>
+            <td><?php echo $c->Area;?></td>
+            <td><?php echo $c->Segmento;?></td>
+            <td align="center"><?php echo $c->Nivel;?></td>
+            <td align="center"><input type="button" value=" " class="btn_exclusao"  title="Descredenciar"  onclick="confirmaExclusao('Deseja realmente descredenciar?', '<?php echo $this->url(array('controller' => 'agentes', 'action' => 'descredenciamento', 'idcredenciamento' => $c->idCredenciamentoParecerista, 'sicredenciamento' =>$c->siCredenciamento)); ?>')" /></td>
+        </tr>
+        <?php } ?>
+    </table>
+    <?php } else { ?>
+    <table class="tabela" id="salvos">
+        <tr>
+            <td>O Parecerista não está credenciado!</td>
+        </tr>
+    </table>
+    <?php } ?>
+
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

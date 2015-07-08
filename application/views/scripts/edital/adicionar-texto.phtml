@@ -1,0 +1,82 @@
+<?php include_once 'inc/menu-montagem.php'; ?>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first">Início</li>
+        <li class=""><a href="index-cadastrar-edital.htm">Criar Edital - Passo 1</a></li>
+        <li class=""><a href="form-informacoes-basicas.htm">Criar Edital - Passo 2</a></li>
+        <li class=""><a href="form-modulos-edital.htm">Criar Edital - Passo 3</a></li>
+        <li class="last">Criar Edital - Passo Final</li>
+    </ul>
+</div>
+<div id="titulo" style="width: 1333px;">
+    <div>Adicionar Texto<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<div id="conteudo">
+    
+    <form id="frmCadTexto" action="<?php echo $this->url(array('controller' => 'edital', 'action' => 'salvar-texto')); ?>" method="POST">
+        <input type="hidden" name="nrTexto" value="<?php echo $this->ultimaOrdem; ?>" />
+        <table class="tabela">
+            <tr>
+                <td class="bold">Texto</td>
+            </tr>
+            <tr>
+                <td style="vertical-align: top;"> 
+                    <textarea style="width:99%;" cols="" class="input_simples" name="txtConteudo" id="txtConteudo"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td class="bold">
+                    <div style="width: 100%; text-align: center;">
+                        <input class="btn_salvar" type="button" value="" name="salvar" id="btsalvar">
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
+
+    <br clear="all">
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<br clear="all" />
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+
+        CKEDITOR.replace('txtConteudo', {
+            toolbar: [
+                ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Print', 'SpellChecker', 'Scayt'],
+                ['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
+                ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'],
+                '/',
+                ['Bold','Italic','Underline','Strike','-','Subscript','Superscript'],
+                ['NumberedList','BulletedList','-','Outdent','Indent','Blockquote','CreateDiv'],
+                ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
+                ['BidiLtr', 'BidiRtl'],
+                ['Link','Unlink','Anchor'],
+                ['Image','Flash','Table','HorizontalRule','Smiley','SpecialChar','PageBreak','Iframe'],
+                '/',
+                ['Styles','Format','Font','FontSize'],
+                ['TextColor','BGColor'],
+                ['Maximize', 'ShowBlocks','-','About']
+            ]
+        });
+
+
+
+        $('#btsalvar').click(function() {
+            $('#frmCadTexto').submit();
+        });
+
+
+    });
+
+    function excluirTexto(id) {
+        var idEdital = $('#idEdital').val();
+        window.location = '<?php echo $this->url(array('controller' => 'edital', 'action' => 'deletar-texto-edital'), '', true); ?>/idTextoEdital/' + id + '/idEdital/' + idEdital;
+    }
+    
+</script>

@@ -1,0 +1,66 @@
+<?php //require_once "inc/menu.inc.php"; // menu ?>
+<?php require_once "scripts/realizaranaliseprojeto/inc/menu.inc.php"; // menu ?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para Início">Início</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'areadetrabalho', 'action' => 'index')); ?>" title="Ir para Análise do Membro da Comissão">Análise do Membro da Comissão</a></li>
+        <li class="last">Documentos Anexados</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Documentos Anexados <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <table class="tabela">
+        <tr>
+            <th style="width: 30%;">PRONAC</th>
+            <th>Nome do Projeto</th>
+        </tr>
+        <?php foreach ($this->buscarpronac as $p){ ?>
+        <tr>
+            <td align="center"><?php echo $p->AnoProjeto.$p->Sequencial; ?></td>
+            <td align="center"><?php echo $p->NomeProjeto; ?></td>
+        </tr>
+        <?php } ?>
+    </table>
+
+    <?php if (count($this->buscarcomprovantes) > 0) { ?>
+    <table class="tabela">
+        <tr>
+            <th style="width: 30%;">Tipo Documento</th>
+            <th>Arquivo</th>
+        </tr>
+        <?php foreach ($this->buscarcomprovantes as $doc){ ?>
+        <tr>
+            <td><?php echo $doc->Classificacao; ?></td>
+            <td><a href="<?php echo $this->url(array('controller' => 'anexardocumentos','action' => 'downdoc')); ?>/id/<?php echo $doc->idDocumento; ?>/tipo/<?php echo $doc->tipoDocumento; ?>"><?php echo $doc->nome; ?></a></td>
+        </tr>
+        <?php } ?>
+    </table>
+    <?php } ?>
+
+    <table class="tabela">
+        <tr>
+            <td class="centro">
+                <a href="javascript:window.print()"><img src="<?php echo $this->baseUrl(); ?>/public/img/imprimir.gif" alt="Imprimir" /></a>
+            </td>
+        </tr>
+    </table>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

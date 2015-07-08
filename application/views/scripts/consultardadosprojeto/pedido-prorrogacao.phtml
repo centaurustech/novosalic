@@ -1,0 +1,52 @@
+<?php header('Content-Type: text/plain; charset=ISO-8859-1'); ?>
+<?php $PeriodoData = Data::tratarDataZend($this->inicioPeriodo, 'Brasileira'); ?>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        //ATUALIZA TITULO DA PAGINA
+        window.parent.$("#titulo").html("<div>Pedidos de Prorroga&ccedil;&atilde;o</div>");
+        window.parent.$("#caminhoLocalAtual").html("Pedidos de Prorroga&ccedil;&atilde;o");
+    });
+</script>
+
+<table class="tabela">
+    <tr class="destacar">
+            <td align="center"><b>PRONAC</b></td>
+            <td align="center"><b>Nome do Projeto</b></td>
+        </tr>
+    <tr class="linha">
+        <td align="center"><?php echo $this->DadosProjeto->pronac; ?></td>
+        <td align="center"><?php echo $this->DadosProjeto->nomeProjeto; ?></td>
+    </tr>
+</table>
+
+<table class="tabela">
+    <?php if(count($this->DadosProrrogacoes) > 0) { ?>
+    <tr>
+        <th align="center" colspan="6">Prorrogações</th>
+    </tr>
+    <tr>
+        <td class="destacar bold" align="center">Dt.Pedido</td>
+        <td class="destacar bold" align="center">Dt.Início</td>
+        <td class="destacar bold" align="center">Dt.Final</td>
+        <td class="destacar bold">Observações</td>
+        <td class="destacar bold">Estado</td>
+        <td class="destacar bold">Analista</td>
+    </tr>
+    <?php foreach ($this->DadosProrrogacoes as $prorrogacoes) { ?>
+    <tr>
+        <td align="center"><?php echo Data::tratarDataZend($prorrogacoes->DtPedido, 'Brasileira'); ?></td>
+        <td align="center"><?php echo Data::tratarDataZend($prorrogacoes->DtInicio, 'Brasileira'); ?></td>
+        <td align="center"><?php echo Data::tratarDataZend($prorrogacoes->DtFinal, 'Brasileira'); ?></td>
+        <td><?php echo $prorrogacoes->Observacao; ?></td>
+        <td><?php echo $prorrogacoes->Estado; ?></td>
+        <td><?php echo $prorrogacoes->Atendimento != 'A' ? $prorrogacoes->Usuario : ''; ?></td>
+    </tr>
+    <?php } ?>
+    <?php } else { ?>
+    <tr>
+        <td align="center">Nenhum registro encontrado.</td>
+    </tr>
+    <?php } ?>
+</table>
+<br clear="all" />

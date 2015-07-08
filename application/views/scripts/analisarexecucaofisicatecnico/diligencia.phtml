@@ -1,0 +1,110 @@
+<?php
+/**
+ * Alterar Projeto
+ * @author Equipe RUP - Politec
+ * @since 15/01/2011
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.alterarprojeto
+ * @copyright ? 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(".btn_enviar").click(function(){
+            if(CKEDITOR.instances['justificativa'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'').length <=20){
+                $("#erro").html("Dados obrigat&oacute;rios n&atilde;o preenchidos ou texto com menos de 21 caracteres!")
+                $("#erro").dialog('open');
+            }
+            else{
+                $("#alert").html('Tem certeza que deseja enviar a dilig&ecirc;ncia ao proponente?');
+                alert(function(){
+                $("#form").submit();
+                },
+                function(){
+                    $("#alert").dialog('close')
+                })
+                $("#alert").dialog('open');
+            }
+        })
+        $("#erro").dialog({
+            title: "Erro!",
+            resizable: false,
+            width:300,
+            height:200,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'OK':  function(){
+                    $(this).dialog('close');
+                }
+            }
+        });
+    })
+
+    function alert(functionsim, functionnao){
+        $("#alert").dialog({
+            title: "Alerta!",
+            resizable: false,
+            width:400,
+            height:200,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'Nao':  functionnao
+                ,
+                'Sim':  functionsim
+            }
+        });
+    }
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="index.html" title="Ir para Início">Início</a></li>
+        <li class="last">Dilig&ecirc;ncia
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<div id="titulo">
+    <div>Dilig&ecirc;ncia
+        <span class="voltar"><a href="#" onkeypress="voltar()" onclick="voltar();">Voltar</a></span>
+    </div>
+</div>
+<div id="conteudo">
+    <div id="alert"></div>
+    <div id="erro"></div>
+    <table class="tabela">
+        <tr>
+            <th>
+                Diligenciar proponente
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <form id="form" method="post" action="<?php echo $this->url(array('controller'=>'analisarexecucaofisica','action'=>'diligencia'));?>">
+                    <input name="idpronac" value="<?php echo $this->idpronac; ?>" type="hidden"/>
+                    <textarea name="justificativa" id="justificativa"></textarea>
+                    <script type="text/javascript">
+                        CKEDITOR.replace('justificativa', {	fullPage : true });
+                    </script>
+                </form>
+            </td>
+        </tr>
+        <tr class="centro">
+            <td><input name="enviar" class="btn_enviar"/><input name="enviar" class="btn_cancelar" onkeypress="voltar()" onclick="voltar();"/></td>
+        </tr>
+    </table>
+</div><!-- final: conteudo principal #conteudo -->
+
+<!-- início: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+
+<br clear="all" />

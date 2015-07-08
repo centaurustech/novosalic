@@ -1,0 +1,105 @@
+<script>
+$(document).ready(function(){
+	$(".item").click(function(){
+		var etapa = $(this).parent().parent().parent().parent().parent().find('.itens');
+		if(etapa.css('display')== 'none'){
+			etapa.css('display','');
+		}
+		else{
+			etapa.css('display','none');
+		}
+	});
+});
+</script>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<?php
+include_once 'scripts/manterorcamento/inc/menu.inc.php';
+?>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'propostas')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+		<li class="last">Or&ccedil;amento</li>
+		<li class="last">Planilha Or&ccedil;ament&aacute;ria Geral</li>
+</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+<div>Planilha Or&ccedil;ament&aacute;ria <span class="voltar"><a href="#"
+	onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+
+<div id="conteudo">
+<?php $total_geral = 0;?>
+<?php foreach ($this->PlanilhaEtapa as $etapas) : ?> 
+<div class="etapas">	
+	<table width="95%" summary="Produto">
+	   <tr>
+	     <td width="4%"  align="center"><img style="cursor: pointer; width: 35%; height: 25%; border: 0px" class="btn_adicionar item" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/btn_adicionar.gif" alt="Adicionar" /></td>
+	     <td width="88%" style="text-align:left; padding-left:2%;"> <?php echo $etapas->DescricaoEtapa; ?>
+	     </td>
+	   </tr> 
+	</table>
+	
+	<div class="itens" style="display:on;">
+		<table width="92%" cellspacing="0" cellpadding="0" style="margin:0 0 0 5%; width: 90%">   
+			<tr>
+				<th width="40%">&Iacute;tem</th>
+				<th>Unidade</th>
+				<th>Qtd</th>
+				<th>Ocorr&ecirc;ncia</th>
+				<th>Vl. Unit&aacute;rio</th>
+				<th>Vl. TOTAL</th>
+								
+			</tr> 
+		<?php $soma = 0;?>
+       	<?php foreach ($this->Planilha as $planilha) :?>
+			<?php if($etapas->idEtapa == $planilha->idEtapa) {?>  
+
+            <tr class="fundo">
+                    <td class="centro"><?php echo $planilha->DescricaoItem ?></td>
+                    <td class="centro" width="10%"><?php echo $planilha->DescricaoUnidade ?></td>
+                    <td class="centro" width="6%"><?php echo $planilha->Quantidade ?></td>
+					<td class="centro" width="13%"><?php echo $planilha->Ocorrencia ?></td>
+                    <td class="centro" width="13%"><?php echo $planilha->ValorUnitario ?></td>
+                    <?php $total = ($planilha->Quantidade * $planilha->Ocorrencia * $planilha->ValorUnitario);?>
+                    <?php $soma = $soma + $total; ?>
+                    <?php $total_geral = $total_geral + $soma;?>
+                    <td class="centro"><?php echo $total?></td>
+
+            </tr>
+        <?php }?>
+        <?php endforeach; ?>
+        <tr>
+	        	<td align="center"><b><font size="3px" color="green">TOTAL: </font></b></td>
+	        	<td width="10%"></td>
+	        	<td width="6%"></td>
+	        	<td width="13%"></td>
+	        	<td width="13%"></td>
+			    <td align="center"><b><font size="3px" color="green"><?php echo "R$".$soma?></font></b></td>
+		</tr>
+ 
+		</table>
+	</div>
+
+</div>
+	<?php endforeach; ?>  <!-- FIM FOREACH ETAPAS -->
+	<table width="92%" cellspacing="0" cellpadding="0" style="margin:0 0 0 5%; width: 90%">
+			<tr>
+	     		<td align="center" width="40%"><b><font size="4px" color="red">TOTAL GERAL: </font></b></td>
+	     		<td width="10%"></td>
+	        	<td width="6%"></td>
+	        	<td width="13%"></td>
+	        	<td width="13%"></td>
+	     		<td align="center"><b><font size="4px" color="red"><?php echo "R$". $total_geral?> </font></b></td>
+		   </tr> 
+	</table>
+
+</div> <!-- FIM CONTEUDO -->
+<!-- ========== FIM CONTEÚDO ========== --> <!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== --> <br clear="all" />

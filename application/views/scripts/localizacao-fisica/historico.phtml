@@ -1,0 +1,52 @@
+<table  class="tabela">
+    <tbody>
+        <tr>
+            <th>Pronac</th>
+            <th>Nome do Projeto</th>
+        </tr>
+        <tr>
+            <td id="pronacCel"><?php echo $this->projeto->AnoProjeto, $this->projeto->Sequencial; ?></td>
+            <td id="nomeProjetoCel"><?php echo $this->projeto->NomeProjeto; ?></td>
+        </tr>
+    </tbody>
+</table>
+<table  class="tabela">
+    <thead>
+        <tr>
+            <th>Remetente</th>
+            <th>Destinat&aacute;rio</th>
+            <th>Data de Inclus&atilde;o</th>
+            <th>Localiza&ccedil;&atilde;o</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach ($this->localizacoes as $localizacao) : ?>
+            <tr>
+                <td><?php echo $localizacao->TecnicoAntigoNome; ?></td>
+                <td><?php echo $localizacao->TecnicoAtualNome; ?></td>
+                <td><?php echo Data::tratarDataZend($localizacao->DataCriacao, 'brasileira'); ?></td>
+                <td><?php echo $localizacao->Localizacao; ?></td>
+            </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+<table class="tabela">
+    <thead>
+        <tr>
+            <td align="center">
+                <input id="btnImprimir" type="button" class="btn_imprimir" data-pronac="<?php echo $this->projeto->AnoProjeto.$this->projeto->Sequencial; ?>" value="" />
+            </td>
+        </tr>
+    </thead>
+</table>
+
+<script>
+$(document).ready(function(){
+    $('#btnImprimir').each(function(){
+        $(this).click(function(){
+            
+            window.open('<?php echo $this->url(array('action' => 'imprimir-historico')); ?>','_blank'); 
+        });
+    });
+});
+</script>

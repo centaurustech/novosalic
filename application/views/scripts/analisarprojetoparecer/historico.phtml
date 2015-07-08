@@ -1,0 +1,68 @@
+<?php
+$indexHref = $this->url(array('controller' => 'Analisarprojetoparecer', 'action' => 'index'), '', true);
+$gerarpdfHref = $this->url(array('controller' => 'Analisarprojetoparecer', 'action' => 'gerarpdfhistorico'));
+$gerarxlsHref = $this->url(array('controller' => 'Analisarprojetoparecer', 'action' => 'gerarxlshistorico'));
+?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''), '', true); ?>" title="Ir para Página Inicial">Início</a></li>
+        <li class="second">Análise Técnica Inicial</li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'analisarprojetoparecer', 'action' => 'index'), '', true); ?>" title="Ir para Página Inicial">Projetos/Produtos para Análise</a></li>
+        <li class="last">Histórico</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== IN?CIO MENU ========== -->
+<script language="javascript" type="text/javascript" src="../scripts/quickmenu.js"></script>
+
+<div>
+    <div id="titulo">
+        <div>Hist&oacute;rico <span class="voltar"><a href="javascript:voltar();" title="Página Anterior">Voltar</a></span></div>
+    </div>
+</div>
+
+<!-- ========== FIM TÍTULO ========== -->
+<div id="conteudo" align="center">
+    <table class="tabela">
+        <?php
+        $primeiro = 0;
+        if (isset($this->Pareceres['pareceres'])) {
+            $Pareceres = $this->Pareceres['pareceres'];
+//        xd($Pareceres);
+            if (count($Pareceres) > 0) {
+                foreach ($Pareceres as $key => $val) {
+                    $titulo = "<tr>";
+                    $conteudo = "<tr>";
+                    foreach ($val as $t => $c) {
+                        $titulo .= "<th>{$t}</th>";
+                        $conteudo .= "<td>{$c}</td>";
+                    }
+                    $titulo .= "</tr>";
+                    $conteudo .= "</tr>";
+                    if ($primeiro == 0) {
+                        echo $titulo;
+                    }
+                    echo $conteudo;
+                    $primeiro++;
+                }
+            }
+        } else {
+            echo '<th>Nenhum Resultado</th>';
+        }
+        ?>
+    </table>
+    <br />
+    
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÃƒÂ CIO RODAPÃƒâ€° DO CONTEÃƒÅ¡DO ========== // -->
+<br clear="all" />
+
+<div id="rodapeConteudo"><span></span></div>
+
+<!-- ========== FIM RODAPÃƒâ€° DO CONTEÃƒÅ¡DO ========== -->

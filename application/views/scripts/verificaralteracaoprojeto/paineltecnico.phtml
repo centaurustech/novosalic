@@ -1,0 +1,423 @@
+<script>
+    $(document).ready(function(){
+        $('.btn_adicionar').click(function(){
+            var regex =  /[^0-9]/g;
+            var qtdProjetos = parseInt($(this).parent().find('span').html().replace(regex, ''))
+            if (qtdProjetos > 0){
+                $(this).parent().parent().parent().parent().next().toggle('slow');
+            }
+        });
+    });
+</script>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para Início">Início</a></li>
+        <li class="last">Análise do Membro da Comissão</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Solicitação de Alteração do Projeto <span class="qtdprojeto">ID #23A</span> <span class="qtdprojeto" class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<div id="conteudo">
+    <table class="tabela">
+        <tr>
+            <td><input type="button" class="btn_adicionar" />Nome do Projeto <span class="qtdprojeto" style="margin-left: 70em;">Qtd. Projetos: <?php echo $this->resultTotal['NomeProjeto']; ?></span></td>
+        </tr>
+    </table>
+    <table class="tabela sumir">
+        <tr>
+            <th>
+                Pronac
+            </th>
+            <th>
+                Nome do Projeto
+            </th>
+            <th>
+                Área/Segmento
+            </th>
+            <th>
+                Data Início
+            </th>
+            <th>
+                Data Fim
+            </th>
+            <th>
+                Estado
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Controle
+            </th>
+        </tr>
+        <?php
+        foreach ($this->resultBusca['NomeProjeto'] as $nome_projeto)
+        {
+        ?>
+            <tr>
+                <td>
+                    <a href='<?php echo $this->url(array('controller' => 'verificaralteracaoprojeto', 'action' => 'nomeprojeto'))."?idpedidoalteracao=". $this->escape($nome_projeto->idPedidoAlteracao); ?>'>
+                    <?php echo $this->escape($nome_projeto->pronac); ?>
+                    </a>
+                </td>
+                <td><?php echo $this->escape($nome_projeto->NomeProjeto); ?></td>
+                <td><?php echo $this->escape($nome_projeto->area) . '/' . $this->escape($nome_projeto->segmento); ?></td>
+                <td><?php echo $this->escape(Data::tratarDataZend($nome_projeto->DtInicioExecucao, 'brasileiro')); ?></td>
+                <td><?php echo $this->escape(Data::tratarDataZend($nome_projeto->DtFimExecucao, 'brasileiro')); ?></td>
+                <td><?php echo $this->escape($nome_projeto->UfProjeto); ?></td>
+                <td>
+                    Status
+                </td>
+                <td>
+                    Controle
+                </td>
+            </tr>
+        <?php
+        }
+        ?>
+    </table>
+    <!--Fim Nome Projeto-->
+
+    <table class="tabela">
+        <tr>
+            <td><input type="button" class="btn_adicionar" />Razão Social <span class="qtdprojeto" style="margin-left: 72em;">Qtd. Projetos: <?php echo $this->resultTotal['RazaoSocial']; ?></span></td>
+        </tr>
+    </table>
+    <table class="tabela sumir">
+        <tr>
+            <th>
+                Pronac
+            </th>
+            <th>
+                Nome do Projeto
+            </th>
+            <th>
+                Área/Segmento
+            </th>
+            <th>
+                Data Início
+            </th>
+            <th>
+                Data Fim
+            </th>
+            <th>
+                Estado
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Controle
+            </th>
+        </tr>
+        <?php
+        foreach ($this->resultBusca['RazaoSocial'] as $razao_social)
+        {
+        ?>
+            <tr>
+                <td><?php echo $this->escape($razao_social->pronac); ?></td>
+                <td><?php echo $this->escape($razao_social->NomeProjeto); ?></td>
+                <td><?php echo $this->escape($razao_social->area) . '/' . $this->escape($razao_social->segmento); ?></td>
+                <td><?php echo $this->escape(Data::tratarDataZend($razao_social->DtInicioExecucao, 'brasileiro')); ?></td>
+                <td><?php echo $this->escape(Data::tratarDataZend($razao_social->DtFimExecucao, 'brasileiro')); ?></td>
+                <td><?php echo $this->escape($razao_social->UfProjeto); ?></td>
+                <td>
+                    Status
+                </td>
+                <td>
+                    Controle
+                </td>
+            </tr>
+        <?php
+        }
+        ?>
+    </table>
+    <!--Fim Razão Social-->
+
+    <table class="tabela">
+        <tr>
+            <td><input type="button" class="btn_adicionar" />Local Realização <span class="qtdprojeto" style="margin-left: 70.5em;">Qtd. Projetos: <?php echo $this->resultTotal['LocalRealizacao']; ?></span></td>
+        </tr>
+    </table>
+    <table class="tabela sumir">
+        <tr>
+            <th>
+                Pronac
+            </th>
+            <th>
+                Nome do Projeto
+            </th>
+            <th>
+                Área/Segmento
+            </th>
+            <th>
+                Data Início
+            </th>
+            <th>
+                Data Fim
+            </th>
+            <th>
+                Estado
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Controle
+            </th>
+        </tr>
+        <?php
+        foreach ($this->resultBusca['LocalRealizacao'] as $local_realizacao)
+        {
+        ?>
+            <tr>
+                <td><?php echo $this->escape($local_realizacao->pronac); ?></td>
+                <td><?php echo $this->escape($local_realizacao->NomeProjeto); ?></td>
+                <td><?php echo $this->escape($local_realizacao->area) . '/' . $this->escape($local_realizacao->segmento); ?></td>
+                <td><?php echo $this->escape(Data::tratarDataZend($local_realizacao->DtInicioExecucao, 'brasileiro')); ?></td>
+                <td><?php echo $this->escape(Data::tratarDataZend($local_realizacao->DtFimExecucao, 'brasileiro')); ?></td>
+                <td><?php echo $this->escape($local_realizacao->UfProjeto); ?></td>
+                <td>
+                    Status
+                </td>
+                <td>
+                    Controle
+                </td>
+            </tr>
+        <?php
+        }
+        ?>
+    </table>
+    <!--Fim Local Realizacao-->
+    <table class="tabela">
+        <tr>
+            <td><input type="button" class="btn_adicionar" />Nome do Proponente <span class="qtdprojeto" style="margin-left: 68.5em;">Qtd. Projetos: <?php echo $this->resultTotal['NomeProponente']; ?></span></td>
+        </tr>
+    </table>
+    <table class="tabela sumir">
+        <tr>
+            <th>
+                Pronac
+            </th>
+            <th>
+                Nome do Projeto
+            </th>
+            <th>
+                Área/Segmento
+            </th>
+            <th>
+                Data Início
+            </th>
+            <th>
+                Data Fim
+            </th>
+            <th>
+                Estado
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Controle
+            </th>
+        </tr>
+        <?php
+        foreach ($this->resultBusca['NomeProponente'] as $nome_proponente)
+        {
+        ?>
+            <tr>
+                <td><?php echo $this->escape($nome_proponente->pronac); ?></td>
+                <td><?php echo $this->escape($nome_proponente->NomeProjeto); ?></td>
+                <td><?php echo $this->escape($nome_proponente->area) . '/' . $this->escape($nome_proponente->segmento); ?></td>
+                <td><?php echo $this->escape(Data::tratarDataZend($nome_proponente->DtInicioExecucao, 'brasileiro')); ?></td>
+                <td><?php echo $this->escape(Data::tratarDataZend($nome_proponente->DtFimExecucao, 'brasileiro')); ?></td>
+                <td><?php echo $this->escape($nome_proponente->UfProjeto); ?></td>
+                <td>
+                    Status
+                </td>
+                <td>
+                    Controle
+                </td>
+            </tr>
+        <?php
+        }
+        ?>
+    </table>
+    <!--Fim Nome do Proponente-->
+    <table class="tabela">
+        <tr>
+            <td><input type="button" class="btn_adicionar" />Ficha Técnica <span class="qtdprojeto"  style="margin-left: 71.8em;">Qtd. Projetos: <?php echo $this->resultTotal['FichaTecnica']; ?></span></td>
+        </tr>
+    </table>
+    <table class="tabela sumir">
+        <tr>
+            <th>
+                Pronac
+            </th>
+            <th>
+                Nome do Projeto
+            </th>
+            <th>
+                Área/Segmento
+            </th>
+            <th>
+                Data Início
+            </th>
+            <th>
+                Data Fim
+            </th>
+            <th>
+                Estado
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Controle
+            </th>
+        </tr>
+        <?php
+        foreach ($this->resultBusca['FichaTecnica'] as $ficha_tecnica)
+        {
+        ?>
+            <tr>
+                <td><?php echo $this->escape($ficha_tecnica->pronac); ?></td>
+                <td><?php echo $this->escape($ficha_tecnica->NomeProjeto); ?></td>
+                <td><?php echo $this->escape($ficha_tecnica->area) . '/' . $this->escape($ficha_tecnica->segmento); ?></td>
+                <td><?php echo $this->escape(Data::tratarDataZend($ficha_tecnica->DtInicioExecucao, 'brasileiro')); ?></td>
+                <td><?php echo $this->escape(Data::tratarDataZend($ficha_tecnica->DtFimExecucao, 'brasileiro')); ?></td>
+                <td><?php echo $this->escape($ficha_tecnica->UfProjeto); ?></td>
+                <td>
+                    Status
+                </td>
+                <td>
+                    Controle
+                </td>
+            </tr>
+        <?php
+        }
+        ?>
+    </table>
+    <!--Fim Ficha Técnica-->
+
+    <table class="tabela">
+        <tr>
+            <td><input type="button" class="btn_adicionar" />Prorrogação de Prazos - Captação <span class="qtdprojeto" style="margin-left: 62.5em;">Qtd. Projetos: <?php echo $this->resultTotal['ProrrogacaoPrazoCaptacao']; ?></span></td>
+        </tr>
+    </table>
+    <table class="tabela sumir">
+        <tr>
+            <th>
+                Pronac
+            </th>
+            <th>
+                Nome do Projeto
+            </th>
+            <th>
+                Área/Segmento
+            </th>
+            <th>
+                Data Início
+            </th>
+            <th>
+                Data Fim
+            </th>
+            <th>
+                Estado
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Controle
+            </th>
+        </tr>
+        <?php
+        foreach ($this->resultBusca['ProrrogacaoPrazoCaptacao'] as $prorrogacao_captacao)
+        {
+        ?>
+            <tr>
+                <td><?php echo $this->escape($prorrogacao_captacao->pronac); ?></td>
+                <td><?php echo $this->escape($prorrogacao_captacao->NomeProjeto); ?></td>
+                <td><?php echo $this->escape($prorrogacao_captacao->area) . '/' . $this->escape($prorrogacao_captacao->segmento); ?></td>
+                <td><?php echo $this->escape(Data::tratarDataZend($prorrogacao_captacao->DtInicioExecucao, 'brasileiro')); ?></td>
+                <td><?php echo $this->escape(Data::tratarDataZend($prorrogacao_captacao->DtFimExecucao, 'brasileiro')); ?></td>
+                <td><?php echo $this->escape($prorrogacao_captacao->UfProjeto); ?></td>
+                <td>
+                    Status
+                </td>
+                <td>
+                    Controle
+                </td>
+            </tr>
+        <?php
+        }
+        ?>
+    </table>
+    <!--Fim Prorrogação de Prazos - Captação-->
+
+    <table class="tabela">
+        <tr>
+            <td><input type="button" class="btn_adicionar" />Prorrogação de Prazos - Execução <span class="qtdprojeto" style="margin-left: 62.5em;">Qtd. Projetos: <?php echo $this->resultTotal['ProrrogacaoPrazoExecucao']; ?></span></td>
+        </tr>
+    </table>
+    <table class="tabela sumir">
+        <tr>
+            <th>
+                Pronac
+            </th>
+            <th>
+                Nome do Projeto
+            </th>
+            <th>
+                Área/Segmento
+            </th>
+            <th>
+                Data Início
+            </th>
+            <th>
+                Data Fim
+            </th>
+            <th>
+                Estado
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Controle
+            </th>
+        </tr>
+        <?php
+        foreach ($this->resultBusca['ProrrogacaoPrazoExecucao'] as $prorrogacao_execucao)
+        {
+        ?>
+            <tr>
+                <td><?php echo $this->escape($prorrogacao_execucao->pronac); ?></td>
+                <td><?php echo $this->escape($prorrogacao_execucao->NomeProjeto); ?></td>
+                <td><?php echo $this->escape($prorrogacao_execucao->area) . '/' . $this->escape($prorrogacao_execucao->segmento); ?></td>
+                <td><?php echo $this->escape(Data::tratarDataZend($prorrogacao_execucao->DtInicioExecucao, 'brasileiro')); ?></td>
+                <td><?php echo $this->escape(Data::tratarDataZend($prorrogacao_execucao->DtFimExecucao, 'brasileiro')); ?></td>
+                <td><?php echo $this->escape($prorrogacao_execucao->UfProjeto); ?></td>
+                <td>
+                    Status
+                </td>
+                <td>
+                    Controle
+                </td>
+            </tr>
+        <?php
+        }
+        ?>
+    </table>
+    <!--Fim Prorrogação de Prazos - Execução-->
+</div>
+<div id="rodapeConteudo"><span class="qtdprojeto"></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+
+<br clear="all" />

@@ -1,0 +1,133 @@
+<?php
+/**
+ * Visualização de comprovantes (Acesso: PROPONENTES)
+ * @author Equipe RUP - Politec
+ * @since 28/04/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.views.scripts.execucaofisicadoprojeto
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="last">Comprovação de Execução Física do Projeto</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Comprovação de Execução Física do Projeto <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+
+
+	<!-- ========== INÍCIO VISUALIZAÇÃO DE COMPROVANTE ========== -->
+	<table class="tabela" colspan="2" class="titulo_tabela">
+	
+		<?php foreach ($this->buscarPronac as $p): ?>
+		<tr class="titulo_tabela">
+			<th class="centro" colspan="2">
+				<p><strong>PRONAC: <?php echo $p->pronac; ?></strong></p>
+				<p><strong>PROJETO: <?php echo $p->NomeProjeto; ?></strong></p>
+			</th>
+		</tr>
+		<?php endforeach; ?>
+	
+	
+	
+		<?php foreach ($this->buscarDoc as $d): ?>
+		<tr>
+			<th class="centro" width="20%">TIPO DE DOCUMENTO</th>
+			<td class="esquerda"><?php echo $d->dsTipoDocumento; ?></td>
+		</tr>
+		<tr>
+			<th class="centro">TÍTULO</th>
+			<td class="esquerda"><?php echo $d->nmComprovante; ?></td>
+		</tr>
+		<tr>
+			<th class="centro">DESCRIÇÃO</th>
+			<td class="esquerda"><?php echo $d->dsComprovante; ?></td>
+		</tr>
+		<tr>
+			<th class="centro">ARQUIVO</th>
+			<td class="esquerda"><a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id=<?php echo $d->idArquivo; ?>"><?php echo $d->nmArquivo; ?></a></td>
+		</tr>
+	
+		<?php if ($d->stParecerComprovante == 'CS') : // 'Comprovante Substituído' ?>
+		<tr>
+			<th class="centro">JUSTIFICATIVA PARA A ALTERAÇÃO</th>
+			<td class="esquerda"><?php echo $d->dsJustificativaAlteracao; ?></td>
+		</tr>
+		<tr>
+			<th class="centro">PARECER TÉCNICO</th>
+			<td class="esquerda"><?php echo $d->dsJustificativaCoordenador; ?></td>
+		</tr>
+		<?php endif; ?>
+	
+		<?php if ($d->stParecerComprovante == 'AD' || $d->stParecerComprovante == 'AI') : // 'Comprovante Deferido - Indeferido' ?>
+		<tr>
+			<th class="centro">JUSTIFICATIVA DE ALTERAÇÃO</th>
+			<td class="esquerda"><?php echo $d->dsJustificativaAlteracao; ?></td>
+		</tr>
+		<tr>
+			<td class="centro" colspan="2">
+				<?php if ($d->stParecerComprovante == 'AD') : // 'Comprovante Deferido' ?>
+				<p>Substituição aceita (deferido)</p>
+				<?php endif; ?>
+				<?php if ($d->stParecerComprovante == 'AI') : // 'Comprovante Indeferido' ?>
+				<p>Substituição não aceita (indeferido)</p>
+				<?php endif; ?>
+				<br />
+				<p>Justificativa: <?php echo $d->dsJustificativaCoordenador; ?></p>
+			</td>
+		</tr>
+		<?php endif; ?>
+	
+		<?php endforeach; ?>
+	
+	
+	
+	</table>
+	
+	
+	
+	<!-- ========== BOTÕES VOLTAR E ETC ========== -->
+	<table class="tabela">
+		<tr>
+			<td>
+				<div class="float_left">
+					<input type="button" class="btn_voltar" title=" Página Anterior "
+						onkeypress=" " 
+						onclick="voltar();" />
+				</div>			
+			</td>
+		</tr>
+	</table>
+	
+	<!-- ========== FIM VISUALIZAÇÃO DE COMPROVANTE ========== -->
+
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

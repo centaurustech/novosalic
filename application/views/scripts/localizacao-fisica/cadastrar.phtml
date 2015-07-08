@@ -1,0 +1,51 @@
+<form method="POST" id="localizacaoCadastrar" action="<?php echo $this->url(array('action' => 'cadastrar')); ?>">
+	<input type="hidden" name="logon" value="<?php echo $this->projeto->Logon; ?>" />
+	<input type="hidden" name="idPronac" value="<?php echo $this->projeto->IdPRONAC; ?>" />
+	<input type="hidden" name="pronac" value="<?php echo $this->projeto->AnoProjeto , $this->projeto->Sequencial; ?>" />
+	<table  class="tabela">
+		<tbody>
+			<tr>
+				<th>Pronac</th>
+				<th>Nome do Projeto</th>
+			</tr>
+			<tr>
+				<td><?php echo $this->projeto->AnoProjeto , $this->projeto->Sequencial; ?></td>
+				<td><?php echo $this->projeto->NomeProjeto; ?></td>
+			</tr>
+		</tbody>
+	</table>
+	<table  class="tabela">
+		<tbody>
+			<tr>
+				<th>Localiza&ccedil;&atilde;o do Projeto</th>
+				<td><input type="text" name="localizacao" class="input_simples" size="60" /></td>
+			</tr>
+			<tr>
+				<th>T&eacute;cnico</th>
+				<td>
+					<select name="tecnico" id="tecnico" class="input_simples">
+                		<option>Selecione</option>
+                		<?php foreach ($this->tecnicos as $tecnico) : ?>
+                			<option value="<?php echo $tecnico->usu_codigo; ?>"><?php echo $tecnico->usu_nome; ?></option>
+                		<?php endforeach; ?>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td align="center" colspan="2">
+					<input class="btn_salvar" type="submit" value="" />
+					<input class="btn_limpar" type="reset" value="" />
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</form>
+
+<script>
+$(document).ready(function(){
+	// Events
+	$('.btn_limpar').click(function(){
+		$('#localizacaoCadastrar').reset();
+	});
+});
+</script>

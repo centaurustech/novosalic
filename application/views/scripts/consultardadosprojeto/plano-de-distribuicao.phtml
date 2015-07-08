@@ -1,0 +1,175 @@
+<?php header('Content-Type: text/plain; charset=ISO-8859-1'); ?>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        //ATUALIZA TITULO DA PAGINA
+        window.parent.$("#titulo").html("<div>Plano de Distribui&ccedil;&atilde;o</div>");
+        window.parent.$("#caminhoLocalAtual").html("Plano de Distribui&ccedil;&atilde;o");
+    });
+    function mostraOcultaElemento(elemento)
+    {
+            $('.' + elemento).toggle();
+
+            if ($('#' + elemento).hasClass('btn_adicionar'))
+            {
+                    $('#' + elemento).addClass('btn_remover');
+                    $('#' + elemento).removeClass('btn_adicionar');
+            }
+            else
+            {
+                    $('#' + elemento).addClass('btn_adicionar');
+                    $('#' + elemento).removeClass('btn_remover');
+            }
+    }
+</script>
+
+<table class="tabela">
+    <tr class="destacar">
+        <td align="center"><b>PRONAC</b></td>
+        <td align="center"><b>Nome do Projeto</b></td>
+    </tr>
+    <tr>
+        <td align="center"><?php echo $this->projeto->AnoProjeto.$this->projeto->Sequencial; ?></td>
+        <td align="center"><?php echo $this->projeto->NomeProjeto; ?></td>
+    </tr>
+</table>
+
+<?php if(is_array($this->dados) && count($this->dados)>0):
+        foreach($this->dados as $distribuicao) : ?>
+        <table class="tabela">
+            <tr>
+                <td align="left">
+                    <input type="button" class="btn_adicionar" id="<?php echo $distribuicao->idPlanoDistribuicao;?>" onclick="mostraOcultaElemento('<?php echo $distribuicao->idPlanoDistribuicao;?>');" />  <b><?php echo "<b>".$distribuicao->Produto."</b>";?> <?php if($distribuicao->stPrincipal == 1) echo "<font color='red'>(produto principal)</font>";?></b>
+                </td>
+            </tr>
+            <tr class="<?php echo $distribuicao->idPlanoDistribuicao;?> sumir" align="left">
+                <td >
+                    <table class="tabela">
+                        <!--<tr class="destacar">
+                            <th align="center"><b>Produto</b></th>
+                        </tr>
+                        <tr>
+                            <td align='center' style="font-size: 11pt"><?php echo "<b>".$distribuicao->Produto."</b>";?> <?php if($distribuicao->stPrincipal == 1) echo "<font color='red'>(principal)</font>";?></td>
+                        </tr>-->
+                        <tr>
+                            <td align='center' width="20%" class="destacar"><b>Produto</b></td>
+                        </tr>
+                        <tr>
+                            <td align='center' width="80%" style="font-size: 11pt"><?php echo "<b>".$distribuicao->Produto."</b>";?></td>
+                        </tr>
+                        <tr>
+                            <td align='center' width="20%" class="destacar"><b>Logomarca</b></td>
+                        </tr>
+                        <tr>
+                            <td align='center' width="80%"><?php echo $distribuicao->PosicaoDaLogo; ?></td>
+                        </tr>
+                        <tr>
+                            <td align= 'center' style='padding:0;'>
+                                <table class='tabela'>
+                                    <tr class="destacar">
+                                        <td align="center"><b>Distribui&ccedil;&atilde;o Gratuita (Qtde)</b></td>
+                                        <td align="center"><b>Total para Venda (Qtde)</b></td>
+                                        <td align="center"><b>Total Produzido</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <table class='tabela'>
+                                                <tr>
+                                                    <td>
+                                                        <b>Patrocinador</b><br>
+                                                        <?php echo number_format($distribuicao->QtdePatrocinador, 0, '', '.'); ?>
+                                                    </td>
+                                                    <td>
+                                                        <b>Divulgação</b><br>
+                                                        <?php echo number_format($distribuicao->QtdeProponente, 0, '', '.'); ?>
+                                                    </td>
+                                                    <td>
+                                                        <b>População de Baixa Renda</b><br>
+                                                        <?php echo number_format($distribuicao->QtdeOutros, 0, '', '.'); ?>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td>
+                                            <table class='tabela'>
+                                                <tr>
+                                                    <td>
+                                                        <b>Normal</b><br>
+                                                        <?php echo number_format($distribuicao->QtdeVendaNormal, 0, '', '.'); ?>
+                                                    </td>
+                                                    <td>
+                                                        <b>Promocional</b><br>
+                                                        <?php echo number_format($distribuicao->QtdeVendaPromocional, 0, '', '.'); ?>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td>
+                                            <table class='tabela'>
+                                                <tr>
+                                                    <td>
+                                                        <b>N&ordm; Exemplares / Ingressos</b><br>
+                                                        <?php echo number_format($distribuicao->QtdeProduzida, 0, '', '.'); ?>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr class="destacar">
+                                        <td align="center"><b>Pre&ccedil;o Unit&aacute;rio (R$)</b></td>
+                                        <td align="center"><b>Receita Prevista (R$)</b></td>
+                                        <td align="center"><b>Total Receita Prevista (R$)</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <table class='tabela'>
+                                                <tr>
+                                                    <td>
+                                                        <b>Normal</b><br>
+                                                       <?php echo number_format($distribuicao->PrecoUnitarioNormal, 2, ',', '.');?>
+                                                    </td>
+                                                    <td>
+                                                        <b>Promocional</b><br>
+                                                        <?php echo number_format($distribuicao->PrecoUnitarioPromocional, 2, ',', '.');?>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td>
+                                            <table class='tabela'>
+                                                <tr>
+                                                    <td>
+                                                        <b>Normal</b><br>
+                                                        <?php echo number_format($distribuicao->ReceitaNormal, 2, ',', '.');?>
+                                                    </td>
+                                                    <td>
+                                                        <b>Promocional</b><br>
+                                                        <?php echo number_format($distribuicao->ReceitaPro, 2, ',', '.');?>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td>
+                                            <table class='tabela' >
+                                                <tr>
+                                                    <td>
+                                                        <b>Total Receita Prevista (R$)</b><br>
+                                                        <?php echo number_format($distribuicao->ReceitaPrevista, 2, ',', '.');?>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                </table>
+                            </td>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <?php endforeach; ?>
+<?php else: ?>
+    <table class="tabela">
+        <tr>
+            <td align="center"><em>Dados n&atilde;o informados!</em></td>
+        </tr>
+    </table>
+<?php endif; ?>

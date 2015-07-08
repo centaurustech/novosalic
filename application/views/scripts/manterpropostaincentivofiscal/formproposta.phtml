@@ -1,0 +1,865 @@
+<?php $buscarAgencia = $this->url(array('controller' => 'Manterpropostaincentivofiscal', 'action' => 'validaagencia')); ?>
+<script type="text/javascript">
+    $(document).ready(function(){
+<?php if (isset($this->movimentacaoAtual) && $this->movimentacaoAtual != '95'): ?>
+            //DESABILITA ALTERACOES NOS DADOS DO FORMULARIO (INCLUIR/ALTERAR/EXCLUIR)
+            JSBloquearAlteracaoFormulario();
+<?php endif; ?>
+        $("#nrAtoTombamento").numeric();
+        $("#frmProposta").validate({
+            rules: {
+                nomeProjeto: { required: true },
+                resumoDoProjeto: { required:  true },
+                agenciaBancaria: { required:  true },
+                dtInicioDeExecucao: { required: true },
+                dtFinalDeExecucao: { required: true },
+                resumoDoProjeto: { validarResumoDoProjeto: true },
+                stPlanoAnual: { required: true}
+            },
+            messages: {
+                nomeProjeto: { required: function(){ JSMostraOcultaObj('identificacao'); return "<br>Dado obrigat&oacute;rio n&atilde;o informado" } },
+                resumoDoProjeto: { required: function(){ JSMostraOcultaObj('identificacao'); return "<br>Dado obrigat&oacute;rio n&atilde;o informado" } },
+                agenciaBancaria: { required: function(){ JSMostraOcultaObj('identificacao'); return "<br>Dado obrigat&oacute;rio n&atilde;o informado" } },
+                dtInicioDeExecucao: { required: function(){ JSMostraOcultaObj('identificacao'); return "<br>Dado obrigat&oacute;rio n&atilde;o informado" } },
+                dtFinalDeExecucao: { required: function(){ JSMostraOcultaObj('identificacao'); return "<br>Dado obrigat&oacute;rio n&atilde;o informado" } },
+                resumoDoProjeto: { validarResumoDoProjeto: function(){ JSMostraOcultaObj('identificacao'); return "Dado obrigat&oacute;rio n&atilde;o informado" } },
+                stPlanoAnual: { required: function() { JSMostraOcultaObj('identificacao'); return "<br>A data da criacão da proposta não pode ultrapassar 30/09 do ano anterior a execução do projeto." }}
+            },
+            submitHandler: function(form) {
+
+                //se dataas nao atendem as regras de negocio, nao submete o form
+                AgenciaValida = document.getElementById("ValidaAgencia").innerHTML;
+                if(AgenciaValida != ""){
+                    $('#tabs').tabs('select', 'identificacao');
+                    $("#agenciaBancaria").focus();
+                    document.getElementById("ValidaAgencia").innerHTML = "<Br>Ag&ecirc;ncia invï¿½lida";
+                    JSMostraOcultaObj('identificacao');
+                    return false;
+                }else{
+                    document.getElementById("ValidaAgencia").innerHTML = "";
+                }
+
+                if($("#blnDatasValidas").val() == "false"){
+                    $('#tabs').tabs('select', 'identificacao');
+                    $("#msgValidaData").focus();
+                    return false;
+                }
+                //valida qtde de digitos da data
+                if($("#dtInicioDeExecucao").val().length < 10){
+                    $('#tabs').tabs('select', 'identificacao');
+                    $("#msgValidaData").html("<font color='red'>Data in&iacute;cio inv&aacute;lida</font>");
+                    $("#msgValidaData").focus();
+                    return false;
+                }
+                //valida qtde de digitos da data
+                if($("#dtFinalDeExecucao").val().length < 10){
+                    $('#tabs').tabs('select', 'identificacao');
+                    $("#msgValidaData").html("<font color='red'>Data final inv&aacute;lida</font>");
+                    $("#msgValidaData").focus();
+                    return false;
+                }
+                //valida qtde de digitos da data
+                if($("#nrAtoTombamento").val() != "" && $("#dtAtoTombamento").val().length < 10){
+                    $('#tabs').tabs('select', 'identificacao');
+                    $("#msgValidaData").html("<font color='red'>Data tombamento inv&aacute;lida</font>");
+                    $("#msgValidaData").focus();
+                    return false;
+                }
+                //valida data do ano anual
+                if ($("#stPlanoAnual").val() == '1' && $("#dtInicioDeExecucao").val().length == 10){
+                    ano_vigente = <?php echo date('Y')?>;
+                    ano_execucao    = new Number($('#dtInicioDeExecucao').val().substr(6, 4));                                     
+                    if (ano_vigente >= ano_execucao) {
+//                        JSMostraOcultaObj('identificacao');
+                        $("#ValidaPlanoAnual").html("<font color='red'>O período de execução de projetos de plano anual dever ser posterior ao ano vigente</font>");
+                        return false;               
+                    
+                    }else{
+                        $("#ValidaPlanoAnual").html("");
+                    }  
+
+                }else{
+                    $("#ValidaPlanoAnual").html("");
+                }
+            form.submit();
+        }
+            
+    });
+
+    //VALIDA CAMPO RESUMO DA PROPOSTA
+    jQuery.validator.addMethod("validarResumoDoProjeto", function(value, element)
+    {
+        var texto = CKEDITOR.instances['resumoDoProjeto'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+
+        if (texto.length > 0)
+        {
+            // verifica se o usuï¿½rio clicou no botï¿½o 'Reintegraï¿½ï¿½o'
+
+            $('#resumoDoProjeto').val(CKEDITOR.instances['resumoDoProjeto'].getData());
+            return true;
+        }
+        else
+        {
+            //apresentarDialog();
+            //$("#divMsg").show();
+            return false;
+        }
+
+    });
+    $("#solicitarvinculo").click(function(){
+        $("#confirmacao").dialog({
+            resizable: true,
+            width:450,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            closeOnEscape : false,
+            title : 'Alerta',
+            buttons: {
+                'Nao': function(){
+                    $(this).dialog('close');
+                },
+                'Sim': function(){
+                    $.ajax({
+                        async: true,
+                        dataType: 'json',
+                        type: "post",
+                        url: "<?php echo $this->url(array('controller' => 'vincularresponsavel', 'action' => 'vinculo')); ?>",
+                        data:{
+                            solicitarvinculoproposta : '1' <?php if (isset($_GET['idPreProjeto'])) { ?>,idpreprojeto : '<?php echo $_GET['idPreProjeto'] ?>'<?php } ?>
+                        },
+                        success: function(data)
+                        {
+                            $("#confirmacao").dialog("close")
+                            if(!data.error){
+                                confirma('Sua solicita&ccedil;&atilde;o foi enviada com sucesso.', 
+                                function(){
+                                    $("#solicitarvinculo").remove();
+                                    $("#confirm").dialog("close")
+                                }
+                            )
+                            }
+                            else{
+                                confirma('Falha na recupera&ccedil;&atilde;o dos dados!', 
+                                function(){
+                                    $("#confirm").dialog("close")
+                                }
+                            )
+                            }
+                        }
+                    });
+                }
+            }
+        });
+        $("#confirmacao").html('Tem certeza que deseja enviar a solicita&ccedil;&atilde;o para o proponente?')
+        $("#confirmacao").dialog("open")
+    })
+                
+    $("#dtInicioDeExecucao").change(function()
+    {
+            
+        if($(this).val().length == 10){
+            var url = '<?php echo $this->url(array('controller' => 'manterpropostaincentivofiscal', 'action' => 'valida-datas')); ?>';
+            url = url +'?dtInicio='+$("#dtInicioDeExecucao").val()+'&dtFim='+$("#dtFinalDeExecucao").val();
+            //funcao responsavel acessar a url via ajax e retornar os dados para o local indicado
+            jqAjaxLinkSemLoading(url,'','msgValidaData');
+        }
+    });
+
+    $("#dtFinalDeExecucao").change(function()
+    {
+        var url = '<?php echo $this->url(array('controller' => 'manterpropostaincentivofiscal', 'action' => 'valida-datas')); ?>';
+        url = url +'?dtInicio='+$("#dtInicioDeExecucao").val()+'&dtFim='+$("#dtFinalDeExecucao").val();
+        //funcao responsavel acessar a url via ajax e retornar os dados para o local indicado
+        jqAjaxLinkSemLoading(url,'','msgValidaData');
+    });
+
+    $("#dtAtoTombamento").change(function()
+    {
+        var url = '<?php echo $this->url(array('controller' => 'manterpropostaincentivofiscal', 'action' => 'valida-datas')); ?>';
+        url = url +'?nrAto='+$("#nrAtoTombamento").val()+'&dtAto='+$("#dtAtoTombamento").val();
+        //funcao responsavel acessar a url via ajax e retornar os dados para o local indicado
+        jqAjaxLinkSemLoading(url,'','msgValidaData');
+    });
+
+    CKEDITOR.config.fontSize_sizes = '14/14px;16/16px;18/18px;20/20px;22/22px;24/24px;26/26px;';
+    CKEDITOR.config.blockedKeystrokes = [CKEDITOR.CTRL + 86]; /* Bloqueando tecla Ctrl+V */
+//    CKEDITOR.replaceAll();
+//
+    CKEDITOR.replace( 'resumoDoProjeto', { toolbar: [] } );
+    CKEDITOR.replace( 'objetivos', { toolbar: [] } );
+    CKEDITOR.replace( 'justificativa', { toolbar: [] } );
+    CKEDITOR.replace( 'acessibilidade', { toolbar: [] } );
+    CKEDITOR.replace( 'democratizacaoDeAcesso', { toolbar: [] } );
+    CKEDITOR.replace( 'etapaDeTrabalho', { toolbar: [] } );
+    CKEDITOR.replace( 'fichaTecnica', { toolbar: [] } );
+    CKEDITOR.replace( 'sinopse', { toolbar: [] } );
+    CKEDITOR.replace( 'impactoAmbiental', { toolbar: [] } );
+    CKEDITOR.replace( 'especificacaoTecnica', { toolbar: [] } );
+    CKEDITOR.replace( 'informacoes', { toolbar: [] } );
+
+    $('#agenciaBancaria').blur(function(){
+        validaAgencia()
+    });
+
+<?php if (!empty($this->proposta->AgenciaBancaria)): ?>
+        validaAgencia();
+<?php endif; ?>
+
+    $("#nomeProjeto").keyup(function()
+    {
+        var novoValor = $(this).val().replace("'","");
+        $(this).val(novoValor);
+        var novoValor = $(this).val().replace("\"","");
+        $(this).val(novoValor);
+    });
+        
+    function ativarDesativarObrigatoriedadeDtAto()
+    {
+        //SE NUMERO DO ATO DIFERENTE DE VAZIO, A DATA E OBRIGATORIA
+        if($("#nrAtoTombamento").val() != "")
+        {
+            //REGRAS E MENSAGENS PARA OS CAMPOS CRIADOS
+            $("#dtAtoTombamento").rules("add", {
+                required: true,
+                messages: {required: "<br>Data tombamento inv&aacute;lida"}
+            });
+            $("#esferaTombamento").rules("add", {
+                required: true,
+                messages: {required: "<br>Esfera inv&aacute;lida"}
+            });
+
+        }else{
+            $("#dtAtoTombamento").rules("remove");
+            $("#esferaTombamento").rules("remove");
+        }
+    }
+    function confirma(msg, functionok){
+        $("#confirm").html(msg)
+        $("#confirm").dialog({
+            resizable: true,
+            width:450,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            closeOnEscape : false,
+            title : 'Alerta',
+            buttons: {
+                'OK': functionok
+            }
+        });
+        $("#confirm").dialog('open');
+    }   
+    function verificaDatas()
+    {
+        var url = '<?php echo $this->url(array('controller' => 'manterpropostaincentivofiscal', 'action' => 'valida-datas')); ?>';
+        url = url +'?dtInicio='+$("#dtInicioDeExecucao").val()+'&dtFim='+$("#dtFinalDeExecucao").val();
+        //funcao responsavel acessar a url via ajax e retornar os dados para o local indicado
+        jqAjaxLinkSemLoading(url,'','msgValidaData');
+
+        var url = '<?php echo $this->url(array('controller' => 'manterpropostaincentivofiscal', 'action' => 'valida-datas')); ?>';
+        url = url +'?dtInicio='+$("#dtInicioDeExecucao").val()+'&dtFim='+$("#dtFinalDeExecucao").val();
+        //funcao responsavel acessar a url via ajax e retornar os dados para o local indicado
+        jqAjaxLinkSemLoading(url,'','msgValidaData');
+
+        var url = '<?php echo $this->url(array('controller' => 'manterpropostaincentivofiscal', 'action' => 'valida-datas')); ?>';
+        url = url +'?nrAto='+$("#nrAtoTombamento").val()+'&dtAto='+$("#dtAtoTombamento").val();
+        //funcao responsavel acessar a url via ajax e retornar os dados para o local indicado
+        jqAjaxLinkSemLoading(url,'','msgValidaData');
+    }
+
+    function validaAgencia(){
+        //agencia = $('#agenciaBancaria').val().replace(" ","");
+        $("#ValidaAgencia").html("validando informa&ccedil;&atilde;o...");
+        jqAjaxLinkSemLoading('<?php echo $buscarAgencia; ?>?agencia='+$('#agenciaBancaria').val(), "", "ValidaAgencia");
+    }
+
+});
+
+/* -----
+        FUNcao QUE FAZ A TROCA (VISUAL) DE UM OBJETO NA TELA
+        CASO ID_STATUS SEJA UM, O OBJETO ANTERIOR N?O SERï¿½ RETIRADO DA TELA
+        DENTRO DA FUNÇÃO ABAIXO ELE TAMBÉM ALTERAR OS DADOS CONFORME A MUDANÇA NO DISPLAY
+        --------- */
+//function JSMostraOcultaObj(id_tbl,id_status){    
+function JSMostraOcultaObj(idObjConteudo,obj){   
+    aparece = $('#'+idObjConteudo).css('display');
+    $('#conteudo').find('.divChave').each(function(){
+        $(this).hide();
+        $(this).fadeOut('fast', function() {
+            $('img.imgDinamica').attr('src','<?php echo $this->baseUrl(); ?>/public/img/btn_adicionar.gif');
+        });
+    });                 
+    if(aparece != 'block'){
+        $("#"+idObjConteudo).fadeIn('fast', function() {
+            $('img', $(obj)).attr('src','<?php echo $this->baseUrl(); ?>/public/img/btn_menos.gif');
+            if(obj){
+                $('html, body').animate({
+                    scrollTop: $(obj).offset().top
+                }, 1000);
+            }
+        });
+    }
+}
+/**
+ * Funï¿½ï¿½es que sï¿½o chamadas apï¿½s a pï¿½gina ser carregada
+ */
+$(document).ready(function()
+{
+    // mï¿½scaras dos campos
+    $("#dtInicioDeExecucao, #dtFinalDeExecucao, #dtAtoTombamento").keyup(function()
+    {
+        mascara(this, format_data); // data
+    });
+
+    // calendï¿½rio
+    $.datepicker.regional['pt-BR'] =
+        {
+        closeText: 'Fechar',
+        prevText: '&#x3c;Anterior',
+        nextText: 'Pr&oacute;ximo&#x3e;',
+        currentText: 'Hoje',
+        monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+        monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+        dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','S&aacute;bado'],
+        dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+        dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+        weekHeader: 'Sm',
+        dateFormat: 'dd/mm/yy',
+        firstDay: 0,
+        isRTL: false,
+        showMonthAfterYear: false,
+        yearSuffix: ''
+    };
+    $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+
+    // id dos campos que utilizarï¿½o o calendï¿½rio
+    $("#dtInicioDeExecucao, #dtFinalDeExecucao, #dtAtoTombamento").datepicker($.datepicker.regional['pt-BR']);
+}); // fim $(document).ready()
+
+</script>
+
+
+<style type="text/css">
+    .divChave{}
+    .divNaoChave{}
+    label.error{ color:red; font-weight: normal; }
+</style>
+
+<?php
+    if (isset($this->proposta->idPreProjeto)) {
+        require_once "inc/menu.inc.php"; // menu
+    }
+//    $controller = "Manterpropostaincentivofiscal";
+//    $links = array(
+//        array('Lista de Propostas' => array('controller' => 'manterpropostaincentivofiscal', 'action' => 'listar-propostas')),
+//        array('Proposta' => array())
+//    );
+//    montaGuiaLinks($controller, $links);
+?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principalproponente', 'action' => ''), null, true); ?>" title="Ir para p&aacute;gina inicial" onclick="carregandoModal();">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'manterpropostaincentivofiscal', 'action' => 'listar-propostas'), null, true); ?>" title="Lista de Propostas" onclick="carregandoModal();">Lista de Propostas</a></li>
+        <li class="last">Proposta</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INICIO TITULO ========== -->
+<div id="titulo">
+    <div><?php if (!isset($this->proposta->idPreProjeto)) { echo "NOVA"; } ?> PROPOSTA <?php //echo montaBotaoVoltar($controller, $links); ?></div>
+</div>
+
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.css" />
+
+<div id="alerta" title="Alerta"></div>
+<div id="erro" title="Erro"></div>
+<div id="resultado"></div>
+<!-- ========== FIM TITULO ========== -->
+<div id="conteudo" align="center">
+    <div id="confirmacao"></div>
+    <div id="confirm"></div>
+    <form action="<?php echo $this->acao; ?>" method="post" id="frmProposta" name="frmProposta">
+
+        <input type="hidden" name="idPreProjeto" id="idPreProjeto" value="<?php
+        if (isset($this->proposta->idPreProjeto))
+            echo $this->proposta->idPreProjeto;
+?>">
+        <input type="hidden" name="acao" id="acao" value="<?php
+               if (isset($this->proposta->idPreProjeto)) {
+                   echo "alterar";
+               } else {
+                   echo "incluir";
+               }
+?>">
+        <table class="tabela">
+            <tr onclick="javascript:JSMostraOcultaObj('identificacaodiv',$(this))" style="cursor:pointer">
+                <th width="5%" align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/btn_remover.gif" class="imgDinamica"/></th>
+                <th width="95%"><a href="anc_identificacaodiv"></a>Identifica&ccedil;&atilde;o da Proposta Cultural</th>
+            </tr>
+        </table>
+        <div id="identificacaodiv" class="divChave">
+            <table class="tabela" cellpadding="1" cellspacing="1">
+                <!--<tr class="titulo_tabela">
+                    <th colspan="5" onclick="javascript:JSMostraOcultaObj('identificacao')">Identifica&ccedil;&atilde;o da Proposta Cultural</th>
+                </tr>-->
+                <tr>
+                    <td class="esquerda" colspan="5">
+                        <div style="width: 95%">
+                            <div style="float:left; width: 85%">
+                                Proponente:
+                                <span style="color: blue;"><?php echo $this->proponente->Descricao; ?></span>
+                                <input type="hidden" class="input_simples" name="idAgente" value="<?php
+               if (isset($this->proponente->idAgente))
+                   echo $this->proponente->idAgente;
+?>">
+                            </div>
+                            <div style="float:left; width: 15%">
+                                Nr da Proposta:<br/><span style="color: blue;"><?php
+                                       if (isset($this->proposta->idPreProjeto))
+                                           echo $this->proposta->idPreProjeto;
+?></span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="esquerda">
+                    <td colspan="5">Nome da Proposta Cultural *
+                        <input type="text" class="input_simples" name="nomeProjeto" id="nomeProjeto" maxlength="500" title="Nome da Proposta Cultural"  style="width:50em;" value="<?php
+                                    if (isset($this->proposta->idPreProjeto))
+                                        echo str_replace("'", "", str_replace("\"", "", $this->proposta->NomeProjeto));
+?>"/>
+                    </td>
+                </tr>
+                <tr class="destacar centro">
+                    <td colspan="5"><b>Resumo da Proposta Cultural</b></td>
+                </tr>
+                <tr>
+                    <td  colspan="5">Explique de forma clara, objetiva e sucinta o que ser&aacute; realizado - m&aacute;ximo de 1000 caracteres. * <br/>
+
+                        <!-- ========== EDITOR ========== -->
+                        <textarea cols="80" id="resumoDoProjeto" obrigatorio="1" name="resumoDoProjeto" rows="10"><?php
+                               if (isset($this->proposta->idPreProjeto))
+                                   echo $this->proposta->ResumoDoProjeto;
+?></textarea>
+                    </td>
+                </tr>
+                <tr class="destacar centro">
+                    <td colspan="5"><b>Informa&ccedil;&otilde;es Complementares</b></td>
+                </tr>
+                <tr>
+                    <td class="centro" width="150px;" nowrap>Mecanismo: <b>Incentivo Fiscal</b></td>
+                    <td class="centro">Data Fixa
+                        <select class="select_simples" name="stDataFixa" id="stDataFixa" style="width: 5em">
+                            <option value="0" <?php
+                            if (isset($this->proposta->idPreProjeto))
+                                if ($this->proposta->stDataFixa == "0") {
+                                    echo "selected";
+                                }
+?>>N&atilde;o</option>
+                            <option value="1" <?php
+                                    if (isset($this->proposta->idPreProjeto))
+                                        if ($this->proposta->stDataFixa == "1") {
+                                            echo "selected";
+                                        }
+?>>Sim</option>
+                        </select>
+                    </td>
+                    <td class="centro">Plano Anual
+                        <select class="select_simples" name="stPlanoAnual" id="stPlanoAnual" style="width: 5em">
+                            <option value="0" <?php
+                                    if (isset($this->proposta->idPreProjeto))
+                                        if ($this->proposta->stPlanoAnual == "0") {
+                                            echo "selected";
+                                        }
+?>>N&atilde;o</option>
+                            <option value="1" <?php
+                                    if (isset($this->proposta->idPreProjeto))
+                                        if ($this->proposta->stPlanoAnual == "1") {
+                                            echo "selected";
+                                        }
+?>>Sim</option>
+                        </select>
+                        <div id="ValidaPlanoAnual" name="ValidaPlanoAnual" style="color:#FF0000" > </div>
+                    </td>
+                    <td class="centro">Ag&ecirc;ncia Banc&aacute;ria *
+                        <input type="text" class="input_simples" name="agenciaBancaria" id="agenciaBancaria" maxlength="12"  style="width:50px;" value="<?php
+                                    if (isset($this->proposta->idPreProjeto))
+                                        echo $this->proposta->AgenciaBancaria;
+?>"/>
+                        <div id="ValidaAgencia" name="ValidaAgencia" style="color:#FF0000" > </div>
+                    </td>
+                    <td class="centro">&Eacute; proposta de audiovisual?
+                        <select class="select_simples" name="propostaAudioVisual" id="propostaAudioVisual" style="width: 5em">
+                            <option value="0" <?php
+                               if (isset($this->proposta->idPreProjeto))
+                                   if ($this->proposta->AreaAbrangencia == "0") {
+                                       echo "selected";
+                                   }
+?>>N&atilde;o</option>
+                            <option value="1" <?php
+                                    if (isset($this->proposta->idPreProjeto))
+                                        if ($this->proposta->AreaAbrangencia == "1") {
+                                            echo "selected";
+                                        }
+?>>Sim</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr class="destacar centro">
+                    <td colspan="3"><b>Per&iacute;odo de Realiza&ccedil;&atilde;o</b></td>
+                    <td colspan="2"><b>No caso de bem tombado</b></td>
+                </tr>
+                <tr>
+                    <td class="centro">Data de In&iacute;cio *</td>
+                    <td>
+                        <input type="text" name="dtInicioDeExecucao" id="dtInicioDeExecucao" maxlength="10" class="input_simples btn_calendario" value="<?php if (isset($this->proposta->idPreProjeto)) echo $this->proposta->DtInicioDeExecucaoForm; ?>"/>
+                        <!--<input type="text" class="input_simples" name="dtInicioDeExecucao" id="dtInicioDeExecucao" autocomplete="off" onkeyup="mascara(this,
+                            format_data);" maxlength="10" value="<?php
+                                    //if (isset($this->proposta->idPreProjeto))
+                                    //echo $this->proposta->DtInicioDeExecucaoForm;
+?>"/>-->
+                    </td>
+                    <td>dd/mm/aaaa. A data inicial de realiza&ccedil;&atilde;o dever&aacute; ser no m&iacute;nimo 90 dias ap&oacute;s a data atual.</td>
+                    <td>N&uacute;mero do Ato </td>
+                    <td><input type="text" class="input_simples" name="nrAtoTombamento" id="nrAtoTombamento" maxlength="12" onkeyup="ativarDesativarObrigatoriedadeDtAto()" value="<?php if (isset($this->proposta->idPreProjeto)) echo trim($this->proposta->NrAtoTombamento); ?>"/></td>
+                </tr>
+                <tr>
+                    <td class="centro">Data Final *</td>
+                    <td>
+                        <input type="text" name="dtFinalDeExecucao" id="dtFinalDeExecucao" maxlength="10" class="input_simples btn_calendario" value="<?php if (isset($this->proposta->idPreProjeto)) echo $this->proposta->DtFinalDeExecucaoForm; ?>"/>
+                       <!-- <input type="text" class="input_simples" name="dtFinalDeExecucao" id="dtFinalDeExecucao"  autocomplete="off" onkeyup="mascara(this, format_data);"
+                       maxlength="10" value="<?php
+                        //if (isset($this->proposta->idPreProjeto))
+                        // echo $this->proposta->DtFinalDeExecucaoForm;
+?>"/>-->
+                    </td>
+                    <td></td>
+                    <td>Data do Ato </td>
+                    <td><input type="text" name="dtAtoTombamento" id="dtAtoTombamento" maxlength="10" class="input_simples btn_calendario" readonly="readonly" value="<?php if (isset($this->proposta->idPreProjeto)) echo $this->proposta->DtAtoTombamentoForm; ?>"/>
+                    <!--<td><input type="text" class="input_simples" name="dtAtoTombamento" id="dtAtoTombamento" maxlength="10" onkeyup="mascara(this, format_data);" value="<?php
+                        //if (isset($this->proposta->idPreProjeto))
+                        //echo $this->proposta->DtAtoTombamentoForm;
+?>"/></td>-->
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3"><span id="msgValidaData"></span><input type="hidden" name="blnDatasValidas" id="blnDatasValidas" value="true"></td>
+                    <td>Esfera do Ato </td>
+                    <td><select class="select_simples" name="esferaTombamento" id="esferaTombamento" style="width: 10em">
+                            <option value="" selected>- Selecione-</option>
+                            <option value="1" <?php
+                        if (isset($this->proposta->idPreProjeto))
+                            if ($this->proposta->EsferaTombamento == "1") {
+                                echo "selected";
+                            }
+?>>Municipal</option>
+                            <option value="2" <?php
+                                    if (isset($this->proposta->idPreProjeto))
+                                        if ($this->proposta->EsferaTombamento == "2") {
+                                            echo "selected";
+                                        }
+?>>Estadual</option>
+                            <option value="3" <?php
+                                    if (isset($this->proposta->idPreProjeto))
+                                        if ($this->proposta->EsferaTombamento == "3") {
+                                            echo "selected";
+                                        }
+?>>Federal</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <table class="tabela">
+            <tr onclick="javascript:JSMostraOcultaObj('objetivosdiv',$(this));" style="cursor:pointer">
+                <th width="5%" align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/btn_adicionar.gif" class="imgDinamica"/></th>
+                <th width="95%"><a href="anc_objetivosdiv"></a>Objetivos</th>
+            </tr>
+        </table>
+        <div id="objetivosdiv" class="sumir divChave">
+            <table class="tabela" cellpadding="1" cellspacing="1">
+                <tr>
+                    <td>Indique os objetivos gerais da proposta cultural, isto &eacute;, o que deseja realizar, inclusive seus resultados. *</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <!-- ========== EDITOR ========== -->
+                        <textarea cols="80" id="objetivos" name="objetivos" rows="10"><?php
+                                    if (isset($this->proposta->idPreProjeto))
+                                        echo $this->proposta->Objetivos;
+?></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span style="color: #ff5050;">Limite máximo de 8000 caracteres.</span></td>
+                </tr>
+            </table>
+        </div>
+        <!-- JUSTIFICATIVA -->
+        <table class="tabela">
+            <tr onclick="javascript:JSMostraOcultaObj('justificativadiv',$(this))" style="cursor:pointer">
+                <th width="5%" align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/btn_adicionar.gif" class="imgDinamica"/></th>
+                <th width="95%"><a href="anc_justificativadiv"></a>Justificativa</th>
+            </tr>
+        </table>
+        <div id="justificativadiv" class="sumir divChave">
+            <table class="tabela" cellpadding="1" cellspacing="1">
+                <tr>
+                    <td>Descreva a justificativa do projeto *</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <!-- ========== EDITOR ========== -->
+                        <textarea cols="80" id="justificativa" name="justificativa" rows="10"><?php
+                            if (isset($this->proposta->idPreProjeto))
+                                echo $this->proposta->Justificativa;
+?></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span style="color: #ff5050;">Limite máximo de 8000 caracteres.</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- ACESSIBILIDADE -->
+        <table class="tabela">
+            <tr onclick="javascript:JSMostraOcultaObj('acessibilidadediv',$(this))" style="cursor:pointer" >
+                <th width="5%" align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/btn_adicionar.gif" class="imgDinamica"/></th>
+                <th><a href="anc_acessibilidadediv"></a>Acessibilidade</th>
+            </tr>
+        </table>
+        <div id="acessibilidadediv" class="sumir divChave">
+            <table class="tabela" cellpadding="1" cellspacing="1">
+                <tr>
+                    <td>Descreva as medidas para garantir o acesso aos Portadores de Necessidades Especiais. *</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <!-- ========== EDITOR ========== -->
+                        <textarea cols="80" id="acessibilidade" name="acessibilidade" rows="10"><?php
+                            if (isset($this->proposta->idPreProjeto))
+                                echo $this->proposta->Acessibilidade;
+?></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span style="color: #ff5050;">Limite máximo de 8000 caracteres.</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- DEMOCRATIZACAO -->
+        <table class="tabela">
+            <tr onclick="javascript:JSMostraOcultaObj('democratizacaodiv',$(this))" style="cursor:pointer" >
+                <th width="5%" align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/btn_adicionar.gif" class="imgDinamica"/></th>
+                <th width="95%">Democratiza&ccedil;&atilde;o de Acesso</th>
+            </tr>
+        </table>
+        <div id="democratizacaodiv" class="sumir divChave">
+            <table class="tabela" cellpadding="1" cellspacing="1">
+                <tr>
+                    <td>Descreva as medidas para garantir a democratiza&ccedil;&atilde;o de acesso. *</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <!-- ========== EDITOR ========== -->
+                        <textarea cols="80" id="democratizacaoDeAcesso" name="democratizacaoDeAcesso" rows="10"><?php
+                            if (isset($this->proposta->idPreProjeto))
+                                echo $this->proposta->DemocratizacaoDeAcesso;
+?></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span style="color: #ff5050;">Limite máximo de 8000 caracteres.</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- ETAPAS -->
+        <table class="tabela">
+            <tr onclick="javascript:JSMostraOcultaObj('etapasdiv',$(this))" style="cursor:pointer" >
+                <th width="5%" align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/btn_adicionar.gif" class="imgDinamica"/></th>
+                <th width="95%">Etapas de Trabalho</th>
+            </tr>
+        </table>
+        <div id="etapasdiv" class="sumir divChave">
+            <table class="tabela" cellpadding="1" cellspacing="1">
+                <tr>
+                    <td>Enumere e descreva todas as fases do projeto, informando quando e como pretende realiz&aacute;-las. *</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <!-- ========== EDITOR ========== -->
+                        <textarea cols="80" id="etapaDeTrabalho" name="etapaDeTrabalho" rows="10"><?php
+                            if (isset($this->proposta->idPreProjeto))
+                                echo $this->proposta->EtapaDeTrabalho;
+?></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span style="color: #ff5050;">Limite máximo de 8000 caracteres.</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- FICHA TECNICA -->
+        <table class="tabela">
+            <tr onclick="javascript:JSMostraOcultaObj('fichatecnicadiv',$(this))" style="cursor:pointer" >
+                <th width="5%" align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/btn_adicionar.gif" class="imgDinamica"/></th>
+                <th width="95%">Ficha T&eacute;cnica</th>
+            </tr>
+        </table>
+        <div id="fichatecnicadiv" class="sumir divChave">
+            <table class="tabela" cellpadding="1" cellspacing="1">
+                <tr>
+                    <td>Ficha T&eacute;cnica, com breve curr&iacute;culo dos participantes do projeto *</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <!-- ========== EDITOR ========== -->
+                        <textarea cols="80" id="fichaTecnica" name="fichaTecnica" rows="10"><?php
+                            if (isset($this->proposta->idPreProjeto))
+                                echo $this->proposta->FichaTecnica;
+?></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span style="color: #ff5050;">Limite máximo de 8000 caracteres.</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- SINOPSE -->
+        <table class="tabela">
+            <tr onclick="javascript:JSMostraOcultaObj('sinopsediv',$(this))" style="cursor:pointer" >
+                <th width="5%" align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/btn_adicionar.gif" class="imgDinamica"/></th>
+                <th width="95%">Sinopse da obra</th>
+            </tr>
+        </table>
+        <div id="sinopsediv" class="sumir divChave">
+            <table class="tabela" cellpadding="1" cellspacing="1">
+                <tr>
+                    <td>Sinopse da obra (textos teatrais, livros, filmes e similares) *</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <!-- ========== EDITOR ========== -->
+                        <textarea cols="80" id="sinopse" name="sinopse" rows="10"><?php
+                            if (isset($this->proposta->idPreProjeto))
+                                echo $this->proposta->Sinopse;
+?></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span style="color: #ff5050;">Limite máximo de 8000 caracteres.</span></td>
+                </tr>
+            </table>
+        </div>
+        <!-- IMPACTO AMBIENTAL -->
+        <table class="tabela">
+            <tr onclick="javascript:JSMostraOcultaObj('impactodiv',$(this))" style="cursor:pointer" >
+                <th width="5%" align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/btn_adicionar.gif" class="imgDinamica"/></th>
+                <th width="95%">Impacto Ambiental</th>
+            </tr>
+        </table>
+        <div id="impactodiv" class="sumir divChave">
+            <table class="tabela" cellpadding="1" cellspacing="1">
+                <tr>
+                    <td>Para minimizar o impacto ambiental: propostas de eventos ao ar livre *</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <!-- ========== EDITOR ========== -->
+                        <textarea cols="80" id="impactoAmbiental" name="impactoAmbiental" rows="10"><?php
+                            if (isset($this->proposta->idPreProjeto))
+                                echo $this->proposta->ImpactoAmbiental;
+?></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span style="color: #ff5050;">Limite máximo de 8000 caracteres.</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- ESPECIFICAO -->
+        <table class="tabela">
+            <tr onclick="javascript:JSMostraOcultaObj('especificacaodiv',$(this))" style="cursor:pointer" >
+                <th width="5%" align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/btn_adicionar.gif" class="imgDinamica"/></th>
+                <th width="95%">Especifica&ccedil;&otilde;es t&eacute;cnicas do produto</th>
+            </tr>
+        </table>
+        <div id="especificacaodiv" class="sumir divChave">
+            <table class="tabela" cellpadding="1" cellspacing="1">
+                <tr>
+                    <td>
+                        <p>- Especifica&ccedil;&otilde;es t&eacute;cnicas: propostas de edi&ccedil;&atilde;o de livro, revistas e peri&oacute;dicos</p>
+                        <p>- Projeto Pedag&oacute;gico/ plano de execu&ccedil;&atilde;o: propostas de cursos/workshops *</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <!-- ========== EDITOR ========== -->
+                        <textarea cols="80" id="especificacaoTecnica" name="especificacaoTecnica" rows="10"><?php
+                            if (isset($this->proposta->idPreProjeto))
+                                echo $this->proposta->EspecificacaoTecnica;
+?></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span style="color: #ff5050;">Limite máximo de 8000 caracteres.</span></td>
+                </tr>
+            </table>
+
+            <table class="tabela" cellpadding="1" cellspacing="1">
+                <tr>
+                    <th>Outras Informa&ccedil;&otilde;es</th>
+                </tr>
+                <tr>
+                    <td>
+                        <p>- Proposta museogr&aacute;fica: propostas de exposi&ccedil;&atilde;o tempor&aacute;ria ou acervo</p>
+                        <p>- Destina&ccedil;&atilde;o do bem patrimonial adquirido, ap&oacute;s o t&eacute;rmino do projeto: propostas com aquisi&ccedil;&atilde;o de material permanente</p>
+                        <p>- Listas dos bens hist&oacute;ricos: propostas de invent&aacute;rios e organiza&ccedil;&atilde;o de acervos</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <!-- ========== EDITOR ========== -->
+                        <textarea cols="80" id="informacoes" name="informacoes" rows="10"><?php
+                            if (isset($this->proposta->idPreProjeto))
+                                echo $this->proposta->EstrategiadeExecucao;
+?></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span style="color: #ff5050;">Limite máximo de 8000 caracteres.</span></td>
+                </tr>
+            </table>
+        </div>
+        <br>
+        <div align="center">
+            <span id="msgForm" style="font-color:red;"></span>
+            <input type="submit" class="btn_salvar" id="btn_salvar" value="">
+            <!-- <input id="btn_sair" type="button" value=" " name="sair" class="btn_sair" style="cursor: pointer;" onclick="window.location='<?php //echo $this->url(array('controller' => 'manterpropostaincentivofiscal', 'action' => 'index'));         ?>';" /> -->
+        </div>
+    </form>
+
+
+    <br/>
+
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+
+
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

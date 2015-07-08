@@ -1,0 +1,49 @@
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'solicitarprorrogacao', 'action' => 'index')); ?>" title="Lista de Solitações de Item">Lista de Pedidos de Prorrogação</a></li>
+        <li class="last">Erros do Pedido de Prorrogação</li>
+    </ul>
+</div>
+
+
+<div id="titulo">
+    <div>Erros do Pedido de Prorrogação <span class="voltar"><a href="<?php echo $this->url(array('controller' => 'solicitarprorrogacao', 'action' => 'index')); ?>" title="Voltar">Voltar</a></span></div>
+</div>
+
+
+<div id="conteudo">
+    <table class="tabela">
+        <?php foreach ($this->dadosProjeto as $dadosProjeto) { ?>
+        <tr>
+            <th width="200px">Pronac</th>
+            <th>Nome do Projeto</th>
+        </tr>
+        <tr>
+            <td><?php echo $dadosProjeto->AnoProjeto.$dadosProjeto->Sequencial; ?></td>
+            <td><?php echo $dadosProjeto->NomeProjeto; ?></td>
+        </tr>
+        <?php } ?>
+    </table>
+    <br clear="all" />
+    
+    <table class="tabela">
+        <tr align="center">
+            <th colspan="2">Lista de erros do pedido de prorrogação</th>
+        </tr>
+        <?php foreach ($this->Erros as $dsErro) { ?>
+        <tr>
+            <td width="1"><img src="<?php echo $this->baseUrl(); ?>/public/img/delete_16x16.png" alt="" /></td>
+            <td><?php echo $dsErro->Descricao; ?></td>
+        </tr>
+        <?php } ?>
+    </table>
+    <br clear="all" />
+</div>
+
+
+<!-- inï¿½cio: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+<br clear="all" />

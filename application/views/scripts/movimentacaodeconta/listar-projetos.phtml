@@ -1,0 +1,206 @@
+<?php
+    header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+<script>
+    
+    function JSSolucionarInconsistencia(idTipoInconsistencia,cpfCnpjIncentivador,idColunaBotaoCorrigir){
+                
+        if(idTipoInconsistencia == '3'){ //sem incentivador
+            JSCadastarIncentivador(cpfCnpjIncentivador,idColunaBotaoCorrigir);
+        }
+        if(idTipoInconsistencia == '7'){ //sem agencia
+            //JSManterContaBancaria(nrPronac);
+        }
+    }
+    
+    function JSCadastarIncentivador(cpfCnpj,idColunaBotaoCorrigir){
+          
+        $('html').css('overflow', 'hidden');
+        $("body").append("<div id='divDinamicaAgentes'></div>");
+        $("#divDinamicaAgentes").html("");
+        $('#divDinamicaAgentes').html("<br><br><center>Carregando dados...</center>");
+        $.ajax({
+            url : '<?php echo $this->url(array('controller' => 'agentes', 'action' => 'incluiragente')); ?>',
+            data :
+                {
+                cpf : cpfCnpj,
+                caminho: "",
+                modal : "s",
+                modulo : "movimentacaobancaria"
+            },
+            success: function(data){
+                if (data.error)
+                {
+                    $('#divDinamicaAgentes').html(data.msg);
+                }else{                    
+                    $('#divDinamicaAgentes').html(data);
+                }
+            },
+            complete: function(){
+                $("#resultadoFinalizar").html("");
+            },
+            type : 'post'
+
+        });
+
+        $("#divDinamicaAgentes").dialog({
+            resizable: true,
+            //width:1300,
+            //height:600,
+            width:$(window).width() - 100,
+            height:$(window).height() - 100,
+            modal: true,
+            autoOpen:true,
+            draggable:false,
+            title: 'Cadastrar incentivador',
+            buttons: {
+                'Fechar': function() {
+                    $("#divDinamicaAgentes").remove();
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');
+                    JSVerificaIncentivador(cpfCnpj,idColunaBotaoCorrigir);
+                }
+            },
+            close: function() {
+                $("#divDinamicaAgentes").remove();
+                $(this).dialog('close');
+                $('html').css('overflow', 'auto');
+                JSVerificaIncentivador(cpfCnpj,idColunaBotaoCorrigir);
+            }
+        });
+    }
+    
+    function JSManterContaBancaria(nrPronac, caminho){
+
+        $('html').css('overflow', 'hidden');
+        $("body").append("<div id='divDinamicaManterConta'></div>");
+        $("#divDinamicaManterConta").html("");
+        $('#divDinamicaManterConta').html("<br><br><center>Carregando dados...</center>");
+        $.ajax({
+            url : '<?php echo $this->url(array('controller' => 'mantercontabancaria', 'action' => 'alterar')); ?>',
+            data :
+                {
+                pronac : nrPronac,
+                caminho: caminho,
+                modal : "s"
+            },
+            success: function(data){
+                if (data.error)
+                {
+                    $('#divDinamicaManterConta').html(data.msg);
+                }else{
+                    $('#divDinamicaManterConta').html(data);
+                }
+            },
+            type : 'post'
+
+        });
+
+        $("#divDinamicaManterConta").dialog({
+            resizable: true,
+            //width:1300,
+            //height:600,
+            width:$(window).width() - 100,
+            height:$(window).height() - 100,
+            modal: true,
+            autoOpen:true,
+            draggable:false,
+            title: 'Manter conta bancária',
+            buttons: {
+                'Cancelar': function() {
+                    $("#divDinamicaManterConta").remove();
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');
+                }
+            },
+            close: function() {
+                $("#divDinamicaManterConta").remove();
+                $(this).dialog('close');
+                $('html').css('overflow', 'auto');
+            }
+        });
+    }
+    
+    function JSVerificaIncentivador(cpfCnpj,idColunaBotaoCorrigir){
+        
+        $.ajax({
+            url : '<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'verifica-incentivador')); ?>',
+            data :
+                {
+                cpfCnpjIncentivador : cpfCnpj
+            },
+            success: function(data){
+                if (data.existe)
+                {
+                    $('#'+idColunaBotaoCorrigir).find('.corrigir').replaceWith("<font color='green'>[Correção enviada]</font>");
+                }
+            },
+            complete: function(){
+                
+            },
+            type : 'post',
+            dataType : 'json'
+
+        });
+    }
+    
+</script>
+<table class="tabela">
+    <?php if ($this->registros->count() <= 0) : ?>
+    <tr>
+        <td align="center" ><em>Consulta efetuada com sucesso, por&eacute;m, n&atilde;o existem contas com captações identificadas para o filtro solicitado!</em></td>
+    </tr>
+    <?php else: ?>      
+        <?php $ct=1; $arrProjeto =array(); $arrIncentivador =array();
+            foreach($this->registros as $projeto): //xd($projeto);?>
+            <?php if($ct==1) { ?>
+            <thead>
+            <tr class="">
+                <th width="10%"><!--<a href="#" class="orderBy" valorOrdenacao="1">-->Pronac</th>
+                <th width="20%"><!--<a href="#" class="orderBy" valorOrdenacao="8">-->Nome do Projeto</th>
+                <th width="12%"><!--<a href="#" class="orderBy" valorOrdenacao="3">-->Proponente</th>
+                <th width="10%" nowrap><!--<a href="#" class="orderBy" valorOrdenacao="14">-->Ag&ecirc;ncia</th>
+                <th width="10%" nowrap><!--<a href="#" class="orderBy" valorOrdenacao="15">-->Conta</th>
+                <th width="13%" nowrap><!--<a href="#" class="orderBy" valorOrdenacao="4">-->Incentivador</th>
+                <th width="15%" nowrap><!--<a href="#" class="orderBy" valorOrdenacao="5">-->Data de Cr&eacute;dito</th>
+                <th width="10%" nowrap><!--<a href="#" class="orderBy" valorOrdenacao="6">-->Valor do Cr&eacute;dito</th>
+                <th width="10%" nowrap>Corrigir</th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php } ?>
+            <tr class="">
+                <td align="center">
+                    <?php //if(!in_array($projeto->pronac,$arrProjeto)): $arrProjeto[] = $projeto->pronac; ?>
+                        <?php if (!empty($projeto->pronac)) { ?>
+                            <a target="_blank" href='<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'))."?idPronac={$projeto->IdPRONAC}"?>'><?php echo $projeto->pronac;?></a>
+                        <?php }else{ ?>
+                            Conta sem PRONAC
+                        <?php } ?>
+                    <?php //endif; ?>
+                </td>
+                <td>
+                    <?php if (!empty($projeto->pronac)) { ?>
+                        <?php echo $projeto->NomeProjeto;?>
+                    <?php }else{ ?>
+                        Conta sem Nome de Projeto
+                    <?php } ?>
+                </td>
+                <td align="center"><?php echo Validacao::mascaraCPFCNPJ($projeto->nrCpfCnpjProponente); ?></td>
+                <td align="center"><?php echo !empty($projeto->Agencia) ? $projeto->Agencia : '<em>Não informada</em>'; ?></td>
+                <td align="center"><?php echo !empty($projeto->ContaBloqueada) ? $projeto->ContaBloqueada : '<em>Não informada</em>'; ?></td>
+                <td align="center"><?php echo Validacao::mascaraCPFCNPJ($projeto->nrCpfCnpjIncentivador); ?></td>
+                <td align="center"><?php echo $projeto->dtCredito; ?></td>
+                <td align="right" class="<?php echo ($projeto->vlValorCredito == 'D') ? 'red' : 'blue' ; ?>"><?php echo $this->formatarReal($projeto->vlValorCredito); ?></td>
+                <td class="centro" id="coluna_<?php echo $projeto->idTipoInconsistencia."_".$ct; ?>">
+                    <?php if($projeto->idTipoInconsistencia && in_array($projeto->idTipoInconsistencia,array('3'))): //tipo 3 = Sem Incentivador , tipo 7 = Sem agencia 
+                             if(!in_array($projeto->nrCpfCnpjIncentivador,$arrIncentivador)): $arrIncentivador[] = $projeto->nrCpfCnpjIncentivador; ?>
+                                <img src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png" class="corrigir" style="cursor: pointer" onclick="JSSolucionarInconsistencia('<?php echo $projeto->idTipoInconsistencia; ?>','<?php echo $projeto->nrCpfCnpjIncentivador; ?>','coluna_<?php echo $projeto->idTipoInconsistencia."_".$ct; ?>')"/>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </td>
+            </tr>
+        <?php $ct++; endforeach;?>
+            </tbody>
+    <?php endif;?>
+</table>

@@ -1,0 +1,112 @@
+<img src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png"
+	class="corrigir" style="cursor: pointer"
+	onclick="JSDestinarSaldoCaptado('<?php echo $this->projeto->IdPRONAC; ?>', '<?php echo $this->captacao->vlValorCredito;?>', '<?php echo $this->captacao->idTmpCaptacao;?>', this)"
+/>
+
+<script>
+	function JSDestinarSaldoCaptado(idPronac,vlTotalCaptado,idTmpCaptacao,idColunaBotaoCorrigir){
+        $('html').css('overflow', 'hidden');
+        $("body").append("<div id='divDinamicaSemSaldo'></div>");
+        $("#divDinamicaSemSaldo").html("");
+        $('#divDinamicaSemSaldo').html("<br><br><center>Carregando dados...</center>");
+        $.ajax({
+            url : '<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'form-saldo-captacao')); ?>',
+            type : 'post',
+            data : {
+                idPronac : idPronac,
+                idTmpCaptacao : idTmpCaptacao,
+                vlTotalCaptadoNoLote : vlTotalCaptado
+            },
+            success: function(data){
+                if (data.error) {
+                    $('#divDinamicaSemSaldo').html(data.msg);
+                }else{                    
+                    $('#divDinamicaSemSaldo').html(data);
+                }
+            },
+            complete: function(){
+                $("#resultadoFinalizar").html("");
+            }
+
+        });
+
+        $("#divDinamicaSemSaldo").dialog({
+            title: "Remanejar valor captado",
+            resizable: true,
+            width:800,
+            height:560,
+            modal: true,
+            autoOpen:true,
+            buttons: {
+                'Fechar': function() {
+                    $("#divDinamicaSemSaldo").remove();
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');
+                    //JSVerificaIncentivador(cpfCnpj,idColunaBotaoCorrigir);
+                },
+                'Salvar': function() {
+                    
+                    var tpCap = $('#formRemanejamentoCaptacao select#formTpApoio').val(),
+                        tpDev = $('#formRemanejamentoCaptacao select#formTpDevolucao').val();
+                
+                    if(tpCap == '' || tpDev == ''){
+                        $("#divDinamicaSemSaldo").remove();
+                        $(this).dialog('close');
+                        $('html').css('overflow', 'auto');
+                        $("#msgAlerta").dialog("destroy");
+                        $("#msgAlerta").html("Favor preencher os campos obrigatórios!");
+                        $("#msgAlerta").dialog({
+                            resizable: false,
+                            title: 'Alerta!',
+                            width:300,
+                            height:160,
+                            modal: true,
+                            buttons : {
+                                'OK' : function(){
+                                    $(this).dialog('close');
+                                }
+                            }
+                        });
+                        $('.ui-dialog-titlebar-close').remove();
+                        return false;
+                    }
+                    
+                    $("#msgAlerta")
+                    .html('<br><center>Aguarde, salvando os dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br>')
+                    .dialog({resizable: false, title: 'Alerta!', width: 300, height: 150, modal: true});
+                    $(idColunaBotaoCorrigir).replaceWith("<font color='green'>[Correção enviada]</font>");
+
+                    $.ajax({
+                        type: 'POST',
+                        dataType : 'json',
+                        url: '<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'remanejar-valor-captado')); ?>',
+                        data: {
+                            idTmpCaptacao   : $('#formRemanejamentoCaptacao input#formIdTmpCaptacao').val(),
+                            vlrCaptacao     : $('#formRemanejamentoCaptacao input#formVlrCaptacao').val(),
+                            vlrDevolucao    : $('#formRemanejamentoCaptacao input#formVlrDevolucao').val(),
+                            tpApoio         : $('#formRemanejamentoCaptacao select#formTpApoio').val(),
+                            tpDevolucao     : $('#formRemanejamentoCaptacao select#formTpDevolucao').val()
+                        },
+                        success: function(data){
+                            $("#msgAlerta").dialog("destroy");
+                            $("#divDinamicaSemSaldo").remove();
+                            $('html').css('overflow', 'auto');
+                            $(this).dialog('close');
+                        },
+                        error: function(data){
+                            $("#msgAlerta").dialog("destroy");
+                            $("#divDinamicaSemSaldo").remove();
+                            $('html').css('overflow', 'auto');
+                            $(this).dialog('close');
+                        }
+                    });
+                }
+            },
+            close: function() {
+                $("#divDinamicaSemSaldo").remove();
+                $('html').css('overflow', 'auto');
+                $(this).dialog('close');
+            }
+        });
+    }
+</script>

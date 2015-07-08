@@ -1,0 +1,31 @@
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/proponentes.js"></script>
+<script type="text/javascript">
+	$(function(){mostrar_menu_dados_agente();});
+</script>
+
+
+
+<div id="erroGeral" class="msgERROR sumir">
+	<div class="float_right"><input type="button" class="btn_close" title="Fechar mensagem" id="msgERROR" onclick="$('.msgERROR').hide();" onkeypress="$('.msgERROR').hide();"/></div>
+	<div>Dados obrigatórios não informados!</div>
+</div>
+
+
+
+<form class="formAgentes form" name="formCadAgentes" id="formCadAgentes" method="post" 
+	action="<?php echo $this->baseUrl(); ?>/manteragentes/gravardirigentecompleto">
+
+	<div><?php require_once "inc/menuabasdirigentes.phtml"; // menu abas ?></div>
+	<div><?php require_once "inc/formDirigente.phtml"; // formulário ?></div>
+
+	<table class="tabela" style="margin:0 auto;">
+		<tr>
+			<td class="centro">
+				<div class="botao_texto">
+					<a class="salvar" href="#" title="Salvar" onclick="verificaValidacaoDirigente();">Confirmar</a>
+				</div>
+			</td>
+		</tr>
+	</table>
+
+</form>

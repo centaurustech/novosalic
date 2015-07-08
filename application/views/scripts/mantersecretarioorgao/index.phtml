@@ -1,0 +1,148 @@
+<script type="text/javascript">
+    
+    $(document).ready(function(){
+        <?php if(isset($_GET['orgao']) && !empty($_GET['orgao'])):?>
+            $('#orgao').val('<?php echo $_GET['orgao'];?>');
+        <?php endif;?>
+        verificarSecretario();
+    });
+    
+    function enviaForm(){
+        if(validarCampo()){
+            $("#frmCadastroSecretario").submit();
+        }
+    }
+    function verificarSecretario(){
+        
+        $("#orgaoSpan").html('');
+        $("#orgaoSpan").html('Aguarde, verificando cadastramento de secretário...');
+        
+        var orgao = $('#orgao').val();
+        
+        $.ajax({
+            url : '<?php echo $this->url(array('controller' => 'mantersecretarioorgao', 'action' => 'buscarsecretario')); ?>',
+            data :
+                {
+                orgao : orgao
+            },
+            success: function(data){
+                if( data.existe ){
+                    $('#nomeSecretario').val(data.nmSecretario);
+                    $('#cargo').val(data.dsCargo);
+
+                }else{
+                    $('#nomeSecretario').val('');
+                    $('#cargo').val('');
+                }
+                $("#orgaoSpan").html('');
+            },
+            dataType : 'json'
+        });
+
+    }
+
+    function validarCampo(){
+
+        var orgao = $("#orgao").val();
+        var nomeSecretario =  $("#nomeSecretario").val();
+        var cargo = $("#cargo").val();
+
+        var bln_validacao = true;
+
+        if(orgao == "Selecione"){
+            bln_validacao = false;
+            $('#orgaoSpan').html('<font color="red">Campo obrigat&oacute;rio</font>');
+        }
+        else{
+            $('#orgaoSpan').html('');
+        }
+        if(!nomeSecretario){
+            bln_validacao = false;
+            $('#nomeSecretarioSpan').html('<font color="red">Campo obrigat&oacute;rio</font>');
+        }
+        else{
+            $('#nomeSecretarioSpan').html('');
+        }
+        if(!cargo){
+            bln_validacao = false;
+            $('#cargoSpan').html('<font color="red">Campo obrigat&oacute;rio</font>');
+        }
+        else{
+            $('#cargoSpan').html('');
+        }
+        return bln_validacao;
+    }
+        
+</script>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''), null, true); ?>" title="Ir para p&aacute;gina inicial">In&iacute;cio</a></li>
+        <li>Administrativo</li>
+        <li class="last">Manter secret&aacute;rio</li>
+    </ul>
+</div> <!-- final: #breadcrumb -->
+
+<!-- início: #titulo -->
+<div id="titulo">
+        <div>Manter secret&aacute;rio <!-- <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span> --></div>
+</div>
+<!-- final: #titulo -->
+
+<!-- início: &aacute;rea principal #conteudo -->
+<div id="conteudo">
+
+    <fieldset><legend>Dados do Secret&aacute;rio do &Oacute;rg&atilde;o</legend>
+        <form class="form" id="frmCadastroSecretario" name="frmCadastroSecretario" method="post" action='<?php echo $this->url(array('controller' => 'mantersecretarioorgao', 'action' => 'cadastrarsecretario')); ?>'>
+            <table class="tabela">
+                <tr>
+                    <td width="150px">
+                        &Oacute;rg&atilde;o*
+                    </td>
+                    <td>
+                        <select id="orgao" name="orgao" class="input_simples" onchange="verificarSecretario()">
+                            <?php foreach ($this->orgaos as $orgaos) { ?>
+                                <option value="<?php echo $orgaos['Codigo'] ?>">
+                                    <?php echo $orgaos['Sigla'] ?>
+                                </option>
+                            <?php } ?>
+                        </select>&nbsp;<span id="orgaoSpan"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Nome do secret&aacute;rio*
+                    </td>
+                    <td>
+                        <input id="nomeSecretario" name="nomeSecretario" type="text" size="50" class="input_simples" />
+                        <div id="nomeSecretarioSpan"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Cargo*
+                    </td>
+                    <td>
+                        <input id="cargo" name="cargo" type="text" size="50" class="input_simples" />
+                        <div id="cargoSpan"></div>
+                    </td>
+                </tr>
+
+
+            </table>
+            <table class="tabela">
+                <tr>
+                    <td colspan="9" align="center">
+                        <input id="btSalvar" type="button" value=" " class="btn_salvar" onclick="return enviaForm()" />
+                </tr>
+                </tr>
+            </table>
+        </form>
+    </fieldset>
+</div>
+<!-- final: conteúdo principal #conteudo -->
+
+<!-- início: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+<br clear="all" />

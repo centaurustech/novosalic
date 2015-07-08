@@ -1,0 +1,72 @@
+<?php
+    $edital = "";
+    if(isset($_GET['edital']) && $_GET['edital']=="s"){
+        require_once 'scripts/manterpropostaedital/inc/menu.inc.php'; // menu de manter proposta por edital
+        $edital = "&edital=s";
+    }else{
+        require_once "scripts/manterpropostaedital/inc/menu.inc.php"; // menu de manter proposta por incentivo fiscal
+    }
+?>
+<?php
+        $controller = "Manterpropostaedital";
+        $links = array(
+            array('Lista de Propostas' => array('controller' => 'manterpropostaincentivofiscal','action' => 'listar-propostas')),
+            array('Confirmar envio da proposta cultural ao Ministério da Cultura' => array())
+        );
+montaGuiaLinks($controller, $links);
+?>
+<!-- ========== INULO ========== -->
+<div id="titulo">
+    <div>Confirmar envio da proposta cultural ao Ministério da Cultura<?php echo montaBotaoVoltar($controller, $links); ?></div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+
+<!-- ========== IDO ========== -->
+<div id="conteudo">
+
+    <table class="tabela">
+
+        <tr class="titulo_tabela">
+            <th></th>
+            <th>Observações</th>
+        </tr>
+        <?php foreach ($this->resultado as $chave => $valor) { ?>
+            <?php if($chave!="erro"){ ?>
+            <tr class="fundo">
+                <td class="centro" width="10%" nowrap>
+                    <?php if($valor['erro'] == 1){?>
+                                <img alt="" src="<?php echo $this->baseUrl(); ?>/public/img/btn_excluir.gif" />
+                    <?php }else{ ?>
+                                <img alt="" src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png" />
+                   <?php  } ?>
+                </td>
+                <td width="90%"><?php echo $valor['msg']; ?></td>
+            </tr>
+            <?php } ?>
+        <?php } ?>
+        
+    </table>
+    <table class="tabela" border="0" cellpadding="0" cellspacing="0">
+        <tr>
+            <td align="center">
+                <?php $idPreProjeto="";if(isset($_GET['idPreProjeto'])){$idPreProjeto = $_GET['idPreProjeto'];}
+                if($this->resultado['erro'] != 1) { ?>
+                <input type="button" id="btn_confirmar" name="sair" style="width: 88px" class="btn_confirmar" onclick="confirmacao('<?php echo $this->url(array("controller"=>"manterpropostaedital", "action"=>"confirmar-envio-proposta-ao-minc")); ?>?idPreProjeto=<?php echo $idPreProjeto.$edital;?>&valida=s','Deseja enviar a Proposta?');">
+                <?php }else{ ?>
+
+                    <?php if(isset($this->movimentacaoAtual) && $this->movimentacaoAtual == '95') { ?>
+                    <br>
+                    <font color="red">A Proposta n&atilde;o pode ser enviada ao Minist&eacute;rio da Cultura.</font>
+                    <br>
+                    <?php } ?>
+
+                <?php } ?>
+            </td>
+        </tr>
+    </table>
+</div><!-- ========== FIM CONTEUDO ========== -->
+<br clear="all" />
+<!-- ========== I ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RO ========== -->
+

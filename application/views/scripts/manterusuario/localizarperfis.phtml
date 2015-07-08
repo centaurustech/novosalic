@@ -1,0 +1,232 @@
+<script type="text/javascript">
+
+        $(document).ready( function() {
+	$("#cadastrarusuarioexterno").validate({
+		// Define as regras
+		rules:{
+                        cpf:{
+
+				required: true, minlength: 14
+			},
+			nome:{
+
+				required: true, minlength: 2
+			},
+			nomeusuario:{
+
+				required: true,  minlength: 2
+			},
+			unidade: "required"
+
+		},
+		// Define as mensagens de erro para cada regra
+		messages:{
+                        cpf:{
+				required: "Digite o seu cpf",
+				minlength: "O seu nome deve conter, no mínimo, 11 caracteres"
+			},
+			nome:{
+				required: "Digite o seu nome",
+				minlength: "O seu nome deve conter, no mínimo, 2 caracteres"
+			},
+			nomeusuario:{
+				required: "Digite o nome de usuário"
+			},
+			unidade: 'Voc&ecirc; precisa selecionar uma unidade'
+		}
+	});
+});
+
+    $(document).ready(function() {
+
+    });
+
+function replaceAll(string, token, newtoken) {
+	while (string.indexOf(token) != -1) {
+ 		string = string.replace(token, newtoken);
+	}
+	return string;
+}
+
+    function carregaCampo(cpf){
+
+   }
+
+
+</script>
+
+
+<!-- ========== INï¿½CIO BREADCRUMB (LINKS TOPO) ========== -->
+<div style="display:none" id="confirm">Por favor, informe seu email!</div>
+<div style="display:none" id="dialog-alert2"></div>
+<div style="display:none" id="confirmInforma">Por favor, digite seu email corretamente!</div>
+<div id="breadcrumb">
+
+<ul>
+<li class="first"><a href="<?php echo $this->url(array('controller' => 'index', 'action' => 'index')); ?>">In&iacute;cio</a></li>
+<li class="last">Cadastrar Usuário Externo</li>
+</ul>
+
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INï¿½CIO Tï¿½TULO ========== -->
+
+<div id="titulo">
+<div>Localizar<span></span> <span class="voltar"><a href="javascript:voltar();">Voltar</a></span></div>
+
+</div>
+<!-- ========== FIM Tï¿½TULO ========== -->
+
+
+
+<!-- ========== INï¿½CIO CONTEï¿½DO ========== -->
+
+	<div id="conteudo">
+<fieldset><legend>Informações</legend>
+
+            <form method="POST" action="<?php echo $this->url(array('controller' => 'manterusuario', 'action' => 'permissoessalic')); ?>" name="localizarperfis" id="localizarperfis">
+
+                <table class="tabela">
+                    <thead>
+                        <tr>
+                            <th colspan="3">Localizar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td width="200">CPF </td>
+                            <td class="css_cmp_impar" width="300">
+                              <select name="identificacao" class="select_simples" style="min-width: 200px;">
+                               <option selected="" value="igual">Exatamente igual</option>
+                               <option value="diferente">Diferente</option>
+                              </select>
+                           </td>
+                            <td><input value="" onkeydown="mascaraCnpjCpf(this);" onkeypress="mascaraCnpjCpf(this);" onkeyup="mascaraCnpjCpf(this);" maxlength="14" class="input_simples" type="text" name="cpf" id="cpf"  /><div id="cpfRetorno" ></div> </td>
+                        </tr>
+                        <tr>
+                            <td>Nome  </td>
+                            <td class="css_cmp_impar">
+                              <select name="nomePesquisa" class="select_simples" style="min-width: 200px;">
+                               <option value="inicio">Inicío igual</option>
+                               <option value="igual">Exatamente igual</option>
+                               <option value="contenha">que contenha</option>
+                               <option value="diferente">Diferente</option>
+                              </select>
+                           </td>
+                            <td><input value="" maxlength="200" class="input_simples" type="text" name="nome" id="nome"  /> </td>
+                        <tr>
+                            <td>Lota&ccedil;&atilde;o </td>
+                            <td class="css_cmp_impar">
+                              <select name="lotacao" class="select_simples" style="min-width: 200px;">
+                               <option selected="" value="igual">Exatamente igual</option>
+                               <option value="diferente">Diferente</option>
+                              </select>
+                           </td>
+                            <td>
+
+                                <select id="unidade" name="unidade" class="select_simples" style="min-width: 200px;">
+                                    <option value="">Selecione a unidade</option>
+                                     <?php foreach ( $this->lotacao as $lotacao ) { ?>
+                                        <option value="<?php echo $lotacao['usu_orgao'] ?>"><?php echo $lotacao['usu_orgaolotacao'] ?></option>
+                                     <?php } ?>
+                                </select>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Telefone</td>
+                            <td class="css_cmp_impar">
+                              <select name="tel" class="select_simples" style="min-width: 200px;">
+                               <option value="inicio">Inicío igual</option>
+                               <option selected="" value="igual">Exatamente igual</option>
+                               <option value="contenha">que contenha</option>
+                               <option value="diferente">Diferente</option>
+                              </select>
+                           </td>
+                            <td>
+                                <input value="" maxlength="200" class="input_simples" type="text" name="telefone" id="telefone"  />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Unidade Autorizada</td>
+                            <td class="css_cmp_impar">
+                              <select name="unidadeaut" class="select_simples" style="min-width: 200px;">
+                               <option selected="" value="igual">Exatamente igual</option>
+                               <option value="diferente">Diferente</option>
+                              </select>
+                           </td>
+                            <td>
+                                <select id="unidadeAutorizada" name="unidadeAutorizada" class="select_simples" style="min-width: 200px;">
+                                    <option value="">Selecione a unidade autorizada</option>
+                                 <?php foreach ( $this->unidadesAutorizadas as $unidadeautorizada ) { ?>
+                                    <option value="<?php echo $unidadeautorizada['org_siglaautorizado'] ?>"><?php echo $unidadeautorizada['org_siglaautorizado'] ?></option>
+                                 <?php } ?>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Perfil</td>
+                            <td class="css_cmp_impar">
+                              <select name="perfilPesquisa" class="select_simples" style="min-width: 200px;">
+                               <option selected="" value="igual">Exatamente igual</option>
+                               <option value="diferente">Diferente</option>
+                              </select>
+                           </td>
+                            <td>
+                                <select id="perfil" name="perfil" class="select_simples" style="min-width: 200px;">
+                                     <option value="">Selecione o perfil</option>
+                                     <?php foreach ( $this->perfil as $perfil ) { ?>
+                                        <option value="<?php echo $perfil['gru_codigo'] ?>"><?php echo $perfil['gru_nome'] ?></option>
+                                     <?php } ?>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Status</td>
+                            <td class="css_cmp_impar">
+                              <select name="statusPesquisa" class="select_simples" style="min-width: 200px;">
+                               <option selected="" value="igual">Exatamente igual</option>
+                               <option value="diferente">Diferente</option>
+                              </select>
+                           </td>
+                            <td>
+                                <select id="status" name="status" class="select_simples" style="min-width: 200px;">
+                                    <option value="">Selecione o status</option>
+                                    <option value="1">Habilitado</option>
+                                    <option value="0">Desabilitado</option>
+                                </select></td>
+                        </tr>
+                        <tr>
+                            <td align="center" colspan="3">
+                            <input id='btIncluir' type='submit' value='' class='btn_pesquisar enviar'/>
+                            <input id='btLimpar' type='reset' value='' class='btn_limpar enviar'  />
+                            <input id='btCancelar' type='button' value='' class='btn_cancelar enviar' onClick="history.go(-1)" onkeypress=" " />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+
+            </form>
+</fieldset>
+
+        </div>
+
+
+<!-- ========== FIM CONTEï¿½DO ========== -->
+
+
+
+<!-- ========== INï¿½CIO RODAPï¿½ DO CONTEï¿½DO ========== -->
+	<div id="rodapeConteudo"><span></span></div>
+
+<!-- ========== FIM RODAPï¿½ DO CONTEï¿½DO ========== -->
+			<br clear="all" />
+
+
+
+
+</body>
+</html>

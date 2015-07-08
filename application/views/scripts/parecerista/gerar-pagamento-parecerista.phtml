@@ -1,0 +1,116 @@
+<?php include_once 'scripts/parecerista/inc/menu-coordenador.inc.php'; ?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'),'',true); ?>" title="Ir para Início">Início</a></li>
+        <li class="last">Gerar Pagamento de Parecerista</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<div id="modal"></div>
+<div id="confirma"></div>
+ 
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Gerar Pagamento de Parecerista <span class="voltar"><a href="javascript:voltar();" title="Página Anterior">Voltar</a></span></div>
+</div>
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+
+<div id="conteudo">
+
+    <?php if(count($this->listaDePagamentos) > 0): ?>
+    <?php foreach($this->listaDePagamentos as $pa):?>
+    <form id="form_<?php echo $pa['idParecerista']; ?>" action="<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'gerar-despacho-pagamento-parecerista')); ?>" method="POST">
+        <table class="tabela">
+            <tr>
+                <td colspan="6" class="fundo_linha2" style="font-size: 15px;">
+                    Parecerista: <strong><?php echo $pa['nmParecerista']; ?></strong>
+                </td>
+            </tr>
+            <tr class="titulo_tabela">
+                <th width="25">Item</th>
+                <th width="100">PRONAC</th>
+                <th width="">PROJETO</th>
+                <th width="300">Produto</th>
+                <th width="300">Vinculada</th>
+                <th width="130">Valor a ser Pago</th>
+            </tr>
+            <?php $i = 1;?>
+            <?php $total = 0;?>
+            <?php $nmProjeto = '';?>
+            <?php $nmPronac = '';?>
+            <?php foreach($pa['Projetos'] as $pag):?>
+            <?php $total = $pag['vlPagamento'] + $total;?>
+            <tr>
+                <td style="text-align: center;"><?php echo $i; ?></td>
+                <td style="text-align: center;"><?php echo $pag['pronac'] == $nmPronac ? '': $pag['pronac']; ?></td>
+                <td><?php echo $pag['NomeProjeto'] == $nmProjeto ? '': $pag['NomeProjeto']; ?></td>
+                <td><?php echo $pag['Produto']; ?></td>
+                <td><?php echo $pag['UnidadeAnalise']; ?></td>
+                <td style="text-align: right;"><?php echo $this->formatarReal($pag['vlPagamento']); ?></td>
+            </tr>
+            
+            <?php $nmProjeto = $pag['NomeProjeto'];?>
+            <?php $nmPronac = $pag['pronac'];?>
+            <?php $i++; ?>
+            <?php endforeach; ?>
+            
+            <tr>
+                <td style="text-align: right;" colspan="5">Total:</td>
+                <td style="text-align: right;"><?php echo $this->formatarReal($total); ?></td>
+            </tr>
+            <tr>
+                <td width="200" colspan="5" style="text-align: right;">
+                    <input type="hidden" name="vlTotal" id="vlTotal_<?php echo $pa['idParecerista']; ?>" value="<?php echo $total; ?>" />
+                    <input type="hidden" name="idParecerista" value="<?php echo $pa['idParecerista']; ?>" />
+                    <label for="nrDespacho">Nº Despacho</label>
+                    <input type="text" name="nrDespacho" id="nrDespacho_<?php echo $pa['idParecerista']; ?>"  class="input_simples" />
+                </td>
+                <td align="center" colspan="0">
+                    <input type="button" class="btn_confirmar" value=" " onclick="gerarDespacho('<?php echo $pa['idParecerista']; ?>');" />
+                </td>
+            </tr>
+        </table>
+        <br />
+    </form>
+    <?php endforeach; ?>
+    <?php else: ?>
+        <table class="tabela">
+            <tr>
+                <td align="center"><b style="color: green">NENHUM REGISTRO ENCONTRADO!</b></td>
+            </tr>
+        </table>
+    <?php endif; ?>
+
+    <!-- ========== PAGINAÇÃO ========== -->
+    <?php if($this->qtdDocumentos > 5){ echo "<p>" . $this->dadospainel . "</p>"; } ?>
+    <!-- ========== FIM PAGINAÇÃO ========== -->
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />
+
+<script>
+
+    function gerarDespacho(id){
+        
+        var nrDespacho = $('#nrDespacho_'+id).val();
+        var vlTotal = $('#vlTotal_'+id).val();
+        
+        if(nrDespacho == '' || vlTotal == ''){
+            $('#nrDespacho_'+id).css('border','solid 1px red');
+            return false;
+        }
+        
+        $('#form_'+id).submit();
+        
+        
+    }
+
+</script>

@@ -1,0 +1,254 @@
+<?php include("scripts/operacional/inc/menu.inc.php"); ?>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => '')); ?>">In&iacute;cio</a></li>
+        <li class="last">Consultar agência bancária</li>
+    </ul>
+</div>
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Consultar ag&ecirc;ncia banc&aacute;ria<span class="voltar"><a href="javascript:voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+<script>
+    $(document).ready(function(){
+        $("#uf").change(function(){
+            carregar_combo($(this).val(), "cidade", "<?php echo $this->url(array('controller'=>'cidade', 'action'=>'combo')); ?>", "Selecione uma UF", "");
+        });
+
+
+        $(".btn_pesquisar").click(function(){
+            //jqAjaxLink("<?php echo $this->baseUrl()?>/operacional/tabelas?consulta="+$("#consulta").val(), null, "resultadoConsulta");
+            $("#resultadoConsulta").html("");
+            jqAjaxForm(document.getElementById("frmAgenciaBancaria"), "resultadoConsulta");
+        });
+
+        $('.todas').hide();
+
+        $("#agencia").mask("9999-*");
+
+
+        $("#tpDtLoteRemessaCB").change(function(){
+            if($("#spanDtLoteRemessaCB").css("display")=="none" && $(this).val() == "entre"){
+                $("#spanDtLoteRemessaCB").show();
+            }else{
+                $("#spanDtLoteRemessaCB").hide();
+            }
+            //$("#spanDtFinal").toggle();
+        });
+
+        $("#tpDtLoteRemessaCL").change(function(){
+            if($("#spanDtLoteRemessaCL").css("display")=="none" && $(this).val() == "entre"){
+                $("#spanDtLoteRemessaCL").show();
+            }else{
+                $("#spanDtLoteRemessaCL").hide();
+            }
+            //$("#spanDtFinal").toggle();
+        });
+
+        $(function()
+        {
+            $.datepicker.regional['pt-BR'] = {
+                closeText: 'Fechar',
+                prevText: '&#x3c;Anterior',
+                nextText: 'Pr&oacute;ximo&#x3e;',
+                currentText: 'Hoje',
+                monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+                monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+                dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+                dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                weekHeader: 'Sm',
+                dateFormat: 'dd/mm/yy',
+                firstDay: 0,
+                isRTL: false,
+                showMonthAfterYear: false,
+                yearSuffix: ''};
+            $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+            $(".cmpData").datepicker($.datepicker.regional['pt-BR']);
+        });
+
+    });
+
+    function montaform(obj){
+        campos = $(obj).val();
+        $('.todas').hide();
+        if(campos != "todas"){
+            $('#conteudo').find('.'+campos).each(function(){
+                $(this).show();
+            });
+        }
+        $(".input_simples, .select_simples").each(function(){
+            if($(this).attr("name") != "consulta"){
+                $(this).val("");
+            }
+        });
+    }
+</script>
+<div id="conteudo" align="center">
+
+    <fieldset>
+        <legend>Filtros de pesquisa</legend>
+        <form action="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-agencia-bancaria')); ?>" method="post" name="frmAgenciaBancaria" id="frmAgenciaBancaria">
+        <table class="tabela" style="width:90%">
+            <tbody><tr>
+                    <th colspan="3">Selecionar campos para pesquisa</th>
+                </tr>
+                <tr>
+                    <td width="120">Ag&ecirc;ncia Banc&aacute;ria</td>
+                    <td align="left" colspan="2">
+                        <select name="consulta" onchange="montaform(this)" style="width: 200px;" class="input_simples">
+                            <option value="todas">Todas</option>
+                            <option value="contas">Contas</option>
+                            <option value="contasbloqueio">Conta Bloqueio</option>
+                            <option value="contasmovimento">Conta Movimento</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr class="contas contasbloqueio contasmovimento todas">
+                    <td width="120">Banco</td>
+                    <td align="left" colspan="2">
+                        <select name="banco" id="banco" style="width: 200px;" class="input_simples">
+                            <option value="">Selecione</option>
+                            <?php foreach($this->bancos as $banco):?>
+                            <option value="<?php echo $banco->Codigo; ?>"><?php echo $banco->Descricao; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr class="contas todas">
+                    <td width="120">Unidade da Federa&ccedil;&atilde;o</td>
+                    <td align="left" colspan="2">
+                        <select name="uf" id="uf" style="width: 200px;" class="input_simples">
+                            <option value="">Selecione</option>
+                            <?php foreach($this->ufs as $uf):?>
+                            <option value="<?php echo $uf->idUF; ?>"><?php echo $uf->Sigla; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr class="contas todas">
+                    <td width="120">Cidade</td>
+                    <td align="left" colspan="2">
+                        <select name="cidade" id="cidade" style="width: 200px;" class="input_simples">
+                            <option value="">Selecione uma UF</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr class="contasbloqueio contasmovimento todas">
+                    <td width="120">Mecanismo</td>
+                    <td align="left" colspan="2">
+                        <select name="mecanismo" id="mecanismo" style="width: 200px;" class="input_simples">
+                            <option value="">Selecione</option>
+                            <?php foreach($this->mecanismos as $mecanismo):?>
+                            <option value="<?php echo $mecanismo->Codigo; ?>"><?php echo $mecanismo->Descricao; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr class="contasbloqueio contasmovimento todas">
+                    <td width="120">Área Cultural</td>
+                    <td align="left" colspan="2">
+                        <select name="area" id="area" style="width: 200px;" class="input_simples">
+                            <option value="">Selecione</option>
+                            <?php foreach($this->areas as $area):?>
+                            <option value="<?php echo $area->Codigo; ?>"><?php echo $area->Descricao; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr class="contasbloqueio contasmovimento todas">
+                    <td width="120">Tipo de Pessoa</td>
+                    <td align="left" colspan="2">
+                        <select name="tipoPessoa" id="tipoPessoa" style="width: 200px;" class="input_simples">
+                            <option value="">Selecione</option>
+                            <option value="1">F&iacute;sica</option>
+                            <option value="2">Jur&iacute;dica</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr class="contasbloqueio contasmovimento todas">
+                    <td width="120">Ag&ecirc;ncia</td>
+                    <td align="left" colspan="2">
+                        <input type="text" name="agencia" id="agencia" class="input_simples w200" />
+                    </td>
+                </tr>
+                <tr class="contasbloqueio todas">
+                    <td width="120">Data Lote Remessa CB</td>
+                    <td width="220" align="center">
+                        <select name="tpDtLoteRemessaCB" id="tpDtLoteRemessaCB" class="select_simples" onchange="if($(this).val()=='OT' || $(this).val()=='U7' || $(this).val()=='SP' || $(this).val()=='MM' || $(this).val()=='UM'){$('#camposDatadtLoteRemessaCB').css('display','none');}else{$('#camposDatadtLoteRemessaCB').css('display','');}">
+                            <OPTGROUP LABEL="Normais">
+                                <option value="">Selecione</option>
+                                <option value="igual">Exatamente Igual</option>
+                                <option value="entre">Entre dois valores</option>
+                                <option value="maior">Maior ou igual a </option>
+                                <option value="menor">Menor ou igual a</option>
+                            </OPTGROUP>
+                            <OPTGROUP LABEL="Especiais">
+                               <option value="OT">Ontem</option>
+                               <option value="U7">&Uacute;ltimos 7 dias</option>
+                               <option value="SP">Semana Passada (seg-dom)</option>
+                               <option value="MM">Este m&ecirc;s</option>
+                               <option value="UM">&Uacute;ltimo m&ecirc;s</option>
+                            </OPTGROUP>
+                        </select>
+                    <td align="left">
+                        <span id="camposDatadtLoteRemessaCB">
+                            <input name="dtLoteRemessaCB" id="dtLoteRemessaCB" value="" class="input_simples cmpData"/> (dd/mm/aaaa)
+                            <span id="spanDtLoteRemessaCB" style="display: none;">&nbsp;e&nbsp;<input name="dtLoteRemessaCB_Final" id="dtLoteRemessaCB_Final" value="" class="input_simples cmpData"/></span>
+                        </span>
+                    </td>
+                </tr>
+                <tr class="contasmovimento todas">
+                    <td width="120">Data Lote Remessa CL</td>
+                    <td width="220" align="center">
+                        <select name="tpDtLoteRemessaCL" id="tpDtLoteRemessaCL" class="select_simples" onchange="if($(this).val()=='OT' || $(this).val()=='U7' || $(this).val()=='SP' || $(this).val()=='MM' || $(this).val()=='UM'){$('#camposDatadtLoteRemessaCL').css('display','none');}else{$('#camposDatadtLoteRemessaCL').css('display','');}">
+                            <OPTGROUP LABEL="Normais">
+                                <option value="">Selecione</option>
+                                <option value="igual">Exatamente Igual</option>
+                                <option value="entre">Entre dois valores</option>
+                                <option value="maior">Maior ou igual a </option>
+                                <option value="menor">Menor ou igual a</option>
+                            </OPTGROUP>
+                            <OPTGROUP LABEL="Especiais">
+                               <option value="OT">Ontem</option>
+                               <option value="U7">&Uacute;ltimos 7 dias</option>
+                               <option value="SP">Semana Passada (seg-dom)</option>
+                               <option value="MM">Este m&ecirc;s</option>
+                               <option value="UM">&Uacute;ltimo m&ecirc;s</option>
+                            </OPTGROUP>
+                        </select>
+                    <td align="left">
+                        <span id="camposDatadtLoteRemessaCL">
+                            <input name="dtLoteRemessaCL" id="dtLoteRemessaCL" value="" class="input_simples cmpData"/> (dd/mm/aaaa)
+                            <span id="spanDtLoteRemessaCL" style="display: none;">&nbsp;e&nbsp;<input name="dtLoteRemessaCL_Final" id="dtLoteRemessaCL_Final" value="" class="input_simples cmpData"/></span>
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="tabela" style="width: 90%">
+            <tr>
+                <td align="center">
+                    <input type="button" style="width: 88px" class="btn_pesquisar" id="btn_pesquisar"/>
+                    <input type="reset" style="width: 88px" class="btn_limpar" id="btn_limpar" value=""/>
+                </td>
+            </tr>
+        </table>
+        </form>
+    </fieldset>
+
+<div id="resultadoConsulta"></div>
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

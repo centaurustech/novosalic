@@ -1,0 +1,35 @@
+<?php
+// Retirado do caso de uso 26
+//$listaprojetosHref          =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'listaprojetos'));
+
+$menuHref                   =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'menu')).'?idusuario='.$this->idusuario;
+$pagamentoHref              =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'pagamento')).'?idusuario='.$this->idusuario;
+$contratoItemHref           =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'carregacontratoajax')).'?idusuario='.$this->idusuario;
+$ExcluirItensCustoHref      =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'excluiritenscusto')).'?idusuario='.$this->idusuario;
+$carregarSelectHref         =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'carregaselectajax')).'?idusuario='.$this->idusuario;
+$vincularitemcustoHref      =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'vincularitemcusto')).'?idusuario='.$this->idusuario;
+$buscarFornecedorHref       =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'buscarfornecedor')).'?idusuario='.$this->idusuario;
+?>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/jquery.maskedinput-1.2.2.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.css" />
+
+<div id="total" style="width: 100%; margin-top: 60px;">
+    <div>
+        <!-- início: #titulo -->
+        <div id="titulo">
+            <div>
+                <?php echo $this->mensagem;?> <span class="voltar"><a href="history.back(-1)" title="Voltar para menu lateral">Voltar</a></span>
+            </div>
+        </div>
+        <!-- final: #titulo -->
+        <!-- início: área principal #conteudo -->
+        <div id="conteudo">
+
+        </div><!-- final: conteúdo principal #conteudo -->
+        <div id="rodapeConteudo" ><span></span></div>
+        <!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+    </div>
+    <br clear="all" />
+</div>

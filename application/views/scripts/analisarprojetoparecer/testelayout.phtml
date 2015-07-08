@@ -1,0 +1,142 @@
+<?php
+$linkProjetosProdutos = $this->url(array('controller' => 'Analisarprojetoparecer', 'action' => 'projetosprodutos'));
+
+/* INICIO DA GUIA DE LINKS */
+$controller = 'Analisarprojetoparecer';
+$links = array();
+$links[] = array('Projetos/Produtos para Análise' => array());
+montaGuiaLinks($controller, $links);
+/* FIM DA GUIA DE LINKS */
+?>
+
+
+<!-- ========== INÃƒÂ CIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="total">
+
+    <!-- ========== FIM BREADCRUMB (LINKS TOPO)========== -->
+    <br clear="all">
+    <div id="divDestao">
+
+    </div>
+
+    <!-- ==========INÃƒÂ CIO TÃƒÂ TULO========== -->
+
+    <div id="titulo">
+        <div>
+            Projetos/Produtos para Análise
+            <?php echo montaBotaoVoltar($controller, $links); ?>
+        </div>
+
+    </div>
+
+    <!-- ========== FIM TÃƒÂ TULO ========== -->
+
+    <!-- ========== INÃƒÂ CIO CONTEÃƒÅ¡DO ==========-->
+
+
+    <div id="conteudo">
+        <table class="tabela">
+            <tr>
+                <td>
+                    <div style="float: left"><img src="<?php echo $this->baseUrl(); ?>/public/img/notice1.png" width="20px"/></div><div style="margin-top: 2px;margin-left: 3px; float: left"> A diligenciar</div>
+                    <div style="float: left"><img src="<?php echo $this->baseUrl(); ?>/public/img/notice.png" width="20px"/></div><div style="margin-top: 2px;margin-left: 3px; float: left"> Diligenciado</div>
+                    <div style="float: left"><img src="<?php echo $this->baseUrl(); ?>/public/img/notice3.png" width="20px"/></div><div style="margin-top: 2px;margin-left: 3px; float: left"> Diligência não respondida</div>
+                    <div style="float: left"><img src="<?php echo $this->baseUrl(); ?>/public/img/notice2.png" width="20px"/></div><div style="margin-top: 2px;margin-left: 3px; float: left"> Diligência respondida</div>
+                </td>
+            </tr>
+        </table>
+
+        <?php if($this->qtdRegistro != 0): ?>	
+		<table class="tabela">
+			<tr>
+				<th width="5"></th>
+				<th width="50">PRONAC</th>
+				<th width="300">Nome do Projeto</th>
+				<th>Produto</th>
+				<th width="100">Tipo de produto</th>
+				<th width="120">Data de Recebimento</th>
+				<th width="90">Tempo Restante</th>
+				<th width="70">Diligência</th>
+				<th width="120">Tempo da Diligência</th>
+				<th width="70">Historico</th>
+				<th width="70">Conclusão</th>
+			</tr>
+			<?php 
+				$contador = 1; 
+				$rp = '';
+				$diligenciado = '';
+				$Titlediligenciado = '';
+				foreach($this->buscar as $d): 
+				
+				switch ($d->stDiligenciado) 
+				{
+			    	case 0:
+			        	$diligenciado = "notice1.png";
+			        	$Titlediligenciado = "A Diligenciar";
+			        	break;
+			        case 1:
+			        	$diligenciado = "notice.png";
+			        	$Titlediligenciado = "Diligenciado";
+			        	break;
+			        case 2:
+			        	$diligenciado = "notice2.png";
+			        	$Titlediligenciado = "Diligencia não respondida";
+			        	break;
+			        case 3:
+			        	$diligenciado = "notice3.png";
+			        	$Titlediligenciado = "Diligencia respondida";
+			        	break;
+			     }
+				
+				
+			?>
+			<tr>
+				<td><?php echo $contador; ?></td>
+				<td align="center">
+					<a target="_blank" href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'),'',true); ?>?idPronac=<?php echo $d->IdPRONAC?>"><?php if($d->PRONAC != $rp){echo $d->PRONAC;}else{echo '';} ?></a>
+				</td>
+				<td><?php if($d->PRONAC != $rp){echo $d->NomeProjeto;}else{echo '';} ?></td>
+				<td><a href="<?php echo $this->url(array('controller' => 'Analisarprojetoparecer', 'action' => 'produto')); ?>?nrRelatorio=<?php echo '1'; ?>&idPronac=<?php echo $d->IdPRONAC; ?>&idProduto=<?php echo $d->idProduto; ?>&stPrincipal=<?php echo $d->stPrincipal; ?>" > <?php echo $d->dsProduto; ?></a></td>
+				<td align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/<?php echo $d->stPrincipal == 0 ? '':'ok_16x16.png'; ?>" width="20px" /></td>
+				<td align="center"><?php echo $d->DtEnvio; ?></td>
+				<td align="center"><?php echo $d->tempoFimParecer; ?></td>
+				<td align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/<?php echo $diligenciado; ?>" title="<?php echo $Titlediligenciado; ?>" width="30px" onclick="redirecionar('<?php echo $this->url(array('controller' => 'diligenciar', 'action' => 'listardiligenciaanalista'))?>?idPronac=<?php echo $d->IdPRONAC ?>&idProduto=<?php echo $d->idProduto ;?>')" /></td>
+				<td align="center"><?php echo $d->tempoFimDiligencia; ?></td>
+				<td align="center">
+					<img src="<?php echo $this->baseUrl(); ?>/public/img/edit_ico.gif" />
+				</td>
+				<td align="center">
+					<img src="<?php echo $this->baseUrl(); ?>/public/img/save.gif" />
+				</td>
+			</tr>
+			<?php 
+				$rp = $d->PRONAC;
+				$contador++;
+				endforeach; 
+			?>
+		</table>
+		
+			<!-- ========== PAGINAÇÃO ========== -->
+			<?php if($this->qtdRegistro > 5){ echo "<p>" . $this->buscar . "</p>"; } ?>
+			<!-- ========== FIM PAGINAÇÃO ========== -->
+		
+		<?php else: ?>
+		<table class="tabela" style="width: 95%;">
+			<tr>
+				<td align="center">NENHUM REGISTRO ENCONTRADO</td>
+			</tr>
+		</table>	
+		<?php endif; ?>    
+		   
+        
+        
+    </div>
+    <!-- ========== FIM CONTEÃƒÅ¡DO ========== -->
+
+    <!-- ========== INÃƒÂ CIO RODAPÃƒâ€° DO CONTEÃƒÅ¡DO ========== // -->
+
+    <div id="rodapeConteudo_com_menu" ><span></span></div>
+    <!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+    <br clear="all" />
+</div>
+

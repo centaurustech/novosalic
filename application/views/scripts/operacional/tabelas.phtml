@@ -1,0 +1,67 @@
+<script>
+    $(document).ready(function(){
+        $(".btn_pesquisar").click(function(){
+            jqAjaxLink("<?php echo $this->baseUrl()?>/operacional/tabelas?consulta="+$("#consulta").val(), null, "resultadoConsulta");
+            
+        });
+    });
+</script>
+<?php include("scripts/operacional/inc/menu.inc.php"); ?>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => '')); ?>">In&iacute;cio</a></li>
+        <li class="last">Consultar Tabelas</li>
+    </ul>
+</div>
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Consultar tabelas<span class="voltar"><a href="javascript:voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="conteudo" align="center">
+
+    <fieldset><legend> Filtros de pesquisa </legend>
+        <table class="tabela" style="width:90%">
+            <tbody><tr>
+                    <th colspan="3">Selecionar campos para pesquisa</th>
+                </tr>
+                <tr>
+                    <td width="120">Tabela</td>
+                    <td width="220" align="center">Exatamente igual</td>
+
+                    <td align="left">
+                        <select name="consulta" id="consulta" class="input_simples w300" >
+                            <option value="itens">Item de Produto</option>
+                            <option value="documentos">Documentos Exigidos</option>
+                            <option value="produtos">Produtos</option>
+                            <option value="situacoes">Situa&ccedil;&atilde;o</option>
+                            <option value="segmentos">Segmento</option>
+                            <option value="tiposdocumento">Tipo de Documento</option>
+                            <option value="pecasdivulgacao">Pe&ccedil;as de Divulga&ccedil;&atilde;o</option>
+                            <option value="veiculosdivulgacao">Ve&iacute;culos de Divulga&ccedil;&atilde;o</option>
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+<table class="tabela" style="width: 90%">
+    <tr>
+        <td align="center">
+            <input type="button" style="width: 88px" class="btn_pesquisar" id="btn_pesquisar"/>
+        </td>
+    </tr>
+</table>
+</fieldset>
+<div id="resultadoConsulta"></div>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

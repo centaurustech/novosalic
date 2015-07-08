@@ -1,0 +1,31 @@
+<?php 
+/**
+ * Menu de Abas: DADOS, TELEFONE, E-MAIL e DIRIGENTES
+ * @author Equipe RUP - Politec
+ * @since 26/05/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.views.scripts.conselheiro.inc
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+
+<!-- ========== MENU DE ABAS ========== -->
+<ul id="menuAgentes">
+	<li>
+		<a href="#" id="menuDados" title="Informe os dados gerais" onclick="mostrar_menu_dados_gerais();">DADOS GERAIS</a>
+	</li>
+	<li>
+		<a href="#" id="menuDatas" title="Informe as datas" onclick="mostrar_menu_data_edital();">DATAS DO EDITAL</a>
+	</li>
+</ul>
+
+<script type="text/javascript">
+<!--
+$(document).ready(function()
+{
+	mostrar_menu_dados_gerais();
+});
+//-->
+</script>

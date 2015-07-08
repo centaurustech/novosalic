@@ -1,0 +1,88 @@
+<script>
+$(document).ready( function() {
+	/*$("#btn_pdf").click(function(){
+        $(".noPDF").hide();
+        var html = $("#info").html();
+        $("#html").val(html);
+        $(".noPDF").show();
+
+        document.permissoes.submit();
+
+    });*/
+	$("#btn_imprimir").click(function(){
+		
+		$("#conteudoImprimir").val($("#conteudoImprimivel").html());
+		$("#formGerarPdf").attr('target', '_blank');    
+        $("#formGerarPdf").submit(); 
+    });
+});
+	
+	
+</script>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => '')); ?>">In&iacute;cio</a></li>
+        <li class="last">Consultar Tabelas</li>
+    </ul>
+</div>
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Resultado de Itens da planilha de custo do produto<span class="voltar"><a href="javascript:voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="conteudo" align="center">
+	<div id="conteudoImprimivel">
+		<table class="tabela">
+		    <tbody>	        
+				<?php
+					$auxEtapa   = '';
+					$auxProduto = '';
+					foreach($this->dados as $dado): 			
+			           	if($auxProduto != $dado->Produto ){
+			           		$auxProduto = $dado->Produto;
+	           	?>		           	
+				<tr>
+					<th valign="middle" align="center" bgcolor="#abda5d"><?php echo $dado->Produto;?></th>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+				</tr>
+				<?php } ?>
+				<tr  class="registros">
+			        <?php
+			           	if($auxEtapa != $dado->Etapa ){
+			        		$auxEtapa = $dado->Etapa;
+			        		echo '<th valign="middle" align="center" bgcolor="#abda5d"> ' . $auxEtapa . ' </td>';
+			        		echo '<tr><td valign="middle" align="center"> ' . $dado->Item . ' </td></tr>';			        		        		
+			        	} else {
+			        		echo '<td colspan="2" valign="middle" align="center"> ' . $dado->Item . ' </td>';
+			        	}
+			        ?>  
+		        </tr>
+		        <?php endforeach; ?>
+		    </tbody>
+		</table>
+	</div>
+	<form method="POST" id="formGerarPdf" name="formGerarPdf" action="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'gerar-pdf')); ?>" style="display:none">
+        <textarea name="html" id="conteudoImprimir"></textarea>
+	</form>
+
+	<table class="tabela">
+	    <tr>
+	        <td align="center">
+	            <input type="button" style="width: 88px" class="btn_imprimir" id="btn_imprimir"/>
+	        </td>
+	    </tr>
+	</table>
+	
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

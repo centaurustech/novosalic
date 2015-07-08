@@ -1,0 +1,299 @@
+<?php $idPronac = Seguranca::encrypt($this->idPronac); ?>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#btn_salvar').click(function() {
+            var preenchimento = false,
+                etapasConcluidas = CKEDITOR.instances['etapasConcluidas'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,''),
+                medidasAcessibilidade = CKEDITOR.instances['medidasAcessibilidade'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,''),
+                medidasFruicao = CKEDITOR.instances['medidasFruicao'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,''),
+                medidasPreventivas = CKEDITOR.instances['medidasPreventivas'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,''),
+                empregosGerados = CKEDITOR.instances['empregosGerados'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+
+            if (
+                    etapasConcluidas.length > 0 &&
+                    medidasAcessibilidade.length > 0 &&
+                    medidasFruicao.length > 0 &&
+                    medidasPreventivas.length > 0 &&
+                    empregosGerados.length > 0
+                    ) 
+            {
+                preenchimento = true;
+            }
+
+            if(!preenchimento) {
+                $("#camposObrigatorios").dialog("destroy");
+                $("#camposObrigatorios").html("Favor preencher os dados obrigat&oacute;rios!");
+                $("#camposObrigatorios").dialog({
+                    resizable: false,
+                    title: 'Alerta!',
+                    width:320,
+//                    height:160,
+                    modal: true,
+                    buttons : {
+                        'OK' : function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+                $('.ui-dialog-titlebar-close').remove();
+            } else {
+                $('#formCadastro').submit();
+            }
+        });
+
+        CKEDITOR.replace('etapasConcluidas', { toolbar: [] } );
+        CKEDITOR.replace('medidasAcessibilidade', { toolbar: [] } );
+        CKEDITOR.replace('medidasFruicao', { toolbar: [] } );
+        CKEDITOR.replace('medidasPreventivas', { toolbar: [] } );
+        CKEDITOR.replace('empregosGerados', { toolbar: [] } );
+
+        $("#totalEmpregosDiretos, #totalEmpregosIndiretos").numeric().keyup(function() {
+            var totalEmpregosDiretos = $("#totalEmpregosDiretos").val() ? $("#totalEmpregosDiretos").val() : 0;
+            var totalEmpregosIndiretos = $("#totalEmpregosIndiretos").val() ? $("#totalEmpregosIndiretos").val() : 0;
+            var total = parseInt(totalEmpregosDiretos, 10) + parseInt(totalEmpregosIndiretos, 10);
+            $("#totalEmpregosDiretosIndiretos").val(total);
+        }).keyup();
+    });
+</script>
+<style>
+    #conteudo ul li{ display: inline; float: left; width: 33%; text-align: center; }
+    #conteudo ul li label{ display:block; }
+    #conteudo ul li input{ border: 1px solid #cecece; text-align: center;  height: 31px; width: 150px; }
+    #cke_empregosGerados { margin-top: 10px; }
+</style>
+<?php require_once "scripts/comprovarexecucaofisica/inc/menu-relatorio-final.php"; ?>
+<div id="camposObrigatorios" class="sumir"></div>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="#" title="In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->baseUrl(); ?>/consultardadosprojeto/index?idPronac=<?php echo $idPronac; ?>" title="Consultar dados do Projeto">Consultar dados do Projeto</a></li>
+        <li class="second">Comprovar Realização do Objeto</li>
+        <li class="last">Etapas de Trabalho</li>
+    </ul>
+</div>
+
+
+<div id="titulo">
+    <div>Etapas de Trabalho <span class="voltar"><a href="<?php echo $this->baseUrl(); ?>/consultardadosprojeto/index?idPronac=<?php echo $idPronac; ?>" title="Voltar">Voltar</a></span></div>
+</div>
+
+
+<div id="conteudo">
+    <table class="tabela">
+        <tr>
+            <th align="center" width="30%">Nº PRONAC:</th>
+            <th align="center">Nome do Projeto:</th>
+        </tr>
+        <tr class="linha">
+            <td align="center"><?php echo $this->DadosProjeto->pronac; ?></td>
+            <td align="center"><?php echo $this->DadosProjeto->NomeProjeto; ?></td>
+        </tr>
+        <tr>
+            <th align="center" width="30%">CNPJ/CPF:</th>
+            <th align="center">Proponente:</th>
+        </tr>
+        <tr class="linha">
+            <td align="center"><?php echo (strlen($this->DadosProjeto->CNPJCPF) > 11) ? Mascara::addMaskCNPJ($this->DadosProjeto->CNPJCPF) : Mascara::addMaskCPF($this->DadosProjeto->CNPJCPF); ?></td>
+            <td align="center"><?php echo $this->DadosProjeto->NomeProponente; ?></td>
+        </tr>
+    </table>
+
+    <br clear="all" />
+
+    <form
+        id="formCadastro"
+        action="<?php echo $this->url(
+                array(
+                    'controller' => 'comprovarexecucaofisica',
+                    'action' => 'cadastrar-final',
+                    'idpronac' => $idPronac,
+                    ),
+                '',
+                true
+                ); ?>"
+        method="post"
+        enctype="multipart/form-data"
+        >
+        <table class="tabela">
+            <tr align="center">
+                <td class="destacar bold">ETAPAS DE TRABALHO EXECUTADAS <span style="color: red;">*</span></td>
+            </tr>
+            <tr>
+                <td>
+                    (Descrever os objetivos e metas realizadas e discorrer sobre os resultados 
+                    do projeto junto à sociedade. Em caso de divergências com o previsto, justificar)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <textarea
+                        name="etapasConcluidas"
+                        id="etapasConcluidas"
+                        cols=""
+                        rows="7"
+                        style="width: 99%;"
+                        class="textarea_simples obrigatorio"><?php echo $this->cumprimentoDoObjeto->getEtapasConcluidas(); ?></textarea>
+                    <br clear="all" /><span style="color: #FF9999; font-size: 11px;">Limite máximo de 3000 caracteres</span>
+                </td>
+            </tr>
+            <tr align="center">
+                <td class="destacar bold">MEDIDAS DE ACESSIBILIDADE, NOS TERMOS DA PORTARIA DE APROVAÇÃO <span style="color: red;">*</span></td>
+            </tr>
+            <tr>
+                <td>(acesso /lugares adaptados para pessoas portadoras de necessidades especiais)</td>
+            </tr>
+            <tr>
+                <td>
+                    Documento:
+                    <br clear="all" />
+                    <input class="input_simples" type="file" id="arquivoAcessibilidadeFisica" name="imagensMedidasAcessibilidadeFisica" style="width:350px;" />
+                    <?php
+                    if ($this->cumprimentoDoObjeto->getMedidasAcessibilidadeImagens()) :
+                        echo $this->partial(
+                                '/comprovarexecucaofisica/partial/imagens-cumprimento-do-objeto.phtml',
+                                array(
+                                    'idPronac' => $idPronac,
+                                    'idCumprimentoDoObjeto' => $this->cumprimentoDoObjeto->getIdCumprimentoObjeto(),
+                                    'imagens' => $this->cumprimentoDoObjeto->getMedidasAcessibilidadeImagens(),
+                                    )
+                                );
+                    endif;
+                    ?>
+                    <br clear="all" />
+                    <textarea
+                        name="medidasAcessibilidade"
+                        id="medidasAcessibilidade"
+                        cols=""
+                        rows="7"
+                        style="width: 99%;"
+                        class="textarea_simples obrigatorio"><?php echo $this->cumprimentoDoObjeto->getMedidasAcessibilidade(); ?></textarea>
+                    <br clear="all" /><span style="color: #FF9999; font-size: 11px;">Limite máximo de 1000 caracteres</span>
+                </td>
+            </tr>
+            <tr align="center">
+                <td class="destacar bold">MEDIDAS DE DEMOCRATIZAÇÃO DO ACESSO, NOS TERMOS DA PORTARIA DE APROVAÇÃO <span style="color: red;">*</span></td>
+            </tr>
+            <tr>
+                <td>(realização em local de fácil acesso, transporte / atividade / distribuição, entrada franqueada e divulgação)</td>
+            </tr>
+            <tr>
+                <td>
+                    Documento:
+                    <br clear="all" />
+                    <input class="input_simples" type="file" id="arquivoAcessibilidadePublica" name="imagensMedidasAcessibilidadePublica" style="width:350px;" />
+                    <?php
+                    if ($this->cumprimentoDoObjeto->getMedidasFruicaoImagens()) :
+                        echo $this->partial(
+                                '/comprovarexecucaofisica/partial/imagens-cumprimento-do-objeto.phtml',
+                                array(
+                                    'idPronac' => $idPronac,
+                                    'idCumprimentoDoObjeto' => $this->cumprimentoDoObjeto->getIdCumprimentoObjeto(),
+                                    'imagens' => $this->cumprimentoDoObjeto->getMedidasFruicaoImagens(),
+                                    )
+                                );
+                    endif;
+                    ?>
+                    <br clear="all" />
+                    <textarea
+                        name="medidasFruicao"
+                        id="medidasFruicao"
+                        cols=""
+                        rows="7"
+                        style="width: 99%;"
+                        class="textarea_simples obrigatorio"><?php echo $this->cumprimentoDoObjeto->getMedidasFruicao(); ?></textarea>
+                    <br clear="all" /><span style="color: #FF9999; font-size: 11px;">Limite máximo de 1000 caracteres</span>
+                </td>
+            </tr>
+            <tr align="center">
+                <td class="destacar bold">MEDIDAS PREVENTIVAS QUANTO A IMPACTOS AMBIENTAIS <span style="color: red;">*</span></td>
+            </tr>
+            <tr>
+                <td>(Descrever sobre as medidas adotadas e, se for o caso, anexar comprovantes)</td>
+            </tr>
+            <tr>
+                <td>
+                    Documento:
+                    <br clear="all" />
+                    <input class="input_simples" type="file" id="arquivoImpactosAmbientais" name="imagensImpactosAmbientais" style="width:350px;" />
+                    <?php
+                    if ($this->cumprimentoDoObjeto->getMedidasPreventivasImagens()) :
+                        echo $this->partial(
+                                '/comprovarexecucaofisica/partial/imagens-cumprimento-do-objeto.phtml',
+                                array(
+                                    'idPronac' => $idPronac,
+                                    'idCumprimentoDoObjeto' => $this->cumprimentoDoObjeto->getIdCumprimentoObjeto(),
+                                    'imagens' => $this->cumprimentoDoObjeto->getMedidasPreventivasImagens(),
+                                    )
+                                );
+                    endif;
+                    ?>
+                    <br clear="all" />
+                    <textarea
+                        name="medidasPreventivas"
+                        id="medidasPreventivas"
+                        cols=""
+                        rows="7"
+                        style="width: 99%;"
+                        class="textarea_simples obrigatorio"><?php echo $this->cumprimentoDoObjeto->getMedidasPreventivas(); ?></textarea>
+                    <br clear="all" /><span style="color: #FF9999; font-size: 11px;">Limite máximo de 1000 caracteres</span>
+                </td>
+            </tr>
+            <tr align="center">
+                <td class="destacar bold">EMPREGOS E QUALIFICAÇÕES DECORRENTES DO PROJETO <span style="color: red;">*</span></td>
+            </tr>
+            <tr>
+                <td>
+                    <ul id="totaisEmpregos">
+                        <li>
+                            <label for="totalEmpregosDiretos">Diretos</label></dt>
+                            <input
+                            type="text"
+                            id="totalEmpregosDiretos"
+                            name="totalEmpregosDiretos"
+                            class="input_simples"
+                            value="<?php echo $this->cumprimentoDoObjeto->getTotalEmpregosDiretos(); ?>"
+                            />
+                        </li>
+                        <li>
+                            <label for="totalEmpregosIndiretos">Indiretos</label>
+                            <input
+                                type="text"
+                                id="totalEmpregosIndiretos"
+                                name="totalEmpregosIndiretos"
+                                class="input_simples"
+                                value="<?php echo $this->cumprimentoDoObjeto->getTotalEmpregosIndiretos(); ?>"
+                                />
+                        </li>
+                        <li>
+                            <label for="totalEmpregosDiretosIndiretos">Total</label>
+                            <input type="text" id="totalEmpregosDiretosIndiretos" class="input_simples" value="0" disabled="disabled"/>
+                        </li>
+                    </ul>
+                    <br clear="all" />
+                    <textarea
+                        name="empregosGerados"
+                        id="empregosGerados"
+                        cols=""
+                        rows="7"
+                        style="width: 99%;"
+                        class="textarea_simples obrigatorio"><?php echo $this->cumprimentoDoObjeto->getEmpregosGerados(); ?></textarea>
+                        <span style="color: #FF9999; font-size: 11px;">Limite máximo de 1000 caracteres</span>
+                </td>
+            </tr>
+        </table>
+    </form>
+
+    <p align="center">
+        <input type="button" class="btn_salvar" id="btn_salvar">
+    </p>
+
+    <br clear="all" />
+</div>
+
+
+<!-- inï¿½cio: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+<br clear="all" />

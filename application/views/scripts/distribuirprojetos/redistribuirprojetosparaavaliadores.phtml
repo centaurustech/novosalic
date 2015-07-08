@@ -1,0 +1,29 @@
+<form id="addAvaliadorForm" method="post" action="<?php echo $this->url(array('controller' => 'distribuirprojetos', 'action' => 'redistribuirprojeto'))."?acao=0"; ?>" >
+<input type="hidden" name="idAvaliadorAnt" value="<?php echo $this->antigoAvaliador; ?>" >
+<table class="tabela">
+    <tr>
+        <td>Novo Avaliador</td>
+        <td>
+            <select class="input_simples" style="width: 400px" name="idAvaliador" id="idAvaliador">
+                <option value="0" >-- Selecione --</option>
+                <?php  foreach ($this->Avaliadores as $ava) {
+                    echo '<option value="'.$ava['idAvaliador'].'">'.utf8_encode($ava['Descricao']).'</option>';
+                } ?>
+            </select>
+            <input type="hidden" name="PreProjetos" value="<?php echo $this->PreProjetos ?>" >
+        </td>
+        <td>
+            <input type="button" class="btn_confirmar" style="width: 88px;" id="AdcionarAvaliador" onclick="addavaliador()">
+        </td>
+    </tr>
+</table>
+</form>
+<div id="ProjetosEmDistribuicao">
+
+    
+
+</div>
+<script>
+    listaprojetos();
+</script>
+

@@ -1,0 +1,63 @@
+<div id="div_g1_1" class="miolo_grid_01 sumir">
+	<div class="conteudoImprimivel">
+		<?php if   ( empty ( $this->resultadoOrgaoUsuario2 ) ||  empty ( $this->perfisNomes2) ){?>
+		<table border="1">
+			<thead>
+				<tr>
+					<td colspan="6">Nenhum registro encontrado.</td>
+				</tr>
+			</thead>
+		</table>
+		<?php } else {?>
+		<table class="tabela">
+			<thead>
+				<tr>
+					<th colspan="7">Perfis/Usuários do Sistema</th>
+				</tr>
+			</thead>		
+			<?php foreach ($this->perfis2 as $gru_codigo=>$perfil) {?>
+				<tr>
+					<td colspan="7">Perfil: <?php echo $this->perfisNomes2[$gru_codigo]?></td>
+				</tr>
+				<tr>
+					<th>CPF</th>
+					<th>Nome</th>
+					<th>Lota&ccedil;&atilde;o</th>
+					<th>Telefone</th>
+					<th>Unidade Autorizada</th>
+					<th>Status</th>
+				</tr>
+				<?php foreach ($perfil as $resultadoOrgaoUsuario) { //xd($resultadoOrgaoUsuario); ?>
+					<tr>
+						<td><?php echo $resultadoOrgaoUsuario['usu_identificacao']?></td>
+						<td><a
+							href="<?php echo $this->url(array('controller' => 'manterusuario', 'action' => 'perfissalicweb')); ?>?id=<?php echo $resultadoOrgaoUsuario['usu_codigo']?>&perfil=<?php echo $resultadoOrgaoUsuario['gru_codigo']?>&estado=<?php echo $resultadoOrgaoUsuario['uog_status']?>&unidade=<?php echo $resultadoOrgaoUsuario['uog_orgao']?>"><?php echo $resultadoOrgaoUsuario['usu_nome']?>
+						</a></td>
+						<td><?php echo $resultadoOrgaoUsuario['usu_orgaolotacao']?></td>
+						<td><?php echo $resultadoOrgaoUsuario['usu_telefone']?></td>
+						<td><?php echo $resultadoOrgaoUsuario['org_siglaautorizado'] ?></td>
+				
+						<?php if ( $resultadoOrgaoUsuario['uog_status'] == 1 ) {?>
+				
+						<td><font color="green">Habilitado</font></td>
+						<?php } else {?>
+						<td><font color="red">Desabilitado</font></td>
+						<?php } ?>						
+					</tr>
+				<?php } ?>
+			<?php } ?>
+			</tbody>
+		</table>
+	<?php } ?>
+	</div>
+</div>
+<form method="POST" id="formGerarPdf" name="formGerarPdf" action="<?php echo $this->url(array('controller' => 'manterusuario', 'action' => 'gerar-pdf-new')); ?>" style="display:none">
+        <textarea name="html" id="conteudoImprimir"></textarea>
+</form>
+<script>
+	$("#conteudoImprimir").val($(".conteudoImprimivel").html());
+	$("#formGerarPdf").submit();
+</script>
+
+
+

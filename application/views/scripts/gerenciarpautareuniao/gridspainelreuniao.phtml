@@ -1,0 +1,199 @@
+<?php
+header('Content-Type: text/plain; charset=ISO-8859-1');
+$totalQtdeAnalisados = 0;
+$totalQtdeNaoAnalisados = 0;
+$totalGeral = 0;
+
+$totalQtdeAprovados = 0;
+$totalQtdeIndeferidos = 0;
+$totalQtdeAprovados = 0;
+?>
+<table width="90%">
+    <tr>
+        <th>&Aacute;rea Cultural</th>
+        <th align="right">Analisados</th>
+        <th align="right">N&atilde;o analisados</th>
+        <th align="right">Total</th>
+        <th align="right">% Analisados</th>
+    </tr>
+    <?php foreach($this->areas as $nome => $codigo){?>
+    <?php $qtdeAnalisados =  isset($this->grid1['analisados'][$nome]) ? count($this->grid1['analisados'][$nome]) : 0;
+          $totalQtdeAnalisados = $totalQtdeAnalisados+$qtdeAnalisados;
+          
+          $qtdeNaoAnalisados =  isset($this->grid1['nao_analisados'][$nome]) ? count($this->grid1['nao_analisados'][$nome]) : 0;
+          $totalQtdeNaoAnalisados = $totalQtdeNaoAnalisados+$qtdeNaoAnalisados;
+          
+          $total = $qtdeAnalisados+$qtdeNaoAnalisados; $totalGeral = $totalGeral+$total;
+
+          $percentual = ($qtdeAnalisados > 0 && $total > 0) ? $qtdeAnalisados/$total*100 : "0.00";
+
+          $percentualGeral = ($totalQtdeAnalisados > 0 && $totalGeral > 0) ? $totalQtdeAnalisados/$totalGeral*100 : "0.00";
+       ?>
+    <tr>
+        <td align="left"><b><?php echo $nome;?></b></td>
+        <td align="right"><?php echo $qtdeAnalisados;?></td>
+        <td align="right"><?php echo $qtdeNaoAnalisados;?></td>
+        <td align="right"><?php echo $total;?></td>
+        <td align="right"><?php echo number_format($percentual, "2");?> %</td>
+    </tr>
+    <?php } ?>
+    <tr class="destacar">
+        <td align="left"><b>TOTAL</b></td>
+        <td align="right"><b><?php echo $totalQtdeAnalisados;?></b></td>
+        <td align="right"><b><?php echo $totalQtdeNaoAnalisados;?></b></td>
+        <td align="right"><b><?php echo $totalGeral;?></b></td>
+        <td align="right"><b><?php echo number_format($percentualGeral, "2");?> %</b></td>
+    </tr>
+</table>
+<br>
+<!-- ========= PROJETOS APROVADOS/INDEFERIDOS ===============-->
+<table width="90%">
+    <tr>
+        <th>&Aacute;rea Cultural</th>
+        <th align="right">Aprovado</th>
+        <th align="right">Indeferido</th>
+        <th align="right">N&atilde;o Analisados</th>
+        <th align="right">Total</th>
+    </tr>
+    <?php   $qtdeNaoAnalisados=0; $totalQtdeNaoAnalisados=0; $total =0; $totalGeral=0;
+    
+            foreach($this->areas as $nome => $codigo){
+                //aprovados
+                $qtdeAprovados =  isset($this->grid2['analisados'][$nome]['aprovado']) ? count($this->grid2['analisados'][$nome]['aprovado']) : 0;
+                $totalQtdeAprovados = $totalQtdeAprovados+$qtdeAprovados;
+                //indeferidos
+                $qtdeIndeferidos =  isset($this->grid2['analisados'][$nome]['indeferido']) ? count($this->grid2['analisados'][$nome]['indeferido']) : 0;
+                $totalQtdeIndeferidos = $totalQtdeIndeferidos+$qtdeIndeferidos;
+                //nao analisados
+                $qtdeNaoAnalisados =  isset($this->grid2['nao_analisados'][$nome]) ? count($this->grid2['nao_analisados'][$nome]) : 0;
+                $totalQtdeNaoAnalisados = $totalQtdeNaoAnalisados+$qtdeNaoAnalisados;
+
+                $total = $qtdeAprovados+$qtdeIndeferidos+$qtdeNaoAnalisados;
+                $totalGeral = $totalGeral+$total
+    ?>
+    <tr>
+        <td align="left"><b><?php echo $nome;?></b></td>
+        <td align="right"><?php echo $qtdeAprovados;?></td>
+        <td align="right"><?php echo $qtdeIndeferidos;?></td>
+        <td align="right"><?php echo $qtdeNaoAnalisados;?></td>
+        <td align="right"><?php echo $total;?></td>
+    </tr>
+    <?php } ?>
+    <tr class="destacar">
+        <td align="left"><b>TOTAL</b></td>
+        <td align="right"><b><?php echo $totalQtdeAprovados;?></b></td>
+        <td align="right"><b><?php echo $totalQtdeIndeferidos;?></b></td>
+        <td align="right"><b><?php echo $totalQtdeNaoAnalisados;?></b></td>
+        <td align="right"><b><?php echo $totalGeral;?></b></td>
+    </tr>
+</table>
+
+<br>
+<!-- ========= PROJETOS VALORES APROVADOS ===============-->
+<table width="90%">
+    <tr>
+        <th>&Aacute;rea Cultural</th>
+        <th align="right">Aprovado</th>
+        <th align="right">Vl. Aprovado</th>
+        <th align="right">%</th>
+        <th align="right">Vl. M&eacute;dio</th>
+    </tr>
+    <?php   $totalQtdeAprovados=0; $totalVlAprovado=0; $totalVlMedio=0;
+            $vlTotalAprovado = $this->grid3['vlTotalAprovado'];
+            foreach($this->areas as $nome => $codigo){
+                
+                //aprovados
+                $qtdeAprovados =  isset($this->grid3['analisados'][$nome]['aprovado']) ? count($this->grid3['analisados'][$nome]['aprovado']) : 0;
+                $totalQtdeAprovados = $totalQtdeAprovados+$qtdeAprovados;
+
+                //valor aprovado
+                $vlAprovado =  isset($this->grid3[$nome]['vlAprovado']) ? array_sum($this->grid3[$nome]['vlAprovado']) : "0.00";
+                $totalVlAprovado = $totalVlAprovado+$vlAprovado;
+
+                //valor medio
+                $vlMedio = ($vlAprovado > 0 && $qtdeAprovados > 0) ? $vlAprovado/$qtdeAprovados : "0.00";
+                $totalVlMedio = $totalVlMedio+$vlMedio;
+                //percentual
+                $percentual = ($vlAprovado > 0 && $vlTotalAprovado > 0) ? $vlAprovado/$vlTotalAprovado*100 : "0.00";
+                
+    ?>
+    <tr>
+        <td align="left"><b><?php echo $nome;?></b></td>
+        <td align="right"><?php echo $qtdeAprovados;?></td>
+        <td align="right">R$ <?php echo number_format($vlAprovado, 2, ",", ".");?></td>
+        <td align="right"><?php echo number_format($percentual, 2);?> %</td>
+        <td align="right">R$ <?php echo number_format($vlMedio, 2, ",", ".");?></td>
+    </tr>
+    <?php } ?>
+    <tr class="destacar">
+        <td align="left"><b>TOTAL</b></td>
+        <td align="right"><b><?php echo $totalQtdeAprovados;?></b></td>
+        <td align="right"><b>R$ <?php echo number_format($totalVlAprovado, 2, ",", ".");?></b></td>
+        <td align="right"><b> - </b></td>
+        <td align="right"><b>R$ <?php echo number_format($totalVlMedio, 2, ",", ".");?></b></td>
+    </tr>
+</table>
+
+<br>
+<!-- ========= PROJETOS MAIOR VALOR APROVADOS ===============-->
+<table width="90%">
+    <tr>
+        <th>PRONAC</th>
+        <th>&Aacute;rea Cultural</th>
+        <th align="right">Vl. Solicitado</th>
+        <th align="right">Vl. Sugerido</th>
+        <th align="right">Vl. Aprovado</th>
+    </tr>
+    <?php   $totalMaxAprovados=0; $totalVlSolicitado=0; $totalVlSugerido =0;
+            $vlTotalAprovado = $this->grid3['vlTotalAprovado'];
+            foreach($this->areas as $nome => $codigo){
+
+                //maior valor aprovado
+                $vlMaxAprovado = isset($this->grid4[$nome]['vlAprovado']) ? max($this->grid4[$nome]['vlAprovado']) : "0.00";
+                $totalMaxAprovados = $totalMaxAprovados+$vlMaxAprovado;
+                
+                //recupera indice do array que contem o maior valor
+                $chave = isset($this->grid4[$nome]['vlAprovado']) ? array_keys($this->grid4[$nome]['vlAprovado'], $vlMaxAprovado) : array('0');
+
+                //no array pronac seleciona o pronac do indice que contem o maior valor
+                $pronac = isset($this->grid4[$nome]['pronac'][$chave[0]]) ? $this->grid4[$nome]['pronac'][$chave[0]] : " - ";
+                $idPronac = isset($this->grid4[$nome]['idPronac'][$chave[0]]) ? $this->grid4[$nome]['idPronac'][$chave[0]] : "";
+
+                if(!empty($idPronac)){
+                    $pronac = '<a href='.$this->url(array("controller" => "dadosprojeto", "action" => "index", "idpronac" =>$idPronac)).' target="_blank"><b>'.$pronac.'</b></a>';
+                }
+
+                //no array VlSolicitado seleciona o valor do indice que contem o maior valor
+                $vlSolicitado = isset($this->grid4[$nome]['vlSolicitado'][$chave[0]]) ? $this->grid4[$nome]['vlSolicitado'][$chave[0]] : "0.00";
+                $totalVlSolicitado = $totalVlSolicitado+$vlSolicitado;
+
+                //no array VLSugerido seleciona o valor do indice que contem o maior valor
+                $vlSugerido = isset($this->grid4[$nome]['vlSugerido'][$chave[0]]) ? $this->grid4[$nome]['vlSugerido'][$chave[0]] : "0.00";
+                $totalVlSugerido = $totalVlSugerido+$vlSugerido;
+
+    ?>
+    <tr>
+        <td align="center"><?php echo $pronac;?></td>
+        <td align="left"><?php echo $nome;?></td>
+        <td align="right">R$ <?php echo number_format($vlSolicitado, 2, ",", ".");?></td>
+        <td align="right">R$ <?php echo number_format($vlSugerido, 2, ",", ".");?></td>
+        <td align="right">R$ <?php echo number_format($vlMaxAprovado, 2, ",", ".");?></td>
+    </tr>
+    <?php } ?>
+    <tr class="destacar">
+        <td align="left"><b>TOTAL</b></td>
+        <td align="right"><b> - </b></td>
+        <td align="right"><b>R$ <?php echo number_format($totalVlSolicitado, 2, ",", ".");?></b></td>
+        <td align="right"><b>R$ <?php echo number_format($totalVlSugerido, 2, ",", ".");?></b></td>
+        <td align="right"><b>R$ <?php echo number_format($totalMaxAprovados, 2, ",", ".");?></b></td>
+    </tr>
+</table>
+<br>
+
+
+
+
+
+
+
+

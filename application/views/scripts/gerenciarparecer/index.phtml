@@ -1,0 +1,98 @@
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.dataPicker').datepicker({
+            dateFormat: 'dd/mm/yy',
+            dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'],
+            dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
+            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb','Dom' ],
+            monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+            nextText: 'Próximo',
+            prevText: 'Anterior'
+        });
+    });
+
+    function modoconsulta(campo,valor){
+        // Exatamente igual
+        if(campo == 'dtDocumento' && valor == 1){
+            $('#dtI').show();
+            $('#dtF').hide();
+            $('#dtF').val('');
+        }
+
+        // Entre dois valores
+        if(campo == 'dtDocumento' && valor == 2){
+            $('#dtF').show();
+        }
+    }
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''),'',true); ?>" title="Ir para Início">Início</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'index'),'',true); ?>" title="Gerenciar Parecer">Gerenciar Pareceres</a></li>
+        <li class="last">Localizar Pareceres</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Localizar Pareceres<span class="voltar"><a href="#" onclick="window.location='<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'index'),'',true); ?>'">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <br clear="all" />
+    <form action="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'listaprojetos')); ?>" method="post">
+        <table class="tabela">
+            <tr>
+                <td width="130">PRONAC</td>
+                <!--<td width="230" align="center">Exatamente igual</td>-->
+                <td><input type="text" class="input_simples" name="pronac" value="" /></td>
+            </tr>
+            <!--<tr>
+                <td>Nome do Projeto</td>
+                <td align="center">
+                    <select name="nometc" style="width: 200px;" class="input_simples">
+                        <option value="1">Início igual</option>
+                        <option value="2">Que contenha</option>
+                        <option value="3">Diferente</option>
+                    </select>
+                </td>
+                <td><input type="text" class="input_simples" name="nomeP" value="" /></td>
+            </tr>-->
+            <tr>
+                <td>Situação</td>
+                <!--<td width="230" align="center">Exatamente igual</td>-->
+                <td>
+                    <select name="situacao" style="width: 220px;" class="input_simples" onchange="modoconsulta('dtDocumento',this.value);">
+                        <option value="0">Todos</option>
+                        <option value="1">Aguardando distribuição</option>
+                        <option value="2">Análise concluída</option>
+                        <option value="3">Devolvida para nova análise</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center">
+                    <input type="submit" class="btn_localizar" value=" " />
+                    <input type="reset" class="btn_limpar" value=" " />
+                </td>
+            </tr>
+        </table>
+    </form>
+    <br clear="all" />
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

@@ -1,0 +1,125 @@
+<?php header('Content-Type: text/plain; charset=ISO-8859-1'); ?>
+<script type="text/javascript">
+    $(document).ready(function(){
+        //ATUALIZA TITULO DA PAGINA
+        window.parent.$("#titulo").html("<div>Dilig&ecirc;ncias</div>");
+        window.parent.$("#caminhoLocalAtual").html("Dilig&ecirc;ncias");
+
+    });
+    function JSVisualizar(idDiligencia,idPronac,idDiligenciaPreProjeto){
+
+        //jqAjaxLink('<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'visualizar-diligencia'));?>', '', 'linha'+idDiligencia);
+        $('#linha'+idDiligencia).toggle();
+        if($('#resultado'+idDiligencia).html() == '')
+        {
+            $('#resultado'+idDiligencia).html('<br><center>Aguarde, carregando dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br>');
+            
+            $.ajax({
+                url : '<?php echo $this->url ( array ('controller' => 'consultardadosprojeto', 'action' => 'visualizar-diligencia' ));?>',
+                data :
+                {
+                    idPronac : idPronac,
+                    idDiligencia : idDiligencia,
+                    idDiligenciaPreProjeto : idDiligenciaPreProjeto
+                },
+                success: function(data){
+                    $('#resultado'+idDiligencia).html(data);
+                },
+                type : 'post'
+
+            });
+        }
+    }
+</script>
+
+<table class="tabela">
+    <tr class="destacar">
+        <td align="center"><b>PRONAC</b></td>
+        <td align="center"><b>Nome do Projeto</b></td>
+    </tr>
+    <tr>
+        <td align="center"><?php echo $this->projeto->AnoProjeto.$this->projeto->Sequencial; ?></td>
+        <td align="center"><?php echo $this->projeto->NomeProjeto; ?></td>
+    </tr>
+</table>
+
+<?php if($this->diligenciasProposta){ ?>
+    <fieldset><legend>Dilig&ecirc;ncia Proposta</legend>
+        <table class="tabela">
+            <tr>
+                <th>Visualizar</th>
+                <th>NR PROPOSTA</th>
+                <th>NOME DA PROPOSTA</th>
+                <th>DATA DA SOLICITA&Ccedil;&Atilde;O</th>
+                <? /*?><th>PRAZO DA RESPOSTA</th>
+                <th>PRORROGADO</th> */ ?>
+            </tr>
+            <?php foreach ($this->diligenciasProposta as $value) { ?>
+            <tr>
+                <td style="text-align: center;">
+                    <img onclick="JSVisualizar('<?php echo $value->idDiligencia;?>','<?php echo $this->idPronac;?>','<?php echo $value->idDiligencia;?>')" src="<?php echo $this->baseUrl(); ?>/public/img/ico/kdict.png" width="20" style="cursor: pointer;"/>
+                </td>
+                <td><?php echo $value->pronac;?></td>
+                <td><?php echo $value->nomeProjeto;?></td>
+                <td align="center"><?php echo date('d/m/Y',strtotime($value->dataSolicitacao));?></td>
+                <? /*<td align="center">
+                    <?php
+                        $qtdia = 40;
+                        echo date('d/m/Y',strtotime($value->dataSolicitacao.' +'.$qtdia.' day'));
+                    ?>
+                </td>
+                <td>Prorrogado</td>*/ ?>
+            </tr>
+            <tr class="sumir" id="linha<?php echo $value->idDiligencia;?>">
+                <td colspan="7" id="resultado<?php echo $value->idDiligencia;?>"></td>
+            </tr>
+            <?php } ?>
+        </table>
+    </fieldset>
+    <?php } if($this->diligencias){ ?>
+    <fieldset>
+        <legend>Dilig&ecirc;ncia Projeto</legend>
+        <table class="tabela">
+            <tr>
+                <th>Visualizar</th>
+                <th>PRONAC</th>
+                <th>NOME DO PROJETO</th>
+                <th>PRODUTO</th>
+                <th>TIPO DA DILIG&Ecirc;NCIA</th>
+                <th>DATA DA SOLICITA&Ccedil;&Atilde;O</th>
+                <th>DATA DA RESPOSTA</th>
+                <th>PRAZO DA RESPOSTA</th>
+                <th>PRORROGADO</th>
+            </tr>
+            <?php foreach ($this->diligencias as $value) { ?>
+            <tr>
+                <td style="text-align: center;">
+                    <img onclick="JSVisualizar('<?php echo $value->idDiligencia;?>','<?php echo $this->idPronac;?>')" src="<?php echo $this->baseUrl(); ?>/public/img/ico/kdict.png" width="20" style="cursor: pointer;"/>
+                </td>
+                <td><?php echo $value->pronac;?></td>
+                <td><?php echo $value->nomeProjeto;?></td>
+                <td align="center">
+                    <?php if($value->produto)
+                        echo $value->produto;
+                    else
+                        echo '-';
+                    ?>
+                </td>
+                <td><?php echo $value->tipoDiligencia;?></td>
+                <td align="center"><?php echo date('d/m/Y',strtotime($value->dataSolicitacao));?></td>
+                <td align="center"><?php echo ($value->stEnviado == 'S') ? (!empty($value->dataResposta)) ? date('d/m/Y',strtotime($value->dataResposta)) : '' : ''; ?></td>
+                <td align="center">
+                    <?php 
+                        $qtdia = 40;
+                        echo date('d/m/Y',strtotime($value->dataSolicitacao.' +'.$qtdia.' day'));
+                    ?>
+                </td>
+                <td>Prorrogado</td>
+            </tr>
+            <tr class="sumir" id="linha<?php echo $value->idDiligencia;?>">
+                <td colspan="9" id="resultado<?php echo $value->idDiligencia;?>"></td>
+            </tr>
+            <?php } ?>
+        </table>
+    </fieldset>
+<?php } ?>

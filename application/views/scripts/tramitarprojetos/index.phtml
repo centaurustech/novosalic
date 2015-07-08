@@ -1,0 +1,404 @@
+<?php $SalvarProjetos = $this->url(array('controller' => 'tramitarprojetos', 'action' => 'despacharproj'));?>
+<?php $EditarProjetos = $this->url(array('controller' => 'tramitarprojetos', 'action' => 'editarprojetos'));?>
+
+<script type="text/javascript">
+<!--
+function excluir(idPronac)
+{
+	$("#confirm").dialog("destroy");
+    $("#confirm").dialog
+    ({
+        width:350,
+        height:150,
+        EscClose:false,
+        modal:true,
+        buttons:
+        {
+            'Cancelar':function()
+            {
+                $(this).dialog('close'); // fecha a modal
+            },
+            'Confirmar':function()
+            {
+                window.location.href="<?php echo $this->url(array('controller'=>'tramitarprojetos', 'action'=>'excluir')); ?>?idPronac="+idPronac+"";
+            }
+        }
+    });
+    $("#confirm").dialog('open');
+}
+
+function sumiraqui(id)
+{
+	$('img[class='+id+']').toggle();
+	$('tr[class='+id+']').toggle();
+
+}
+
+$(document).ready(function(){
+
+	$('.numero').keydown(function(event){
+        //		var texto = '';
+        //		 for(j in event){
+        //			 texto += j+' = '+event[j]+' | ';
+        //				}
+        //
+        //		alert(texto);return false;
+        if((event.keyCode >= 96 && event.keyCode <= 105) || (event.keyCode >= 48 && event.keyCode <= 57) || event.keyCode == 8 || event.keyCode ==9 ){
+            return true;
+        }
+        else
+            return false;
+        //$(this).val($(this).val().replace(/\D/g,''));
+    });
+
+	$('#btn_alterar').click(function(){
+
+		var validar = true;
+		$('.valida').each(function(){
+			if($(this).val() == ''){
+				validar = false;
+			}
+		});
+		if(validar == false){
+			$("#error").html('Dados obrigatórios não informados!');
+			$("#error").dialog('open');
+			$("#error").dialog
+            ({
+                height: 180,
+                modal: true,
+                draggable: false,
+                resizable: false,
+                closeOnEscape: false,
+                buttons: {
+                    'Ok': function()
+                    {
+                        $(this).dialog('close');
+                    }
+                }
+            });
+			$(".ui-dialog-titlebar-close").remove();
+		} else{
+
+                        pronac = document.getElementById("orgaoERROR").innerHTML;
+                       if(pronac.length > 0){
+                           $("#error").html('Este projeto n&atilde;o se encontra nessa unidade!');
+			   $("#error").dialog('open');
+			   $("#error").dialog
+                           ({
+                                    height: 180,
+                                    modal: true,
+                                    draggable: false,
+                                    resizable: false,
+                                    closeOnEscape: false,
+                                    buttons: {
+                                        'Ok': function()
+                                        {
+                                            $(this).dialog('close');
+                                        }
+                                    }
+                                });
+                       }else{
+                          $('#formu1').submit();
+                       }
+                     }
+
+
+	});
+
+	$('.btn_salvar').click(function(){
+			var validar = true;
+			$('.valida').each(function(){
+				if($(this).val() == ''){
+					validar = false;
+				}
+			});
+			if(validar == false){
+				$("#error").html('Dados obrigatórios não informados!');
+				$("#error").dialog('open');
+				$("#error").dialog
+	            ({
+	                height: 180,
+	                modal: true,
+	                draggable: false,
+	                resizable: false,
+	                closeOnEscape: false,
+	                buttons: {
+	                    'Ok': function()
+	                    {
+	                        $(this).dialog('close');
+	                    }
+	                }
+	            });
+				$(".ui-dialog-titlebar-close").remove();
+			}
+			else{
+                                 pronac = document.getElementById("orgaoERROR").innerHTML;
+                       if(pronac.length > 0){
+                           $("#error").html('Este projeto n&atilde;o se encontra nessa unidade!');
+			   $("#error").dialog('open');
+			   $("#error").dialog
+                           ({
+                                    height: 180,
+                                    modal: true,
+                                    draggable: false,
+                                    resizable: false,
+                                    closeOnEscape: false,
+                                    buttons: {
+                                        'Ok': function()
+                                        {
+                                            $(this).dialog('close');
+                                        }
+                                    }
+                                });
+                       }else{
+                          $('#formu2').submit();
+                       }
+                     }
+
+	});
+});
+
+function buscarProjeto(v)
+{
+	$.ajax({
+		type: "POST",
+		dataType: 'json',
+		data:
+		{
+			pronac: v
+		},
+		url: '../tramitarprojetos/buscaprojeto',
+		success: function(data)
+		{
+
+			for (i in data)
+			{
+				if (data[i].msg == 'ok')
+				{
+					$('#l_localizacao').html('Localização: '+data[i].localizacao);
+					$('#l_processonome').html(data[i].processonome);
+					$('#idpronac').val(data[i].idpronac);
+					$('#idDestino').val(data[i].Orgao);
+				}
+				else
+				{
+					$('#l_localizacao').html('Projeto não Cadastrado!');
+					$('#l_processonome').html('');
+					$('#idpronac').val('');
+				}
+
+			}
+
+                       if(data[0].localizacao != '<?php echo $this->siglaOrgao; ?>' ){
+                           //alert(data[0].localizacao+" != <?php echo $this->siglaOrgao; ?>")
+                           document.getElementById("orgaoERROR").innerHTML = "Este projeto n&atilde;o se encontra nessa unidade";
+                       }else{
+                           document.getElementById("orgaoERROR").innerHTML = "";
+                       }
+		}
+	});
+}
+//-->
+</script>
+
+<?php
+if (isset($_GET['pronac'])) {
+    $projeto = $this->Projeto;
+}
+
+require_once "inc/menu.inc.php"; // menu
+?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para p&aacute;gina inicial">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'tramitarprojetos', 'action' => 'index')); ?>" title="Ir para Tramitar projetos">Tramitar projetos</a></li>
+        <li class="last">Cadastrar projetos</li>
+    </ul>
+</div>
+<!-- ========== FIM BRADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Cadastrar projetos <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="error"></div>
+<div id="confirm" title="Confirma&ccedil;&atilde;o" style="display: none">Tem certeza que deseja excluir o registro?</div>
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+<fieldset><legend> Preencha os dados abaixo </legend>
+	<?php if (isset ($_GET['pronac'])) {?>
+        <script type="text/javascript">
+
+            buscarProjeto('<?php echo $this->setProjeto[0]->pronac; ?>');
+        </script>
+	<form name="formu1" id="formu1" method="post" action="<?php echo $this->url(array('controller' => 'tramitarprojetos', 'action' => 'editarprojetos'));?>">
+		<input type="hidden" name="idpronac" id="idpronac" value=""  />
+		<?php foreach ($this->setProjeto as $setProjeto): ?>
+		<input type="hidden" name="idpronac" id="idpronac" value=""  />
+		<input type="hidden" name="idDestino" id="idDestino" value=""  />
+		<table class="tabela" width="50%" align="center">
+			<tr>
+				<td width="120"><label for="name">PRONAC *</label></td>
+				<td>
+                                    <input type="text" class="input_simples valida numero" style="float:left" name="pronac" id="pronac" size="10" maxlength="6" onchange="buscarProjeto(this.value);" value="<?php echo $setProjeto->pronac; ?>" size="20" maxlength="20" />
+					<label id="l_erro" style="color:red; font-size:12px;"></label>
+                                        <div id="orgaoERROR" style="color:#FF0000; float:left; margin-left: 10px">&nbsp;</div>
+				</td>
+			</tr>
+			<tr>
+				<td><label for="name">Dados do projeto:</label></td>
+				<td>
+					<label id="l_localizacao"></label>&nbsp;&nbsp;&nbsp;&nbsp;
+					<label id="l_processonome"></label> &nbsp;&nbsp;&nbsp;&nbsp;
+
+				</td>
+			</tr>
+
+			<tr>
+				<td><label for="name">Destino *</label></td>
+				<td>
+					<select name="destino" id="destino" style="width: 350px;" class="select_simples valida">
+							<option value ="">Selecione..</option>
+						<?php foreach($this->TodosDestinos as $destino):?>
+							<?php if($setProjeto->idDestino == $destino->Codigo){?>
+							<option selected="selected" value="<?php echo $destino->Codigo; ?>">
+								<?php echo $destino->Sigla; ?> - <?php echo $destino->org_nomeautorizado ; ?>
+							</option>
+							<?php }?>
+							<option value="<?php echo $destino->Codigo; ?>">
+								<?php echo $destino->Sigla; ?> - <?php echo $destino->org_nomeautorizado ; ?>
+							</option>
+						<?php endforeach; ?>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td><label for="name">Despacho* </label></td>
+				<td><textarea class="textarea_simples valida" name="despacho" id="despacho" cols="50" rows="5"><?php echo $setProjeto->despacho; ?></textarea></td>
+			</tr>
+		</table>
+		<table class="tabela" cellpadding="0" cellspacing="0">
+			<tr>
+				<td>
+				<input type="button" class="btn_alterar" id="btn_alterar"/></td>
+			</tr>
+		</table>
+		<?php endforeach;?>
+		</form>
+		<?php } else {?>
+		<form name="formu2" id="formu2" method="post" action="<?php echo $this->url(array('controller' => 'tramitarprojetos', 'action' => 'despacharproj'));?>">
+			<input type="hidden" name="idpronac" id="idpronac" value=""  />
+			<input type="hidden" name="idDestino" id="idDestino" value=""  />
+			<table class="tabela" width="50%" align="center">
+			<tr>
+				<td width="120"><label for="name">PRONAC *</label></td>
+				<td>
+                                    <input type="text" class="input_simples valida numero" name="pronac" id="pronac" value="" size="10" maxlength="6" onchange="buscarProjeto(this.value);" style="float:left" />
+					<label id="l_erro" style="color:red; font-size:12px;"></label>
+                                        <div id="orgaoERROR" style="color:#FF0000; float:left; margin-left: 10px">&nbsp;</div>
+				</td>
+			</tr>
+			<tr>
+				<td><label for="name">Dados do projeto:</label></td>
+				<td>
+					<label id="l_localizacao"></label>&nbsp;&nbsp;&nbsp;&nbsp;
+					<label id="l_processonome"></label> &nbsp;&nbsp;&nbsp;&nbsp;
+
+				</td>
+			</tr>
+
+			<tr>
+				<td><label for="name">Destino *</label></td>
+				<td colspan="3">
+					<select name="destino" id="destino" style="width: 350px;" class="select_simples valida">
+							<option value="">Selecione..</option>
+						<?php foreach($this->TodosDestinos as $destino):?>
+							<option value="<?php echo $destino->Codigo; ?>"><?php echo $destino->Sigla; ?> - <?php echo $destino->org_nomeautorizado ; ?> </option>
+						<?php endforeach; ?>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td><label for="name">Despacho *</label></td>
+				<td colspan="3"><textarea class="textarea_simples valida" name="despacho" id="despacho" cols="50" rows="5" ></textarea></td>
+			</tr>
+		</table>
+		<table class="tabela" cellpadding="0" cellspacing="0">
+			<tr>
+				<td><input type="button" class="btn_salvar" id="btn_salvar"/></td>
+			</tr>
+		</table>
+	</form>
+	<?php }?>
+</fieldset>
+
+<?php if (($this->Destino) && ($this->Despacho)){?>
+<?php $x = 0;
+		$idAtual = 0;
+	 	$idAnterior = 1;?>
+<fieldset><legend> Projetos Cadastrados/Recusados </legend>
+<table class="tabela">
+	<?php foreach($this->Destino as $destino):?>
+		<?php if($x > 0){
+			$idAtual = $destino->idDestino;
+		 }?>
+		<?php if($idAtual != $idAnterior){ ?>
+ 		<tr>
+ 			<th colspan="9" align="left">
+ 				<img src="<?php echo $this->baseUrl(); ?>/public/img/icn_menos.gif" class="<?php echo $destino->idDestino; ?>" style="cursor:pointer;" onclick="sumiraqui('<?php echo $destino->idDestino; ?>');" />
+ 				<img src="<?php echo $this->baseUrl(); ?>/public/img/icn_mais.gif" class="<?php echo $destino->idDestino; ?>" style="cursor:pointer; display:none;" onclick="sumiraqui('<?php  echo $destino->idDestino; ?>');" />
+ 			 &nbsp;&nbsp;&nbsp;&nbsp;
+ 			 Destino: &nbsp;<?php echo $destino->siglaDestino; ?> &nbsp;-&nbsp;  <?php echo $destino->nomeDestino; ?>&nbsp;&nbsp; | &nbsp;
+ 			 <a href="<?php echo $this->url(array('controller' => 'tramitarprojetos', 'action' => 'despacharprojetos', 'Destino'=>$destino->idDestino)); ?>">Enviar Projetos</a>
+ 			</th>
+ 		</tr>
+ 		<tr class="<?php echo $destino->idDestino; ?>">
+ 			<th width="50">Processo</th>
+ 			<th width="30">PRONAC</th>
+ 			<th>Nome do Projeto</th>
+ 			<th>Despacho</th>
+ 			<th width="50">Situa&ccedil;&atilde;o</th>
+ 			<th width="120">Usu&aacute;rio</th>
+ 			<th width="70">Data</th>
+ 			<th width="5">Editar</th>
+ 			<th width="5">Excluir</th>
+ 		</tr>
+ 		<?php foreach($this->Despacho as $despacho):?>
+		<?php if ($despacho->idDestino == $destino->idDestino){?>
+ 		<tr class="<?php echo $destino->idDestino; ?>">
+ 			<td align="center"><?php echo $despacho->Processo; ?></td>
+ 			<td align="center"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')); ?>?idPronac=<?php echo $despacho->idPronac; ?>" title="Consultar dados do projeto" target="_blank"><?php echo $despacho->Pronac; ?></a></td>
+ 			<td align="center"><?php echo $despacho->NomeProjeto; ?></td>
+ 			<td align="center"><?php echo $despacho->despacho; ?></td>
+ 			<td align="center" ><?php if ($despacho->Acao == 4) { echo "<b><font color='red'></font>"; } echo $despacho->Situacao;?></td>
+ 			<td align="center" ><?php echo $despacho->Emissor ?></td>
+ 			<td align="center" ><?php echo $despacho->dtEnvio ?></td>
+ 			<td class='centro' width="5%">
+				<a href='<?php echo $this->baseurl();?>/tramitarprojetos/despacharprojetos?pronac=<?php echo $despacho->Pronac ?>&acao=<?php echo $despacho->Acao ?>'>
+				<img title="Editar" class="editar" src="<?php echo $this->baseUrl(); ?>/public/img/ico/edit.png" style="width: 40%; height: 45%"></img></a></td>
+			<td align="center">
+				<input type="button" class="btn_excluir" name="btn_excluir" value="" onclick="excluir('<?php echo $despacho->idPronac; ?>');" /></td>
+ 		</tr>
+ 		<?php }?>
+ 		<?php $idAnterior = $destino->idDestino; ?>
+ 		<?php $x++;?>
+ 		<?php endforeach;?> <!-- FIM FOREACH DESPACHO -->
+ 		<?php }?>
+ 		<?php endforeach;?> <!-- FIM FOREACH DESTINO -->
+
+
+ </table>
+ </fieldset>
+<?php }?>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

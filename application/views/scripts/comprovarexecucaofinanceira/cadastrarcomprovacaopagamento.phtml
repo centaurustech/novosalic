@@ -1,0 +1,31 @@
+<?php
+if($this->arq){
+    if($this->erroextensao){
+    ?>
+    <script>window.parent.janelaAlerta('Arquivo com extens&atilde;o invalida!');</script>
+    <?php
+    }
+    else{
+        $comprovacaoPagamentoHref   =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'comprovacaopagamento'));
+        ?>
+        <script>
+
+            info = {
+                resp        :   true,
+                mensagem    :   'Anexado com sucesso!',
+                pagina      :   '<?php echo $comprovacaoPagamentoHref;?>',
+                parametros  :   {
+                                    idpronac:'<?php echo $this->idpronac;?>',ckItens:<?php echo json_encode($this->ckItens);?>
+                                }
+            }
+            window.parent.executarPagina(info);
+        </script>
+        <?php
+    }
+}
+else{
+    ?>
+    <script>window.parent.janelaAlerta('Obrigat&oacute;rio anexar um arquivo!');</script>
+    <?php
+}
+?>

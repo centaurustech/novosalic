@@ -1,0 +1,73 @@
+<?php
+/* INICIO DA GUIA DE LINKS */
+$controller = 'Fiscalizarprojetocultural';
+$links = array(
+        array('Fiscaliza&ccedil;&atilde;o do projeto'=>array())
+);
+montaGuiaLinks('Fiscalizarprojetocultural',$links);
+/* FIM DA GUIA DE LINKS */
+?>
+<div id="total" style="width: 100%;">
+    <div>
+        <div id="titulo">
+            <div>
+                Fiscaliza&ccedil;&atilde;o do Projeto
+                <?php echo montaBotaoVoltar($controller, $links); ?>
+            </div>
+        </div>
+        <div id="conteudo">
+            <br clear="left"/>
+            <div id='painel'>
+                <?php
+                $num = 0;
+                $cPronacAnt = null;
+                $cNmProjetoAnt = null;
+                $cProdutoAnt = null;
+                foreach ($this->projetosFiscalizacao as $key=>$valor) {
+                    echo "<table class='tabela'>
+                        <tr>
+                            <td><input type='button' id='abrir_fechar{$key}' cont='{$key}' class='btn_adicionar linkrelatorio' />{$valor['nome']}</td>
+                        </tr>
+                    </table>";
+                    $primeiro = 0;
+                    echo "<div class='class_relatorio' id='div_relatorio{$key}' style='display:none;'>";
+                    echo "<table cellspacing=\"1\" style=\"margin: 0;margin-left: 52px; width: 90%;  padding: 0px;\">";
+                    foreach ($valor['projetos'] as $idProjeto=>$dsProjeto) {
+                        $titulo     =   "<thead><tr>";
+                        $conteudo   =   "<tbody><tr>";
+                        foreach ($dsProjeto as $t=>$c) {
+                            $titulo     .=  "<th>{$t}</th>";
+                            $conteudo   .=  "<td>{$c}</td>";
+                        }
+                        $titulo     .=  "</tr></thead>";
+                        $conteudo   .=  "</tr></tbody>";
+                        if($primeiro==0) {
+                            echo $titulo;
+                        }
+                        echo $conteudo;
+                        $primeiro++;
+                    }
+                    if (count($valor['projetos']) <= 0) {
+                    	echo "<tr><th>NÃO EXISTE(M) PROJETO(S) COM ".$valor['nome']."</th></tr>";
+                    }
+                    echo "</table>";
+                    echo "</div>";
+                }
+                ?>
+            </div>
+        </div>
+        <div id="rodapeConteudo" ><span></span></div>
+        <!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+    </div>
+    <br clear="all" />
+</div>
+<script>
+    var cont = 0;
+    $('#painel').find('.class_relatorio').each(function(){
+        var contAux = cont;
+        $('#abrir_fechar'+contAux).click(function(){
+            $('#div_relatorio'+contAux).toggle('slow');
+        });
+        cont++;
+    });
+</script>

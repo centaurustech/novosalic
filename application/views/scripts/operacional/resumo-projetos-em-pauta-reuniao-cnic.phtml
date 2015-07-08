@@ -1,0 +1,80 @@
+<script>
+    function JSImprimir(){
+        //$(".naoImprimir").css("display", "none");
+        $("#divConteudoPDF").html($(".conteudoImprimivel").html());
+        $("#divConteudoPDF").find('.naoImprimivel').each(function(){
+            $(this).remove();
+        });
+        $("#conteudoImprimir").val($("#divConteudoPDF").html());
+        $("#formGerarPdf").submit();
+    }
+    
+</script>
+<form method="POST" id="formGerarPdf" target="_blank" name="formGerarPdf" action="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'gerar-pdf')); ?>" style="display:none">
+    <div id="divConteudoPDF"></div>
+    <textarea name="html" id="conteudoImprimir"></textarea>
+</form>
+<form action="<?php echo $this->urlGerarGrafico; ?>" method="post" name="frmGraficoResumo" id="frmGraficoResumo" target="_blank">
+    <div class="conteudoImprimivel" id="conteudoImprimivel">
+    <table class="tabela" style="width: 70%;">
+        <tr>
+            <th colspan="2">
+            Resumo: Projetos por Componente da Comiss&atilde;o
+            </th>
+            <th class="naoImprimivel"></th>
+        </tr>
+        <tr>
+            <th width="70%">Componentes</th>
+            <th width="20%">Registros</th>
+            <th width="10%" class="naoImprimivel"><input type="submit" name="todos" class="btn_gerar_grafico" value="" /></th>
+        </tr>
+        <?php $i=0?>
+        <?php foreach($this->projetosAnalisados as $componente => $qtde): $i++;?>
+        <input type="hidden" name="gValA_<?php echo $componente; ?>" value="<?php echo $qtde; ?>"/>
+        <?php if($i == 1): ?>
+        <tr class="destacar">
+            <td align="left"><b>Analisados</b></td>
+            <td align="right"><b><?php echo $this->projetosAnalisados['total'];?></b></td>
+            <td align="center" class="naoImprimivel"><input type="submit" name="Analisados" class="btn_gerar_grafico" value=""/></td>
+        </tr>
+        <?php endif; ?>
+        <?php if($componente != "total"): ?>
+        <tr>
+            <td align="left" style="padding-left: 40px;"><?php echo $componente; ?></td>
+            <td align="right"><?php echo $qtde; ?></td>
+            <td width="10%" class="naoImprimivel"></td>
+        </tr>
+        <?php endif; ?>
+        <?php endforeach; ?>
+        
+        <?php $i=0; $qtde=0; $componente=""; foreach($this->projetosNaoAnalisados as $componente => $qtde): $i++;?>
+        <input type="hidden" name="gValNA_<?php echo $componente; ?>" value="<?php echo $qtde; ?>"/>
+        <?php if($i == 1): ?>
+        <tr class="destacar">
+            <td align="left"><b>N&atilde;o analisados</b></td>
+            <td align="right"><b><?php echo $this->projetosNaoAnalisados['total'];?></b></td>
+            <td align="center" class="naoImprimivel"><input type="submit" name="NaoAnalisados" class="btn_gerar_grafico" value=""/></td>
+        </tr>
+        <?php endif; ?>
+        <?php if($componente != "total"): ?>
+        <tr>
+            <td align="left" style="padding-left: 40px;"><?php echo $componente; ?></td>
+            <td align="right"><?php echo $qtde; ?></td>
+            <td width="10%" class="naoImprimivel"></td>
+        </tr>
+        <?php endif; ?>
+        <?php endforeach; ?>
+        <tr>
+            <th align="left">Total Geral</th>
+            <th align="right"><?php echo $this->projetosAnalisados['total']+$this->projetosNaoAnalisados['total']; ?></th>
+            <th width="10%" class="naoImprimivel"></th>
+        </tr>
+    </table>
+    </div><!-- fecha conteudo imprimivel -->
+<?php echo Grafico::formConfiguracao($this->baseUrl(),null,false) ; ?>
+</form>
+<div align="center">
+    <input  type="button" name="imprimir" class="btn_imprimir" onclick='javascript:JSImprimir()'>
+    <input type="button" class="btn_configurar_grafico" id="btn_configurar_grafico" onclick="$('#confGrafico').toggle(); $(this).hide();" />
+    <!--<input type="button" class="btn_voltar" onclick="voltar();"/>-->
+</div>

@@ -1,0 +1,52 @@
+<?php
+/**
+ * Busca Agentes
+ * @author Equipe RUP - Politec
+ * @since 28/04/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.manteragentes
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+
+<table class="tabela">
+	<tr>
+		<td colspan="3" align="right">
+			<a id="btnAddDirigente" class="incluir_dirigente" href="#" title="Adicionar Dirigente" onclick="adicionar_dirigente_agente(true);"> </a>
+		</td>
+	</tr>
+
+	<tr>
+		<th colspan="3" class="fundo_linha2">Dirigentes cadastrados para o Agente</th>
+	</tr>
+
+	<?php if ($this->Dirigentes) { ?>
+	<tr>
+		<th>CPF</th>
+		<th>NOME</th>
+		<th>AÇÃO</th>
+	</tr>
+
+	<?php foreach ($this->Dirigentes as $D) : ?>
+	<tr class="linha">
+		<td align="center" width="160">
+			<a href="#" onclick="alterar_dirigente('<?php echo $D->CNPJCPF; ?>');" title="Alterar dados do Dirigente"><?php echo Validacao::mascaraCPFCNPJ($D->CNPJCPF) ?></a>
+		</td>
+		<td>
+			<?php echo $D->Nome; ?>
+		</td>
+		<td class="centro" width="100">
+			<div class="botao_texto"><a class="editar" href="#" title=" Alterar dados do Dirigente " onclick="alterar_dirigente('<?php echo $D->CNPJCPF; ?>');" /></a></div>
+		</td>
+	</tr>
+	<?php endforeach; ?>
+
+	<?php } else { ?>
+	<tr>
+		<td colspan="3" align="center"><em>Não existem Dirigentes associados ao Agente!</em></td>
+	</tr>
+	<?php } ?>
+
+</table>

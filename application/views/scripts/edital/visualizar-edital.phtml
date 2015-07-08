@@ -1,0 +1,55 @@
+<?php include_once 'inc/menu-montagem.php'; ?>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first">Início</li>
+        <li class=""><a href="index-cadastrar-edital.htm">Criar Edital - Passo 1</a></li>
+        <li class=""><a href="form-informacoes-basicas.htm">Criar Edital - Passo 2</a></li>
+        <li class=""><a href="form-modulos-edital.htm">Criar Edital - Passo 3</a></li>
+        <li class="last">Criar Edital - Passo Final</li>
+    </ul>
+</div>
+<div id="titulo" style="width: 1333px;">
+    <div>Criar Edital<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<div id="conteudo" style="width: 1347px;">
+    <!-- ====================================================================== --> 
+    <!-- ============= INICIO - VISUALIZAR FINALIZAR ========================== -->
+    <!-- ====================================================================== -->
+    <div id="visualizarFinalizar">
+        <form id="frmConteudoEdital" name="frmConeudoEdital" action="" method="post">
+            <table class="tabela" id="tblConteudo" style="width: 900px">
+                <tbody><tr>
+                        <th colspan="8">Visualizar/Finalizar Edital</th>
+                    </tr>
+                    <tr>
+                        <td colspan="8" class="destacar bold w150 esquerdo">Formatação final do Edital <span style="color: red;">*</span></td>
+                    </tr>
+                    <?php foreach ($this->editalmontado as $ed) :?>
+                    <tr>
+                        <td colspan="8">
+                            <?php echo $ed['dsTexto']; ?>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                    
+
+                </tbody>
+            </table>
+            <br>
+            <div style="width: 100%; text-align: center;">
+                <input class="btn_finalizar" type="button" id="finalizarEdital" value="" name="salvar" id="salvar">
+            </div>
+        </form>
+    </div>
+</div>
+<br clear="all">
+
+<script type="text/javascript">
+    
+    
+    $('#finalizarEdital').click(function(){
+        window.location = '<?php echo $this->url(array('controller' => 'edital', 'action' => 'index'),'',true); ?>';
+    });
+        
+</script>        

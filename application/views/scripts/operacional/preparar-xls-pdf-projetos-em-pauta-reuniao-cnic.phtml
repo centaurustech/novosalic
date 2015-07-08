@@ -1,0 +1,125 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#conteudoXLS').val($('#conteudoImprimivel').html());
+        $('#formGerarXls').submit();
+    });
+</script>
+<form method="POST" id="formGerarXls" name="formGerarXls" action="<?php echo $this->url(array('controller' => 'relatorio', 'action' => ($this->tipo == 'xls')?'gerar-xls':'html2-pdf' , 'orientacao' => ($this->tipo == 'pdf' && $this->orientacao)?'L':'P' )); ?>" style="display:none">
+    <textarea name="html" id="conteudoXLS"></textarea>
+</form>
+<div class="conteudoImprimivel" id="conteudoImprimivel" style="display:none">
+<table class="tabela" width="100%">
+    <tr>
+        <?php if(@in_array("cmpsOrd_Proponente", $this->parametrosBusca["visaoAgente"])): ?>
+            <th valign="middle" align="center" bgcolor="#D0D0D0">Proponente</th>
+        <?php endif; ?>
+        <?php if(@in_array("cmpsOrd_Pronac", $this->parametrosBusca["visaoAgente"])): ?>
+            <th valign="middle" align="center" bgcolor="#D0D0D0">PRONAC</th>
+        <?php endif; ?>
+        <?php //if(@in_array("cmpsOrd_NomeProjeto", $this->parametrosBusca["visaoAgente"])): ?>
+            <th valign="middle" align="center" bgcolor="#D0D0D0">Nome do Projeto</th>
+        <?php //endif; ?>
+        <?php if(@in_array("cmpsOrd_ResumoProjeto", $this->parametrosBusca["visaoAgente"])): ?>
+            <th valign="middle" align="center" bgcolor="#D0D0D0">Resumo do Projeto</th>
+        <?php endif; ?>
+        <?php if(@in_array("cmpsOrd_Situacao", $this->parametrosBusca["visaoAgente"])): ?>
+            <th valign="middle" align="center" bgcolor="#D0D0D0">Situa&ccedil;&atilde;o</th>
+        <?php endif; ?>
+        <?php if(@in_array("cmpsOrd_DtInicio", $this->parametrosBusca["visaoAgente"])): ?>
+            <th valign="middle" align="center" bgcolor="#D0D0D0">Dt. In&iacute;cio Execu&ccedil;&atilde;o</th>
+        <?php endif; ?>
+        <?php if(@in_array("cmpsOrd_DtFim", $this->parametrosBusca["visaoAgente"])): ?>
+            <th valign="middle" align="center" bgcolor="#D0D0D0">Dt. Fim Execu&ccedil;&atilde;o</th>
+        <?php endif; ?>
+        <?php if(@in_array("cmpsOrd_DtDistribuicao", $this->parametrosBusca["visaoAgente"])): ?>
+            <th valign="middle" align="center" bgcolor="#D0D0D0">Dt. Distribui&ccedil;&atilde;o</th>
+        <?php endif; ?>
+        <?php if(@in_array("cmpsOrd_Area", $this->parametrosBusca["visaoAgente"])): ?>
+            <th valign="middle" align="center" bgcolor="#D0D0D0">&Aacute;rea Cultural</th>
+        <?php endif; ?>
+        <?php if(@in_array("cmpsOrd_Segmento", $this->parametrosBusca["visaoAgente"])): ?>
+            <th valign="middle" align="center" bgcolor="#D0D0D0">Segmento Cultural</th>
+        <?php endif; ?>
+        <?php if(@in_array("cmpsOrd_Avaliacao", $this->parametrosBusca["visaoAgente"])): ?>
+            <th valign="middle" align="center" bgcolor="#D0D0D0">Avalia&ccedil;&atilde;o</th>
+        <?php endif; ?>
+        <?php if(@in_array("cmpsOrd_SolicitadoReal", $this->parametrosBusca["visaoAgente"])): ?>
+            <th valign="middle" align="center" bgcolor="#D0D0D0">Vl. Solicitado</th>
+        <?php endif; ?>
+        <?php if(@in_array("cmpsOrd_SugeridoReal", $this->parametrosBusca["visaoAgente"])): ?>
+            <th valign="middle" align="center" bgcolor="#D0D0D0">Vl. Sugerido</th>
+        <?php endif; ?>
+    </tr>
+    <?php $auxAnalise = ""; $auxComponente = ""; ?>
+    <?php $ct = 0; ?>
+    <?php if(count($this->projetos) > 0):?>
+    <?php foreach($this->projetos as $chave => $projeto):?>
+    <?php  if($projeto->Analise == "Analisado"): ?>
+    <?php       if(isset($this->arrQtdeProjetosAnalisados[$projeto->Componente])){ $qtde = $this->arrQtdeProjetosAnalisados[$projeto->Componente];} $total = $this->arrQtdeProjetosAnalisados['total']; ?>
+    <?php  else: ?>
+    <?php       if(isset($this->arrQtdeProjetosNaoAnalisados[$projeto->Componente])){ $qtde =  $this->arrQtdeProjetosNaoAnalisados[$projeto->Componente];} $total = $this->arrQtdeProjetosNaoAnalisados['total'];?>
+    <?php  endif; ?>
+    <?php if($projeto->Analise != $auxAnalise): $auxComponente = ""?>
+    <tr>
+        <th valign="top" align="left" colspan="<?php echo count($this->parametrosBusca["visaoAgente"]); ?>"><b>Status:&nbsp;<?php echo $projeto->Analise?> (<?php echo $total;?>)</b></th>
+    </tr>
+    <?php endif; ?>
+    <?php if($projeto->Componente != $auxComponente):?>
+    <tr class="destacar">
+        <th valign="top" align="left" colspan="<?php echo count($this->parametrosBusca["visaoAgente"]); ?>"><b>Componente:&nbsp;<?php echo $projeto->Componente?>  (<?php echo $qtde;?>)</b></th>
+    </tr>
+    <?php endif; ?>
+    <tr>
+        <?php if(@in_array("cmpsOrd_Proponente", $this->parametrosBusca["visaoAgente"])): ?>
+            <td valign="top" align="left"><?php echo $projeto->Proponente?></td>
+        <?php endif; ?>
+        <?php if(@in_array("cmpsOrd_Pronac", $this->parametrosBusca["visaoAgente"])): ?>
+            <td valign="top" align="center"><?php echo $projeto->Pronac?></td>
+        <?php endif; ?>
+        <?php //if(@in_array("cmpsOrd_NomeProjeto", $this->parametrosBusca["visaoAgente"])): ?>
+            <td valign="top" align="left"><?php echo $projeto->NomeProjeto?></td>
+        <?php //endif; ?>
+        <?php if(@in_array("cmpsOrd_ResumoProjeto", $this->parametrosBusca["visaoAgente"])): ?>
+            <td valign="top" align="justify"><?php echo $projeto->ResumoProjeto?></td>
+        <?php endif; ?>
+        <?php if(@in_array("cmpsOrd_Situacao", $this->parametrosBusca["visaoAgente"])): ?>
+            <td valign="top" align="left"><?php echo $projeto->Situacao?></td>
+        <?php endif; ?>
+        <?php if(@in_array("cmpsOrd_DtInicio", $this->parametrosBusca["visaoAgente"])): ?>
+            <td valign="top" align="center"><?php echo ConverteData($projeto->DtInicioExecucao, 5)?></td>
+        <?php endif; ?>
+        <?php if(@in_array("cmpsOrd_DtFim", $this->parametrosBusca["visaoAgente"])): ?>
+            <td valign="top" align="center"><?php echo ConverteData($projeto->DtFimExecucao, 5)?></td>
+        <?php endif; ?>
+        <?php if(@in_array("cmpsOrd_DtDistribuicao", $this->parametrosBusca["visaoAgente"])): ?>
+            <td valign="top" align="center"><?php echo ConverteData($projeto->DtDistribuicao, 5)?></td>
+        <?php endif; ?>
+        <?php if(@in_array("cmpsOrd_Area", $this->parametrosBusca["visaoAgente"])): ?>
+            <td valign="top" align="left" nowrap="nowrap"><?php echo $projeto->DescArea?></td>
+        <?php endif; ?>
+        <?php if(@in_array("cmpsOrd_Segmento", $this->parametrosBusca["visaoAgente"])): ?>
+            <td valign="top" align="left" nowrap="nowrap"><?php echo $projeto->DescSegmento?></td>
+        <?php endif; ?>
+        <?php if(@in_array("cmpsOrd_Avaliacao", $this->parametrosBusca["visaoAgente"])): ?>
+            <td valign="top" align="left"><?php echo $projeto->Avaliacao?></td>
+        <?php endif; ?>
+        <?php if(@in_array("cmpsOrd_SolicitadoReal", $this->parametrosBusca["visaoAgente"])): ?>
+        <!--<td valign="top" align="center"><?php echo $projeto->Dias?></td>-->
+            <td valign="top" align="right"><?php echo number_format($projeto->SolicitadoReal, 2, ",", ".")?></td>
+        <?php endif; ?>
+        <?php if(@in_array("cmpsOrd_SugeridoReal", $this->parametrosBusca["visaoAgente"])): ?>
+            <td valign="top" align="right"><?php echo number_format($projeto->SugeridoReal, 2, ",", ".")?></td>
+        <?php endif; ?>
+    </tr>
+    <?php $auxAnalise = $projeto->Analise; ?>
+    <?php $auxComponente = $projeto->Componente; ?>
+    <?php endforeach; ?>
+    <?php else: ?>
+    <tr>
+        <td colspan="16" valign="top" align="center">Nenhum Registro Encontrado</td>
+    </tr>
+    <?php endif; ?>
+</table>
+</div>
+
+

@@ -1,0 +1,384 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.btn_imprimir').click(function(){
+            $('#formImpressao').submit();
+        });
+        
+        $('.btn_xls').click(function(){
+            $('#formxls').submit();
+        });
+    });
+        
+    function confirmaBalancear(idpronac){
+        $("#msgmodal").html("Deseja realmente enviar para o componente da comissão?");
+        $("#modalConfirm").dialog("destroy");
+        $("#modalConfirm").dialog({
+            title :'Confirmação',
+            resizable: false,
+            width:320,
+            height:180,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'Não': function(){
+                    $(this).dialog('close');
+                },
+                'Sim': function(){
+                    location.href = "<?php echo $this->url(array('controller' => 'projetos', 'action' => 'balancear')); ?>/idpronac/" + idpronac;
+                    $(this).dialog('close');
+                    $("#msgmodal").html("<center>Processando dados ...</center>");
+                    $("#modalConfirm").dialog('open');
+                }
+            }
+        });
+        $('.ui-dialog-titlebar-close').remove();
+        $("#modalConfirm").dialog('open');
+    }
+
+    function confirmaAprovacao(idpronac, idusuario){
+        $("#idpronac").val(idpronac);
+        $("#idusuario").val(idusuario);
+        document.getElementById("modalJustificativa").title = "Anexar Documento";
+
+        // modal com os ddos do dirigente
+        $("#modalJustificativa").dialog("destroy");
+        $("#modalJustificativa").dialog({
+            width:580,
+            height:280,
+            EscClose:false,
+            modal:true,
+            buttons: {
+                'Cancelar':function(){
+                    $(this).dialog('close'); // fecha a modal
+		},
+		'Salvar': function(){
+                    $(this).dialog('close'); // fecha a modal
+                    $("#msgmodal").html("Deseja realmente fazer a aprovação direta?");
+                    $("#modalConfirm").dialog("destroy");
+                    $("#modalConfirm").dialog({
+                        title :'Confirmação',
+                        resizable: false,
+                        width:320,
+                        height:160,
+                        modal: true,
+                        autoOpen:false,
+                        buttons: {
+                            'Não': function(){
+                                $(this).dialog('close');
+                            },
+                            'Sim': function(){
+                                document.forms["formeanexo"].submit();
+                                $(this).dialog('close');
+                                $("#msgmodal").html("<center>Processando dados ...</center>");
+                                $("#modalConfirm").dialog('open');
+                            }
+                        }
+                    });
+                    $("#modalConfirm").dialog('open');
+                    $('.ui-dialog-titlebar-close').remove();
+                }
+            }
+        });
+        $('.ui-dialog-titlebar-close').remove();
+    }
+
+
+    function devolverParaAnalise(idPronac){
+        $("#modalDevolverParaAnalise").html("<br><br><br><br><center>Carregando dados <br><img src='<?php echo $this->baseUrl(); ?>/public/img/ajax.gif' /></center>");
+        jqAjaxLinkSemLoading('<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'devolverparaanalise')); ?>?idpronac='+idPronac, '', 'modalDevolverParaAnalise');
+
+        // modal com os dados do dirigente
+        $("#modalDevolverParaAnalise").dialog("destroy");
+        $("#modalDevolverParaAnalise").dialog({
+            width:750,
+            height:470,
+            title: "Devolver para Análise",
+            EscClose:false,
+            modal:true,
+            buttons: {
+                'Cancelar':function(){
+                    $(this).dialog('close'); // fecha a modal
+                },
+                'Enviar':function(){
+                    $("#frmDevolver").submit();
+                }
+            }
+        });
+        $('.ui-dialog-titlebar-close').remove();
+    }
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''),'',true); ?>" title="Ir para Início">Início</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'index'),'',true); ?>" title="Gerenciar Pareceres">Gerenciar Pareceres T&eacute;cnicos</a></li>
+        <li class="last">Principal</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Gerenciar Pareceres<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div style="display:none;" id="modalJustificativa" title="Anexar Documento" >
+    <form name="formeanexo" id="" method="post" action="<?php echo $this->url(array('controller' => 'projetos', 'action' => 'aprovacaodireta'));?>" enctype="multipart/form-data">
+        <table class="tabela">
+            <tr align="center">
+                <td colspan="2">* Favor, anexar um documento para fazer a aprovação direta!</td>
+            </tr>
+            <tr>
+                <td class="destacar bold">Tipo Documento <span style="color: red;">*</span></td>
+                <td>
+                    <select name="tipo_doc" style="width: 200px;" class="input_simples">
+                        <?php foreach($this->tipos as $t){ ?>
+                        <option value="<?php echo $t->idTipoDocumento; ?>"><?php echo $t->dsTipoDocumento; ?></option>
+                        <?php } ?>
+                    </select>
+                </td>
+            </tr>
+            <!--<tr>
+                <td class="destacar bold">Código ECT:</td>
+                <td><input type="text" class="input_simples numero" name="cod_ect" id="cod_ect" value="" size="20" maxlength="20" /></td>
+            </tr>-->
+            <tr>
+                <td class="destacar bold">Arquivo <span style="color: red;">*</span></td>
+                <td><input class="input_simples" type="file" id="documento" name="documento" style="width:350px;" /></td>
+            </tr>
+        </table>
+        <input type="hidden" name="idpronac" id="idpronac"/>
+        <input type="hidden" name="idusuario" id="idusuario"/>
+    </form>
+</div>
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <div id="modalConfirm" style="display: none;"><span id="msgmodal"></span></div>
+
+    <table class="tabela">
+        <tr>
+            <td width="200" align="center">
+                <input type="button" class="btn_localizar" name="name" value=" " onclick="redirecionar('<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'buscarprojeto'));?>');" />
+            </td>
+            <td align="center"><?php if($this->qtdDocumentos != 0) { echo $this->qtdDocumentos.' Projetos listados'; }else {  echo 'Nenhum Registro encontrado!'; }?></td>
+            <td width="200" align="center"></td>
+        </tr>
+    </table>
+
+    <?php if(count($this->dados)>0):?>
+    <!-- ============ PAGINAÇÃO ============ -->
+    <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+        <tbody><tr>
+                <td align="center">
+                <form name="form1" id="form1" action="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'index'));?>" method="get">
+                   <?php if($this->paginacao['pag']>1) { ?>
+                    <input class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'index')).'?pag=1'."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']; ?>'">
+                    <?php } ?>
+                    <input id="btn_p_anterior" type="button"
+                    <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                    <?php }else { ?>
+                           class="btn_p_anterior"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'index')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']; ?>'"
+                    <?php } ?>>
+                    <input id="btn_p_proximo" type="button"
+                           <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                           class="btn_p_proximo-off"
+                    <?php }else { ?>
+                           class="btn_p_proximo"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'index')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']; ?>'"
+                    <?php } ?>>
+                    <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                    <input class="btn_ultimo" id="btn_ultimo" type="button"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'index')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']; ?>'">
+                    <?php } ?>
+                    Pág.:<select name="pag" id="pag" onchange="$('#form1').submit()" class="input_simples">
+                        <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                        <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                        <?php endfor; ?>
+                    </select>
+                    &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>"><input type="submit" class="btn_recarregar" value="">
+                    <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                    <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                    <input type="button" class="btn_imprimir">
+                    <input type="button" class="btn_xls" />
+                 </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <center>
+    <?php
+        echo $this->paginacao['inicio']." a ";
+        echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+        echo " de ". $this->paginacao['total'];
+    ?>
+    </center>
+    <!-- ========== FIM PAGINAÇÃO ========== -->
+    <?php endif; ?>
+
+    <?php if($this->qtdDocumentos != 0){ ?>
+    <table class="tabela">
+        <tr>
+            <th align="center" nowrap><a href="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'index')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=PRONAC&ordem='.$this->paginacao['novaOrdem'];?>">PRONAC</a></th>
+            <th align="center" nowrap><a href="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'index')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=NomeProjeto&ordem='.$this->paginacao['novaOrdem'];?>">Nome do Projeto</a></th>
+            <th align="center" nowrap><a href="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'index')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=Situacao&ordem='.$this->paginacao['novaOrdem'];?>">Situa&ccedil;&atilde;o</a></th>
+            <th align="center" nowrap><a href="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'index')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=NomeProponente&ordem='.$this->paginacao['novaOrdem'];?>">Nome do Proponente</a></th>
+            <th align="center" width="105"><a href="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'index')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=DtConsolidacao&ordem='.$this->paginacao['novaOrdem'];?>">Dt Consolida&ccedil;&atilde;o</a></th>
+            <th align="center" width="160">Dados da Análise Técnica</th>
+
+            <?php if($this->codGrupo == 103){ ?>
+            <th align="center" width="160">Devolver para An&aacute;lise</th>
+            <th align="center" width="200">Enviar para Comp. da Comiss&atilde;o</th>
+            <th align="center" width="110">Aprova&ccedil;&atilde;o Direta</th>
+            <!--<th align="center" nowrap>Enviar Mensagem</th>-->
+            <th align="center" width="80">Tramitação</th>
+            <?php } ?>
+        </tr>	
+        <?php foreach($this->dados as $pc){ ?>
+        <tr>
+            <td align="center">
+                <a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'));?>?idPronac=<?php echo $pc->IdPRONAC?>" target="_blank">
+                    <?php echo $pc->PRONAC; ?>
+                </a>
+            </td>
+            <td align="left" style="padding-left: 20px;"><?php echo $pc->NomeProjeto; ?></td>
+            <td align="left" style="padding-left: 20px;"><?php echo $pc->Situacao; ?></td>
+            <td align="left" style="padding-left: 20px;"><?php echo $pc->NomeProponente; ?></td>
+            <td align="center" nowrap><?php echo $pc->DtConsolidacao; ?></td>
+            <td align="center"><img style="cursor:pointer;" title="Dados da Análise Técnica" src="<?php echo $this->baseUrl(); ?>/public/img/ico/archive.png" onclick="window.open('<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'dadosdaanalisetecnica'));?>/idpronac/<?php echo $pc->IdPRONAC; ?>');" /></td>
+
+            <?php if($this->codGrupo == 103){ ?>
+            <td align="center"><img style="cursor:pointer;" title="Devolver para Análise" src="<?php echo $this->baseUrl(); ?>/public/img/ico/undo.png" onclick="devolverParaAnalise('<?php echo $pc->IdPRONAC; ?>'); //redirecionar('<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'devolverparaanalise'));?>/idpronac/<?php echo $pc->IdPRONAC; ?>');" /></td>
+            <td align="center">
+                <?php if($pc->Situacao == 'C20'){ ?>
+                <img style="cursor:pointer;" title="Balancear" src="<?php echo $this->baseUrl(); ?>/public/img/encaminhar22x22.jpg" onclick="confirmaBalancear(<?php echo $pc->IdPRONAC; ?>);" /></td>
+                <?php } ?>
+            <td align="center">
+                <?php if($pc->Situacao == 'C20'){ ?>
+                <img style="cursor:pointer;" title="Aprovar" src="<?php echo $this->baseUrl(); ?>/public/img/passed.gif" onclick="confirmaAprovacao(<?php echo $pc->IdPRONAC; ?> , <?php echo $this->idusuario; ?>);" />
+                <?php } ?>
+            </td>
+            <!--<td class="centro"><a target='_blank' href='<?php echo $this->url(array('controller' => 'mantermensagens', 'action' => 'consultarmensagem'), '', true); ?>/idpronac/<?php echo $pc->IdPRONAC; ?>'><img src='<?php echo $this->baseUrl() ?>/public/img/buttons/sair-p.gif' title='Enviar mensagem'/></a></td>-->
+            <td align="center"><img style="cursor:pointer;" title="Visualizar Tramitação" src="<?php echo $this->baseUrl(); ?>/public/img/table_multiple.png" onclick="redirecionar('<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'tramitacaoprojeto'));?>/idpronac/<?php echo $pc->IdPRONAC; ?>');" /></td>
+            <?php } ?>
+        </tr>
+        <?php } ?>	
+    </table>
+
+    <?php if(count($this->dados)>0){ ?> 
+    
+    <!-- ============ PAGINAÇÃO ============ -->		   
+    <?php if($this->qtdDocumentos > 10) { ?>
+    <center>
+    <?php
+        echo $this->paginacao['inicio']." a ";
+        echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+        echo " de ". $this->paginacao['total'];
+    ?>
+    </center>
+    <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+        <tbody>
+            <tr>
+                <td align="center">
+                <form name="form2" id="form2" action="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'index'));?>" method="get">
+                    <?php if($this->paginacao['pag']>1) { ?>
+                    <input class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'index')).'?pag=1'."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']; ?>'">
+                    <?php } ?>
+                    <input id="btn_p_anterior" type="button"
+                    <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                    <?php }else { ?>
+                           class="btn_p_anterior"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'index')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']; ?>'"
+                    <?php } ?>>
+                    <input id="btn_p_proximo" type="button"
+                           <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                           class="btn_p_proximo-off"
+                    <?php }else { ?>
+                           class="btn_p_proximo"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'index')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']; ?>'"
+                    <?php } ?>>
+                    <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                    <input class="btn_ultimo" id="btn_ultimo" type="button"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'index')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']; ?>'">
+                    <?php } ?>
+                    Pág.:<select name="pag" id="pag" onchange="$('#form2').submit()" class="input_simples">
+                        <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                        <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                        <?php endfor; ?>
+                    </select>
+                    &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>"><input type="submit" class="btn_recarregar" value="">
+                    <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                    <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                    <input type="button" class="btn_imprimir">
+                    <input type="button" class="btn_xls" />
+                 </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <!-- ========== FIM PAGINAÇÃO ========== -->
+
+    <?php } } ?>
+    
+    <form target="_blank" class="form" name="formImpressao" id="formImpressao" method="post" action='<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'imprimir-pareceres')); ?>'>
+        <input type="hidden" name="pag" value="<?php echo $this->pag;?>">
+        <input type="hidden" name="qtde" value="<?php echo $this->intTamPag;?>">
+        <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+        <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+        <input type="hidden" name="idpronac" value="<?php echo $this->idpronac;?>">
+        <input type="hidden" name="pronac" value="<?php echo $this->pronac;?>">
+        <input type="hidden" name="nomeP" value="<?php echo $this->nomeP;?>">
+        <input type="hidden" name="nometc" value="<?php echo $this->nometc;?>">
+        <input type="hidden" name="nomeProponente" value="<?php echo $this->nomeProponente;?>">
+        <input type="hidden" name="tipoPesqPronente" value="<?php echo $this->tipoPesqPronente;?>">
+        <input type="hidden" name="dtI" value="<?php echo $this->dtI;?>">
+        <input type="hidden" name="dtF" value="<?php echo $this->dtF;?>">
+        <input type="hidden" name="situacaotc" value="<?php echo $this->situacaotc;?>">
+        <input type="hidden" name="situacao" value="<?php echo $this->situacao;?>">
+    </form>
+    
+    <form id="formxls" action="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'xls-pareceres')); ?>" method="post">
+        <input type="hidden" name="pag" value="<?php echo $this->pag;?>">
+        <input type="hidden" name="qtde" value="<?php echo $this->intTamPag;?>">
+        <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+        <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+        <input type="hidden" name="idpronac" value="<?php echo $this->idpronac;?>">
+        <input type="hidden" name="pronac" value="<?php echo $this->pronac;?>">
+        <input type="hidden" name="nomeP" value="<?php echo $this->nomeP;?>">
+        <input type="hidden" name="nometc" value="<?php echo $this->nometc;?>">
+        <input type="hidden" name="nomeProponente" value="<?php echo $this->nomeProponente;?>">
+        <input type="hidden" name="tipoPesqPronente" value="<?php echo $this->tipoPesqPronente;?>">
+        <input type="hidden" name="dtI" value="<?php echo $this->dtI;?>">
+        <input type="hidden" name="dtF" value="<?php echo $this->dtF;?>">
+        <input type="hidden" name="situacaotc" value="<?php echo $this->situacaotc;?>">
+        <input type="hidden" name="situacao" value="<?php echo $this->situacao;?>">
+    </form>
+    
+<!--    <form id="formxls" action="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'gerarxls')); ?>" method="post">
+        <textarea name="html" class="sumir"><?php echo $this->html; ?></textarea>
+    </form>-->
+        
+    <?php } else { ?>
+    <table class="tabela">
+        <tr>
+            <td align="center">Nenhum registro encontrado.</td>
+        </tr>
+    </table>
+    <?php } ?>
+    <br clear="all" />
+    
+    <div id="modalDevolverParaAnalise" class=""></div>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

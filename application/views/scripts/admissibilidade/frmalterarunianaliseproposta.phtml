@@ -1,0 +1,86 @@
+<?php
+header("Content-Type: text/html; charset=ISO-8859-1");
+?>
+<script type="text/javascript">
+<!--
+$(document).ready(function(){
+   $("#frmTrocaSecretaria").validate({
+        rules: {
+            secretaria: { required: true }
+        },
+        messages: {
+            secretaria: { required: "Obrigatorio" }
+        },
+        submitHandler: function(form) {
+            $("#retorno").html("");
+            jqAjaxForm(form, "retorno");
+        }
+    });
+    $(".btn_cancelar").click(function(){
+        $("#retorno").html("");
+    });
+});
+//-->
+</script>
+<form action="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'alterarunianaliseproposta')); ?>" method="post" name="frmTrocaSecretaria" id="frmTrocaSecretaria">
+<input type="hidden" name="idAvaliacaoProposta" value="<?php echo $this->proposta->idAvaliacaoProposta; ?>">
+<table class="tabela">
+    <tr>
+        <th colspan="2">Alterar unidade de an&aacute;lise da proposta </th>
+    </tr>
+    <tr>
+        <th colspan="2">Identifica&ccedil;&atilde;o</th>
+    </tr>
+    <tr>
+        <td align="left"><b>Nr. Proposta</b><br /><?php echo $this->proposta->idPreProjeto; ?></td>
+        <td align="left"><b>Nome da Proposta</b><br /><?php echo $this->proposta->NomeProjeto; ?></td>
+    </tr>
+    <tr>
+        <th colspan="2">Síntese de Proposta</th>
+    </tr>
+    <tr>
+        <td align="left" colspan="2"><?php echo $this->proposta->ResumoDoProjeto; ?></td>
+    </tr>
+    <tr>
+        <th colspan="2">Alterar a localização da proposta</th>
+    </tr>
+    <tr>
+        <td align="left">
+            <b>
+                Localização atual
+            </b>
+        </td>
+        <td align="left"><?php echo $this->orgaoSecretaria[0]->secretaria; ?></td>
+    </tr>
+    <tr>
+        <td align="left">
+            <b>
+                Enviar para a Secretaria *
+            </b>
+        </td>
+        <td align="left">
+            <!-- SE FAZ NECESSARIO ENTENDIMENTO JUNTO A GESTORA OU AO DESENVOLVEDOR DO MOTIVO PELO QUAL O VALOR DO RADIO "secretaria" ESTA COM VALOR FIXO NO CODIGO -->
+            <input type="radio" name="secretaria" value="2756" <?php /*if($this->proposta->idTecnico==2756){ echo "checked='checked'"; }*/ if($this->orgaoSecretaria[0]->idOrgao == '160'){ echo 'disabled checked';}?> />
+            do Audiovisual
+            <!-- SE FAZ NECESSARIO ENTENDIMENTO JUNTO A GESTORA OU AO DESENVOLVEDOR DO MOTIVO PELO QUAL O VALOR DO RADIO "secretaria" ESTA COM VALOR FIXO NO CODIGO -->
+            <input type="radio" name="secretaria" value="2784" <?php /*if($this->proposta->idTecnico==2784){ echo "checked='checked'"; }*/ if($this->orgaoSecretaria[0]->idOrgao == '251'){ echo 'disabled checked';}?> />
+            de Fomento e Incentivo &agrave; Cultura
+        </td>
+    </tr>
+</table>
+<table class="tabela">
+    <tr>
+        <td align="center" colspan="2">
+            <?php if($this->orgaoUsuarioLogado == $this->orgaoSecretaria[0]->idOrgao){ ?>
+            <input type="submit" class="btn_salvar" title="Salvar" value=" " style="width: 88px;" />
+            <?php }else{ ?>
+            <input type="button" class="btn_salvar-off" title="Salvar" value=" " style="width: 88px;" />
+            <?php } ?>
+            <input type="button" class="btn_cancelar" title="Cancelar" value=" " style="width: 88px;" />
+            <?php if($this->orgaoUsuarioLogado != $this->orgaoSecretaria[0]->idOrgao){ ?>
+            <br /><br /><font color="red" size="2"><b>ATEN&Ccedil;&Atilde;O:</b></font> Usu&aacute;rio n&atilde;o autorizado a alterar proposta de outra secretaria.
+            <?php } ?>
+        </td>
+    </tr>
+</table>
+</form>

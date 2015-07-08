@@ -1,0 +1,89 @@
+<?php header('Content-Type: text/plain; charset=ISO-8859-1'); ?>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        //ATUALIZA TITULO DA PAGINA
+        window.parent.$("#titulo").html("<div>Execu&ccedil;&atilde;o da receita e despesa</div>");
+        window.parent.$("#caminhoLocalAtual").html("Execu&ccedil;&atilde;o da receita e despesa");
+    });
+</script>
+
+<table class="tabela">
+    <tr class="destacar">
+        <td align="center"><b>PRONAC</b></td>
+        <td align="center"><b>Nome do Projeto</b></td>
+    </tr>
+    <tr class="linha">
+        <td align="center"><?php echo $this->DadosProjeto->pronac; ?></td>
+        <td align="center"><?php echo $this->DadosProjeto->nomeProjeto; ?></td>
+    </tr>
+</table>
+
+<table class="tabela">
+    <?php $x=1; $vl=0; if(count($this->relExecRec) > 0) { ?>
+    <tr class="centro">
+        <td class="destacar bold" style="width: 1px;">Seq.</td>
+        <td class="destacar bold w150">Receita</td>
+        <td class="destacar bold">CNPJ/CPF</td>
+        <td class="destacar bold">Incentivador</td>
+        <td class="destacar bold w150">Valor</td>
+    </tr>
+    <?php foreach ($this->relExecRec as $r) { ?>
+    <tr>
+        <td align="center"><?php echo $x; ?></td>
+        <td class="<?php echo $r->tipo=='RECEITA' ? 'blue' : 'red';  ?>"><?php echo $r->tipo; ?></td>
+        <td><?php echo Validacao::mascaraCPFCNPJ($r->CgcCpfMecena); ?></td>
+        <td><?php echo $r->Nome; ?></td>
+        <td align="right"><?php echo number_format($r->vlIncentivado, 2, ",", "."); ?></td>
+    </tr>
+    <?php $x++; $vl=$vl+$r->vlIncentivado; } ?>
+    <tr class="bold blue">
+        <td align="right" colspan="4">TOTAL RECEITA</td>
+        <td align="right"><?php echo number_format($vl, 2, ",", "."); ?></td>
+    </tr>
+    <?php } else { ?>
+    <tr>
+        <td align="center">Nenhum registro encontrado.</td>
+    </tr>
+    <?php } ?>
+</table>
+
+<br clear="all" />
+
+<table class="tabela">
+    <?php $y=1; $vl2=0; $tipoAnterior=null; $etapaAnterior=null; if(count($this->relExecDesp) > 0) { ?>
+    <tr class="centro">
+        <td class="destacar bold" style="width: 1px;">Seq.</td>
+        <td class="destacar bold w150">Despesa</td>
+        <td class="destacar bold">Etapa</td>
+        <td class="destacar bold">Item Or&ccedil;ament&aacute;rio</td>
+        <td class="destacar bold w150">Valor</td>
+    </tr>
+    <?php foreach ($this->relExecDesp as $r) { ?>
+    <tr>
+        <td align="center"><?php echo $y; ?></td>
+        <td class="<?php echo $r->tipo=='RECEITA' ? 'blue' : 'red';  ?>"><?php echo ($r->tipo!=$tipoAnterior) ? $r->tipo : ''; ?></td>
+        <td><?php echo ($r->Etapa!=$etapaAnterior) ? $r->Etapa : ''; ?></td>
+        <td><?php echo $r->Item; ?></td>
+        <td align="right"><?php echo number_format($r->vlPagamento, 2, ",", "."); ?></td>
+    </tr>
+    <?php $y++; $vl2=$vl2+$r->vlPagamento; $tipoAnterior=$r->tipo; $etapaAnterior=$r->Etapa; } ?>
+    <tr class="bold red">
+        <td align="right" colspan="4">TOTAL DESPESA</td>
+        <td align="right"><?php echo number_format($vl2, 2, ",", "."); ?></td>
+    </tr>
+    <?php } else { ?>
+    <tr>
+        <td align="center">Nenhum registro encontrado.</td>
+    </tr>
+    <?php } ?>
+</table>
+
+<br clear="all" />
+
+<table class="tabela">
+    <tr>
+        <td align="right" style="font-size: 16px; color: #333; font-weight: bold;">Total</td>
+        <td align="right" width="140px" style="font-size: 14px; color: #333; font-weight: bold;" nowrap id="vlTotal"><?php echo number_format(($vl-$vl2), 2, ",", "."); ?></td>
+    </tr>
+</table>

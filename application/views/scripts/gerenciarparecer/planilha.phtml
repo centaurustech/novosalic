@@ -1,0 +1,1577 @@
+<script type="text/javascript">
+ function areadetrabalho()
+    {
+        $('#pinicial').click(function(){
+            $('#analiseinicial').toggle('slow');
+        });
+        $('#preadequacao').click(function(){
+            $('#readequacao').toggle('slow');
+        });
+         $('#pparecer').click(function(){
+            $('#parecer').toggle('slow');
+        });
+
+    }
+    window.onload = function() {areadetrabalho();};
+</script>
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'index'),'',true); ?>" title="Ir para Início">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'index'),'',true); ?>" title="Gerenciar Pareceres">Gerênciar Pareceres</a></li>
+		<li class="last">Planilhas</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+<div>Dados da Análise<span class="voltar"><a
+	href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+<table class="tabela">
+	<tr>
+                <td><input type="button" id="pinicial" class="btn_adicionar" />An&aacute;lise de Conte&uacute;do</td>
+                <!--<td width="180" align="right" >Mostrando: <?php echo $this->inicio; ?> <b>a</b> <?php echo $this->fim; ?> <b>de</b> <?php echo $this->total; ?></td>-->
+        </tr>
+</table>
+<div id="analiseinicial" style="display: none">
+ <table class="tabela tablesorter">
+     <thead>
+            <tr>
+                    <td colspan="3">Tipo Parecer <br />
+                    Aprovaç?o</td>
+                    <td colspan="3">Parecer Favorável ? <br />
+                    Sim</td>
+            </tr>
+            <tr>
+                    <th colspan="6">Lei 8.313</th>
+            </tr>
+            <tr>
+                    <td colspan="6">Lei 8.313/91 alterada pela Lei 9.874/1999* <br />
+                    Sim</td>
+            </tr>
+            <tr>
+                    <th colspan="3" align="center">Artigo 3?</th>
+                    <th colspan="2" align="center">Artigo 18</th>
+                    <th align="center">Artigo 26</th>
+            </tr>
+            <tr>
+                    <td>Artigo 3 <br />
+                    Sim</td>
+                    <td>Inciso <br />
+                    III</td>
+                    <td>Alínea <br />
+                    b</td>
+                    <td>Artigo 18 <br />
+                    Sim</td>
+                    <td>Alínea <br />
+                    g</td>
+                    <td>Artigo 26 <br />
+                    N?o</td>
+            </tr>
+            <tr>
+                    <th colspan="6">Decreto 5761/2006*</th>
+            </tr>
+            <tr>
+                    <td>Lei 5.761 <br />
+                    Sim</td>
+                    <td>Artigo 27 <br />
+                    Sim</td>
+                    <td>Inciso I <br />
+                    N?o</td>
+                    <td>Inciso II <br />
+                    Sim</td>
+                    <td>Inciso III <br />
+                    N?o</td>
+                    <td>Inciso IV <br />
+                    N?o</td>
+            </tr>
+            <tr>
+                    <th colspan="6">Parecer</th>
+            </tr>
+            <tr>
+                    <td colspan="6">Após Análise de Conteúdo do Projeto Pronac 131350
+                    - CanalizaSom, concluímos que o projeto se enquadra atendendo os
+                    requisitos.</td>
+            </tr>
+        </thead>
+</table>
+</div>
+
+
+
+<table class="tabela">
+	<tr>
+                <td><input type="button" id="preadequacao" class="btn_adicionar" />Planilha de Custos</td>
+               <!-- <td width="180" align="right" >Mostrando: <?php echo $this->inicio; ?> <b>a</b> <?php echo $this->fim; ?> <b>de</b> <?php echo $this->total; ?></td>-->
+        </tr>
+
+</table>
+    <div id="readequacao" style="display: none">
+	<table class="tabela tablesorter">
+	<thead>
+            <tr>
+		<th colspan="12" class="center">Planilha de Or&ccedil;amento
+		Sugerido</th>
+            </tr>
+            <tr>
+		<td colspan="12">&nbsp;</td>
+            </tr>
+	<tr>
+		<td colspan="12"><strong>
+		<div><a href="#IFF109" onclick="AbrirFecharPlanilha('IFF109');"
+			onkeypress=" ">
+		<div id="IFF109" class="icn_menos" style="width: 90%"><span
+			class="red del_link" style="font-size: 18pt;"> Incentivo
+		Fiscal Federal</span></div>
+		</a></div>
+		</strong></td>
+	</tr>
+	<tr class="IFF109 linha">
+		<td colspan="12"><strong>
+		<div><a href="#IFF_PRODUTO1090"
+			onclick="AbrirFecharPlanilha('IFF_PRODUTO1090');" onkeypress=" ">
+		<div id="IFF_PRODUTO1090" class="icn_menos"
+			style="width: 98%; margin-left: 2%;"><span
+			class="green del_link">Administra&ccedil;&atilde;o do Projeto</span></div>
+		</a></div>
+		</strong></td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO1090">
+		<td colspan="12"><strong style="margin-left: 2%;">
+		<div><a href="#IFF_ETAPA10904"
+			onclick="AbrirFecharPlanilha('IFF_ETAPA10904');" onkeypress=" ">
+		<div id="IFF_ETAPA10904" class="icn_menos"
+			style="width: 90%; margin-left: 4%;"><span
+			class="orange del_link">4 - 4 - Custos / Administrativos</span></div>
+		</a></div>
+		</strong></td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO1090 IFF_ETAPA10904">
+		<td colspan="12"><strong style="margin-left: 3%;">
+		<div><a href="#IFF_UF1090433330455"
+			onclick="AbrirFecharPlanilha('IFF_UF1090433330455');" onkeypress=" ">
+		<div id="IFF_UF1090433330455" class="icn_menos"
+			style="width: 90%; margin-left: 6%"><span
+			class="black del_link">RJ - Rio de Janeiro</span></div>
+		</a></div>
+		</strong></td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO1090 IFF_ETAPA10904 IFF_UF1090433330455">
+		<th>&nbsp;</th>
+		<th>Item</th>
+		<th>Dias</th>
+		<th>Unidade</th>
+		<th>Qtde</th>
+		<th>Ocor.</th>
+		<th width="12%">Vl. Unit&aacute;rio</th>
+		<th width="12%">Vl. Solicitado</th>
+		<th width="12%">Vl. Sugerido do Parecerista</th>
+		<th>Justificativa do Parecerista</th>
+		<th width="12%">Vl. Sugerido do Relator</th>
+		<th>Justificativa do Relator</th>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO1090 IFF_ETAPA10904 IFF_UF1090433330455">
+		<td>1</td>
+		<td>Auxiliar Administrativo</td>
+		<td class="direita">180</td>
+		<td class="centro">M&ecirc;s</td>
+		<td class="direita">1.0</td>
+		<td class="direita">6.0</td>
+		<td class="direita">R$ 800,00</td>
+		<td class="direita blue">R$ 4.800,00</td>
+		<td class="direita green">R$ 4.800,00</td>
+		<td></td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO1090 IFF_ETAPA10904 IFF_UF1090433330455">
+		<td>2</td>
+		<td>Cartucho 90</td>
+		<td class="direita">180</td>
+		<td class="centro">Unidade</td>
+		<td class="direita">8.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 80,00</td>
+		<td class="direita blue">R$ 640,00</td>
+		<td class="direita green">R$ 640,00</td>
+		<td></td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO1090 IFF_ETAPA10904 IFF_UF1090433330455">
+		<td>3</td>
+		<td>Contador</td>
+		<td class="direita">180</td>
+		<td class="centro">M&ecirc;s</td>
+		<td class="direita">1.0</td>
+		<td class="direita">6.0</td>
+		<td class="direita">R$ 980,00</td>
+		<td class="direita blue">R$ 5.880,00</td>
+		<td class="direita green">R$ 5.880,00</td>
+		<td></td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO1090 IFF_ETAPA10904 IFF_UF1090433330455">
+		<td>4</td>
+		<td>Coordena&ccedil;&atilde;o Administrativo- Financeiro</td>
+		<td class="direita">180</td>
+		<td class="centro">M&ecirc;s</td>
+		<td class="direita">1.0</td>
+		<td class="direita">6.0</td>
+		<td class="direita">R$ 0,00</td>
+		<td class="direita blue">R$ 13.200,00</td>
+		<td class="direita green">R$ 0,00</td>
+		<td>No projeto j&aacute; est&aacute; inclu&iacute;do a
+		contrata&ccedil;&atilde;o de contador e de um coordenador geral. ...</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO1090 IFF_ETAPA10904 IFF_UF1090433330455">
+		<td>5</td>
+		<td>Coordena&ccedil;&atilde;o geral</td>
+		<td class="direita">180</td>
+		<td class="centro">M&ecirc;s</td>
+		<td class="direita">1.0</td>
+		<td class="direita">6.0</td>
+		<td class="direita">R$ 3.000,00</td>
+		<td class="direita blue">R$ 36.000,00</td>
+		<td class="direita green">R$ 18.000,00</td>
+		<td>Este &eacute; o valor compat&iacute;vel com o mercado para um
+		restaurador-coordenador, e n&atilde;o ...</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO1090 IFF_ETAPA10904 IFF_UF1090433330455">
+		<td>6</td>
+		<td>Correios</td>
+		<td class="direita">180</td>
+		<td class="centro">Verba</td>
+		<td class="direita">1.0</td>
+		<td class="direita">6.0</td>
+		<td class="direita">R$ 40,00</td>
+		<td class="direita blue">R$ 240,00</td>
+		<td class="direita green">R$ 240,00</td>
+		<td></td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO1090 IFF_ETAPA10904 IFF_UF1090433330455">
+		<td colspan="6"><strong>Total de UF</strong></td>
+		<td>&nbsp;</td>
+		<td class="direita"><strong>R$ 60.760,00</strong></td>
+		<td class="direita"><strong>R$ 29.560,00</strong></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO1090 IFF_ETAPA10904">
+		<td colspan="6" class="orange"><strong>Total da Etapa</strong></td>
+		<td>&nbsp;</td>
+		<td class="direita orange"><strong>R$ 60.760,00</strong></td>
+		<td class="direita orange"><strong>R$ 29.560,00</strong></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO1090">
+		<td colspan="12"><strong style="margin-left: 2%;">
+		<div><a href="#IFF_ETAPA10905"
+			onclick="AbrirFecharPlanilha('IFF_ETAPA10905');" onkeypress=" ">
+		<div id="IFF_ETAPA10905" class="icn_menos"
+			style="width: 90%; margin-left: 4%;"><span
+			class="orange del_link">5 - 5 - Recolhimentos</span></div>
+		</a></div>
+		</strong></td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO1090 IFF_ETAPA10905">
+		<td colspan="12"><strong style="margin-left: 3%;">
+		<div><a href="#IFF_UF1090533330455"
+			onclick="AbrirFecharPlanilha('IFF_UF1090533330455');" onkeypress=" ">
+		<div id="IFF_UF1090533330455" class="icn_menos"
+			style="width: 90%; margin-left: 6%"><span
+			class="black del_link">RJ - Rio de Janeiro</span></div>
+		</a></div>
+		</strong></td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO1090 IFF_ETAPA10905 IFF_UF1090533330455">
+		<th>&nbsp;</th>
+		<th>Item</th>
+		<th>Dias</th>
+		<th>Unidade</th>
+		<th>Qtde</th>
+		<th>Ocor.</th>
+		<th width="12%">Vl. Unit&aacute;rio</th>
+		<th width="12%">Vl. Solicitado</th>
+		<th width="12%">Vl. Sugerido do Parecerista</th>
+		<th>Justificativa do Parecerista</th>
+		<th width="12%">Vl. Sugerido do Relator</th>
+		<th>Justificativa do Relator</th>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO1090 IFF_ETAPA10905 IFF_UF1090533330455">
+		<td>7</td>
+		<td>INSS</td>
+		<td class="direita">180</td>
+		<td class="centro">M&ecirc;s</td>
+		<td class="direita">1.0</td>
+		<td class="direita">6.0</td>
+		<td class="direita">R$ 1.296,00</td>
+		<td class="direita blue">R$ 7.776,00</td>
+		<td class="direita green">R$ 7.776,00</td>
+		<td></td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO1090 IFF_ETAPA10905 IFF_UF1090533330455">
+		<td colspan="6"><strong>Total de UF</strong></td>
+		<td>&nbsp;</td>
+		<td class="direita"><strong>R$ 7.776,00</strong></td>
+		<td class="direita"><strong>R$ 7.776,00</strong></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO1090 IFF_ETAPA10905">
+		<td colspan="6" class="orange"><strong>Total da Etapa</strong></td>
+		<td>&nbsp;</td>
+		<td class="direita orange"><strong>R$ 7.776,00</strong></td>
+		<td class="direita orange"><strong>R$ 7.776,00</strong></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO1090">
+		<td colspan="12"><strong style="margin-left: 2%;">
+		<div><a href="#IFF_ETAPA10906"
+			onclick="AbrirFecharPlanilha('IFF_ETAPA10906');" onkeypress=" ">
+		<div id="IFF_ETAPA10906" class="icn_menos"
+			style="width: 90%; margin-left: 4%;"><span
+			class="orange del_link">6 - 6 - Elabora&ccedil;&atilde;o e
+		Agenciamento</span></div>
+		</a></div>
+		</strong></td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO1090 IFF_ETAPA10906">
+		<td colspan="12"><strong style="margin-left: 3%;">
+		<div><a href="#IFF_UF1090633330455"
+			onclick="AbrirFecharPlanilha('IFF_UF1090633330455');" onkeypress=" ">
+		<div id="IFF_UF1090633330455" class="icn_menos"
+			style="width: 90%; margin-left: 6%"><span
+			class="black del_link">RJ - Rio de Janeiro</span></div>
+		</a></div>
+		</strong></td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO1090 IFF_ETAPA10906 IFF_UF1090633330455">
+		<th>&nbsp;</th>
+		<th>Item</th>
+		<th>Dias</th>
+		<th>Unidade</th>
+		<th>Qtde</th>
+		<th>Ocor.</th>
+		<th width="12%">Vl. Unit&aacute;rio</th>
+		<th width="12%">Vl. Solicitado</th>
+		<th width="12%">Vl. Sugerido do Parecerista</th>
+		<th>Justificativa do Parecerista</th>
+		<th width="12%">Vl. Sugerido do Relator</th>
+		<th>Justificativa do Relator</th>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO1090 IFF_ETAPA10906 IFF_UF1090633330455">
+		<td>8</td>
+		<td>Elabora&ccedil;&atilde;o e Agenciamento</td>
+		<td class="direita">1</td>
+		<td class="centro">Verba</td>
+		<td class="direita">1.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 28.000,00</td>
+		<td class="direita blue">R$ 28.000,00</td>
+		<td class="direita green">R$ 28.000,00</td>
+		<td></td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO1090 IFF_ETAPA10906 IFF_UF1090633330455">
+		<td colspan="6"><strong>Total de UF</strong></td>
+		<td>&nbsp;</td>
+		<td class="direita"><strong>R$ 28.000,00</strong></td>
+		<td class="direita"><strong>R$ 28.000,00</strong></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO1090 IFF_ETAPA10906">
+		<td colspan="6" class="orange"><strong>Total da Etapa</strong></td>
+		<td>&nbsp;</td>
+		<td class="direita orange"><strong>R$ 28.000,00</strong></td>
+		<td class="direita orange"><strong>R$ 28.000,00</strong></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO1090">
+		<td colspan="6" class="green"><strong>Total dos Custos
+		Administrativos ou do Produto</strong></td>
+		<td>&nbsp;</td>
+		<td class="direita green"><strong>R$ 96.536,00</strong></td>
+		<td class="direita green"><strong>R$ 65.336,00</strong></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr class="IFF109 linha">
+		<td colspan="12"><strong>
+		<div><a href="#IFF_PRODUTO10938"
+			onclick="AbrirFecharPlanilha('IFF_PRODUTO10938');" onkeypress=" ">
+		<div id="IFF_PRODUTO10938" class="icn_menos"
+			style="width: 98%; margin-left: 2%;"><span
+			class="green del_link">Preserva&ccedil;&atilde;o de Acervo
+		Cultural</span></div>
+		</a></div>
+		</strong></td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO10938">
+		<td colspan="12"><strong style="margin-left: 2%;">
+		<div><a href="#IFF_ETAPA109381"
+			onclick="AbrirFecharPlanilha('IFF_ETAPA109381');" onkeypress=" ">
+		<div id="IFF_ETAPA109381" class="icn_menos"
+			style="width: 90%; margin-left: 4%;"><span
+			class="orange del_link">1 - 1 - Pr&eacute;-Produ&ccedil;ao /
+		Prepara&ccedil;&atilde;o</span></div>
+		</a></div>
+		</strong></td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109381">
+		<td colspan="12"><strong style="margin-left: 3%;">
+		<div><a href="#IFF_UF10938133330455"
+			onclick="AbrirFecharPlanilha('IFF_UF10938133330455');" onkeypress=" ">
+		<div id="IFF_UF10938133330455" class="icn_menos"
+			style="width: 90%; margin-left: 6%"><span
+			class="black del_link">RJ - Rio de Janeiro</span></div>
+		</a></div>
+		</strong></td>
+	</tr>
+	<tr
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109381 IFF_UF10938133330455">
+		<th>&nbsp;</th>
+		<th>Item</th>
+		<th>Dias</th>
+		<th>Unidade</th>
+		<th>Qtde</th>
+		<th>Ocor.</th>
+		<th width="12%">Vl. Unit&aacute;rio</th>
+		<th width="12%">Vl. Solicitado</th>
+		<th width="12%">Vl. Sugerido do Parecerista</th>
+		<th>Justificativa do Parecerista</th>
+		<th width="12%">Vl. Sugerido do Relator</th>
+		<th>Justificativa do Relator</th>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109381 IFF_UF10938133330455
+								">
+		<td>9</td>
+		<td>Transporte de material</td>
+		<td class="direita">20</td>
+		<td class="centro">Verba</td>
+		<td class="direita">1.0</td>
+		<td class="direita">10.0</td>
+		<td class="direita">R$ 0,00</td>
+		<td class="direita blue">R$ 1.500,00</td>
+		<td class="direita green">R$ 0,00</td>
+		<td>Os materiais geralmente s&atilde;o entregues pelas lojas
+		aonde foram adquiridos e est&aacute; ...</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109381 IFF_UF10938133330455">
+		<td colspan="6"><strong>Total de UF</strong></td>
+		<td>&nbsp;</td>
+		<td class="direita"><strong>R$ 1.500,00</strong></td>
+		<td class="direita"><strong></strong></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109381">
+		<td colspan="6" class="orange"><strong>Total da Etapa</strong></td>
+		<td>&nbsp;</td>
+		<td class="direita orange"><strong>R$ 1.500,00</strong></td>
+		<td class="direita orange"><strong></strong></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO10938">
+		<td colspan="12"><strong style="margin-left: 2%;">
+		<div><a href="#IFF_ETAPA109382"
+			onclick="AbrirFecharPlanilha('IFF_ETAPA109382');" onkeypress=" ">
+		<div id="IFF_ETAPA109382" class="icn_menos"
+			style="width: 90%; margin-left: 4%;"><span
+			class="orange del_link">2 - 2 - Produ&ccedil;&atilde;o /
+		Execu&ccedil;&atilde;o</span></div>
+		</a></div>
+		</strong></td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382">
+		<td colspan="12"><strong style="margin-left: 3%;">
+		<div><a href="#IFF_UF10938233330455"
+			onclick="AbrirFecharPlanilha('IFF_UF10938233330455');" onkeypress=" ">
+		<div id="IFF_UF10938233330455" class="icn_menos"
+			style="width: 90%; margin-left: 6%"><span
+			class="black del_link">RJ - Rio de Janeiro</span></div>
+		</a></div>
+		</strong></td>
+	</tr>
+	<tr
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<th>&nbsp;</th>
+		<th>Item</th>
+		<th>Dias</th>
+		<th>Unidade</th>
+		<th>Qtde</th>
+		<th>Ocor.</th>
+		<th width="12%">Vl. Unit&aacute;rio</th>
+		<th width="12%">Vl. Solicitado</th>
+		<th width="12%">Vl. Sugerido do Parecerista</th>
+		<th>Justificativa do Parecerista</th>
+		<th width="12%">Vl. Sugerido do Relator</th>
+		<th>Justificativa do Relator</th>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>10</td>
+		<td>A&ccedil;os e produtos met&aacute;licos</td>
+		<td class="direita">180</td>
+		<td class="centro">Verba</td>
+		<td class="direita">1.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 0,00</td>
+		<td class="direita blue">R$ 1.500,00</td>
+		<td class="direita green">R$ 0,00</td>
+		<td>A quatntidade precisa ser especificada</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>11</td>
+		<td>Acr&iacute;lica</td>
+		<td class="direita">180</td>
+		<td class="centro">Unidade</td>
+		<td class="direita">2.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 280,00</td>
+		<td class="direita blue">R$ 5.600,00</td>
+		<td class="direita green">R$ 560,00</td>
+		<td>O verniz paraloid b72 &eacute; um material que rende muito,
+		para esta obra n&atilde;o h&aacute; neces ...</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>12</td>
+		<td>Adesivos/Aditivos</td>
+		<td class="direita">180</td>
+		<td class="centro">Verba</td>
+		<td class="direita">5.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 100,00</td>
+		<td class="direita blue">R$ 3.000,00</td>
+		<td class="direita green">R$ 500,00</td>
+		<td>N&atilde;o h&aacute; necessidade da quantidade de adesivo e o
+		pre&ccedil;o estava acima do valor de m ...</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>13</td>
+		<td>Adesivos/Aditivos</td>
+		<td class="direita">180</td>
+		<td class="centro">Verba</td>
+		<td class="direita">5.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 80,00</td>
+		<td class="direita blue">R$ 800,00</td>
+		<td class="direita green">R$ 400,00</td>
+		<td>N&atilde;o h&aacute; necessidade da quantidade de adesivo
+		sugerido para os servi&ccedil;os a serem re ...</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>14</td>
+		<td>Aguarr&aacute;s Mineral</td>
+		<td class="direita">180</td>
+		<td class="centro">Unidade</td>
+		<td class="direita">20.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 18,00</td>
+		<td class="direita blue">R$ 700,00</td>
+		<td class="direita green">R$ 360,00</td>
+		<td>O litro de aguarr&aacute;s mineral custa R$18,00 ( Dezoito
+		reais)</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>15</td>
+		<td>Algod&atilde;o</td>
+		<td class="direita">180</td>
+		<td class="centro">Unidade</td>
+		<td class="direita">60.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 18,00</td>
+		<td class="direita blue">R$ 3.600,00</td>
+		<td class="direita green">R$ 1.080,00</td>
+		<td>60 rolos de algod&atilde;o ce 1 kg cada, s&atilde;o
+		suficientes para a limpeza da azulejaria e ...</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>16</td>
+		<td>Almoxarifado/deposito</td>
+		<td class="direita">180</td>
+		<td class="centro">M&ecirc;s</td>
+		<td class="direita">1.0</td>
+		<td class="direita">6.0</td>
+		<td class="direita">R$ 400,00</td>
+		<td class="direita blue">R$ 3.600,00</td>
+		<td class="direita green">R$ 2.400,00</td>
+		<td>Valor n&atilde;o compat&iacute;vel com o mercado</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>17</td>
+		<td>Aparelhos e lumin&aacute;rias</td>
+		<td class="direita">180</td>
+		<td class="centro">Unidade</td>
+		<td class="direita">15.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 30,00</td>
+		<td class="direita blue">R$ 900,00</td>
+		<td class="direita green">R$ 450,00</td>
+		<td>O trabalho ser&aacute; executado durante o dia, n&atilde;o
+		h&aacute; necessidade de adquirir 30 lumin ...</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>18</td>
+		<td>Aplica&ccedil;&atilde;o de produtos qu&iacute;micos</td>
+		<td class="direita">180</td>
+		<td class="centro">Verba</td>
+		<td class="direita">1.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 4.000,00</td>
+		<td class="direita blue">R$ 8.000,00</td>
+		<td class="direita green">R$ 4.000,00</td>
+		<td>O valor solicitado &eacute; para uma quantidade muito grande
+		de produto qu&iacute;micos, e a a ...</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>19</td>
+		<td>Areia</td>
+		<td class="direita">180</td>
+		<td class="centro">Verba</td>
+		<td class="direita">1.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 700,00</td>
+		<td class="direita blue">R$ 700,00</td>
+		<td class="direita green">R$ 700,00</td>
+		<td></td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>20</td>
+		<td>Arm&aacute;rios</td>
+		<td class="direita">180</td>
+		<td class="centro">Verba</td>
+		<td class="direita">1.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 500,00</td>
+		<td class="direita blue">R$ 500,00</td>
+		<td class="direita green">R$ 500,00</td>
+		<td></td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>21</td>
+		<td>Assistentes</td>
+		<td class="direita">180</td>
+		<td class="centro">M&ecirc;s</td>
+		<td class="direita">1.0</td>
+		<td class="direita">6.0</td>
+		<td class="direita">R$ 700,00</td>
+		<td class="direita blue">R$ 4.200,00</td>
+		<td class="direita green">R$ 4.200,00</td>
+		<td></td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>22</td>
+		<td>Canteiro de Obra: Montagem e Desmontagem</td>
+		<td class="direita">2</td>
+		<td class="centro">Verba</td>
+		<td class="direita">1.0</td>
+		<td class="direita">2.0</td>
+		<td class="direita">R$ 200,00</td>
+		<td class="direita blue">R$ 400,00</td>
+		<td class="direita green">R$ 400,00</td>
+		<td></td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>23</td>
+		<td>Canteiro de Obra: Montagem e Desmontagem</td>
+		<td class="direita">2</td>
+		<td class="centro">Verba</td>
+		<td class="direita">2.0</td>
+		<td class="direita">2.0</td>
+		<td class="direita">R$ 300,00</td>
+		<td class="direita blue">R$ 1.200,00</td>
+		<td class="direita green">R$ 1.200,00</td>
+		<td></td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>24</td>
+		<td>Cimento/cal</td>
+		<td class="direita">180</td>
+		<td class="centro">Verba</td>
+		<td class="direita">1.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 600,00</td>
+		<td class="direita blue">R$ 600,00</td>
+		<td class="direita green">R$ 600,00</td>
+		<td></td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>25</td>
+		<td>Cobertura Provis&oacute;ria com ou sem Estrutura</td>
+		<td class="direita">180</td>
+		<td class="centro">Verba</td>
+		<td class="direita">2.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 300,00</td>
+		<td class="direita blue">R$ 800,00</td>
+		<td class="direita green">R$ 600,00</td>
+		<td>O valor sugerido n&atilde;o &eacute; compat&iacute;vel com o
+		valor de mercado</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>26</td>
+		<td>Cola</td>
+		<td class="direita">180</td>
+		<td class="centro">Verba</td>
+		<td class="direita">1.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 0,00</td>
+		<td class="direita blue">R$ 800,00</td>
+		<td class="direita green">R$ 0,00</td>
+		<td>Este item j&aacute; est&aacute; incluido em adesivos/aditivos</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>27</td>
+		<td>Entrega da Obra</td>
+		<td class="direita">60</td>
+		<td class="centro">Verba</td>
+		<td class="direita">1.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 50,00</td>
+		<td class="direita blue">R$ 5.000,00</td>
+		<td class="direita green">R$ 50,00</td>
+		<td>A reda&ccedil;&atilde;o do relat&oacute;rio t&eacute;cnico
+		faz parte do servi&ccedil;o do coordenador geral do proj ...</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>28</td>
+		<td>Epoxi</td>
+		<td class="direita">180</td>
+		<td class="centro">Unidade</td>
+		<td class="direita">20.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 40,00</td>
+		<td class="direita blue">R$ 1.400,00</td>
+		<td class="direita green">R$ 800,00</td>
+		<td>Valor n&atilde;o compat&iacute;vel com o mercado</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>29</td>
+		<td>Escrit&oacute;rios</td>
+		<td class="direita">180</td>
+		<td class="centro">M&ecirc;s</td>
+		<td class="direita">1.0</td>
+		<td class="direita">6.0</td>
+		<td class="direita">R$ 750,00</td>
+		<td class="direita blue">R$ 4.500,00</td>
+		<td class="direita green">R$ 4.500,00</td>
+		<td></td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>30</td>
+		<td>Extintores</td>
+		<td class="direita">180</td>
+		<td class="centro">Unidade</td>
+		<td class="direita">4.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 300,00</td>
+		<td class="direita blue">R$ 1.200,00</td>
+		<td class="direita green">R$ 1.200,00</td>
+		<td></td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>31</td>
+		<td>Ferramentas</td>
+		<td class="direita">180</td>
+		<td class="centro">Verba</td>
+		<td class="direita">1.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 0,00</td>
+		<td class="direita blue">R$ 750,00</td>
+		<td class="direita green">R$ 0,00</td>
+		<td>Os restauradores devem possuir suas ferramentas de trabalho,
+		pois ap&oacute;s adquirida ...</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>32</td>
+		<td>Fixa&ccedil;&atilde;o (ganchos, amarra&ccedil;&atilde;o,
+		parafusos etc)</td>
+		<td class="direita">30</td>
+		<td class="centro">Verba</td>
+		<td class="direita">1.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 1.300,00</td>
+		<td class="direita blue">R$ 2.300,00</td>
+		<td class="direita green">R$ 1.300,00</td>
+		<td>A quantidade ou metragem precisaria estar especificada</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>33</td>
+		<td>Granito / m&aacute;rmore</td>
+		<td class="direita">1</td>
+		<td class="centro">Unidade</td>
+		<td class="direita">1.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 6.000,00</td>
+		<td class="direita blue">R$ 6.000,00</td>
+		<td class="direita green">R$ 6.000,00</td>
+		<td></td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455 ">
+		<td>34</td>
+		<td>Instala&ccedil;&atilde;o provis&oacute;ria de for&ccedil;a de
+		luz</td>
+		<td class="direita">180</td>
+		<td class="centro">Verba</td>
+		<td class="direita">1.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 700,00</td>
+		<td class="direita blue">R$ 700,00</td>
+		<td class="direita green">R$ 700,00</td>
+		<td></td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>35</td>
+		<td>Instala&ccedil;&otilde;es hidro-sanit&aacute;rias</td>
+		<td class="direita">180</td>
+		<td class="centro">M&ecirc;s</td>
+		<td class="direita">1.0</td>
+		<td class="direita">6.0</td>
+		<td class="direita">R$ 760,00</td>
+		<td class="direita blue">R$ 4.560,00</td>
+		<td class="direita green">R$ 4.560,00</td>
+		<td></td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>36</td>
+		<td>Jardins/Equipamentos</td>
+		<td class="direita">180</td>
+		<td class="centro">Verba</td>
+		<td class="direita">2.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 0,00</td>
+		<td class="direita blue">R$ 1.200,00</td>
+		<td class="direita green">R$ 0,00</td>
+		<td>O restaurador deve fornecer estes equipamentos, pois
+		ap&oacute;s a sua adquiri&ccedil;&atilde;o e t&eacute;r ...</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>37</td>
+		<td>L&acirc;mina de bisturi n&deg; 20</td>
+		<td class="direita">180</td>
+		<td class="centro">Unidade</td>
+		<td class="direita">100.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 1,00</td>
+		<td class="direita blue">R$ 200,00</td>
+		<td class="direita green">R$ 100,00</td>
+		<td>N&atilde;o h&aacute; necessidade de 200 laminas de bisturi,
+		pois o material a ser trabalhado &eacute; ...</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>38</td>
+		<td>Limpeza final</td>
+		<td class="direita">1</td>
+		<td class="centro">Verba</td>
+		<td class="direita">1.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 350,00</td>
+		<td class="direita blue">R$ 700,00</td>
+		<td class="direita green">R$ 350,00</td>
+		<td>A di&aacute;ria de um faxineiro custa R$80,00 (oitenta reais
+		) mais a passagem, portant ...</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>39</td>
+		<td>Loca&ccedil;&atilde;o de equipamentos</td>
+		<td class="direita">180</td>
+		<td class="centro">M&ecirc;s</td>
+		<td class="direita">2.0</td>
+		<td class="direita">6.0</td>
+		<td class="direita">R$ 420,00</td>
+		<td class="direita blue">R$ 5.040,00</td>
+		<td class="direita green">R$ 5.040,00</td>
+		<td></td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>40</td>
+		<td>Loca&ccedil;&atilde;o de equipamentos</td>
+		<td class="direita">4</td>
+		<td class="centro">Verba</td>
+		<td class="direita">1.0</td>
+		<td class="direita">2.0</td>
+		<td class="direita">R$ 1.500,00</td>
+		<td class="direita blue">R$ 3.600,00</td>
+		<td class="direita green">R$ 3.000,00</td>
+		<td>alor n&atilde;o compat&iacute;vel com o mercado</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>41</td>
+		<td>Luva cir&uacute;rgica</td>
+		<td class="direita">180</td>
+		<td class="centro">Unidade</td>
+		<td class="direita">50.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 22,00</td>
+		<td class="direita blue">R$ 2.200,00</td>
+		<td class="direita green">R$ 1.100,00</td>
+		<td>50 caixas de luvas contendo 100 luvas s&atilde;o suficientes</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>42</td>
+		<td>Manuten&ccedil;&atilde;o de tapume de obra</td>
+		<td class="direita">180</td>
+		<td class="centro">M&ecirc;s</td>
+		<td class="direita">3.0</td>
+		<td class="direita">4.0</td>
+		<td class="direita">R$ 50,00</td>
+		<td class="direita blue">R$ 1.200,00</td>
+		<td class="direita green">R$ 600,00</td>
+		<td>Valor n&atilde;o compat&iacute;vel com o mercado</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>43</td>
+		<td>Massa &uacute;nica</td>
+		<td class="direita">180</td>
+		<td class="centro">Unidade</td>
+		<td class="direita">3.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 70,00</td>
+		<td class="direita blue">R$ 350,00</td>
+		<td class="direita green">R$ 210,00</td>
+		<td>A massa acr&iacute;lica &eacute; um material que tem grande
+		rendimento.</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>44</td>
+		<td>Material de consumo</td>
+		<td class="direita">180</td>
+		<td class="centro">Verba</td>
+		<td class="direita">1.0</td>
+		<td class="direita">6.0</td>
+		<td class="direita">R$ 300,00</td>
+		<td class="direita blue">R$ 3.600,00</td>
+		<td class="direita green">R$ 1.800,00</td>
+		<td>Valor n&atilde;o compat&iacute;vel com o mercado</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>45</td>
+		<td>Pincel - S&eacute;rie 315 - n&ordm; 0</td>
+		<td class="direita">180</td>
+		<td class="centro">Unidade</td>
+		<td class="direita">50.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 18,00</td>
+		<td class="direita blue">R$ 2.700,00</td>
+		<td class="direita green">R$ 900,00</td>
+		<td>50 pinc&eacute;is s&atilde;o suficientes para a
+		reintegra&ccedil;&atilde;o est&eacute;tica das lacunas da azulejari
+		...</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>46</td>
+		<td>Pinturas</td>
+		<td class="direita">180</td>
+		<td class="centro">Verba</td>
+		<td class="direita">5.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 80,00</td>
+		<td class="direita blue">R$ 800,00</td>
+		<td class="direita green">R$ 400,00</td>
+		<td>N&atilde;o h&aacute; necessidade de adquiri&ccedil;&atilde;o
+		de 10 potes de pigmentos. Este material rende m ...</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>47</td>
+		<td>Placas vinilicas</td>
+		<td class="direita">180</td>
+		<td class="centro">Unidade</td>
+		<td class="direita">3.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 500,00</td>
+		<td class="direita blue">R$ 1.500,00</td>
+		<td class="direita green">R$ 1.500,00</td>
+		<td></td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>48</td>
+		<td>Restaura&ccedil;&atilde;o / Conserva&ccedil;&atilde;o</td>
+		<td class="direita">1</td>
+		<td class="centro">Verba</td>
+		<td class="direita">2.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 0,00</td>
+		<td class="direita blue">R$ 3.600,00</td>
+		<td class="direita green">R$ 0,00</td>
+		<td>N&atilde;o dever&aacute; haver reposi&ccedil;&atilde;o de
+		pe&ccedil;as totalmente perdidas</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>49</td>
+		<td>Restaura&ccedil;&atilde;o / Conserva&ccedil;&atilde;o</td>
+		<td class="direita">180</td>
+		<td class="centro">Verba</td>
+		<td class="direita">1.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 180.000,00</td>
+		<td class="direita blue">R$ 238.700,00</td>
+		<td class="direita green">R$ 180.000,00</td>
+		<td>Valor n&atilde;o compativel com o mercado.</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>50</td>
+		<td>Restaura&ccedil;&atilde;o / Conserva&ccedil;&atilde;o</td>
+		<td class="direita">180</td>
+		<td class="centro">Verba</td>
+		<td class="direita">1.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 0,00</td>
+		<td class="direita blue">R$ 72.000,00</td>
+		<td class="direita green">R$ 0,00</td>
+		<td>A equipe de restauradores a ser contratada deve ser
+		tamb&eacute;m qualificada para rea ...</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>51</td>
+		<td>Silicone</td>
+		<td class="direita">180</td>
+		<td class="centro">Verba</td>
+		<td class="direita">1.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 300,00</td>
+		<td class="direita blue">R$ 920,00</td>
+		<td class="direita green">R$ 300,00</td>
+		<td>Valor n&atilde;o compat&iacute;vel com mercado</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>52</td>
+		<td>Tapumes/cercas</td>
+		<td class="direita">180</td>
+		<td class="centro">Unidade</td>
+		<td class="direita">3.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 400,00</td>
+		<td class="direita blue">R$ 1.800,00</td>
+		<td class="direita green">R$ 1.200,00</td>
+		<td>Valor n&atilde;o compat&iacute;vel com o mercado.</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td>53</td>
+		<td>Transporte Local / Loca&ccedil;&atilde;o de Autom&oacute;vel
+		/ Combust&iacute;vel</td>
+		<td class="direita">180</td>
+		<td class="centro">M&ecirc;s</td>
+		<td class="direita">1.0</td>
+		<td class="direita">6.0</td>
+		<td class="direita">R$ 1.800,00</td>
+		<td class="direita blue">R$ 10.800,00</td>
+		<td class="direita green">R$ 10.800,00</td>
+		<td></td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382 IFF_UF10938233330455">
+		<td colspan="6"><strong>Total de UF</strong></td>
+		<td>&nbsp;</td>
+		<td class="direita"><strong>R$ 414.220,00</strong></td>
+		<td class="direita"><strong>R$ 244.360,00</strong></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109382">
+		<td colspan="6" class="orange"><strong>Total da Etapa</strong></td>
+		<td>&nbsp;</td>
+		<td class="direita orange"><strong>R$ 414.220,00</strong></td>
+		<td class="direita orange"><strong>R$ 244.360,00</strong></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO10938">
+		<td colspan="12"><strong style="margin-left: 2%;">
+		<div><a href="#IFF_ETAPA109383"
+			onclick="AbrirFecharPlanilha('IFF_ETAPA109383');" onkeypress=" ">
+		<div id="IFF_ETAPA109383" class="icn_menos"
+			style="width: 90%; margin-left: 4%;"><span
+			class="orange del_link">3 - 3 - Divulga&ccedil;&atilde;o /
+		Comercializa&ccedil;&atilde;o</span></div>
+		</a></div>
+		</strong></td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109383">
+		<td colspan="12"><strong style="margin-left: 3%;">
+		<div><a href="#IFF_UF10938333330455"
+			onclick="AbrirFecharPlanilha('IFF_UF10938333330455');" onkeypress=" ">
+		<div id="IFF_UF10938333330455" class="icn_menos"
+			style="width: 90%; margin-left: 6%"><span
+			class="black del_link">RJ - Rio de Janeiro</span></div>
+		</a></div>
+		</strong></td>
+	</tr>
+	<tr
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109383 IFF_UF10938333330455">
+		<th>&nbsp;</th>
+		<th>Item</th>
+		<th>Dias</th>
+		<th>Unidade</th>
+		<th>Qtde</th>
+		<th>Ocor.</th>
+		<th width="12%">Vl. Unit&aacute;rio</th>
+		<th width="12%">Vl. Solicitado</th>
+		<th width="12%">Vl. Sugerido do Parecerista</th>
+		<th>Justificativa do Parecerista</th>
+		<th width="12%">Vl. Sugerido do Relator</th>
+		<th>Justificativa do Relator</th>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109383 IFF_UF10938333330455">
+		<td>54</td>
+		<td>Estandartes / Banners</td>
+		<td class="direita">30</td>
+		<td class="centro">Unidade</td>
+		<td class="direita">6.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 700,00</td>
+		<td class="direita blue">R$ 4.200,00</td>
+		<td class="direita green">R$ 4.200,00</td>
+		<td></td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109383 IFF_UF10938333330455">
+		<td>55</td>
+		<td>Folders</td>
+		<td class="direita">60</td>
+		<td class="centro">Unidade</td>
+		<td class="direita">5000.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 0,00</td>
+		<td class="direita blue">R$ 6.000,00</td>
+		<td class="direita green">R$ 0,00</td>
+		<td>Para este projeto os banners s&atilde;o suficientes para a
+		divulga&ccedil;&atilde;o do mesmo.</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109383 IFF_UF10938333330455">
+		<td>56</td>
+		<td>Fotografia Art&iacute;stica (Fot&oacute;grafo, Tratamento,
+		Revela&ccedil;&atilde;o, etc.)</td>
+		<td class="direita">6</td>
+		<td class="centro">Cach&ecirc;</td>
+		<td class="direita">1.0</td>
+		<td class="direita">6.0</td>
+		<td class="direita">R$ 1.100,00</td>
+		<td class="direita blue">R$ 6.600,00</td>
+		<td class="direita green">R$ 6.600,00</td>
+		<td></td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109383 IFF_UF10938333330455">
+		<td>57</td>
+		<td>M&iacute;dia impressa</td>
+		<td class="direita">2</td>
+		<td class="centro">Verba</td>
+		<td class="direita">2.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 0,00</td>
+		<td class="direita blue">R$ 5.000,00</td>
+		<td class="direita green">R$ 0,00</td>
+		<td>A Floresta da Tijuca por si s&oacute; atrai o interresse da
+		m&iacute;da impressa.,</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109383 IFF_UF10938333330455">
+		<td>58</td>
+		<td>M&iacute;dia internet</td>
+		<td class="direita">180</td>
+		<td class="centro">Verba</td>
+		<td class="direita">1.0</td>
+		<td class="direita">1.0</td>
+		<td class="direita">R$ 0,00</td>
+		<td class="direita blue">R$ 3.200,00</td>
+		<td class="direita green">R$ 0,00</td>
+		<td>A Floresta da Tijuca &eacute; assunto de interresse da
+		m&iacute;dia, portanto, apenas os banne ...</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr onmouseover="over_tr(this);" onfocus="over_tr(this);"
+		onmouseout="out_tr(this);" onblur="out_tr(this);"
+		onclick="click_tr(this);" onkeypress="click_tr(this);"
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109383 IFF_UF10938333330455">
+		<td>59</td>
+		<td>Projeto Gr&aacute;fico</td>
+		<td class="direita">30</td>
+		<td class="centro">Verba</td>
+		<td class="direita">1.0</td>
+		<td class="direita">7.0</td>
+		<td class="direita">R$ 300,00</td>
+		<td class="direita blue">R$ 5.600,00</td>
+		<td class="direita green">R$ 2.100,00</td>
+		<td>N&atilde;o compativel com o valor de mercado</td>
+		<td class="direita"></td>
+		<td></td>
+	</tr>
+	<tr
+		class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109383 IFF_UF10938333330455">
+		<td colspan="6"><strong>Total de UF</strong></td>
+		<td>&nbsp;</td>
+		<td class="direita"><strong>R$ 30.600,00</strong></td>
+		<td class="direita"><strong>R$ 12.900,00</strong></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO10938 IFF_ETAPA109383">
+		<td colspan="6" class="orange"><strong>Total da Etapa</strong></td>
+		<td>&nbsp;</td>
+		<td class="direita orange"><strong>R$ 30.600,00</strong></td>
+		<td class="direita orange"><strong>R$ 12.900,00</strong></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr class="IFF109 IFF_PRODUTO10938">
+		<td colspan="6" class="green"><strong>Total dos Custos
+		Administrativos ou do Produto</strong></td>
+		<td>&nbsp;</td>
+		<td class="direita green"><strong>R$ 446.320,00</strong></td>
+		<td class="direita green"><strong>R$ 257.260,00</strong></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr class="IFF109">
+		<td colspan="6" class="red" style="font-size: 12pt;"><strong>Total
+		por mecanismo de incentivo</strong></td>
+		<td>&nbsp;</td>
+		<td class="direita red" style="font-size: 12pt;"><strong>R$
+		542.856,00</strong></td>
+		<td class="direita red" style="font-size: 12pt;"><strong>R$
+		322.596,00</strong></td>
+		<td colspan="3">&nbsp;</td>
+	</tr>
+	<tr>
+		<th class="left" colspan="6" style="font-size: 12pt;"><strong>Total
+		Geral</strong></th>
+		<th>&nbsp;</th>
+		<th class="direita red" style="font-size: 12pt;"><strong>R$
+		542.856,00</strong></th>
+		<th class="direita red" style="font-size: 12pt;"><strong>R$
+		322.596,00</strong></th>
+		<th colspan="3">&nbsp;</th>
+	</tr>
+        </thead>
+</table>
+</div>
+
+<table class="tabela">
+	<tr>
+                <td><input type="button" id="pparecer" class="btn_adicionar" />Parecer</td>
+                <!--<td width="180" align="right" >Mostrando: <?php echo $this->inicio; ?> <b>a</b> <?php echo $this->fim; ?> <b>de</b> <?php echo $this->total; ?></td>-->
+        </tr>
+</table>
+    <!-- ==================================PARECER===============================================-->
+        <div id="parecer" style="display: none">
+            <table class="tabela tablesorter">
+                <thead>
+                    <tr>
+                        <td>Listar Pareceres</td>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

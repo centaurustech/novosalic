@@ -1,0 +1,72 @@
+<?php
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+<script>
+
+    $(document).ready(function(){
+
+        $("#frmDevolver").validate({
+            rules: {
+                observacao: { required: true,  minlength: 15 }
+            },
+            messages: {
+                observacao: { required: "<br><center>Dados obrigat&oacute;rios n&atilde;o informados.</center>", minlength: "<br><center>Justificativa deve conter no m&iacute;nimo, 15 caracteres.</center>" }
+            },
+            submitHandler: function(form) {
+                form.submit();
+                $("#conteudoDevolucao").html("<center><br><br><br><br><br>Aguarde, devolvendo para an&aacute;lise t&eacute;cnica<br><img src='<?php echo $this->baseUrl(); ?>/public/img/ajax.gif' /></center>");
+            }
+        });
+
+    });
+
+    $("textarea[maxlength]").keypress(function(event){
+    var key = event.which;
+
+    //todas as teclas incluindo enter
+    if(key >= 33 || key == 13) {
+        var maxLength = $(this).attr("maxlength");
+        var length = this.value.length;
+        if(length >= maxLength) {
+            event.preventDefault();
+        }
+    }
+});
+</script>
+<style>
+    label.error{ color:red; font-weight: normal; }
+</style>
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+
+<div id="conteudoDevolucao">
+<form name="frmDevolver" id="frmDevolver" action="<?php echo $this->url(array('controller' => 'projetosgerenciar', 'action' => 'devolver-projeto-para-analise')); ?>" method="post">
+    <table class="tabela">
+    <?php if(count($this->dados)>0) {
+            foreach($this->dados as $d):?>
+        <input type="hidden" name="idpronac"  value="<?php echo $d->IdPRONAC; ?>" />
+        <input type="hidden" name="idorgao"  value="<?php echo $d->idOrgao; ?>" />
+            <tr>
+                <th colspan="2" align="left">Pronac: <?php echo $d->PRONAC; ?></th>
+            </tr>
+            <tr>
+                <th colspan="2" align="left">Projeto: <?php echo (($d->NomeProjeto)); ?></th>
+            </tr>
+            <tr>
+                <td colspan="2">Devolvendo para: <b><?php echo (($d->Orgao)); ?></b></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    Justificativa da devolu&ccedil;&atilde;o:<br>
+                    <textarea name="observacao" id="observacao" style="width: 97%;" rows="8" class="input_simples"></textarea>
+                </td>
+            </tr>
+    <?php endforeach;
+         }else{ ?>
+            <tr>
+                <td colspan="2"><em>Dados n&atilde;o encontrados.</em></td>
+            </tr>
+    <?php } ?>
+    </table>
+</form>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->

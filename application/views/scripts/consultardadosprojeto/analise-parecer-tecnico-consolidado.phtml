@@ -1,0 +1,328 @@
+<?php
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+<?php if(is_array($this->resultAnaliseProjeto) && count($this->resultAnaliseProjeto)>0): ?>
+<table class="tabela">
+    <tr>
+        <td>
+            <b>Enquadramento</b><br>
+            <?php echo $this->escape($this->enquadramento);?>
+        </td>
+        <td>
+            <b>Tipo de parecer</b><br>
+            <?php if($this->resultAnaliseProjeto['TipoParecer'] == '1')  echo 'Aprova&ccedil;&atilde;o'; ?>
+            <?php if($this->resultAnaliseProjeto['TipoParecer'] == '2')  echo 'Complementa&ccedil;&atilde;o'; ?>
+            <?php if($this->resultAnaliseProjeto['TipoParecer'] == '3')  echo 'Prorroga&ccedil;&atilde;o'; ?>
+            <?php if($this->resultAnaliseProjeto['TipoParecer'] == '4') echo 'Redu&ccedil;&atilde;o'; ?>
+        </td>
+        <td>
+            <b>Parecer Favor&aacute;vel?</b><br>
+            <?php echo ($this->resultAnaliseProjeto['ParecerFavoravel']) == '2' ? 'Sim' : 'N&atilde;o';?>
+        </td>
+        <td>
+            <b>Dt. parecer</b><br>
+            <?php echo date('d/m/Y',strtotime($this->resultAnaliseProjeto['DtParecer']));?>
+        </td>
+        <td>
+            <b>Sugerido Real</b><br>
+            <?php echo $this->escape($this->formatarReal($this->valorparecerista));?>
+        </td>
+    </tr>
+    <tr>
+        <td class="destacar">Valor Solicitado (A)</td>
+        <td colspan="4">
+            <?php if (isset($this->fontesincentivo)) {  echo $this->escape($this->formatarReal($this->fontesincentivo)); }else echo 'R$ 0,00';?>
+        </td>
+    </tr>
+    <tr>
+        <td class="destacar">Valor de outras fontes (B)</td>
+        <td colspan="4">
+            <?php if (isset($this->outrasfontes)) { echo $this->escape($this->formatarReal($this->outrasfontes));} else echo 'R$ 0,00'; ?>
+        </td>
+    </tr>
+    <tr>
+        <td class="destacar">Valor da Proposta (C=A+B)</td>
+        <td colspan="4">
+            <?php if (isset($this->valorproposta)) { echo $this->escape($this->formatarReal($this->valorproposta)); } else echo 'R$ 0,00'; ?>
+        </td>
+    </tr>
+    <tr>
+        <td class="destacar">Valor do Parecerista <!--Valor Sugerido para Aprovaca(D)--></td>
+        <td colspan="4">
+            <?php if (isset($this->valorparecerista)) { echo $this->escape($this->formatarReal($this->valorparecerista)); } else echo 'R$ 0,00'; ?>
+        </td>
+    </tr>
+</table>
+<table class="tabela">
+    <tr class="destacar">
+        <td colspan="6" align="center"><b>Outras Informa&ccedil;&otilde;es</b></td>
+    </tr>
+    <?php foreach ($this->resultAnaliseProduto as $produto) { ?>
+    <tr>
+        <td>
+            <b>Produto</b><br>
+            <?php echo $this->escape($produto->Produto); ?>
+        </td>
+        <td>
+            <b>Enquadramento</b><br>
+            <?php echo $produto->Enquadramento;?>
+        </td>
+        <td>
+            <b>Artigo 27 - Inciso I </b><br>
+            <?php echo ($produto->IncisoArtigo27_I); ?>
+        </td>
+        <td>
+            <b>Artigo 27 - II</b><br>
+            <?php echo ($produto->IncisoArtigo27_II); ?>
+        </td>
+        <td>
+            <b>Artigo 27 - III</b><br>
+            <?php echo ($produto->IncisoArtigo27_III); ?>
+        </td>
+        <td>
+            <b>Artigo 27 - IV</b><br>
+            <?php echo ($produto->IncisoArtigo27_IV); ?>
+        </td>
+    </tr>
+   <?php } ?>
+</table>
+<table class="tabela">
+    <tr class="destacar">
+        <td align="center"><b>Parecer T&eacute;cnico</b></td>
+    </tr>
+    <tr>
+        <td>
+            <?php
+            echo strip_tags($this->resultAnaliseProjeto['ResumoParecer'],"<b></b><ul></ul><li></li><strong></strong><i></i><p></p><br>");
+            ?>
+        </td>
+    </tr>
+</table>
+<?php endif;?>
+
+
+
+<!-- CONSOLIDADO CNIC -->
+<?php if(is_array($this->resultAnaliseProjetoCNIC) && count($this->resultAnaliseProjetoCNIC)>0):?>
+<table class="tabela">
+    <tr>
+        <td>
+            <b>Enquadramento</b><br>
+            <?php echo $this->escape($this->enquadramento);?>
+        </td>
+        <td>
+            <b>Tipo de parecer</b><br>
+            <?php if($this->resultAnaliseProjetoCNIC['TipoParecer'] == '1')  echo 'Aprova&ccedil;&atilde;o'; ?>
+            <?php if($this->resultAnaliseProjetoCNIC['TipoParecer'] == '2')  echo 'Complementa&ccedil;&atilde;o'; ?>
+            <?php if($this->resultAnaliseProjetoCNIC['TipoParecer'] == '3')  echo 'Prorroga&ccedil;&atilde;o'; ?>
+            <?php if($this->resultAnaliseProjetoCNIC['TipoParecer'] == '4') echo 'Redu&ccedil;&atilde;o'; ?>
+        </td>
+        <td>
+            <b>Parecer Favor&aacute;vel?</b><br>
+            <?php echo ($this->resultAnaliseProjetoCNIC['ParecerFavoravel']) == '2' ? 'Sim' : 'N&atilde;o';?>
+        </td>
+        <td>
+            <b>Dt. parecer</b><br>
+            <?php echo date('d/m/Y',strtotime($this->resultAnaliseProjetoCNIC['DtParecer']));?>
+        </td>
+        <td>
+            <b>Sugerido Real</b><br>
+            <?php echo $this->escape($this->formatarReal($this->valorcomponente));?>
+        </td>
+    </tr>
+    <tr>
+        <td class="destacar">Valor Solicitado (A)</td>
+        <td colspan="4">
+            <?php if (isset($this->fontesincentivo)) {  echo $this->escape($this->formatarReal($this->fontesincentivo)); }else echo 'R$ 0,00';?>
+        </td>
+    </tr>
+    <tr>
+        <td class="destacar">Valor de outras fontes (B)</td>
+        <td colspan="4">
+            <?php if (isset($this->outrasfontes)) { echo $this->escape($this->formatarReal($this->outrasfontes));} else echo 'R$ 0,00'; ?>
+        </td>
+    </tr>
+    <tr>
+        <td class="destacar">Valor da Proposta (C=A+B)</td>
+        <td colspan="4">
+            <?php if (isset($this->valorproposta)) { echo $this->escape($this->formatarReal($this->valorproposta)); } else echo 'R$ 0,00'; ?>
+        </td>
+    </tr>
+    <tr>
+        <td class="destacar">Valor do Componente da Comiss&atilde;o <!--Valor Sugerido para Aprovacao--></td>
+        <td colspan="4">
+            <?php if (isset($this->valorcomponente)) { echo $this->escape($this->formatarReal($this->valorcomponente)); } else echo 'R$ 0,00'; ?>
+        </td>
+    </tr>
+</table>
+<table class="tabela">
+    <tr class="destacar">
+        <td colspan="6" align="center"><b>Outras Informa&ccedil;&otilde;es</b></td>
+    </tr>
+    <?php foreach ($this->resultAnaliseProduto as $produto) { ?>
+    <tr>
+        <td>
+            <b>Produto</b><br>
+            <?php echo $this->escape($produto->produto); ?>
+        </td>
+        <td>
+            <b>Enquadramento</b><br>
+            <?php if($produto->stArtigo18 == '1') echo 'Artigo 18'; if($produto->stArtigo26 == '1') echo 'Artigo 26';?>
+        </td>
+        <?php if ($produto->stArtigo27 == 1) : ?>
+            <td>
+                <b>Artigo 27 - Inciso I </b><br>
+                <?php echo ($produto->stIncisoArtigo27_I == '1') ? 'Sim' : 'N&atilde;o'; ?>
+            </td>
+            <td>
+                <b>Artigo 27 - II</b><br>
+                <?php echo ($produto->stIncisoArtigo27_II == '1') ? 'Sim' : 'N&atilde;o'; ?>
+            </td>
+            <td>
+                <b>Artigo 27 - III</b><br>
+                <?php echo ($produto->stIncisoArtigo27_III == '1') ? 'Sim' : 'N&atilde;o'; ?>
+            </td>
+            <td>
+                <b>Artigo 27 - IV</b><br>
+                <?php echo ($produto->stIncisoArtigo27_IV == '1') ? 'Sim' : 'N&atilde;o'; ?>
+            </td>
+        <?php else: ?>
+            <td>Artigo 27 - Inciso I</td>
+            <td>Artigo 27 - II</td>
+            <td>Artigo 27 - III</td>
+            <td>Artigo 27 - IV</td>
+        <?php endif; ?>
+   </tr>
+   <?php } ?>
+</table>
+<table class="tabela">
+    <tr class="destacar">
+        <td align="center"><b>Parecer T&eacute;cnico</b></td>
+    </tr>
+    <tr>
+        <td>
+            <?php
+            echo strip_tags($this->resultAnaliseProjetoCNIC['ResumoParecer'],"<b></b><ul></ul><li></li><strong></strong><i></i><p></p><br>");
+            ?>
+        </td>
+    </tr>
+</table>
+<?php endif;?>
+
+
+
+<!-- CONSOLIDADO PLENARIA -->
+<?php if(is_array($this->resultAnaliseProjetoPlenaria) && count($this->resultAnaliseProjetoPlenaria)>0):?>
+<table class="tabela">
+    <tr>
+        <td>
+            <b>Enquadramento</b><br>
+            <?php echo $this->escape($this->enquadramento);?>
+        </td>
+        <td>
+            <b>Tipo de parecer</b><br>
+            <?php if($this->resultAnaliseProjetoPlenaria['TipoParecer'] == '1')  echo 'Aprova&ccedil;&atilde;o'; ?>
+            <?php if($this->resultAnaliseProjetoPlenaria['TipoParecer'] == '2')  echo 'Complementa&ccedil;&atilde;o'; ?>
+            <?php if($this->resultAnaliseProjetoPlenaria['TipoParecer'] == '3')  echo 'Prorroga&ccedil;&atilde;o'; ?>
+            <?php if($this->resultAnaliseProjetoPlenaria['TipoParecer'] == '4') echo 'Redu&ccedil;&atilde;o'; ?>
+        </td>
+        <td>
+            <b>Parecer Favor&aacute;vel?</b><br>
+            <?php echo ($this->resultAnaliseProjetoPlenaria['ParecerFavoravel']) == '2' ? 'Sim' : 'N&atilde;o';?>
+        </td>
+        <td>
+            <b>Dt. parecer</b><br>
+            <?php echo date('d/m/Y',strtotime($this->resultAnaliseProjetoPlenaria['DtParecer']));?>
+        </td>
+        <td>
+            <b>Sugerido Real</b><br>
+            <?php echo $this->escape($this->formatarReal($this->valorcomponente));?>
+        </td>
+    </tr>
+    <tr>
+        <td class="destacar">Valor Solicitado (A)</td>
+        <td colspan="4">
+            <?php if (isset($this->fontesincentivo)) {  echo $this->escape($this->formatarReal($this->fontesincentivo)); }else echo 'R$ 0,00';?>
+        </td>
+    </tr>
+    <tr>
+        <td class="destacar">Valor de outras fontes (B)</td>
+        <td colspan="4">
+            <?php if (isset($this->outrasfontes)) { echo $this->escape($this->formatarReal($this->outrasfontes));} else echo 'R$ 0,00'; ?>
+        </td>
+    </tr>
+    <tr>
+        <td class="destacar">Valor da Proposta (C=A+B)</td>
+        <td colspan="4">
+            <?php if (isset($this->valorproposta)) { echo $this->escape($this->formatarReal($this->valorproposta)); } else echo 'R$ 0,00'; ?>
+        </td>
+    </tr>
+    <tr>
+        <td class="destacar">Valor do Componente da Comiss&atilde;o <!--Valor Sugerido para Aprovacao--></td>
+        <td colspan="4">
+            <?php if (isset($this->valorcomponente)) { echo $this->escape($this->formatarReal($this->valorcomponente)); } else echo 'R$ 0,00'; ?>
+        </td>
+    </tr>
+</table>
+<table class="tabela">
+    <tr class="destacar">
+        <td colspan="6" align="center"><b>Outras Informa&ccedil;&otilde;es</b></td>
+    </tr>
+    <?php foreach ($this->resultAnaliseProduto as $produto) { ?>
+    <tr>
+        <td>
+            <b>Produto</b><br>
+            <?php echo $this->escape($produto->produto); ?>
+        </td>
+        <td>
+            <b>Enquadramento</b><br>
+            <?php if($produto->stArtigo18 == '1') echo 'Artigo 18'; if($produto->stArtigo26 == '1') echo 'Artigo 26';?>
+        </td>
+        <?php if ($produto->stArtigo27 == 1) : ?>
+            <td>
+                <b>Artigo 27 - Inciso I </b><br>
+                <?php echo ($produto->stIncisoArtigo27_I == '1') ? 'Sim' : 'N&atilde;o'; ?>
+            </td>
+            <td>
+                <b>Artigo 27 - II</b><br>
+                <?php echo ($produto->stIncisoArtigo27_II == '1') ? 'Sim' : 'N&atilde;o'; ?>
+            </td>
+            <td>
+                <b>Artigo 27 - III</b><br>
+                <?php echo ($produto->stIncisoArtigo27_III == '1') ? 'Sim' : 'N&atilde;o'; ?>
+            </td>
+            <td>
+                <b>Artigo 27 - IV</b><br>
+                <?php echo ($produto->stIncisoArtigo27_IV == '1') ? 'Sim' : 'N&atilde;o'; ?>
+            </td>
+        <?php else: ?>
+            <td>Artigo 27 - Inciso I</td>
+            <td>Artigo 27 - II</td>
+            <td>Artigo 27 - III</td>
+            <td>Artigo 27 - IV</td>
+        <?php endif; ?>
+   </tr>
+   <?php } ?>
+</table>
+<table class="tabela">
+    <tr class="destacar">
+        <td align="center"><b>Parecer T&eacute;cnico</b></td>
+    </tr>
+    <tr>
+        <td>
+            <?php
+            echo strip_tags($this->resultAnaliseProjetoPlenaria['ResumoParecer'],"<b></b><ul></ul><li></li><strong></strong><i></i><p></p><br>");
+            ?>
+        </td>
+    </tr>
+</table>
+<?php endif;?>
+
+<!-- SEM REGISTROS PARA MOSTRAR -->
+<?php if((count($this->resultAnaliseProjeto)<=0) && (count($this->resultAnaliseProjetoCNIC)<=0) && (count($this->resultAnaliseProjetoPlenaria)<=0)): ?>
+        <table class="tabela">
+            <tr>
+                <td align="center"><em>Dados n&atilde;o informados!</em></td>
+            </tr>
+        </table>
+<?php endif; ?>

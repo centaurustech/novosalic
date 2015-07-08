@@ -1,0 +1,243 @@
+<?php
+include_once 'inc/menu.inc.php';
+$verificar = $this->VerificarReuniao;
+$idpronacatual = isset($verificar[0]->idPRONAC) ? $verificar[0]->idPRONAC : '';
+?>
+<script src="<?php echo $this->baseUrl(); ?>/public/js/gerenciarpautareuniao.js"></script>
+<script>
+    $(document).ready(function(){
+        
+        jqAjaxLink('<?php echo $this->Url(array('controller' => 'gerenciarpautareuniao', 'action' => 'listaprojetoscnic', 'stenvioplenaria' => 'S')) ?>', '', 'pautaPlenaria');
+        setTimeout(function(){
+            jqAjaxLink('<?php echo $this->Url(array('controller' => 'gerenciarpautareuniao', 'action' => 'listaprojetoscnic', 'stenvioplenaria' => 'S', 'grid' => 'planoanual')) ?>', '', 'pautaPlenariaPlanoAnual');
+        }, '1000');
+        setTimeout(function(){
+            jqAjaxLink('<?php echo $this->Url(array('controller' => 'gerenciarpautareuniao', 'action' => 'listaprojetoscnic', 'stenvioplenaria' => 'S', 'grid' => 'votado')) ?>', '', 'pautaPlenariaVotados');
+        }, '2000');
+        
+        $("#abrir_fechar_analisados").click(function(){
+            $('#pautaplenaria').toggle('slow');
+        });
+        $("#abrir_fechar_naoanalisados").click(function(){
+            $('#naoanalisados').toggle('slow');
+        });
+    });
+
+    function alerta(functionok){
+        $("#alert").dialog({
+            resizable: true,
+            width:450,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            closeOnEscape : false,
+            title : 'Alerta',
+            buttons: {
+                'OK': functionok
+            }
+        });
+    }
+    function dadosprojetos(idpronac, e){
+        var idpronac = idpronac;
+        var view = $(e).attr('view');
+        var idprojeto = $(e).attr('idprojeto');
+        var aberto = $("#"+idprojeto).attr('aberto');
+        if($.trim($("#"+idprojeto).html()) != ''){
+            if(aberto == 'true'){
+                $("#"+idprojeto).addClass('sumir');
+                $("#"+idprojeto).attr('aberto','false');
+                return false;
+            }
+            else{
+                $("#"+idprojeto).removeClass('sumir');
+                $("#"+idprojeto).attr('aberto','true');
+                return false;
+            }
+        }else{
+            $("#"+idprojeto).html('<center>Carregando dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br>');
+        }
+        $.ajax({
+            async: true,
+            type: "post",
+            url: "../gerenciarpautareuniao/"+view,
+            data:{
+                idpronac:idpronac
+            },
+            beforeSend: function(){
+                //$("#load").dialog('open');
+                $('.ui-dialog-titlebar-close').remove();
+            },
+            success: function(data)
+            {
+                valor = "<fieldset>";
+                valor += data;
+                valor += "</fieldset>";
+                $("#"+idprojeto).html(valor);
+                $("#"+idprojeto).attr('aberto','true');
+                $("#load").dialog('close');
+            }
+        });
+    }
+
+    var telavotacao =  setInterval(function(){
+        var stplenaria = '<?php echo $this->codstplenaria ?>';
+        clearInterval(votacao);
+        if(stplenaria == 'A' && $('#cronometro #minu').html()*1 == 0 && $('#cronometro #seg').html()*1 ==0){
+            //verificavotacao()
+        }
+    }, '5000');
+    
+    var votacao =  setInterval(function(){
+        //verificainiciocnic()
+    }, '2000');
+
+    function verificavotacao(){
+        var verificarjanela = $("#reuniaoaberta").val();
+        $.ajax({
+            async: true,
+            type: "post",
+            url: "../gerenciarpautareuniao/verificavotacao",
+            success: function(data)
+            {
+                if(!data.error){
+                    if(data.status == 'aberta' && verificarjanela != 'true'){
+                            $("#reuniaoaberta").val("true");
+                    }
+                }
+                else{
+                     if(verificarjanela == 'true'){
+                         $("#reuniaoaberta").val('false');
+                         jqAjaxLink('<?php echo $this->Url(array('controller' => 'gerenciarpautareuniao', 'action' => 'listaprojetoscnic', 'stenvioplenaria' => 'S')) ?>', '', 'pautaplenaria');    
+                     }
+                }
+            }
+            ,dataType : 'json'
+        });
+    }
+    
+    function verificainiciocnic(){
+        $.ajax({
+            async: true,
+            type: "post",
+            url: "<?php echo $this->url(array('controller' => 'gerenciarpautareuniao', 'action' => 'verificarcnic')); ?>",
+            data:{
+                verificacnic : true,
+                stPlenaria : '<?php echo $this->Plenaria['stPlenaria'] ?>'
+            },
+            success: function(data)
+            {
+                if(data){
+                    if(!data.error){
+                        if(data.acao == 'reload'){
+                            window.location.reload();
+                        }
+                        else{
+                            if(data.real > 0){
+                                if(data.status == 'A'){
+                                    clearInterval(votacao);
+                                    var hora = data.cronometro;
+                                    var dadoscronometro = hora.split(':');
+
+                                    var min = dadoscronometro['0'];
+                                    var seg = dadoscronometro['1'];
+                                    $("#minu").html(min);
+                                    $("#seg").html(seg);
+                                    $("#cronometro").removeClass('sumir')
+                                    $(".acao").addClass('sumir')
+                                    var contador;
+                                    clearInterval(votacao);
+                                    cronometrouso(
+                                    function(){
+                                        window.location.reload()
+                                        clearInterval(contador);
+                                    }
+                                );
+                                }
+                            }
+                            else{
+                                if(data.status == 'A'){
+                                    $("#cronometro").addClass('sumir');
+                                    $(".acao").removeClass('sumir');
+                                    $("#menuGerenciar").removeClass('sumir');
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            ,dataType : 'json'
+        });
+    }
+    
+    function JSMostraOcultaElemento(elemento)
+    {
+        $('.' + elemento).toggle();
+
+        if ($('#' + elemento).hasClass('btn_adicionar'))
+        {
+                $('#' + elemento).addClass('btn_remover');
+                $('#' + elemento).removeClass('btn_adicionar');
+        }
+        else
+        {
+                $('#' + elemento).addClass('btn_adicionar');
+                $('#' + elemento).removeClass('btn_remover');
+        }
+    }
+    
+</script>
+<div id="load" class="carregando sumir" title="Carregando..."><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" alt="carregando"><br/><br/>Carregando...<br>Por Favor, aguarde!!</div>
+<input id="reuniaoaberta" type="hidden" value="false"/>
+<div id="consolidacao" class="sumir">
+    <table  class="tabela">
+        <tr>
+            <th colspan="2">Consolida&ccedil;&atilde;o do Projeto
+        <div id="pronac"></div>
+        </th>
+        </tr>
+        <tr>
+            <td>
+                Resultado:
+            </td>
+            <td id="resultado"></td>
+        </tr>
+        <tr>
+            <th colspan="2">Consolida&ccedil;&atilde;o  da Vota&ccedil;&atilde;o</th>
+        </tr>
+        <tr>
+            <td colspan="2" id="consolidacaosec">
+            </td>
+        </tr>
+    </table>
+
+</div>
+<div id="alert"></div>
+<div id="titulo">
+    <div>Reuni&atilde;o CNIC n&ordm; <?php echo $this->numerocnic; ?> - Status : <?php echo $this->statusplenaria; ?>
+        <span class="voltar"><a href="#" onkeypress="voltar()" onclick="voltar();">Voltar</a></span>
+    </div>
+</div>
+<div id="conteudo">
+    <div id="cronometro" style="font-size: 2em; margin-top: 0.5em; text-align: center; color: red;" class="sumir">
+        Tempo restante para in&iacute;cio da Plen&aacute;ria = <span id="minu" ></span>' : <span id="seg" ></span>
+    </div>
+    <div id="miolo">
+        <!-- INICIO - PROJETO SUBMETIDOS A PLENARIA -->
+        <div id="pautaPlenaria"></div>
+        <!-- FIM - PROJETO SUBMETIDOS A PLENARIA -->
+        <br>
+        <!-- INICIO - PROJETO SUBMETIDOS A PLENARIA - PLANO ANUAL-->
+        <div id="pautaPlenariaPlanoAnual"></div>
+        <!-- FIM - PROJETO SUBMETIDOS A PLENARIA - PLANO ANUAL-->
+        <br>
+        <!-- INICIO - PROJETO VOTADOS -->
+        <div id="pautaPlenariaVotados"></div>
+        <!-- FIM - PROJETO VOTADOS -->
+    </div>
+</div><!-- final: conteudo principal #conteudo -->
+
+<!-- inicio: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+<br clear="all" />

@@ -1,0 +1,310 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+
+        $('.btn_cancelar').click(function(){
+            var objeto = $(this),
+                idHistorico = objeto.attr('idHistorico');
+            $("#msgAlerta").dialog("destroy");
+            $("#msgAlerta").html("Deseja realmente cancelar a tramitação?");
+            $("#msgAlerta").dialog({
+                resizable: false,
+                title: 'Alerta!',
+                width:340,
+                height:160,
+                modal: true,
+                buttons : {
+                    'Não' : function(){
+                        $(this).dialog('close');
+                    },
+                    'Sim' : function(){
+                        $.ajax({
+                            type: 'POST',
+                            url: '<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'cancelar-tramitacao')); ?>',
+                            data: {
+                                idHistorico: idHistorico
+                            },
+                            success: function(data){
+                                if(data.resposta){
+                                    $("#msgAlerta").dialog("destroy");
+                                    $("#msgAlerta").html('<center><br /><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" alt="carregando"><br />Por favor, aguarde!!</center>');
+                                    $("#msgAlerta").dialog({
+                                        resizable: false,
+                                        title: 'Alerta!',
+                                        width:300,
+                                        height:150,
+                                        modal: true
+                                    });
+                                    $('.ui-dialog-titlebar-close').remove();
+
+                                    window.setInterval(function() {
+                                        objeto.parent().parent().remove();
+                                        $("#msgAlerta").dialog("destroy");
+                                    }, 1500);
+                                } else {
+                                    $("#msgAlerta").dialog("destroy");
+                                    $("#msgAlerta").html('Não foi possível cancelar a tramitação!');
+                                    $("#msgAlerta").dialog({
+                                        resizable: false,
+                                        title: 'Alerta!',
+                                        width:320,
+                                        height:160,
+                                        modal: true,
+                                        buttons: {
+                                            'Ok':function(){
+                                                $(this).dialog('close'); // fecha a modal
+                                            }
+                                        }
+                                    });
+                                    $('.ui-dialog-titlebar-close').remove();
+                                }
+                            },
+                            dataType : 'json'
+                        });
+                    }
+                }
+            });
+            $('.ui-dialog-titlebar-close').remove();
+        });
+
+    });
+
+    function visualizarTextoModal(text){
+        $("#visualizarTextoModal").dialog("destroy");
+        $("#visualizarTextoModal").html(text);
+        $("#visualizarTextoModal").dialog({
+            resizable: true,
+            modal: true,
+            autoOpen:true,
+            EscClose:false,
+            buttons: {
+                'Ok':function(){
+                    $(this).dialog('close'); // fecha a modal
+                }
+            }
+        });
+        $("#visualizarTextoModal").dialog('open');
+    }
+</script>
+
+<div id="visualizarTextoModal" title="Visualizar Texto" class="sumir"></div>
+<div id="msgAlerta" class="sumir"></div>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para p&aacute;gina inicial">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'index')); ?>" title="Ir para Tramitar documentos">Tramitar documentos</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'consultar')); ?>" title="Ir para Consulta de documentos">Consulta de documentos</a></li>
+        <li class="last">Resultado da pesquisa</li>
+    </ul>
+</div>
+<!-- ========== FIM BRADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Consulta de documentos <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+    <?php if(count($this->dados)>0){ ?>
+    <!-- ============ PAGINAÇÃO ============ -->
+    <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+        <tbody>
+            <tr>
+                <td align="center">
+                <form name="form1" id="form1" action="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'consultardocumento'));?>" method="get">
+                    <?php if($this->paginacao['pag']>1) { ?>
+                    <input class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'consultardocumento')).'?pag=1'."&qtde=".$this->paginacao['qtde'].'&estado='.$this->estado.'&pronac='.$this->pronac.'&origem='.$this->origem.'&destino='.$this->destino.'&tipo_dtEnvio='.$this->tipo_dtEnvio.'&dtEnvioI='.$this->dtEnvioI.'&dtEnvioF='.$this->dtEnvioF.'&tipo_dtRecebida='.$this->tipo_dtRecebida.'&dtRecebidoI='.$this->dtRecebidoI.'&dtRecebidoF='.$this->dtRecebidoF.'&lote='.$this->lote; ?>'">
+                    <?php } ?>
+                    <input id="btn_p_anterior" type="button"
+                    <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                    <?php }else { ?>
+                           class="btn_p_anterior"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'consultardocumento')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].'&estado='.$this->estado.'&pronac='.$this->pronac.'&origem='.$this->origem.'&destino='.$this->destino.'&tipo_dtEnvio='.$this->tipo_dtEnvio.'&dtEnvioI='.$this->dtEnvioI.'&dtEnvioF='.$this->dtEnvioF.'&tipo_dtRecebida='.$this->tipo_dtRecebida.'&dtRecebidoI='.$this->dtRecebidoI.'&dtRecebidoF='.$this->dtRecebidoF.'&lote='.$this->lote; ?>'"
+                    <?php } ?>>
+                    <input id="btn_p_proximo" type="button"
+                           <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                           class="btn_p_proximo-off"
+                    <?php }else { ?>
+                           class="btn_p_proximo"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'consultardocumento')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].'&estado='.$this->estado.'&pronac='.$this->pronac.'&origem='.$this->origem.'&destino='.$this->destino.'&tipo_dtEnvio='.$this->tipo_dtEnvio.'&dtEnvioI='.$this->dtEnvioI.'&dtEnvioF='.$this->dtEnvioF.'&tipo_dtRecebida='.$this->tipo_dtRecebida.'&dtRecebidoI='.$this->dtRecebidoI.'&dtRecebidoF='.$this->dtRecebidoF.'&lote='.$this->lote; ?>'"
+                    <?php } ?>>
+                    <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                    <input class="btn_ultimo" id="btn_ultimo" type="button"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'consultardocumento')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].'&estado='.$this->estado.'&pronac='.$this->pronac.'&origem='.$this->origem.'&destino='.$this->destino.'&tipo_dtEnvio='.$this->tipo_dtEnvio.'&dtEnvioI='.$this->dtEnvioI.'&dtEnvioF='.$this->dtEnvioF.'&tipo_dtRecebida='.$this->tipo_dtRecebida.'&dtRecebidoI='.$this->dtRecebidoI.'&dtRecebidoF='.$this->dtRecebidoF.'&lote='.$this->lote; ?>'">
+                    <?php } ?>
+                    Pág.:<select name="pag" id="pag" onchange="$('#form1').submit()" class="input_simples">
+                        <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                        <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                        <?php endfor; ?>
+                    </select>
+                    &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>"><input type="submit" class="btn_recarregar" value="">
+                    <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                    <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                    <input type="hidden" name="estado" value="<?php echo $this->estado;?>">
+                    <input type="hidden" name="pronac" value="<?php echo $this->pronac;?>">
+                    <input type="hidden" name="origem" value="<?php echo $this->origem;?>">
+                    <input type="hidden" name="destino" value="<?php echo $this->destino;?>">
+                    <input type="hidden" name="tipo_dtEnvio" value="<?php echo $this->tipo_dtEnvio;?>">
+                    <input type="hidden" name="tipo_dtEnvio" value="<?php echo $this->tipo_dtEnvio;?>">
+                    <input type="hidden" name="dtEnvioI" value="<?php echo $this->dtEnvioI;?>">
+                    <input type="hidden" name="dtEnvioF" value="<?php echo $this->dtEnvioF;?>">
+                    <input type="hidden" name="dtEnvioF" value="<?php echo $this->dtEnvioF;?>">
+                    <input type="hidden" name="tipo_dtRecebida" value="<?php echo $this->tipo_dtRecebida;?>">
+                    <input type="hidden" name="dtRecebidoI" value="<?php echo $this->dtRecebidoI;?>">
+                    <input type="hidden" name="dtRecebidoF" value="<?php echo $this->dtRecebidoF;?>">
+                    <input type="hidden" name="lote" value="<?php echo $this->lote;?>">
+                 </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <center>
+        <?php
+            echo $this->paginacao['inicio']." a ";
+            echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+            echo " de ". $this->paginacao['total']. " projetos listados";
+        ?>
+    </center>
+    <!-- ========== FIM PAGINAÇÃO ========== -->
+    <?php } ?>
+
+
+    <?php if($this->qtdRegistros != 0){ ?>
+    <table class="tabela tablesorter">
+        <thead>
+            <tr class="titulo_tabela">
+                <th>Origem</th>
+                <th><a href="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'consultardocumento')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=19&ordem='.$this->paginacao['novaOrdem'].'&estado='.$this->estado.'&origem='.$this->origem.'&destino='.$this->destino.'&tipo_dtEnvio='.$this->tipo_dtEnvio.'&dtEnvioI='.$this->dtEnvioI.'&dtEnvioF='.$this->dtEnvioF.'&tipo_dtRecebida='.$this->tipo_dtRecebida.'&dtRecebidoI='.$this->dtRecebidoI.'&dtRecebidoF='.$this->dtRecebidoF.'&lote='.$this->lote;?>">PRONAC</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'consultardocumento')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=20&ordem='.$this->paginacao['novaOrdem'].'&estado='.$this->estado.'&origem='.$this->origem.'&destino='.$this->destino.'&tipo_dtEnvio='.$this->tipo_dtEnvio.'&dtEnvioI='.$this->dtEnvioI.'&dtEnvioF='.$this->dtEnvioF.'&tipo_dtRecebida='.$this->tipo_dtRecebida.'&dtRecebidoI='.$this->dtRecebidoI.'&dtRecebidoF='.$this->dtRecebidoF.'&lote='.$this->lote;?>">Nome do Projeto</a></th>
+                <th width="110"><a href="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'consultardocumento')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=13&ordem='.$this->paginacao['novaOrdem'].'&estado='.$this->estado.'&origem='.$this->origem.'&destino='.$this->destino.'&tipo_dtEnvio='.$this->tipo_dtEnvio.'&dtEnvioI='.$this->dtEnvioI.'&dtEnvioF='.$this->dtEnvioF.'&tipo_dtRecebida='.$this->tipo_dtRecebida.'&dtRecebidoI='.$this->dtRecebidoI.'&dtRecebidoF='.$this->dtRecebidoF.'&lote='.$this->lote;?>">Processo</a></th>
+                <th>Despacho</th>
+                <th><a href="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'consultardocumento')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=14&ordem='.$this->paginacao['novaOrdem'].'&estado='.$this->estado.'&origem='.$this->origem.'&destino='.$this->destino.'&tipo_dtEnvio='.$this->tipo_dtEnvio.'&dtEnvioI='.$this->dtEnvioI.'&dtEnvioF='.$this->dtEnvioF.'&tipo_dtRecebida='.$this->tipo_dtRecebida.'&dtRecebidoI='.$this->dtRecebidoI.'&dtRecebidoF='.$this->dtRecebidoF.'&lote='.$this->lote;?>">Emissor</a></th>
+                <th width="70">Dt. Envio</th>
+                <th>Destino</th>
+                <th width="80">Dt. Recebida</th>
+                <th><a href="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'consultardocumento')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=17&ordem='.$this->paginacao['novaOrdem'].'&estado='.$this->estado.'&origem='.$this->origem.'&destino='.$this->destino.'&tipo_dtEnvio='.$this->tipo_dtEnvio.'&dtEnvioI='.$this->dtEnvioI.'&dtEnvioF='.$this->dtEnvioF.'&tipo_dtRecebida='.$this->tipo_dtRecebida.'&dtRecebidoI='.$this->dtRecebidoI.'&dtRecebidoF='.$this->dtRecebidoF.'&lote='.$this->lote;?>">Receptor</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'consultardocumento')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=8&ordem='.$this->paginacao['novaOrdem'].'&estado='.$this->estado.'&origem='.$this->origem.'&destino='.$this->destino.'&tipo_dtEnvio='.$this->tipo_dtEnvio.'&dtEnvioI='.$this->dtEnvioI.'&dtEnvioF='.$this->dtEnvioF.'&tipo_dtRecebida='.$this->tipo_dtRecebida.'&dtRecebidoI='.$this->dtRecebidoI.'&dtRecebidoF='.$this->dtRecebidoF.'&lote='.$this->lote;?>">Lote</a></th>
+                <th>Situa&ccedil;&atilde;o</th>
+                <th>A&ccedil;&atilde;o</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach($this->dados as $d){ ?>
+            <tr>
+                <td align="center"><?php echo $d->Origem; ?></td>
+                <td align="center"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')); ?>?idPronac=<?php echo $d->idPronac; ?>" title="Consultar dados do projeto" target="_blank"><?php echo $d->Pronac; ?></a></td>
+                <td><?php echo $d->NomeProjeto; ?></td>
+                <td align="center"><?php echo $d->Processo; ?></td>
+                <td align="center">
+                    <?php if(!empty($d->despacho)){ ?>
+                    <img src="<?php echo $this->baseUrl(); ?>/public/img/table_multiple.png" style="cursor:pointer;" onclick="visualizarTextoModal('<?php echo $d->despacho; ?>');" alt="Visualizar" />
+                    <?php } ?>
+                </td>
+                <td><?php echo $d->Emissor; ?></td>
+                <td align="center"><?php echo $d->dtEnvio; ?></td>
+                <td><?php echo $d->Destino; ?></td>
+                <td align="center"><?php echo $d->dtRecebida; ?></td>
+                <td><?php echo $d->Receptor; ?></td>
+                <td><?php echo $d->idLote ?></td>
+                <td><?php echo $d->Estado; ?></td>
+                <td align="center">
+                    <?php if(($d->idOrigem == $this->orgaoLogado) && ($d->idUsuarioEmissor == $this->usuarioLogado) && $d->Acao == 2){ ?>
+                    <input type="button" class="btn_cancelar" idHistorico="<?php echo $d->idHistorico; ?>" />
+                    <?php } ?>
+                </td>
+            </tr>
+            <?php } ?>
+        </tbody>
+    </table>
+
+    <?php if(count($this->dados)>0){ ?>
+
+        <!-- ============ PAGINAÇÃO ============ -->
+        <?php if($this->qtdRegistros > 10) { //echo $this->dados; ?>
+        <center>
+            <?php
+                echo $this->paginacao['inicio']." a ";
+                echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+                echo " de ". $this->paginacao['total'];
+            ?>
+        </center>
+        <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+            <tbody>
+                <tr>
+                    <td align="center">
+                    <form name="form2" id="form2" action="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'consultardocumento'));?>" method="get">
+                        <?php if($this->paginacao['pag']>1) { ?>
+                        <input class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'consultardocumento')).'?pag=1'."&qtde=".$this->paginacao['qtde'].'&estado='.$this->estado.'&pronac='.$this->pronac.'&origem='.$this->origem.'&destino='.$this->destino.'&tipo_dtEnvio='.$this->tipo_dtEnvio.'&dtEnvioI='.$this->dtEnvioI.'&dtEnvioF='.$this->dtEnvioF.'&tipo_dtRecebida='.$this->tipo_dtRecebida.'&dtRecebidoI='.$this->dtRecebidoI.'&dtRecebidoF='.$this->dtRecebidoF.'&lote='.$this->lote; ?>'">
+                        <?php } ?>
+                        <input id="btn_p_anterior" type="button"
+                        <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                        <?php }else { ?>
+                               class="btn_p_anterior"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'consultardocumento')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].'&estado='.$this->estado.'&pronac='.$this->pronac.'&origem='.$this->origem.'&destino='.$this->destino.'&tipo_dtEnvio='.$this->tipo_dtEnvio.'&dtEnvioI='.$this->dtEnvioI.'&dtEnvioF='.$this->dtEnvioF.'&tipo_dtRecebida='.$this->tipo_dtRecebida.'&dtRecebidoI='.$this->dtRecebidoI.'&dtRecebidoF='.$this->dtRecebidoF.'&lote='.$this->lote; ?>'"
+                        <?php } ?>>
+                        <input id="btn_p_proximo" type="button"
+                               <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                               class="btn_p_proximo-off"
+                        <?php }else { ?>
+                               class="btn_p_proximo"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'consultardocumento')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].'&estado='.$this->estado.'&pronac='.$this->pronac.'&origem='.$this->origem.'&destino='.$this->destino.'&tipo_dtEnvio='.$this->tipo_dtEnvio.'&dtEnvioI='.$this->dtEnvioI.'&dtEnvioF='.$this->dtEnvioF.'&tipo_dtRecebida='.$this->tipo_dtRecebida.'&dtRecebidoI='.$this->dtRecebidoI.'&dtRecebidoF='.$this->dtRecebidoF.'&lote='.$this->lote; ?>'"
+                        <?php } ?>>
+                        <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                        <input class="btn_ultimo" id="btn_ultimo" type="button"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'consultardocumento')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].'&estado='.$this->estado.'&pronac='.$this->pronac.'&origem='.$this->origem.'&destino='.$this->destino.'&tipo_dtEnvio='.$this->tipo_dtEnvio.'&dtEnvioI='.$this->dtEnvioI.'&dtEnvioF='.$this->dtEnvioF.'&tipo_dtRecebida='.$this->tipo_dtRecebida.'&dtRecebidoI='.$this->dtRecebidoI.'&dtRecebidoF='.$this->dtRecebidoF.'&lote='.$this->lote; ?>'">
+                        <?php } ?>
+                        Pág.:<select name="pag" id="pag" onchange="$('#form2').submit()" class="input_simples">
+                            <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                            <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                            <?php endfor; ?>
+                        </select>
+                        &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>"><input type="submit" class="btn_recarregar" value="">
+                        <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                        <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                        <input type="hidden" name="estado" value="<?php echo $this->estado;?>">
+                        <input type="hidden" name="pronac" value="<?php echo $this->pronac;?>">
+                        <input type="hidden" name="origem" value="<?php echo $this->origem;?>">
+                        <input type="hidden" name="destino" value="<?php echo $this->destino;?>">
+                        <input type="hidden" name="tipo_dtEnvio" value="<?php echo $this->tipo_dtEnvio;?>">
+                        <input type="hidden" name="tipo_dtEnvio" value="<?php echo $this->tipo_dtEnvio;?>">
+                        <input type="hidden" name="dtEnvioI" value="<?php echo $this->dtEnvioI;?>">
+                        <input type="hidden" name="dtEnvioF" value="<?php echo $this->dtEnvioF;?>">
+                        <input type="hidden" name="dtEnvioF" value="<?php echo $this->dtEnvioF;?>">
+                        <input type="hidden" name="tipo_dtRecebida" value="<?php echo $this->tipo_dtRecebida;?>">
+                        <input type="hidden" name="dtRecebidoI" value="<?php echo $this->dtRecebidoI;?>">
+                        <input type="hidden" name="dtRecebidoF" value="<?php echo $this->dtRecebidoF;?>">
+                        <input type="hidden" name="lote" value="<?php echo $this->lote;?>">
+                     </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- ========== FIM PAGINAÇÃO ========== -->
+    <?php } } ?>
+
+    <?php } else { ?>
+    <br clear="all" />
+    <table class="tabela">
+        <tr>
+            <td align="center">Nenhum registro encontrado!</td>
+        </tr>
+    </table>
+    <?php } ?>
+    <br clear="all" />
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

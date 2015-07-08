@@ -1,0 +1,7 @@
+<!--PEGAR OS DADOS DO FORMULÁRIO DA TELA OFICIALIZAR FISCALIZACAO-->
+<form name="formulario" method="post" action="<?php echo $this->url(array('controller' => 'Pesquisarprojetofiscalizacao', 'action' => $this->tela));?>">
+    <input type="hidden" name="idPronac" value="<?php echo $this->idPronac ?>" />
+</form>
+<script>
+    $('[name=formulario]').submit();
+</script> 

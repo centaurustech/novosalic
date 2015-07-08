@@ -1,0 +1,205 @@
+<script>
+    $(document).ready(function(){
+        $("#confirmacao").dialog({
+            resizable: true,
+            height:100,
+            modal: true,
+            autoOpen:false
+        });
+        $('.ui-dialog-titlebar-close').remove();
+        
+        $("#load").dialog({
+            resizable: false,
+            width:300,
+            height:160,
+            modal: true,
+            autoOpen:false
+        });
+        $(".btn").click(function(){
+            if($("#dsjustificativa").val()==""){
+                $("#alerta").html("Dados obrigat&oacute;rios n&atilde;o informados!")
+                alerta(function(){$("#alerta").dialog("close")});
+                $('.ui-dialog-titlebar-close').remove();
+                $("#alerta").dialog("open");
+            }
+            else{
+                var msg = 'Confirmar o voto?';
+                var voto = $(this).attr('voto');
+                var idpronac = $(this).attr('idpronac');
+                var dsjustificativa = $('#dsjustificativa').val();
+                $("#confirmacao").html(msg);
+                confirmaClick(function(){
+                    $("#confirmacao").html("Aguarde, salvando informa&ccedil;&otilde;es!");
+                    $.ajax({
+                        async: true,
+                        datatype : 'json',
+                        type: "post",
+                        url: "<?php echo $this->baseUrl(); ?>/votarprojetocultural/votacao",
+                        data:{
+                            idpronac:idpronac,
+                            voto : voto,
+                            dsjustificativa : dsjustificativa
+                        },
+                        success: function(data)
+                        {
+                            if(!data.error){
+                               $("#alerta").html("Projeto votado com sucesso!")
+                               alerta(
+                                   function(){
+                                      $("div").dialog('close');
+                                      $('html').css('overflow', 'auto');
+                                   }
+                               ) 
+                              $("#alerta").dialog('open');
+                            }
+                        }
+                    });
+                }, 
+                function(){
+                    $("#confirmacao").dialog('close')
+                }
+            );
+                $("#confirmacao").dialog('open')
+            }
+        });
+        $('#dsjustificativa').keyup(function(){
+            var digitados = $(this).val().length;
+            var maximo    = $("#maximo").val();
+            var contador  = 0;
+            if(digitados < maximo) {
+                contador = Number(maximo - digitados);
+            }
+            $("#dsjustificativa").val($(this).val().substr(0, maximo));
+            $("#contador").html(contador);
+        });
+
+        $(".btn_adicionar").click(function(){
+            var idpronac = <?php echo $this->idpronac; ?>;
+            var idprojeto = $(this).attr('view');
+            var aberto = $("#"+idprojeto).attr('aberto');
+            if($.trim($("#"+idprojeto).html()) != ''){
+                if(aberto == 'true'){
+                    $("#"+idprojeto).addClass('sumir');
+                    $("#"+idprojeto).attr('aberto','false');
+                    return false;
+                }
+                else{
+                    $("#"+idprojeto).removeClass('sumir');
+                    $("#"+idprojeto).attr('aberto','true');
+                    return false;
+                }
+            }else{
+                $("#"+idprojeto).html('<center>Carregando dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br>');
+            }
+            $.ajax({
+                async: true,
+                type: "post",
+                url: "<?php echo $this->baseUrl(); ?>/votarprojetocultural/"+idprojeto,
+                data:{
+                    idpronac:idpronac
+                },
+                success: function(data)
+                {
+                    valor = "<fieldset>";
+                    valor += data;
+                    valor += "</fieldset>";
+                    $("#"+idprojeto).html(valor);
+                    $("#"+idprojeto).attr('aberto','true');
+                }
+            });
+            
+        })
+        
+    });
+    function confirmaClick(funcaoRetornoSim, functionnao){
+        $("#confirmacao").dialog({
+            resizable: false,
+            height:160,
+            modal: true,
+            buttons: {
+                'Cancelar': functionnao,
+                'Confirmar': funcaoRetornoSim
+            }
+        });
+    }
+    function alerta(funcionok){
+        $("#alerta").dialog({
+            resizable: false,
+            width:470,
+            height:160,
+            modal: true,
+            autoOpen:false,
+            buttons : {
+                'OK' : funcionok
+            }
+        });
+    }
+</script>
+<?php
+/**
+ * Vota��o usu�rio
+ * @author Equipe RUP - Politec
+ * @since 07/06/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.controller.realizaranaliseprojeto
+ * @link http://www.cultura.gov.br
+ * @copyright � 2010 - Minist�rio da Cultura - Todos os direitos reservados.
+ */
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+<div id="confirmacao"></div>
+<div id="erro"></div>
+<div id="alerta"></div>
+<div id="load" class="carregando sumir" style="width:100%; height:100%;" title="Carregando..."><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" alt="carregando"><br/><br/>Carregando...<br>Por Favor, aguarde!!</div>
+<div style="font-size: 18pt; color: #008000; padding-top: 1em; text-align: center">Vota&ccedil;&atilde;o do projeto: <a id="consultarprojetos" href="<?php echo $this->Url(array('controller' => 'dadosprojeto', 'action' => 'index', 'idpronac'=>$this->dadosprojeto['IdPRONAC']),'',true) ; ?>" target="_new" title="Ir para Consultar Projetos"> <?php echo $this->dadosprojeto['AnoProjeto'] . $this->dadosprojeto['Sequencial'] . " - " . $this->dadosprojeto['NomeProjeto']; ?></a></div>
+<div style="font-size: 18pt; color: #008000; padding-top: 1em; text-align: center">Componente da Comiss&atilde;o: <?php echo $this->componente; ?></div>
+<div>
+    <fieldset>
+        <input type="button" view="parecerconsolidado" class="btn_adicionar" />Parecer Consolidado
+    </fieldset>
+    <div id="parecerconsolidado" aberto="false"></div>
+    <fieldset>
+        <input type="button" view="analisedeconta"  class="btn_adicionar"/>An&aacute;lise de Corte Sugerido
+    </fieldset>
+    <div id="analisedeconta" aberto="false"></div>
+    <fieldset>
+        <input type="button" view="analisedeconteudo" class="btn_adicionar"/>An&aacute;lise de Conte&uacute;do
+    </fieldset>
+    <div id="analisedeconteudo" aberto="false"></div>
+    <fieldset>
+        <input type="button" view="analisedecustos" class="btn_adicionar"/>An&aacute;lise de Custos
+    </fieldset>
+    <div id="analisedecustos" aberto="false"></div>
+    <fieldset>
+        <input type="button" view="dadosproponente" class="btn_adicionar"/>Dados Proponente
+    </fieldset>
+    <div id="dadosproponente" aberto="false"></div>
+</div>
+<form id="formulario" action="<?php echo $this->url(array('controller' => 'votarprojetocultural', 'action' => 'votacao')); ?>" method="post">
+    <table style="width: 100%;">
+        <tr>
+            <th colspan="3">Justificativa do voto do componente da comiss&atilde;o</th>
+        </tr>
+        <tr>
+            <td colspan="3" class="centro">
+                <textarea style="width: 60em; height: 20em; margin-left: 7em" id="dsjustificativa" name="dsjustificativa" class="w600 input_simples"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3" align="center">
+                faltam
+                <input type="hidden" name="maximo" id="maximo" value="8000"/>
+                <div id="contador">
+                    8000
+                </div>
+                Caracteres
+            </td>
+        </tr>
+        <tr>
+            <td align="center"><input voto="A" idpronac="<?php echo $this->idpronac; ?>" class="btn" type="button" value="Aprovar projeto cultural" id="btaprovar"></td>
+            <td align="center"><input voto="B" idpronac="<?php echo $this->idpronac; ?>" class="btn" type="button" value="Abster voto" id="abstencao"></td>
+            <td align="center"><input voto="I" idpronac="<?php echo $this->idpronac; ?>" class="btn" type="button" value="Indeferir projeto cultural" id="indeferir"></td>
+        </tr>
+    </table>
+</form>

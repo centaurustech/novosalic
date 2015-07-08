@@ -1,0 +1,188 @@
+<!-- ========== MENU ========== -->
+<!--?php include_once 'scripts/aprovacaoeparecer/inc/menu.inc.php';     ?>
+<!-- ========== IN??CIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="index" title="Ir para Início">In&iacute;cio</a></li>
+        <li class="last">Libera&ccedil;&atilde;o</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== BUTTON VOLTAR ========== -->
+<div id="titulo">
+    <div>Libera&ccedil;&atilde;o<span class="voltar"><a href="#" onclick="location.href ='index.html'">Voltar</a></span></div>
+</div>
+<!-- ========== FIM T??TULO ========== -->
+
+<div id="conteudo" align="center">
+    <div style="width:100%;" align="center">
+        <form name="formulario" action="#" align="center">
+
+            <table class="tabela">
+                <th colspan="0" class="centro">Dados Principais</th>
+                <tr>
+                    <td align="center">PRONAC:</td>
+                    <td colspan="0">
+                        <input type="text" id="pronac" name="pronac" value="" maxlength="7" size="12" class='input_simples w200' onkeypress="mascara(this,format_num);" onchange="mascara(this,format_num);" onkeydown="mascara(this,format_num);"/>
+                    </td>
+                    <td colspan="0" align="center">Nome do Projeto:</td>
+                    <td>
+                        <input name='NomeProjeto' type='text' class='input_simples w500 focus'/>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="0" class="centro">UF / Mecanismo / &Aacute;rea / Segmento / Processo</th>
+                </tr>
+                <td colspan="0" align="center">UF:</td>
+                <td colspan="0">
+                    <select name='uf' class='select_simples focus w200'>
+                        <option value='' selected>--Selecione--</option>
+                        <option value='SSS'>DF</option>
+                        <option value='SSS'>SP</option>
+                        <option value='SSS'>RJ</option>
+                    </select>
+                </td>
+                <td colspan="0" align="center">SEGMENTO:</td>
+                <td>
+                    <input name='NomeProjeto' type='text' class='input_simples w100 focus'/>
+                </td>
+                <tr>
+                    <td colspan="" align="center">MECANISMO:</td>
+                    <td>
+                        <input name='NomeProjeto' type='text' class='input_simples w100 focus'/>
+                    </td>
+                    <td colspan="0" align="center">&Aacute;REA:</td>
+                    <td>
+                        <input name='NomeProjeto' type='text' class='input_simples w100 focus'/>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">CNPJ/CPF:</td>
+                    <td colspan="0">
+                        <input type="text" id="pronac" name="pronac" value="" maxlength="14" size="12" class='input_simples w200' onkeypress="mascara(this,format_num);" onchange="mascara(this,format_num);" onkeydown="mascara(this,format_num);"/>
+                    </td>
+                    <td colspan="0">
+                        <input name='NomeProjeto' type='text' class='input_simples w500 focus'/>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">PROCESSO:</td>
+                    <td colspan="0">
+                        <input name='Processo' type='text' class='input_simples w500 focus'/>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="0" class="centro">Or&ccedil;amento Aprovado</th>
+                </tr>
+                <tr>
+                    <td colspan="0" align="center">MECENATO:</td>
+                    <td colspan="0">
+                        <input name='Processo' type='text' class='input_simples w200 focus'/>
+                    </td>   
+                </tr>
+                <tr>
+                    <td colspan="0" align="center">ARTIGO 1:</td>
+                    <td colspan="0">
+                        <input name='Processo' type='text' class='input_simples w200 focus'/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="0" align="center">PRODU&Ccedil;&Atilde;O:</td>
+                    <td colspan="0">
+                        <input name='Processo' type='text' class='input_simples w200 focus'/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="0" align="center">COMERCIALIZA&Ccedil;&Atilde;O:</td>
+                    <td colspan="0">
+                        <input name='Processo' type='text' class='input_simples w200 focus'/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="0" align="center">ARTIGO 3:</td>
+                    <td colspan="0">
+                        <input name='Processo' type='text' class='input_simples w200 focus'/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="0" align="center">PRODU&Ccedil;&Atilde;O:</td>
+                    <td colspan="0">
+                        <input name='Processo' type='text' class='input_simples w200 focus'/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="0" align="center">COMERCIALIZA&Ccedil;&Atilde;O:</td>
+                    <td colspan="0">
+                        <input name='Processo' type='text' class='input_simples w200 focus'/>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">TOTAL:</td>
+                    <td colspan="0">
+                        <input name='Processo' type='text' class='input_simples w200 focus'/>
+                    </td>
+                </tr>               
+                <tr>
+                    <th colspan="0" class="centro">Captado</th>
+                </tr>
+                <tr>
+                    <td colspan="0" align="center">MECENATO:</td>
+                    <td colspan="0">
+                        <input name='Processo' type='text' class='input_simples w200 focus'/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="0" align="center">ARTIGO 1:</td>
+                    <td colspan="0">
+                        <input name='Processo' type='text' class='input_simples w200 focus'/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="0" align="center">ARTIGO 3:</td>
+                    <td colspan="0">
+                        <input name='Processo' type='text' class='input_simples w200 focus'/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="0" align="center">OUTRAS FONTES:</td>
+                    <td colspan="0">
+                        <input name='Processo' type='text' class='input_simples w200 focus'/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="0" align="center">TOTAL:</td>
+                    <td colspan="0">
+                        <input name='Processo' type='text' class='input_simples w200 focus'/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="0" class="centro">
+                        <input class="btn" id="liberar" value="Liberar" type="button" onclick="window.location='index.html';"/>
+                    </td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td><input type="radio" name="stRelatorioFinal" class="stRelatorioFinal" value="1"/> Mostrar Relat&oacute;rio </td>
+                    <td><input type="radio" name="stRelatorioFinal" class="stRelatorioFinal" value="2"/> Ocultar Relat&oacute;rio </td>
+                </tr>
+            </table>
+            <table class="tabela" border="0" cellpadding="0" cellspacing="1" style="margin-top: 10px;">
+                <tr>
+                    <td colspan="0" class="centro">
+                        <input class="btn_salvar" id="btn_salvar" value="" type="button" onclick="window.location='index.html';"/>
+                        <input class="btn_imprimir" id="btn_imprimir" value="" type="button" onclick="window.location='index.html';"/>
+                        <input class="btn_cancelar" id="btn_cancelar" value="" type="button" onclick="window.location='index.html';"/>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+<!-- ========== IN??CIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

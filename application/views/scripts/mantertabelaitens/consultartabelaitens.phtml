@@ -1,0 +1,85 @@
+
+<!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== 
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'propostas')); ?>" title="Ir para Propostas">Propostas</a></li>
+        <li class="last">Produtos / Etapas / Itens  </li>
+    </ul>
+</div>-->
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+<?php
+require_once "scripts/manterpropostaincentivofiscal/inc/menu.inc.php"; // menu de manter proposta por incentivo fiscal
+?>
+<?php
+        $controller = "mantertabelaitens";
+        $links = array(
+            array('Lista de Propostas' => array('controller' => 'manterpropostaincentivofiscal','action' => 'listar-propostas')),
+            array('Tabelas de Itens' => array())
+        );
+montaGuiaLinks($controller, $links);
+?>
+<!-- ========== INICIO TITULO ========== -->
+<div id="titulo">
+    <div>Tabelas de Itens <?php echo montaBotaoVoltar($controller, $links); ?></div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+<div id="conteudo">
+    <form id="formBuscar" name="formBuscar" method="post" action="<?php echo $this->url(array('controller' => 'mantertabelaitens', 'action' => 'exibirdados')); ?>?idPreProjeto=<?php if(isset($_GET['idPreProjeto']))echo $_GET['idPreProjeto'];?>">
+        <table class="tabela">
+            <th colspan="3">Localizar Produtos / Etapas / Itens </th>
+            <tr><td colspan="3"></td></tr>
+            <tr>
+                <td class="esquerda" ><label for="produto" ><b>Produto </b></label></td>
+                <td class="esquerda"><b>Exatamente igual </b></td>
+                <td class="esquerda"><label for="produto"></label>
+                    <select class="input_simples" name="produto" id="produto">
+                        <option value="">- Todos - </option>
+                        <?php foreach($this->produto as $tbproduto) { ?>
+                        <option value="<?php echo $tbproduto->codproduto; ?>"> <?php echo $tbproduto->Produto; ?></option>
+                            <?php } ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="esquerda" ><label for="etapa" ><b>Etapa</b></label></td>
+                <td class="esquerda"><b>Exatamente igual </b></td>
+                <td class="esquerda">
+                    <select class="input_simples" name="etapa" id="etapa">
+                        <option value="">- Todos - </option>
+                        <?php foreach($this->etapa as $tbetapa) { ?>
+                        <option value="<?php echo $tbetapa->codetapa; ?>"> <?php echo $tbetapa->Etapa; ?></option>
+                            <?php } ?>
+                    </select>
+                </td>
+            </tr>
+            <tr  class="centro">
+                <td class="esquerda" ><label for="item" ><b>Item</b></label></td>
+                <td class="esquerda">
+                    <select class="input_simples" name="TipoPesquisa" id="TipoPesquisa">
+                        <option value="01" selected="selected">Que contenha</option>
+                        <option value="02" >In&iacute;cio Igual</option>
+                        <option value="03">Exatamente Igual</option>
+                        <option value="04">Diferente</option>
+                    </select>
+                    <td class="esquerda"><input type="text" name="NomeDoItem" id="NomeDoItem" maxlength="70" style="width:600px;"
+                                            onclick="limpar_campo(this, 'Nome do Item');" value=" "
+                                            onkeypress=" "
+                                            onblur="restaurar_campo(this, 'Nome do Item');"
+                                            onmouseout="restaurar_campo(this, 'Nome do Item');"
+                                            class="input_simples w500"
+                                            />
+                    </td>
+            </tr>
+            <tr  class="centro">
+                <td colspan="3" class="centro">
+                    <input type="submit" title=" Pesquisar " class="btn_localizar" value=" " />
+                    &nbsp;
+                    <input type="button" name="novo" class="btn_novo" value="" onclick="window.location='<?php echo $this->url(array('controller' => 'mantertabelaitens', 'action' => 'solicitaritens')); ?>?idPreProjeto=<?php if(isset($_GET['idPreProjeto']))echo $_GET['idPreProjeto'];?>'">&nbsp;
+                    <input type="reset" title=" Cancelar " class="btn_limpar" value=" " />
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<br clear="all" />

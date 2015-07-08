@@ -1,0 +1,37 @@
+<?php 
+$nmArquivo = preg_replace('#(\s)#is', '_', $_POST['relatorio']);
+
+header("Content-type: application/vnd.ms-excel; name='excel'");
+//header("Content-Disposition: filename=$nmArquivo.xls");
+header("Content-Disposition: attachment; filename=relatorio.xls");
+header("Pragma: no-cache");
+header("Expires: 0");
+
+$output = $_POST['output'];
+
+$patterns = array();
+$patterns[] = '/<table.*?>/is';
+$patterns[] = '/<thead>/is';
+$patterns[] = '/<\/thead>/is';
+$patterns[] = '/<tbody>/is';
+$patterns[] = '/<\/tbody>/is';
+$patterns[] = '/<col.*?>/is';
+$patterns[] = '/<th.*?>/is';
+$patterns[] = '/<tr.*?>/is';
+$patterns[] = '/<td.*?>/is';
+
+$replaces = array();
+$replaces[] = '<table border=1>';
+$replaces[] = '';
+$replaces[] = '';
+$replaces[] = '';
+$replaces[] = '';
+$replaces[] = '';
+$replaces[] = '<th>';
+$replaces[] = '<tr>';
+$replaces[] = '<td>';
+
+$output = preg_replace($patterns,$replaces,$output);
+
+echo $output;
+?>

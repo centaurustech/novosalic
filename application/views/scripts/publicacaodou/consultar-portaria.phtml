@@ -1,0 +1,250 @@
+<?php
+/**
+ * Consultar Portaria
+ * @author Equipe XTI
+ * @since 02/02/2014
+ * @version 1.0
+ * @package application
+ * @subpackage application.controller.PublicacaoDou
+ * @link http://www.cultura.gov.br
+ * @copyright ï¿½ 2010 - Ministï¿½rio da Cultura - Todos os direitos reservados.
+ */
+?>
+<!-- ========== INï¿½CIO BREADCRUMB (LINKS TOPO) ========== -->
+<script type="text/javascript" id="js">
+    $(document).ready(function(){
+        $('#btn_imprimir_rtf').click(function(){
+            $('#formRtf').submit();
+        });
+        
+        $('#imprimir_tabela').click(function(){
+            $('#formImpTable').submit();
+        });
+        
+        $('#btn_pesquisar').click(function(){
+            $('#formPesquisa').submit();
+        });
+    });
+
+    function confirmaRetirada(PortariaAprovacao){
+        $("#alert").dialog({
+            title : 'Alerta!',
+            resizable: true,
+            width:350,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'Não': function() {
+                    $(this).dialog('close');
+                },
+                'Sim': function() {
+                    $("#alert").dialog("destroy");
+                    $("#msgAlerta").dialog("destroy");
+                    $("#msgAlerta").html('<center><br />Carregando...<br />Por favor, aguarde!!<center>');
+                    $("#msgAlerta").dialog({
+                        resizable: false,
+                        title: 'Alerta!',
+                        width:300,
+                        height:150,
+                        modal: true
+                    });
+                    $('.ui-dialog-titlebar-close').remove();
+                    location.href = "<?php echo $this->url(array('controller' => 'publicacaodou', 'action' => 'retirarportaria')); ?>"+"?PortariaAprovacao=" + PortariaAprovacao + "&tipo=<?php echo $this->filtro; ?>";
+                }
+            }
+        });
+        $('#alert').html('Deseja realmente retirar essa portaria?');
+        $("#alert").dialog('open');
+    }
+
+    function confirmaPublicacao(PortariaAprovacao){
+        $("#alert").dialog({
+            title : 'Alerta!',
+            resizable: true,
+            width:350,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'Não': function() {
+                    $(this).dialog('close');
+                },
+                'Sim': function() {
+                    $("#alert").dialog("destroy");
+                    $("#msgAlerta").dialog("destroy");
+                    $("#msgAlerta").html('<center><br />Carregando...<br />Por favor, aguarde!!<center>');
+                    $("#msgAlerta").dialog({
+                        resizable: false,
+                        title: 'Alerta!',
+                        width:300,
+                        height:150,
+                        modal: true
+                    });
+                    $('.ui-dialog-titlebar-close').remove();
+                    location.href = "<?php echo $this->url(array('controller' => 'publicacaodou', 'action' => 'publicarportaria')); ?>?PortariaAprovacao=" + PortariaAprovacao + "&tipo=<?php echo $this->filtro; ?>";
+                }
+            }
+        });
+        $('#alert').html('Deseja realmente publicar essa portaria?');
+        $("#alert").dialog('open');
+    }
+</script>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->baseUrl(); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="last">Atualiza&ccedil;&atilde;o de Portaria</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INï¿½CIO Tï¿½TULO ========== -->
+<div id="titulo">
+    <div>Atualiza&ccedil;&atilde;o de Portaria</div>
+</div>
+<!-- ========== FIM Tï¿½TULO ========== -->
+
+
+<!-- ========== INï¿½CIO CONTEï¿½DO ========== -->
+<div id="conteudo">
+    <div id="msgAlerta" class="sumir"></div>
+    <div id="alert" class="sumir"></div>
+    <div id="final" class="sumir"></div>
+    <div id="erro" class="sumir"></div>
+    <div id="confirmacao" class="sumir"></div>
+    
+    <form name="formPesquisa" id="formPesquisa" action="<?php echo $this->url(array('controller' => 'publicacaodou', 'action' => 'consultar-portaria'));?>" method="get">
+        <table class="tabela">
+            <tr>
+                <th colspan="4">Filtro de Pesquisa</th>
+            </tr>
+            <tr class="divFiltroPesquisa">
+                <td class="destacar bold" width="70">Portaria</td>
+                <td width="70">
+                    <!--<input type="text" class="input_simples" name="portaria" id="pronac" onkeypress="mascara(this, format_num);" style="width: 100px;" value="<?php echo $this->portaria; ?>">-->
+                    <input type="text" class="input_simples" name="portaria" id="pronac" style="width: 100px;" value="<?php echo $this->portaria; ?>">
+                </td>
+                <td class="destacar bold" width="70">Situa&ccedil;&atilde;o</td>
+                <td>
+                    <select name="situacao" style="width: 180px; margin-right: 15px;" class="input_simples">
+                        <option value="">Aprovação inicial</option>
+                        <option value="complementacao" <?php echo $this->filtro=='complementacao'?'selected="selected"':''; ?>>Complementa&ccedil;&atilde;o</option>
+                        <option value="prorrogacao" <?php echo $this->filtro=='prorrogacao'?'selected="selected"':''; ?>>Prorroga&ccedil;&atilde;o</option>
+                        <option value="reducao" <?php echo $this->filtro=='reducao'?'selected="selected"':''; ?>>Redu&ccedil;&atilde;o</option>
+                        <option value="aprovacaoPrestacao" <?php echo $this->filtro=='aprovacaoPrestacao'?'selected="selected"':''; ?>>Aprova&ccedil;&atilde;o Presta&ccedil;&atilde;o</option>
+                        <option value="reprovacaoPrestacao" <?php echo $this->filtro=='reprovacaoPrestacao'?'selected="selected"':''; ?>>Reprova&ccedil;&atilde;o Presta&ccedil;&atilde;o</option>
+                        <option value="readequacao" <?php echo $this->filtro=='readequacao'?'selected="selected"':''; ?>>Readequa&ccedil;&atilde;o</option>
+                    </select>
+                    <input type="button" name="btn_pesquisar" id="btn_pesquisar" class="btn_pesquisar" value="">
+                    
+                    <?php if(count($this->projetosPublicados) > 0){ ?>
+                    <input type="button" class="btn_imprimir" id="imprimir_tabela" />
+                    <?php } ?>
+                </td>
+            </tr>
+        </table>
+    </form>
+    
+    <table class="tabela">
+        <tr>
+            <th>PUBLICAR PORTARIAS</th>
+        </tr>
+    </table>
+
+    <?php if(count($this->projetosPublicados)>0){ ?>
+    <table class="tabela">
+        <tr>
+            <td class="centro">
+                <input type="button" class="btn_publicar" onclick="confirmaPublicacao('<?php echo $this->portaria; ?>');" title="Atualizar"/> Atualizar
+            </td>
+            <td class="centro">
+                <input type="button" class="btn_npublicar" onclick="confirmaRetirada('<?php echo $this->portaria; ?>');" title="Retirar da publica&ccedil;&atilde;o"/> Retirar da publica&ccedil;&atilde;o
+            </td>
+            <td class="centro">
+                <?php echo count($this->projetosPublicados); ?> Projetos gerados
+            </td>
+        </tr>
+    </table>
+    
+    <table class="tabela">
+        <tr class="destacar bold">
+            <td>Pronac</td>
+            <td>Nome do Projeto</td>
+            <td>Dt. Início Execução</td>
+            <td>Dt. Fim Execução</td>
+            <td>Dt. Início Captação</td>
+            <td>Dt. Fim Captação</td>
+            <?php if($this->filtro == 'readequacao'){ ?>
+            <td>Tipo Readequação</td>
+            <?php } ?>
+        </tr>
+        <?php foreach ($this->projetosPublicados as $p){ ?>
+        <tr>
+            <td>
+                <a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'));?>?idPronac=<?php echo ($p->IdPRONAC); ?>" target="_blank">
+                    <?php echo $p->AnoProjeto.$p->Sequencial; ?>
+                </a>
+            </td>
+            <td><?php echo $p->NomeProjeto; ?></td>
+            <td><?php echo Data::tratarDataZend($p->DtInicioExecucao,'Brasileira'); ?></td>
+            <td><?php echo Data::tratarDataZend($p->DtFimExecucao,'Brasileira'); ?></td>
+            <td><?php echo Data::tratarDataZend($p->dtInicioCaptacao,'Brasileira'); ?></td>
+            <td><?php echo Data::tratarDataZend($p->dtFimCaptacao,'Brasileira'); ?></td>
+            <?php if($this->filtro == 'readequacao'){ ?>
+            <td><?php echo $this->escape($p->dsReadequacao); ?></td>
+            <?php } ?>
+        </tr>
+        <?php } ?>
+    </table>
+    
+    <form name="formRtf" id="formRtf" action="<?php echo $this->url(array('controller' => 'publicacaodou', 'action' => 'gerar-arquivo-rtf')); ?>" method="post" target="_blank">
+        <table class="tabela">
+            <tr>
+<!--                <td class="destacar bold">Secretaria:</td>
+                <td>
+                    <select name="cargo" id="cargo" class="input_simples">
+                        <?php /*foreach ($this->cargosPublicacao as $cargo) { ?>
+                            <option value="<?php echo $cargo->Descricao; ?>"><?php echo $cargo->Descricao; ?></option>
+                        <?php }*/ ?>
+                    </select>
+                </td>-->
+                <td class="destacar bold w100">Representante:</td>
+                <td>
+                    <select name="nome" id="nome" class="input_simples">
+                        <?php foreach ($this->nomesPublicacao as $np){ ?>
+                        <option value="<?php echo $np->idManterPortaria; ?>"><?php echo $np->dsAssinante; ?></option>
+                        <?php } ?>
+                    </select>
+                </td>
+                <td class="centro">
+                    <input type="hidden" name="nrportaria" value="<?php echo $this->portaria; ?>"/>
+                    <input type="hidden" name="imprimitipoPublicacao" value="<?php echo $this->filtro; ?>"/>
+                    <input type="button" class="btn_imprimir" id="btn_imprimir_rtf" title="Imprimir RTF"/> Gerar Arquivo RTF
+                </td>
+            </tr>
+        </table>
+    </form>
+    <?php } ?>
+    
+    <?php if(isset($this->filtro) && count($this->projetosPublicados)==0){ ?>
+    <table class="tabela">
+        <tr>
+            <td class="centro red bold">Nenhum projeto encontrado.</td>
+        </tr>
+    </table>
+    <?php } ?>
+    
+    
+    <form name="formImpTable" id="formImpTable" action="<?php echo $this->url(array('controller' => 'publicacaodou', 'action' => 'imprimir-tabela-portaria')); ?>" method="post" target="_blank">
+        <input type="hidden" name="nrportaria" value="<?php echo $this->portaria; ?>"/>
+        <input type="hidden" name="filtro" value="<?php echo $this->filtro; ?>"/>
+    </form>
+    
+</div>
+<!-- ========== INï¿½CIO RODAPï¿½ DO CONTEï¿½DO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPï¿½ DO CONTEï¿½DO ========== -->
+
+<br clear="all" />

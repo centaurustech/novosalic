@@ -1,0 +1,392 @@
+<script language="javascript">
+    
+    $(document).ready(function(){
+        
+        $("#listaSelecionados").attr('disabled', 'disabled');
+       
+        
+        $("#consulta").change(function() {
+            
+            if ( $("#consulta").val() == 3)
+            {
+                $('#tdListaSelecionados').css('display','');
+                $('#listaSelecionados').removeAttr("disabled");
+            }
+            if ( $("#consulta").val() != 3)
+            {
+                $('#tdListaSelecionados').css('display','none');
+                $('#listaSelecionados').attr('disabled', 'disabled');
+            }
+            $("#fundo").removeAttr("disabled");
+            $("#classificacao").removeAttr("disabled");
+            $("#edital").removeAttr("disabled");
+            $("#uf").removeAttr("disabled");
+            $("#cidade").removeAttr("disabled");            
+            $('#listaSelecionados').attr('checked',false);
+            $('#tabela').html('');
+            $("#btVisualizar").show();
+        });
+
+
+
+        
+        $("#listaSelecionados").change(function() {
+
+            if($(this).attr('checked')){
+                $("#fundo").attr('disabled', 'disabled');
+                $("#classificacao").attr('disabled', 'disabled');
+                $("#edital").attr('disabled', 'disabled');
+                $("#uf").attr('disabled', 'disabled');
+                $("#cidade").attr('disabled', 'disabled');
+                $("#btVisualizar").hide();
+            }
+            else{
+                $("#fundo").removeAttr("disabled");
+                $("#classificacao").removeAttr("disabled");
+                $("#edital").removeAttr("disabled");
+                $("#uf").removeAttr("disabled");
+                $("#cidade").removeAttr("disabled");
+                $("#btVisualizar").show();
+            }
+
+            if(this.checked){
+                v = true;
+                
+            var divMsg = $('#divMsg');
+	    $('#table_btn').show();
+	    $('#tabela').show();
+            
+	    divMsg.html('<img src="public/img/ajax.gif" /><br />Carregando...').css('color','').fadeIn(1000);
+            
+	  
+            
+            $('#resultado').css('display','none');
+            
+                $.ajax({
+	        type: 'POST',
+	        url: '<?php echo $this->url(array('controller' => 'gerarrelatorios', 'action' => 'listarselecionados')); ?>',
+	        data:{
+
+	        },
+	        success: function(data)
+	        {
+	        	divMsg.hide();
+				$('#tabela').show();
+				$('#tabela').html(data);
+
+	        },
+	        error: function (data)
+			{
+	        	divMsg.html("Falha na recuperação dos dados.\nNão foi possível carregar agente!");
+			}
+	    });
+            }else{
+                v = false;
+            }
+        });
+    
+
+	$('#xlsExport').click(function() {
+	    var relatorio = $("#tabela").html();
+	    $("#htmlxls").val(relatorio);
+	    $("#output").val(relatorio);
+	    $("#FormularioExportacao").submit();
+	    return false;
+	});
+
+	$("#btn_imprimir").click(function(){
+		var relatorio = $("#tabela").html();
+		$("#html").val(relatorio);
+        $("#FormularioExportacaoPdf").attr('target', '_blank');
+        $("#FormularioExportacaoPdf").submit(); 
+    });
+        
+        $('#escondeDiv').click(function() {
+	   $('#tabela').hide();
+	});
+
+
+	/* PESQUISA */
+	$('#btVisualizar').click(function(){
+
+	    var divMsg = $('#divMsg');
+	    $('#table_btn').show();
+	    $('#tabela').show();
+		
+	    divMsg.html('<img src="public/img/ajax.gif" /><br />Carregando...').css('color','').fadeIn(1000);
+
+	    var codRelatorio 	= $('#consulta').val();
+	    var idEdital 	= $('#edital').val();
+	    var idUf 		= $('#uf').val();
+	    var idMunicipio 	= $('#cidade').val();
+	    var idFundo 	= $('#fundo').val();
+	    var idClassificacao = $('#classificacao').val();
+
+            $('#resultado').css('display','none');
+	
+	    $.ajax({
+	        type: 'POST',
+	        url: '<?php echo $this->url(array('controller' => 'gerarrelatorios', 'action' => 'busca')); ?>',
+	        data:{
+	        	consulta: codRelatorio,
+	        	edital: idEdital,
+	        	uf: idUf,
+	        	cidade: idMunicipio,
+	        	fundo: idFundo,
+	        	classificacao: idClassificacao
+	        },
+	        success: function(data)
+	        {
+	        	divMsg.hide();
+				$('#tabela').show();
+				$('#tabela').html(data);
+
+	        },
+	        error: function (data)
+			{
+	        	divMsg.html("Falha na recuperação dos dados.\nNão foi possível carregar agente!");
+			}
+	    });
+	});
+	});
+
+	
+	function carregar_combo2(combo, url, txt_combo, campo_selecionado)
+	{
+            $("#uf").attr("disabled",true);
+            $("#cidade").attr("disabled",true);
+
+            ajax = xmlhttp();
+            document.getElementById(combo).options.length = 1;
+            ajax.open("POST", url, true);
+            ajax.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+            ajax.onreadystatechange = function()
+            {
+                statusAjax = ajax.readyState;
+
+                    if (ajax.readyState <= 3)
+                    {
+                            txt_combo == null ? document.getElementById(combo).options[0].innerHTML = "..." : document.getElementById(combo).options[0].innerHTML = "carregando...";
+                    }
+
+                    if (ajax.readyState == 4)
+                    {
+                            if (ajax.responseXML)
+                            {
+                                    buscar_xml_combo(ajax.responseXML, combo, txt_combo, campo_selecionado);
+                            }
+                            else
+                            {
+                                    txt_combo == null ? document.getElementById(combo).options[0].innerHTML = " -- " : document.getElementById(combo).options[0].innerHTML = txt_combo;
+                            }
+                            $("#uf").attr("disabled",false);
+                            $("#cidade").attr("disabled",false);
+                    }
+            }
+
+
+            var params = "valores=" + $('#fundo').val() + ":" + $('#classificacao').val();
+
+            ajax.send(params);
+		
+	}
+
+	function xls()
+	{
+		$('#FormularioExportacao').submit();
+	}	
+
+        function carregar_combo_cidade(idUf){
+
+            carregar_combo(idUf,'cidade','<?php echo $this->url(array('controller'=>'cidade', 'action'=>'combo')); ?>',' - Selecione primeiro o UF - ');
+            
+        }
+         
+
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''),'',true); ?>" title="Ir para Início">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'gerarrelatorios', 'action' => 'index'),'',true); ?>" title="Gerenciar Pareceres">Relatórios</a></li>
+		<li class="last">Principal</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Relatórios<span class="voltar"><a id="escondeDiv" href="#" >Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+
+<div id="modalConfirm" style="display: none;"><label id="msgmodal"></label></div>
+
+<form action="<?php echo $this->url(array('controller' => 'gerarrelatorios', 'action' => 'index')); ?>" method="post">
+
+<table class="tabela">
+	<tr>
+		<td>Buscar por: 
+			<select name="consulta" id="consulta" class="input_simples">
+				<option value="1" <?php if($this->relatorio == 1)echo 'selected';?> >Propostas Cadastradas</option>
+				<option value="2" <?php if($this->relatorio == 2)echo 'selected';?> >Propostas Conformidade</option>
+				<option value="3" <?php if($this->relatorio == 3)echo 'selected';?> >Todos os Projetos</option>
+				<option value="4" <?php if($this->relatorio == 4)echo 'selected';?> >Propostas com conformidade que não viraram projetos</option>
+			</select>
+		</td>
+	</tr>
+</table>
+
+
+<table class="tabela">
+	<tr>
+		<th colspan="3" width="200" align="center" style="font-family: Arial;">Dados para consulta</th>
+	</tr>
+	<tr>
+		<td width="500" align="left">
+			<label style="font-family: Arial;">Fundos Setoriais</label>
+			<br />
+			<select name="fundo" id="fundo" class="input_simples"
+			onchange="carregar_combo2('edital','<?php echo $this->url(array('controller'=>'gerarrelatorios', 'action'=>'comboedital')); ?>',' - Selecione - ');" >
+				<option value="">Todos</option>
+				<?php foreach($this->combofundos as $f):?>
+				<option value="<?php echo $f->idFundo; ?>" <?php if($this->fundo == $f->idFundo)echo 'selected';?>><?php echo $f->nmFundo; ?></option>
+				<?php endforeach;?>
+			</select>
+		</td>
+		<td align="left">
+			<label style="font-family: Arial;">Classificação do edital</label>
+			<br />
+			<select name="classificacao" id="classificacao" class="input_simples"
+			onchange="carregar_combo2('edital','<?php echo $this->url(array('controller'=>'gerarrelatorios', 'action'=>'comboedital')); ?>',' - Selecione - ');" >
+				<option value="">Todos</option>
+				<?php foreach($this->comboclassificacoes as $c):?>
+				<option value="<?php echo $c->idClassificacao; ?>" <?php if($this->classificacao == $c->idClassificacao)echo 'selected';?>><?php echo $c->nmClassificacao; ?></option>
+				<?php endforeach;?>
+			</select>
+		</td>
+                <td align="left" id="tdListaSelecionados" style="display:none;">
+			<label style="font-family: Arial;">Listar Editais Selecionados</label>
+			<br />
+                        <input type="checkbox" name="listaSelecionados" id="listaSelecionados" />
+		</td>
+	</tr>
+	<tr>
+		<td align="left" colspan="3">
+			<label style="font-family: Arial;">Edital</label>
+			<br />
+			<select id="edital" name="edital" class="input_simples">
+				<option value="">Todos</option>
+				<?php foreach($this->comboeditais as $e):?>
+				<option value="<?php echo $e->id; ?>" <?php if($this->edital == $e->id)echo 'selected';?>><?php echo $e->descricao; ?></option>
+				<?php endforeach;?>
+			</select>
+		</td>
+		
+	</tr>
+	<tr>
+            <td align="left">
+			<label style="font-family: Arial;">UF</label>
+			<br />
+			<select name="uf" id="uf" 
+					onchange="carregar_combo_cidade(this.value);"
+					class="input_simples">
+
+				<?php if (!isset($this->uf) || empty($this->uf)) { ?>
+				<option value=""> -- </option>
+				<?php } ?>
+
+				<?php foreach($this->comboestados as $comboestado): ?>
+				<option value="<?php echo $comboestado->id; ?>"
+					<?php if($this->uf == $comboestado->id) echo "selected=\"selected\""; ?> >
+					<?php echo $comboestado->descricao; ?>
+				</option>
+				<?php endforeach; ?>
+
+			</select>
+		</td>
+                <td colspan="2" align="left">
+			<label style="font-family: Arial;">Município</label>
+			<br />
+			<select name="cidade" id="cidade"  style="width: 300px;" class="input_simples">
+				<option value=""> - Selecione primeiro a UF - </option>
+				<?php foreach ($this->combocidades as $combocidade): ?>
+				<option value="<?php echo $combocidade->id; ?>"	id="<?php echo $combocidade->idUF; ?>" 
+					<?php if ($this->municipio == $combocidade->id) echo "selected=\"selected\""; ?>>
+					<?php echo $combocidade->descricao; ?>
+				</option>
+				<?php endforeach; ?>
+			</select> 
+		</td>
+		
+	</tr>
+
+</table>
+	<table class="tabela">
+		<tr>
+			<td>
+                            <input type="button" value=" " class="btn_localizar" id="btVisualizar" /> 
+                            <input type="reset" style="width: 88px" class="btn_limpar" id="btn_limpar" value=""/>
+                        </td>
+                        
+		</tr>
+	</table>
+</form>
+
+<br />
+<center>
+<div id="divMsg"></div>
+</center>
+
+<table class="tabela" id="table_btn" style="display: none;">
+	<tr>
+<!--		<td align="left" width="220">
+			<div id="contador" style="display: inline-block; height: 20px;"></div>
+		</td>-->
+		<td align="center">
+			<span class="tituloSemTabelaRelatorio" style="height: 20px; width: 25px;" >
+				<input type="button" value=" " class="btn_xls" id="xlsExport" style="width: 44px;"/>
+				<input type="button" style="width: 88px" class="btn_imprimir" id="btn_imprimir"/>
+			</span>	
+		</td>
+	</tr>
+</table>
+		
+<div id="tabela"></div>
+
+
+
+<form id="FormularioExportacao" name="FormularioExportacao" action="<?php echo $this->url(array('controller' => 'gerarrelatorios', 'action' => 'exportxls')); ?>" method="post">
+    <input type="hidden" id="codRelatorio" name="codRelatorio" value="<?php if(isset($_GET['codRelatorio']))echo $_GET['codRelatorio'];?>"/>
+    <input type="hidden" id="relatorio" name="relatorio" value=""/>
+    <input type="hidden" id="output" name="output" value=""/>
+    <input type="hidden" id="htmlxls" name="htmlxls" value=""/>
+</form>
+
+<form id="FormularioExportacaoPdf" name="FormularioExportacaoPdf" action="<?php echo $this->url(array('controller' => 'gerarrelatorios', 'action' => 'gerar-pdf')); ?>" method="post">
+    <input type="hidden" id="codRelatorio" name="codRelatorio" value="<?php if(isset($_GET['codRelatorio']))echo $_GET['codRelatorio'];?>"/>
+    <input type="hidden" id="relatorio" name="relatorio" value=""/>
+    <input type="hidden" id="output" name="output" value=""/>
+    <input type="hidden" id="html" name="html" value=""/>
+</form>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

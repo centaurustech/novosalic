@@ -1,0 +1,247 @@
+<?php
+/**
+ * Prestação de Contas (UC45) - AECI Prestação de Contas
+ * @author Equipe RUP - Politec
+ * @since 27/12/2010
+ * @version 1.0
+ * @subpackage application.view.scripts.tecnicoprestacaocontas
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ *
+ */
+?>
+
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''), '', true); ?>" title="Ir para p&aacute;gina inicial">Início</a></li>
+        <li class="last">Analisar presta&ccedil;&atilde;o de contas</li>
+    </ul>
+</div>
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Analisar presta&ccedil;&atilde;o de contas <span class="voltar" style="float:right;"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+    <script>
+
+        function areadetrabalho()
+        {
+            $('#abrir_fechar').click(function(){
+                $('#pautaplenaria').toggle('slow');
+            });
+            $('#abrir_fechar1').click(function(){
+                $('#naoanalisados').toggle('slow');
+            });
+            $('#abrir_fechar2').click(function(){
+                $('#fecharmecenato').toggle('slow');
+            });
+            $('#abrir_fechar3').click(function(){
+                $('#fechardiligenciados').toggle('slow');
+            });
+
+            $('#abrir_fechar4').click(function(){
+                $('#fechartce').toggle('slow');
+            });
+
+        }
+        window.onload = function() {areadetrabalho();};
+    </script>
+    <!-- MODAL PARA ENCAMINHAMENTO PARA ANALISE -->
+
+    <?php //foreach($this->Projetos as $chave => $prescontas){ 	?>
+    <script type="text/javascript">
+
+        function JSEncaminharParaAnalise(idPronac,idOrgao)
+        {
+            $('#encaminhar2').html("<br><br><center>Carregando dados...</center>");
+
+            $.ajax({
+                url : '<?php echo $this->url ( array ('controller' => 'realizarprestacaodecontas', 'action' => 'respostaconsultoria' ));?>?idPronac='+idPronac+'&idOrgao='+idOrgao,
+                data :
+                    {
+                    idPronac : idPronac,
+                    idOrgao : idOrgao,
+                    tpConsultoria : "aeci"
+                },
+                success: function(data){
+                    $('#encaminhar2').html(data);
+                },
+                type : 'post'
+
+            });
+
+            $("#encaminhar2").dialog({
+                title : 'Responder solicitação de consultoria',
+                resizable: true,
+                width:750,
+                height:600,
+                modal: true,
+                autoOpen:false,
+                buttons: {
+                    'Cancelar': function() {
+                        $(this).dialog('close');
+                    }
+                }
+            });
+            $("#encaminhar2").dialog('open');
+
+        }
+
+        function encaminhar2(Pronac, nomeProjeto, idPronac){
+
+            $("#Pronac").html(Pronac);
+            $("#nomeProjeto").html(nomeProjeto);
+            $("#idPronac").val(idPronac);
+
+            $("#encaminhar2").dialog({
+                title : 'Encaminhar Projeto para Análise',
+                resizable: true,
+                width:560,
+                height:580,
+                modal: true,
+                autoOpen:false,
+                buttons: {
+                    'Cancelar': function() {
+                        $(this).dialog('close');
+                    }
+                }
+            });
+            $("#encaminhar2").dialog('open');
+        }
+
+        function historicoEncaminhamento(idPronac){
+
+            $('#historicoEncaminhamento').html("<br><br><center>Carregando dados...</center>");
+
+            $.ajax({
+                url : '<?php echo $this->url ( array ('controller' => 'realizarprestacaodecontas', 'action' => 'historicoencaminhamento' ));?>?idPronac='+idPronac,
+                data :
+                    {
+                    idPronac : idPronac
+                },
+                success: function(data){
+                    $('#historicoEncaminhamento').html(data);
+                },
+                type : 'post'
+
+            });
+
+            $("#historicoEncaminhamento").dialog({
+                title : 'Historico de Encaminhamento do Projeto',
+                resizable: true,
+                width:750,
+                height:400,
+                modal: true,
+                autoOpen:false,
+                buttons: {
+                    'Cancel': function() {
+                        $(this).dialog('close');
+                    }
+                }
+            });
+            $("#historicoEncaminhamento").dialog('open');
+        }
+        /*Fim Modal Hisotrico*/
+
+
+
+    </script>
+    <script>
+<?php if(isset($_GET['tipoMsg'])):?>
+    $("#novas_mensagens", document).append("<div class='msg<?php echo $_GET['tipoMsg']; ?>'><div class='float_right'><input type='button' class='btn_close' title='Fechar mensagem' id='msg<?php echo $_GET['tipoMsg']; ?>' onclick='$(\".msg<?php echo $_GET['tipoMsg']; ?>\").hide();' onkeypress='$(\".msg<?php echo $_GET['tipoMsg']; ?>\").hide();'/></div><div><?php echo $_GET['msg'] ?></div></div>");
+<?php endif;?>
+    </script>
+    <!-- FIM DO MODAL PARA ENCAMINHAMENTO PARA ANALISE -->
+    <!-- HISTORICO DO PROJETO -->
+    <div style="display: none;" id="encaminhar2" title="Encaminhar projeto para análise">
+
+    </div>
+    <!-- FIM DO MODAL PARA ENCAMINHAMENTO PARA ANALISE -->
+
+    <?php //} ?>
+
+    <div id="miolo">
+        <table class="tabela" >
+            <tr>
+                <td><input type="button" id="abrir_fechar_E18" class="btn_adicionar" />AGUARDANDO ANÁLISE</td>
+                <td width="100" align="right" >Quantidade: <?php echo "0".count($this->AeciPresContas);?></td>
+            </tr>
+        </table>
+        <div id="devolaposanalise">
+            <?php
+            if (count ( $this->AeciPresContas ) > 0) { ?>
+            <table class="tabela tablesorter">
+                <thead> 
+                    <tr class="titulo_tabela">
+                        <th width="60">Número</th>
+                        <th width="60">Pronac</th>
+                        <th>Nome do Projeto</th>
+                        <th width="220">Área / Segmento</th>
+                        <th width="60">Cidade</th>
+                        <th width="60">Data de Recebimento</th>
+                        <th width="130">Consultoria</th>
+                    </tr>
+                </thead>
+                    <?php
+//xd($this->DevolvidosAposAnalise->AnoProjeto. $this->DevolvidosAposAnalise->Sequencial);
+                    $i = 1;
+                    foreach ( $this->AeciPresContas as $chave => $prescontas ) :
+
+
+
+                        if ($i % 2 == 0)
+                            $fundo = "linha1";
+                        else
+                            $fundo = "linha2";
+                        ?>
+                <tr class="fundo_<?php //echo $fundo;?>">
+                    <td align="center"><?php echo $i;?></td>
+                    <td class="centro">
+                        <a target="_blank" href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')).'?idPronac='.$prescontas->IdPRONAC.'&tpAgente=177'?>" class="itenspronac" style="text-decoration: underline; cursor: pointer;">
+                                                                    <?php echo $prescontas->AnoProjeto . '' . $prescontas->Sequencial;?>
+                        </a>
+                    </td>
+                    <td class="centro"><?php echo $prescontas->NomeProjeto;?></td>
+                    <td class="centro"><?php echo $prescontas->Area . ' / ' . $prescontas->Segmento;?></td>
+                    <td class="centro"><?php echo $prescontas->UfProjeto;?></td>
+                    <td class="centro"><?php echo date('d/m/Y',strtotime($prescontas->dtInicioEncaminhamento)); ?></td>
+
+                    <td align="center">
+                        <a href="<?php echo $this->url ( array ('controller' => 'realizarprestacaodecontas', 'action' => 'respostaconsultoria' ));?>?idEncPrestContas=<?php echo $prescontas->idEncPrestContas;?>" >
+                            <img style="cursor: pointer;" src="../public/img/table_multiple.png" alt="Encaminhar" />
+                        </a>
+                    </td>
+                </tr>
+                        <?php
+                        $i ++;
+                    endforeach; ?>
+
+            </table>
+                <?php
+            } else {
+                ?>
+            <table class="tabela">
+                <tr>
+                    <th>Você não possui projetos devolvidos após a análise.</th>
+                </tr>
+            </table>
+                <?php
+            }
+            ?>
+        </div>
+
+    </div>
+</div>
+
+<!-- início: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+<br clear="all" />

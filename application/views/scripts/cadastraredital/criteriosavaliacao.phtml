@@ -1,0 +1,585 @@
+ <script>
+
+$(document).ready( function() {
+	$('#btn_salvar').click(function(){
+
+		var valida = true;
+		$('.required').each(function(){
+			if($(this).val() == ''){
+				valida = false;
+			}
+		});
+        if(!valida){
+        	if($(".dsPergunta").val()==''){
+	        	$("#mensagem1").html('<font color="red"><b>Informe o Crit&eacute;rio de Avalia&ccedil;&atilde;o!</b></font>');
+	        }else{
+	        	$("#mensagem1").html('');
+	        }
+
+        	if($(".nrPeso").val()==''){
+	        	$("#mensagem2").html('<font color="red"><b>Informe o Peso!</b></font>');
+	        }else{
+	        	$("#mensagem2").html('');
+	        }
+	        
+        	if($(".nrNotaInicio").val()==''){
+	        	$("#mensagem3").html('<font color="red"><b>Informe a Nota Inicial!</b></font>');
+	        }else{
+	        	$("#mensagem3").html('');
+	        }
+	        
+        	if($(".nrNotaFim").val()==''){
+	        	$("#mensagem4").html('<font color="red"><b>Informe a Nota Final!</b></font>');
+	        }else{
+	        	$("#mensagem4").html('');
+	        }
+	        
+        	if($(".nrNotaVariacao").val()==''){
+	        	$("#mensagem5").html('<font color="red"><b>Informe a Varia&ccedil;&atilde;o!</b></font>');
+	        }else{
+	        	$("#mensagem5").html('');
+	        }
+        	return false;
+        }else{ 
+        var nrNotaInicio = new Number($(".nrNotaInicio").val()); 
+        var nrNotaFim = new Number($(".nrNotaFim").val());
+            if(nrNotaInicio > nrNotaFim){ 
+                	
+            	$("#alerta").dialog("destroy");
+                $("#alerta").dialog
+                ({
+                    width:350,
+                    height:150,
+                    EscClose:false,
+                    modal:true,
+                    buttons:
+                    {
+                        'Ok':function()
+                        {
+                            $(this).dialog('close'); // fecha a modal
+                        }
+                    }
+                });
+
+                $("#alerta").dialog('open');
+            }else{
+                
+        	$("#mensagem1").html('');
+        	$("#mensagem2").html('');
+        	$("#mensagem3").html('');
+        	$("#mensagem4").html('');
+        	$("#mensagem5").html('');
+        	$('#formulario').submit();
+        }
+        }
+		
+	});
+
+	$('#btn_alterar').click(function(){
+
+		var valida = true;
+		$('.required').each(function(){
+			if($(this).val() == ''){
+				valida = false;
+			}
+		});
+        if(!valida){
+        	if($(".dsPergunta").val()==''){
+	        	$("#mensagem1").html('<font color="red"><b>Informe o Crit&eacute;rio de Avalia&ccedil;&atilde;o!</b></font>');
+	        }else{
+	        	$("#mensagem1").html('');
+	        }
+
+        	if($(".nrPeso").val()==''){
+	        	$("#mensagem2").html('<font color="red"><b>Informe o Peso!</b></font>');
+	        }else{
+	        	$("#mensagem2").html('');
+	        }
+	        
+        	if($(".nrNotaInicio").val()==''){
+	        	$("#mensagem3").html('<font color="red"><b>Informe a Nota Inicial!</b></font>');
+	        }else{
+	        	$("#mensagem3").html('');
+	        }
+	        
+        	if($(".nrNotaFim").val()==''){
+	        	$("#mensagem4").html('<font color="red"><b>Informe a Nota Fim</b></font>');
+	        }else{
+	        	$("#mensagem4").html('');
+	        }
+	        
+        	if($(".nrNotaVariacao").val()==''){
+	        	$("#mensagem5").html('<font color="red"><b>Informe a Varia&ccedil;&atilde;o!</b></font>');
+	        }else{
+	        	$("#mensagem5").html('');
+	        }
+        	return false;
+        }else{
+        	$("#mensagem1").html('');
+        	$("#mensagem2").html('');
+        	$("#mensagem3").html('');
+        	$("#mensagem4").html('');
+        	$("#mensagem5").html('');
+        	$('#formulario').submit();
+        }
+		
+	});
+});
+
+    $(document).ready(function(){
+        $( "#sortable" ).sortable({
+            placeholder: "ui-state-highlight",
+            stop:function(event,ui){
+                recadastrarPosicao('#sortable',{operacao:'ordenar',nrFormDocumento:<?php echo $_GET['nrFormDocumento'];?>,nrVersaoDocumento:<?php echo$_GET['nrVersaoDocumento'];?>},'#requisicaoAjax #alerta','nrOrdemPergunta','nrPergunta');
+            }
+        });
+        $( "#sortable" ).disableSelection();
+});
+    function recadastrarPosicao(idsortable,data,caminhoAlerta,idordenacao,iditem){
+        var contador = 1;
+        $(idsortable+" li").each(function(){
+            data[idordenacao] =   contador;
+            data[iditem]      =   $(this).attr(iditem);
+            $.ajax({
+                type: 'post',
+                url:  '<?php echo $this->url(array('controller' => 'cadastraredital', 'action' => 'criteriosavaliacao')); ?>',
+                data: data,
+                success: function(data){
+
+                        $(caminhoAlerta).html('<div id="divMensagensSistema" style="display:none;border: 1px solid rgb(30, 144, 255); color: rgb(0, 154, 205); font-family: Arial; font-size: 12px;">'+data.mensagem+'</div>');
+                        $(caminhoAlerta+' #divMensagensSistema').show('fast');
+                        setTimeout(function(){
+                            $(caminhoAlerta+' #divMensagensSistema').hide('fast');
+                        },2000);
+
+                }
+            });
+            contador++;
+        });
+    }
+
+    function enviaAcao(acao, nrPergunta)
+    {
+        $(document).ready(function(){
+
+            $('#nrPerguntaD').val(nrPergunta) ;
+            $('#acaoD').val(acao);
+            document.frmCriteriosAvaliacao.submit();
+        });
+    }
+
+    function excluir(acao, nrPergunta)
+    {
+    	$("#confirm").dialog("destroy");
+        $("#confirm").dialog
+        ({
+            width:350,
+            height:150,
+            EscClose:false,
+            modal:true,
+            buttons:
+            {
+                'Não':function()
+                {
+                    $(this).dialog('close'); // fecha a modal
+                },
+                'Sim':function()
+                {
+                	$(document).ready(function(){
+
+                        $('#nrPerguntaD').val(nrPergunta) ;
+                        $('#acaoD').val(acao);
+                        document.frmCriteriosAvaliacao.submit();
+                    });
+                }
+            }
+        });
+
+        $("#confirm").dialog('open');
+    }
+
+    function mascaraNotas(campo,event){
+        formataQualquerTipoMascaraDireita(campo,'999.9', event);
+        validaDigito(event);
+    }
+    function mascaraPeso(campo,event){
+        formataQualquerTipoMascaraDireita(campo,'999', event);
+        validaDigito(event);
+    }
+    function completamascaraNotas(campo){
+        var er = /(\.|\,)/i;
+        var valor = campo.value;
+        if (!er.test(valor) && campo.value.length != 0)
+            valor = valor+".0";
+        campo.value = valor;
+    }
+    function formataQualquerTipoMascaraDireita (campo, mask, evt) {
+   vCampo = campo.value;              //vCampo: valor do campo.
+   tCampo = vCampo.length;            //tCampo: tamanho do campo.
+   tMask = mask.length;               //tMask: tamanho da mascara.
+   vFinal = "";                       //vFinal: return da funcao.
+   tecla   = evt.keyCode;    //Codigo da tecla digitada pelo usuario
+   cont = 0;
+
+   //Verificando se foi pressionado Ctrl+c ou Ctrl+v, permitindo seus efeitos.
+
+   //Para permitir que a m???scara seja aplicada sobre o texto colado, ??? chamada
+   //a fun??????o completaMascara ap???s a execu??????o desta fun??????o, atrav???s da fun??????o
+   //javascript nativa "setTimeout".
+   if((evt.ctrlKey && tecla == 67) || (evt.ctrlKey && tecla == 86)){
+       setTimeout("completaMascara(document.getElementById(\'"+campo.id+"\'),\'"+mask+"\')",100);
+   }
+
+   // Teclas Insert, Del, Page UP, Page Down, Home, End, setas de movimenta??????o, Shift, Ctrl e Tab.
+   if (tecla == 8 || tecla == 37 || tecla == 38 || tecla == 39 ||
+       tecla == 40 || tecla == 46 || tecla == 36 || tecla == 35 ||
+	   tecla == 33 || tecla == 34  || tecla == 45 || tecla == 16 ||
+	   tecla == 17 || tecla == 9)
+   {
+	    return;
+   }
+   for (i=0; i<tCampo; i++) {
+        vCampo = vCampo.replace ("-","");
+		vCampo = vCampo.replace (".","");
+        vCampo = vCampo.replace ("/","");
+        vCampo = vCampo.replace (":","");
+        vCampo = vCampo.replace (" ","");
+        vCampo = vCampo.replace (",","");
+   }
+
+   for (i=0;i<tMask;i++) {
+        if (mask.charAt(i) == "9") {
+            cont++;
+        }
+   }
+
+   tCampo = vCampo.length;
+	 if (tCampo >= cont) {
+	 	return false;
+	 }
+
+   pMask = tMask-1;
+
+   for (i=0;i<tCampo;i++) {
+        pMask--;
+        while (mask.charAt(pMask) != "9") {
+            pMask--;
+        }
+   }
+
+   cont = 0;
+   for (i=pMask;i<tMask;i++) {
+        if (mask.charAt(i) == "9") {
+            vFinal = vFinal + vCampo.charAt(cont);
+            cont++;
+        }
+        else {
+            vFinal = vFinal + mask.charAt(i);
+        }
+   }
+   campo.value = "";
+   campo.value = vFinal;
+   return true;
+}
+
+function validaDigito(e)
+{
+   var controle = false;
+
+   // Pega o valor ASCII da tecla que o usu???rio pressionou
+   if(window.event){ //Internet Explorer
+        tecla   = e.keyCode;
+   }
+   else{ //Demais browsers
+        tecla = e.which;
+   }
+
+   // Permite a digita??????o das seguintes teclas: Backspace, Insert, Del, Page UP, Page Down, Home, End, setas de movimenta??????o e Shift.
+   // Acrescentada a tecla Tab em 13/03/2007
+   if (tecla == 8 || tecla == 37 || tecla == 38 || tecla == 39 ||
+       tecla == 40 || tecla == 46 || tecla == 36 || tecla == 35 ||
+	   tecla == 33 || tecla == 34  || tecla == 45 || tecla == 16 || tecla == 9 || tecla==13)
+   {
+	    return;
+   }
+
+   // Verifica se a tecla ??? um d???gito, sendo que o shift n???o pode estar sendo pressionado
+   if ((tecla >= 48 && tecla <= 57) && !e.shiftKey){
+   		return;
+   }
+
+   //  Verifica se a tecla ??? um d???gito do teclado n???m???rico
+   if (tecla >= 96 && tecla <= 105){
+   		return;
+   }
+
+   // Permite a digita??????o da tecla alt
+   if (e.altKey){
+		return;
+   }
+
+   // Verifica se foi entrada a sequ???ncia Ctrl+c ou Ctrl+v
+   if((e.ctrlKey && tecla == 67) || (e.ctrlKey && tecla == 86)){
+       controle = true;
+       if(browser.isIE){
+          setTimeout("validaCampo(\'"+e.srcElement.id+"\')",100);
+       }
+       else{
+          setTimeout("validaCampo(\'"+e.target.id+"\')",100);
+       }
+   }
+   var caracter = String.fromCharCode(tecla);
+
+   //Verifica se o caractere n???o est??? entre 0-9, se foi utilizada a sequ???ncia Ctrl+c ou Ctrl+v e se a tecla Shift estava pressionada
+   //Se verdadeiro, n???o permite a digita??????o do caractere.
+   if(((("0123456789".indexOf(caracter) == -1) && !controle)) || e.shiftKey)
+   {
+        if (window.event){ //IE
+            window.event.returnValue = null;
+        }
+        else{ //Firefox
+            e.preventDefault();
+            return false;
+        }
+   }
+   else
+      return;
+}
+</script>
+
+<style>
+    .ui-autocomplete {
+        max-height: 200px;
+        overflow-y: auto;
+        width: 200px;
+    }
+    /* IE 6 doesn't support max-height
+     * we use height instead, but this forces the menu to always be this tall
+    */
+    * html .ui-autocomplete {
+        height: 100px;
+        width: 200px;
+    }
+    #sortable { list-style-type: none; margin: 0; padding: 0; width: 98%; }
+    #sortable li { margin: 0 2px 2px 2px; padding: 5px; font-size: 1.2em; height: 1.5em;  }
+    html>body #sortable li {height: 1.5em; line-height: 1.2em; }
+    .ui-state-highlight {height: 1.5em; line-height: 1.2em; }
+    #informativo { width:98%;border: 1px solid #36963f; font-family: Arial, Helvetica, sans-serif;font-size: 11px;margin-left: 1%;}
+    .ui-state-default-branco{border: 1px solid #327e04; height: 14px; width: 100%; background: #ffffff url(images/ui-bg_highlight-hard_15_abda5d_1x100.png) 50% 50% repeat-x; font-weight: bold; color: #0a449b;}
+</style>
+<?php
+
+if ( !empty  ($this->dadosCriterios )  )
+{
+foreach ($this->dadosCriterios as $dadosCriterios) {
+    $nrPergunta = $dadosCriterios['nrPergunta'];
+    $criterio = $dadosCriterios['dsPergunta'];
+    $textoAjuda = $dadosCriterios['dsLabelPergunta'];
+    $peso = $dadosCriterios['nrPeso'];
+    $notaInicial = $dadosCriterios['vlMinOpcao'];
+    $notaFinal = $dadosCriterios['vlMaxOpcao'];
+    $variacao = $dadosCriterios['vlVariacaoOpcao'];
+
+}
+}
+else
+{
+    $criterio = "";
+    $textoAjuda = "";
+    $peso = "";
+    $notaInicial = "";
+    $notaFinal = "";
+    $variacao = "";
+}
+
+include_once 'inc/funcoes.inc.php';
+?>
+
+    <?php include_once 'inc/menu.inc.php';?>
+<div id="confirm" title="Confirma&ccedil;&atilde;o" style="display: none">Tem certeza que deseja excluir o registro?</div>
+<div id="alerta" title="Confirma&ccedil;&atilde;o" style="display: none">Nota Inicial não pode ser maior que a Nota Final!</div>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>">In&iacute;cio</a></li>
+        <?php //if ( isset ($_GET['idEdital'] ) ) : ?>
+        <!-- <li><a href="<?php echo $this->url(array('controller' => 'cadastraredital', 'action' => 'consultaralterareditais')); ?>">Consultar/Alterar Edital</a></li>-->
+        <?php //endif; ?>
+        <li><a href="<?php echo $this->url(array('controller' => 'cadastraredital', 'action' => ''), '', true); ?>" title="Ir para Edital">Edital</a></li>
+        <li class="last">Critério de avalia&ccedil;&atilde;o</li>
+    </ul>
+</div>
+
+<div id="titulo">
+    <div>Critério de avalia&ccedil;&atilde;o - Edital "<?php echo $this->nmEdital; ?>" <span class="voltar"><a href="javascript:voltar();" title="Página anterior">Voltar</a></span></div>
+
+</div>
+
+<div id="conteudo">
+
+        <table  id="tabelaPrincipal" class="tabela">
+
+
+            <!-- ========== IN?CIO TABELA DADOS ========== -->
+            <div id="FormularioParteFixa">
+
+                <form action="<?php echo $this->url(array('controller' => 'cadastraredital', 'action' => 'criteriosavaliacao')); ?>?nrFormDocumento=<?php echo $_GET['nrFormDocumento']?>&nrVersaoDocumento=<?php echo $_GET['nrVersaoDocumento']?>&idUsuario=<?php echo $_GET['idUsuario']?>&idEdital=<?php echo $_GET['idEdital']?>" name="formulario" method="POST" id="formulario">
+
+                    <table class="tabela">
+                        <tbody>
+                            <tr>
+                                <th>Dados do Critério de Avalia&ccedil;&atilde;o</i></th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <b>Critério de Avalia&ccedil;&atilde;o *: </b><br>
+                                    <input type="text" value="<?php echo $criterio?>" class="input_simples required dsPergunta" title="Crit?rio de avalia??o" null="false" id="dsPergunta" name="dsPergunta" >
+                                    <div id="mensagem1"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <i><b>Texto de ajuda do Critério de Avalia&ccedil;&atilde;o: (opcional)</b></i><br>
+                                    <textarea class="input_simples" rows="3" cols="150" class="campoTexto"  id="dsLabelPergunta" name="dsLabelPergunta" apagar="false"><?php echo $textoAjuda?></textarea>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td width="5%">
+                                    <b>Peso *</b>
+                                    &nbsp;
+                                    <input value="<?php echo $peso?>" align="right" type="text"  onkeydown="mascaraPeso(this, event);" onkeypress="mascaraPeso(this, event);" maxlength="3" size="10" class="input_simples required nrPeso" name="nrPeso" id="nrPeso" >
+                                    <div id="mensagem2"></div>
+
+                                </td>
+                            </tr>
+                            <tr>
+                            	<td>&nbsp;</td>
+                            </tr>
+                            <tr>
+                            	<th>Notas</th>
+                            </tr>
+                            <tr>
+                                <td>
+
+                                        <table class="tabela">
+                                        
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                    	<label for="nrNotaInicio">Inicial *</label> 
+                                                        <input value="<?php echo $notaInicial?>" align="right" type="text" maxlength="5" size="10" class="input_simples required nrNotaInicio" name="nrNotaInicio" id="nrNotaInicio" onblur="return completamascaraNotas(this);" onkeypress="mascaraNotas(this, event);" onkeydown="mascaraNotas(this, event);" title="Nota: Inicial" null="false">
+                                                        <div id="mensagem3"></div>
+                                                    </td>
+                                                    <td>
+                                                    	<label for="nrNotaFim">Final *</label> 
+                                                        <input value="<?php echo $notaFinal?>"t align="right" type="text" maxlength="5" size="10" class="input_simples2 required nrNotaFim" name="nrNotaFim" id="nrNotaFim" onblur="return completamascaraNotas(this);" onkeypress="mascaraNotas(this, event);" onkeydown="mascaraNotas(this, event);" title="Nota: Final" null="false">
+                                                    	<div id="mensagem4"></div>
+                                                    </td>
+                                                    <td>
+                                                    	<label for="nrNotaVariacao">Varia&ccedil;&atilde;o *</label> 
+                                                        <input value="<?php echo $variacao?>" align="right" type="text" maxlength="5" size="10" class="input_simples required nrNotaVariacao" name="nrNotaVariacao" id="nrNotaVariacao" onblur="return completamascaraNotas(this);" onkeypress="mascaraNotas(this, event);" onkeydown="mascaraNotas(this, event);" title="Nota: Varia??o" null="false">
+                                                   		<div id="mensagem5"></div>
+                                                    </td>
+                                                </tr>
+
+                                            </tbody>
+                                        
+
+                                    </table>
+
+                                </td>
+                            </tr>
+                            <tr id="trSubmit">
+                                <td align="center">
+                                <?php if (isset ( $nrPergunta ) &&  !empty ( $_GET['idEdital'] )) {?>
+                                       <input type="button" value="" id="btn_salvar" class="btn_salvar" >
+                                <?php }else{?>
+                                       <input type="button" value="" id="btn_salvar" class="btn_salvar" >
+                                <?php }?>
+                                    
+                                    <input type="submit" class="botoes" style="display: none;" value="Cancelar" id="cancelarAlteracao">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <input type="hidden" name="nrFormDocumento" id="nrFormDocumento" value="<?php echo $_GET['nrFormDocumento'] ?>">
+                    <input type="hidden" name="nrVersaoDocumento" id="nrVersaoDocumento" value="<?php echo $_GET['nrVersaoDocumento'] ?>">
+
+                    <?php if ( isset ( $nrPergunta ) ) { ?>
+                        <input type="hidden" name="nrPergunta" id="nrPergunta" value="<?php echo $nrPergunta ?>">
+                    <?php } ?>
+                    <?php if ( !empty ( $_GET['idEdital'] ) ) {?>
+                        <input type="hidden" name="idEdital" id="idEdital" value="<?php echo $_GET['idEdital'] ?>">
+                    <?php } ?>
+                    <input type="hidden" name="acao" id="acao" value="2" />
+                    
+    </form>
+
+                    <div id="QuestoesAdicionadas">
+                        <div id="requisicaoAjax"></div>
+
+                            <form action="<?php echo $this->url(array('controller' => 'cadastraredital', 'action' => 'criteriosavaliacao')); ?>?nrFormDocumento=<?php echo $_GET['nrFormDocumento']?>&nrVersaoDocumento=<?php echo $_GET['nrVersaoDocumento']?>&idUsuario=<?php echo $_GET['idUsuario']?>&idEdital=<?php echo $_GET['idEdital']?>" method="POST" name="frmCriteriosAvaliacao" id="frmCriteriosAvaliacao">
+                                <table class="tabela">
+
+                                    <tbody>
+                                        <tr>
+                                            <th colspan="6"><?php echo sizeof($this->dadosPergunta).' '; ?> Crit&eacute;rios Cadastrados! </th>
+                                        </tr>
+                                        <?php if ( !empty ( $this->dadosPergunta ) ) { ?>
+                                        <tr>
+                                            <th>Crit&Eacute;rios</th>
+                                            <th>Peso</th>
+                                            <th>Nota Inicial</th>
+                                            <th>Nota Final</th>
+                                            <th>Varia&ccedil;&atilde;o</th>
+                                            <th class="centro" nowrap>A&ccedil;&atilde;o</th>
+                                        </tr>
+                                    <?php foreach ( $this->dadosPergunta as $dadosPergunta) {?>
+                                    <tr align="center" nrPergunta="<?php echo $dadosPergunta['nrPergunta']; ?>">
+                                            <td>
+                                            	<?php echo $dadosPergunta['dsPergunta']; ?>
+                                            </td>
+                                            <td>
+                                            	<?php echo preg_replace("#(\.\d+)#is", "", utf8_encode($dadosPergunta['nrPeso'])); ?>
+                                            </td>
+                                            <td>
+                                            	<?php echo utf8_encode($dadosPergunta['vlMinOpcao']); ?>
+                                            </td>
+                                            <td>
+                                            	<?php echo utf8_encode($dadosPergunta['vlMaxOpcao']); ?>
+                                            </td>
+                                            <td>
+                                            	<?php echo utf8_encode($dadosPergunta['vlVariacaoOpcao']); ?>
+                                            </td>
+                                            <td class="centro" nowrap>
+                                            	<img onclick="enviaAcao(0, <?php echo $dadosPergunta['nrPergunta']; ?>);" src="<?php echo $this->baseUrl(); ?>/public/img/botaoEditarNovo.gif" style="cursor: pointer;" alt="Alterar"/>
+                                            	<img onclick="excluir(1, <?php echo $dadosPergunta['nrPergunta']; ?>);" src="<?php echo $this->baseUrl(); ?>/public/img/botaoExcluir.png" alt="Excluir"  style="cursor: pointer"  />
+                                            </td>
+                                    </tr>
+                                    <?php } ?>
+                                   	<?php } ?>
+                                    </tbody>
+
+                                </table>
+                                <input type="hidden" name="nrFormDocumento" id="nrFormDocumento" value="<?php echo $_GET['nrFormDocumento'] ?>">
+                                <input type="hidden" name="nrVersaoDocumento" id="nrVersaoDocumento" value="<?php echo $_GET['nrVersaoDocumento'] ?>" />
+                                <input type="hidden" name="nrPergunta" id="nrPerguntaD" value="" />
+                                <?php if (isset($_GET['idEdital'])) { ?>
+                                    <input type="hidden" name="idEdital" id="idEdital" value="<?php echo $_GET['idEdital'] ?>">
+                                <?php } ?>
+                                <input type="hidden" name="acaoD" id="acaoD" value="" />
+                            </form>
+
+                     
+                            <div id="alerta"></div>
+
+            </div>
+        </table>
+		<br clear="all" />
+</div>
+
+<!-- ========== IN?CIO RODAP? DO CONTE?DO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+
+<!-- ========== FIM RODAP? DO CONTE?DO ========== -->
+<br clear="all" />

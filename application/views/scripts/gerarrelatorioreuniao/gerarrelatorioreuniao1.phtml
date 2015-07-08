@@ -1,0 +1,123 @@
+<script>
+    $(document).ready(function(){
+        $("#error").dialog({
+            title: "Erro",
+            resizable: false,
+            width:250,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'OK': function() {
+                    $(this).dialog('close');
+                }
+            }
+        });
+        $(".btn_pesquisar").click(function(){
+            if($.trim($("#idReuniao").val()) == ''){
+                $("#error").html("Dados obrigat&oacute;rios n&atilde;o informados!");
+                $("#error").dialog("open");
+            }
+            else{
+                $("#pesquisa").submit();
+            }
+        });
+        $("#gerarrelatorio").click(function(){
+            $("#pdf").val($("#dados").html())
+            $('#gerarrelatorio').submit()
+        });
+    });
+</script>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->baseUrl(); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="last">Relat&oacute;rio de Resultado da CNIC</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== IN�CIO T�TULO ========== -->
+<div id="titulo">
+    <div>Relat&oacute;rio de Resultado da CNIC<span>ID #23A</span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM T�TULO ========== -->
+
+<div id="conteudo">
+    <div id="error"></div>
+    <fieldset>
+        <form id="pesquisa" method="post">
+            <table class="tabela">
+                <tr>
+                    <td>
+                        <label for="idReuniao">N&uacute;mero da Reuni&atilde;o: </label>
+                        <input class="input_simples w100" type="text" name="idReuniao" id="idReuniao" value="<?php echo ($this->NrReuniao > 0) ? $this->NrReuniao : '' ;?>" size="30" maxlength="6"/>
+                        <label for="pronac">PRONAC:</label>
+                        <input class="input_simples w100" type="text" name="pronac" id="pronac" value="" size="30" maxlength="10"/>
+                    </td>
+                    <td>
+                        <input type="button" name="procurar" class="btn_pesquisar" value=" " /><br>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </fieldset>
+    <?php if(isset($this->projetospauta)){?>
+    <div id="dados">
+        <?php $resultado =
+        "<fieldset>
+            <table class='tabela'>
+                    <tr>
+                        <th colspan='8' style='font-size: 14pt;'>Resultado da ".$this->NrReuniao. "&ordm Reuni&atilde;o CNIC</th>
+                    </tr>";
+                foreach ($this->projetospauta as $key=>$dadosprojeto) {
+                $resultado .= "<tr>
+                        <th colspan='8'>$key</th>
+                    </tr>
+                    <tr>
+                        <th>&Aacute;rea Cultural</th>
+                        <th>Projeto</th>
+                        <th>Nome do Projeto</th>
+                        <th>Decis&atilde;o Conselheiro</th>
+                        <th>Voto Conselheiro</th>
+                        <th>Voto Plen&aacute;ria</th>
+                        <th>Descis&atilde;o Plen&aacute;ria</th>
+                        <th style='width:20px;'>Valor Aprovado</th>
+                    </tr>";
+                foreach($this->projetospauta[$key] as $projetos){
+                $resultado .= "<tr>
+                        <td>".$key."</td>
+                        <td>".$projetos['PRONAC']."</td>
+                        <td>".$projetos['NomeProjeto']."</td>
+                        <td>".$projetos['stAnaliseConselheiro']."</td>
+                        <td>".strip_tags($projetos['dsConselheiro'])."</td>
+                        <td>".$projetos['stAnalisePlenaria']."</td>
+                        <td>".strip_tags($projetos['dsPlenaria'])."</td>
+                        <td style='width:20px;'>".$this->formatarReal($projetos['ValorAprovado'])."</td>
+                    </tr>";
+                  }
+                }
+                $resultado .= "</table>";
+                $resultado .= "</fieldset>";
+
+                echo $resultado;
+                ?>
+    </div>
+    <div class="centro">
+        <form action="<?php echo $this->url(array('controller'=>'gerarrelatorioreuniao', 'action'=>'gerarpdf') );?>" method="post">
+            <input name="dadospdf" value="<?php echo $this->escape($resultado) ?>" type="hidden"/>
+            <input name="gerarpdf" value="Gerar Resultado da Reuni&atilde;o" class="btn" type="submit"/>
+        </form>
+    </div>
+    <?php } ?>
+</div><!-- final: conteúdo principal #conteudo -->
+
+<!-- início: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+
+<br clear="all" />
+

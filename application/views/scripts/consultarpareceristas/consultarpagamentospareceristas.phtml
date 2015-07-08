@@ -1,0 +1,241 @@
+<?php
+require_once "scripts/consultarpareceristas/inc/menu.inc.php";
+?>
+<script>
+    function abrir_fechar(id_div){
+        $('#'+id_div).toggle();
+        $('#maiss'+id_div).toggle().focus();
+        $('#menoss'+id_div).toggle().focus();
+    }
+
+    $(document).ready(function(){
+        $("#formConsulta").validate({
+            submitHandler: function(form) {
+                verificaDatas();
+            }
+        });
+
+        $("#parecerista").rules("add", {
+            required: true, messages: { required: "&nbsp;Obrigat&oacute;rio"}
+        });
+
+        $(".btn_limpar").click(function(){
+            $("#datainicio").css("display", "none");
+            $("#datafim").css("display", "none");
+            $("#ldata").css("display", "none");
+        });
+    });
+
+    $(function() {
+        $.datepicker.regional['pt-BR'] = {
+            closeText: 'Fechar',
+            prevText: '&#x3c;Anterior',
+            nextText: 'Pr&oacute;ximo&#x3e;',
+            currentText: 'Hoje',
+            monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+            dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            weekHeader: 'Sm',
+            dateFormat: 'dd/mm/yy',
+            firstDay: 0,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: ''};
+        $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+        $("#datainicio").datepicker($.datepicker.regional['pt-BR']);
+        $("#datafim").datepicker($.datepicker.regional['pt-BR']);
+
+        $("#datainicio,#datafim").blur(function(){
+            if($(this).val() == "00/00/0000"){ $(this).val(""); }
+            if($(this).val() == "00/00/0000"){ $(this).val(""); }
+        });
+
+        $("#area").change(function() {
+            $.ajax({
+                type: "POST",
+                data: {
+                    codigo: $(this).val()
+                },
+                url: '<?php echo $this->url(array('controller' => 'consultarpareceristas', 'action' => 'ajaxcarregarsegmentos')); ?>',
+                success: function(data) {
+                    if(data) {
+                        var dados = '<option value="">Todos</option>';
+                        dados += data;
+                        $("#segmento").html(dados);
+                        $("#segmento").parent().fadeIn('fast');
+                    } else {
+                        $("#segmento").parent().fadeOut('fast');
+                    }
+                }
+            });
+        });
+        $("#orgao").change(function() {
+            $.ajax({
+                type: "POST",
+                data: {
+                    idOrgao: $(this).val()
+                },
+                url: '<?php echo $this->url(array('controller' => 'consultarpareceristas', 'action' => 'ajaxcarregarpareceristas')); ?>',
+                success: function(data) {
+                    if(data) {
+                        var dados = '<option value="">[ Selecione ]</option>';
+                        dados = data;
+                        $("#parecerista").html(dados);
+                    } else {
+                        var dados = '<option value="">[ Selecione ]</option>';
+                        $("#parecerista").html(dados);
+                    }
+                }
+            });
+
+        });        
+    });
+    function verificaDatas() {
+        switch($("#periodo").val())
+        {
+            case 'entreDatas':
+                if ($("#datainicio").val() != '' && $("#datafim").val() != '') {
+                    if (1 == compararDataInicialDataFinal($("#datainicio").val(),$("#datafim").val())) {
+                        alert("A Data Inicial n\xE3o pode ser maior que a Final");
+                    } else {
+                        $('#formConsulta').submit();
+                    }
+                } else {
+                    alert ("Coloque as datas");
+                }
+                break;
+            case 'exatamente':
+                if ($("#datainicio").val() < 1 ) {
+                    alert("Coloque a Data");
+                } else {
+                    $('#formConsulta').submit();
+                }
+                break;
+            default:
+                $('#formConsulta').submit();
+        }
+    }
+    function datas(valor) {
+        switch(valor)
+        {
+            case 'exatamente':
+                $("#datainicio").show();
+                $("#datafim").val('');
+                $("#datafim").hide();
+                $("#ldata").hide();
+                break;
+            case 'entreDatas':
+                $("#datainicio").show();
+                $("#datafim").show();
+                $("#ldata").show();
+                break;
+            default:
+                $("#datafim").hide();
+                $("#datainicio").hide();
+                $("#ldata").hide();
+                break;
+        }
+    }
+    
+</script>
+<div id="titulo">
+    <div><?php echo $this->titulo; ?><span>&nbsp;</span> <span class="voltar"><a href="javascript:history.back();">Voltar</a></span></div>
+</div>
+<div id="conteudo" align="center">
+    <form id="formConsulta" method="post" action="<?php echo $this->url(array('controller' => 'consultarpareceristas', 'action' => 'tratardadosrelatoriopagamento')); ?>">
+    <input type="hidden" name="titulo" value="<?php echo $this->titulo; ?>" />
+        <table class="tabela" style="text-align: left;">
+            <?php
+            if ($this->Orgaos) {
+                ?>
+                <tr>
+                    <td>Órgão</td>
+                    <td colspan="8">
+                        <select id="orgao" name="filtro[orgao]" class="input_simples" style="width: 250px;">
+                            <option value="">Todos</option>
+                            <?php
+                            foreach ($this->Orgaos as $value) {
+                                echo "<option value='{$value->Codigo}'>{$value->Sigla}</option>";
+                            }
+                            ?>
+                        </select>
+                    </td>
+                </tr>
+                <?php
+            }
+            if ($this->Areas) {
+                ?>
+                <tr>
+                    <td>Área</td>
+                    <td>
+                        <select id="area"  name="filtro[area]" class="input_simples" style="width: 250px;">
+                            <option value="">Todas</option>
+                            <?php
+                            foreach ($this->Areas as $value) {
+                                echo "<option value='{$value->Codigo}'>{$value->Descricao}</option>";
+                            }
+                            ?>
+                        </select>
+                    </td>
+                    <td>Segmento</td>
+                    <td>
+                        <select id="segmento" name="filtro[segmento]" class="input_simples" style="width: 250px;">
+                            <option value="">Todos</option>
+                            <?php
+                            foreach ($this->Segmentos as $value) {
+                                echo "<option value='{$value->Codigo}'>{$value->Descricao}</option>";
+                            }
+                            ?>
+                        </select>
+                    </td>
+                </tr>
+                <?php
+            }?>
+
+                <tr>
+                    <td>Parecerista *</td>
+                    <td colspan="8">
+                        <select id="parecerista" name="filtro[parecerista]" class="input_simples" style="width: 250px;">
+                            <option value="">Selecione</option>
+                            <?php
+                            if($this->pareceristas){
+	                            foreach ($this->pareceristas as $key => $parecerista) {
+	                                echo "<option value='{$parecerista['idParecerista']}'>{$parecerista['Nome']}</option>";
+	                            }
+                            }
+                            else {
+                            	echo "<option value='0'>N&atilde;o existe Parecerista para este &Oacute;rg&atilde;o</option>";
+                            }
+                            ?>
+                        </select>
+                    </td>
+                </tr>
+
+            <tr>
+                <td width="150">Período de Análise</td>
+                <td width="150" >
+                    <select name="filtro[periodo]" id="periodo" class="input_simples" style="width: 250px;" onchange="datas(this.value);">
+                        <option value="">Todo</option>
+                        <option value="exatamente">Exatamente igual</option>
+                        <option value="entreDatas">Entre dois valores</option>
+                    </select>
+                </td>
+                <td colspan="4">
+                    <input type="text" name="filtro[periodo][dataInicio]" id="datainicio" class="input_simples sumir" maxlength="10" value="" onkeyup="mascara(this, format_data);" onclick="limpar_campo(this, '00/00/0000');" onblur="restaurar_campo(this, '00/00/0000');" type="text">
+                    <label id="ldata" class="sumir"> &agrave;</label>
+                    <input type="text" name="filtro[periodo][datafim]" id="datafim" class="input_simples sumir" maxlength="10" value="" onkeyup="mascara(this, format_data);" onclick="limpar_campo(this, '00/00/0000');" onblur="restaurar_campo(this, '00/00/0000');" type="text">
+                </td>
+            </tr>
+            <tr>
+                <td align="center" colspan="6">
+                    <input type="submit" value=" " class="btn_localizar" />
+                    <input type="reset" value=" " class="btn_limpar" />
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<span id="rodapeConteudo" style="width: 1347px;"><span></span></span>
+<br clear="all" />

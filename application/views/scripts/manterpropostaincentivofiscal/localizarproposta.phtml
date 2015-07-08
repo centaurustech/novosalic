@@ -1,0 +1,22 @@
+<table class="tabela">
+    <tr>
+        <th width="125px">N&uacute;mero da Proposta</th>
+        <th>Nome da Proposta</th>
+        <th>Nome do Proponente</th>
+    </tr>
+    <?php foreach ($this->propostas as $prop) { //xd($prop['idPreProjeto']); ?>
+        <?php
+//                     if(!empty ($proposta->idEdital) && $proposta->idEdital != 0){
+//                         $url = $this->url(array('controller' => 'manterpropostaedital', 'action' => 'dadospropostaedital'));
+//                     }else{
+                 $url = $this->url(array('controller' => 'manterpropostaincentivofiscal', 'action' => 'editar'));
+//                     }
+             $url .= "?idPreProjeto=".$prop['idPreProjeto'];
+        ?>
+        <tr>
+            <td class="centro"><a href="#" onclick="window.location='<?php echo $url; ?>'"><?php echo $prop['idPreProjeto']; ?></a></td>
+            <td class="esquerda"><?php echo $prop['NomeProjeto']; ?></td>
+            <td class="esquerda"><?php echo $prop['NomeProponente']; ?></td>
+        </tr>
+        <?php } ?>
+</table>

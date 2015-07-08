@@ -1,0 +1,94 @@
+<?php
+
+$relatorio = "
+<html>
+<head>
+<body>
+<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+<title>Leitor PDF</title>
+
+<style>
+
+#Termo {
+	font-size: 17px;
+	margin-left: 10%;
+	margin-right: 8%;
+}
+
+#TituloGeral {
+	margin-top: 3%;
+	text-align: center;
+	font-size: 15px;
+}
+
+#TituloSecundario {
+	font-size: 24px;
+	text-align: center;
+	
+}
+
+th{background: #abda5d; font-family: Arial; text-align: center;}
+
+#Texto { text-indent: 3%; }
+
+#Solicitacao { }
+
+.Itens { }
+
+.Dados { margin-left: 4%; }
+
+#Finalizacao { text-indent: 3%; }
+
+#DataAtual { }
+
+#Assinatura { text-align: center; }
+
+</style>
+
+";
+
+
+	$relatorio .= "
+	<div id='TituloSecundario'>
+	Listar Projetos
+	</div>
+	<table border='1' width='97%' align='center'>
+	<tr bgcolor='#abda5d'>
+	<td>Numero do Projeto</td>
+	<td>Nome do Projeto</td>
+	<td>Situacao</td>
+	<td>Data Envio</td>
+	<td>Data recebimento</td>
+	</tr>
+	";
+
+  
+foreach ( $this->listarprojetos as $listaProjetos ) 
+{
+	$NrProjeto 			= $this->escape ( $listaProjetos->NrProjeto );
+    $NomeProjeto 		= $this->escape ( $listaProjetos->NomeProjeto);
+	$Situacao 			= $this->escape ( $listaProjetos->Situacao );
+	$DataEnvio 			= $this->escape ( $listaProjetos->DataEnvio);
+	$DataRecebimento 	= $this->escape ( $listaProjetos->DataRecebimento );
+	
+	$relatorio .= "
+	<tr>
+		<td> " . $NrProjeto . "</td>
+		<td> " . $NomeProjeto . "</td>
+		<td> " . $Situacao . "</td>
+		<td> " . $DataEnvio . "</td>
+		<td> " . $DataRecebimento . "</td>
+	</tr>";
+}
+
+$relatorio .= "
+    </table></body>
+</html>";
+//echo $relatorio;
+$excel = new PDF ( $relatorio, 'excel' );
+echo $excel->gerarRelatorio ();
+
+?>
+
+
+

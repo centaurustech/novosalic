@@ -1,0 +1,74 @@
+<div id="regularidade">
+    <table>
+         <?php
+         $CgcCpf= $this->tipoCgcCpf;
+           if(!empty($CgcCpf)){
+           $dataatual = date('Y-m-d');
+           $datasalic = $this->buscarsalic;
+           $datacqte = $this->buscarcqte;
+           $datacqtf = $this->buscarcqtf;
+           $datafgts = $this->buscarfgts;
+           $datainss = $this->buscarinss;
+           $datacadin = $this->buscarcadin;
+           if(!empty($datacadin)){
+           $dtcadin = $datacadin[0]->DtEmissao;
+           $situacao = $datacadin[0]->cdSituacaoCertidao;
+           $dtcadin = data::tratarDataZend($dtcadin, 'americano');
+           }
+        ?>
+        <th class="titulo" colspan="2" >Regularidade do Proponente</th>
+        <tr>
+            <td id="regularidade_texto">SALIC</td><td class="centro"><?php echo $salic= ChecarRegularidadeController::compararSalic($datasalic); ?></td>
+        </tr>
+                    <!--<tr>
+             <td>CQTE</td><td class="centro"><?php //echo $cqte = ChecarRegularidadeController::compararData($dataatual, $datacqte); ?></td>
+                    </tr>-->
+        <tr>
+            <td >CQTF</td><td class="centro"><?php echo $cqtf= ChecarRegularidadeController::compararData($dataatual, $datacqtf);?></td>
+        </tr>
+        <tr>
+            <td>FGTS</td><td class="centro"><?php echo $fgts = ChecarRegularidadeController::compararData($dataatual, $datafgts); ?></td>
+        </tr>
+        <tr>
+            <td>INSS</td><td class="centro"><?php echo $inss = ChecarRegularidadeController::compararData($dataatual, $datainss); ?></td>
+        </tr>
+        <tr>
+            <td class="centro">CADIN</td>
+            <td class="centro">
+                <?php  if(!empty($datacadin)) {
+                    echo $cadin = ChecarRegularidadeController::compararCadin($dtcadin, $situacao, $dataatual);
+                } else {
+                    echo "N&atilde;o Lan&ccedil;ado!";
+                }?>
+            </td>
+        </tr>
+        <?php } else{
+           $dataatual = date('Y-m-d');
+           $datasalic = $this->buscarsalic;
+           $datacqtf = $this->buscarcqtf;
+           $datacadin = $this->buscarcadin;
+           if(!empty($datacadin)){
+           $dtcadin = $datacadin[0]->DtEmissao;
+           $situacao = $datacadin[0]->cdSituacaoCertidao;
+           $dtcadin = data::tratarDataZend($dtcadin, 'americano');
+           }
+                ?>
+        <th class="titulo" colspan="2">Regularidade do Proponente</th>
+        <tr>
+            <td class="centro">SALIC</td><td class="centro"><?php echo $salic= ChecarRegularidadeController::compararSalic($datasalic); ?></td>
+        </tr>
+        <tr>
+            <td class="centro">CQTF</td><td class="centro"><?php echo $cqtf= ChecarRegularidadeController::compararData($dataatual, $datacqtf);?></td>
+        </tr>
+        <tr>
+            <td class="centro">CADIN</td><td class="centro">
+                <?php  if(!empty($datacadin)) {
+                    echo $cadin = ChecarRegularidadeController::compararCadin($dtcadin, $situacao, $dataatual);
+                } else {
+                    echo "N&atilde;o Lan&ccedil;ado!";
+                }?>
+            </td>
+        </tr>
+        <?php } ?>
+    </table>
+</div>

@@ -1,0 +1,161 @@
+<?php require_once "inc/menu.inc.php"; // menu ?>
+<script>
+
+    $(document).ready(function(){
+
+        $("#salvar").click(function(){
+
+            var texto = CKEDITOR.instances['ParecerTecnico'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+            if (texto == ""){
+                $("#obrigatorio").dialog('open');
+                $("#obrigatorio").html('Dados obrigat&oacute;rios n&atilde;o informados!');
+                $("#obrigatorio").dialog({
+                    title : 'Parecer',
+                    resizable: false,
+                    width: 350,
+                    height: 150,
+                    modal: true,
+                    buttons : {
+                        'OK' : function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+                $('.ui-dialog-titlebar-close').remove();
+            }else{
+
+                $("#formEncaminhar").submit();
+            }
+        });
+
+    });
+
+    <?php if(isset($_GET['tipoMsg'])):?>
+        $("#novas_mensagens", document).append("<div class='msg<?php echo $_GET['tipoMsg']; ?>'><div class='float_right'><input type='button' class='btn_close' title='Fechar mensagem' id='msg<?php echo $_GET['tipoMsg']; ?>' onclick='$(\".msg<?php echo $_GET['tipoMsg']; ?>\").hide();' onkeypress='$(\".msg<?php echo $_GET['tipoMsg']; ?>\").hide();'/></div><div><?php echo $_GET['msg'] ?></div></div>");
+    <?php endif;?>
+</script>
+<style>
+    label.error{ color:red; font-weight: normal; }
+</style>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.js"></script>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->baseUrl(); ?>" title="Início">Início</a></li>
+        <?php if($this->codGrupo == 132): ?>
+            <li><a href="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'chefedivisaoprestacaocontas'));?>">Presta&ccedil;&atilde;o de contas</a></li>
+        <?php else: ?>
+            <li><a href="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'tecnicoprestacaocontas'));?>">Presta&ccedil;&atilde;o de contas</a></li>
+        <?php endif; ?>
+        <li class="last">Emitir parecer</li>
+    </ul>
+</div>
+<div id="titulo">
+    <div>
+        Emitir parecer
+        <span class="voltar" style="float:right;"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span>
+    </div>
+</div>
+<div id="conteudo">
+    <form id="formEncaminhar" name="formEncaminhar" method="post" action="<?php echo $this->url(array('controller' => 'Realizarprestacaodecontas', 'action' => 'parecertecnico')); ?>">
+      <table class="tabela">
+        <tr>
+            <th>PRONAC</th>
+            <th>Nome do Projeto</th>
+        </tr>
+        <tr>
+            <td align="center"><?php echo $this->pronac ?></td>
+            <td align="center"><?php echo $this->nomeProjeto ?></td>
+        </tr>
+    </table>
+    <table class="tabela">
+        <?php  if($this->codGrupo == 132): 
+        
+        ?>
+        <tr>
+            <td align="left">
+                <fieldset>
+                    <legend> Parecer T&eacute;cnico </legend>
+                    <textarea class="input_simples" cols="80" rows="10" style="width: 98%" readonly><?php if(!empty($this->parecerTecnico)):echo $this->parecerTecnico->meRelatorio;endif;?></textarea>
+                    <?php
+                        if ($this->parecerTecnico) :
+                            echo '<span style="color: #35953F; font-size: 16px; font-weight: bold; padding: 5px;">Manifestação Final: </span>';
+                            echo ($this->parecerTecnico->siManifestacao == 0) ? 'Irregular' : 'Regular';
+                        endif;
+                    ?>
+                </fieldset>
+            </td>
+        </tr>
+        <?php endif; ?>
+        <tr>
+            <td align="left">
+                <fieldset>
+                    <?php  if($this->codGrupo == 132): $bln_chefedivisao = "sim"; ?>
+                        <legend> Parecer do Chefe de Divis&atilde;o * </legend>
+                    <?php else: $bln_chefedivisao = "nao";?>
+                        <legend> Parecer * </legend>
+                    <?php endif; ?>
+                        <textarea cols="80" id="ParecerTecnico" name="ParecerTecnico" class="cParecerTecnico" 
+                            rows="10"><?php
+                                if (!empty($this->parecerChefe)) :
+                                    echo $this->parecerChefe->meRelatorio;
+                                else:
+                                    if (!empty($this->parecerTecnico) && $this->codGrupo != 132 ) :
+                                        echo $this->parecerTecnico->meRelatorio;
+                                    endif;
+                                endif;?></textarea>
+                        <script type="text/javascript">
+                        //<![CDATA[
+                        CKEDITOR.replaceAll('cParecerTecnico', {	fullPage : true });
+                        //]]>
+                        </script>
+                </fieldset>
+                <span style="color: #35953F; font-size: 16px; font-weight: bold; padding: 5px;">
+                    <?php
+                        if($this->codGrupo != 132) :
+                            echo 'Manifestação Final:';
+                        else :
+                            echo 'Pronunciamento:';
+                        endif;
+                    ?>
+                </span>
+                <input type="radio" name="manifestacao" id="regular" value="1" checked="checked"/>
+                <label for="regular">Regular</label>
+                <input type="radio" name="manifestacao" id="irregular" 
+                    value="0"
+                    <?php
+                        if ($this->codGrupo != 132) : // tecnico
+                            $parecer = $this->parecerTecnico;
+                        else :
+                            $parecer = $this->parecerChefe;
+                        endif;
+                        if ($parecer && $parecer->siManifestacao == 0) :
+                            echo 'checked="checked"';
+                        endif;
+                    ?>
+                    />
+                <label for="irregular">Irregular</label>
+                <input type="hidden" name="nomeProjeto" id="nomeProjeto" value="<?php echo $this->nomeProjeto ?>" />
+                <input type="hidden" name="pronac" id="pronac" value="<?php echo $this->pronac ?>" />
+                <input type="hidden" name="idPronac" id="idPronac" value="<?php echo $this->idPronac ?>" />
+                <input type="hidden" name="parecerChefeDivisao" id="parecerChefeDivisao" value="<?php echo $bln_chefedivisao; ?>" />
+            </td>
+        </tr>
+        <tr>
+            <td align="center">
+                <input type="button" name="salvar" id="salvar" class="btn_salvar" value="">
+            </td>
+        </tr>
+    </table>
+    </form>
+</div>
+<div id="obrigatorio" ></div>
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== --> 
+<div id="rodapeConteudo"><span></span></div> 
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== --> 
+ 
+<br clear="all" /> 
+
+<div id="analisar-confirm" style="width:220px" class="sumir" title="Enviar Chefe de Divisão"></div>

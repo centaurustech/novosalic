@@ -1,0 +1,392 @@
+<?php include_once 'scripts/parecerista/inc/menu-coordenador.inc.php'; ?>
+ 
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'),'',true); ?>" title="Ir para Início">Início</a></li>
+        <li class="last">Configurar Despacho</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<div id="modal"></div>
+<div id="confirma"></div>
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Configurar Despacho <span class="voltar"><a href="javascript:voltar();" title="Página Anterior">Voltar</a></span></div>
+</div>
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+
+<div id="conteudo">
+    
+    <?php if($this->qtdDePagamentos > 0): ?>
+    <form id="formConfigurarPagamento" action="<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'configurou-pagamento-parecerista')); ?>" method="POST">
+        <input type="hidden" name="nrDespachos" id="nrDespachos" value="<?php echo $this->qtdDePagamentos; ?>" />
+        <input type="hidden" name="idConfigurarPagamento" id="idConfigurarPagamento" value="<?php echo $this->configuracaoAtiva[0]->idConfigurarPagamento; ?>" />
+        <input type="hidden" name="nrDespachoFinal" id="nrDespachoFinal" />
+        <input type="hidden" name="ultimoDespachoDoAno" id="ultimoDespachoDoAno" value="<?php echo $this->ultimoDespachoDoAno == '' ? '0':$this->ultimoDespachoDoAno; ?>" />
+        <input type="hidden" name="assinanteCargoRemove" id="assinanteCargoRemove" />
+        
+        <table class="tabela">
+            <tr>
+                <td colspan="3" class="titulo_tabela"></td>
+            </tr>
+            <tr>
+                <td colspan="3" class=""><?php echo $this->ultimoDespachoDoAno == '' ? 'Nenhum despacho gerado até o momento!': 'Último despacho gerado: '.$this->ultimoDespachoDoAno; ?></td>
+            </tr>
+            <tr>
+                <td width="160">Número despacho inicial:</td>
+                <td colspan="2"><input type="text" class="input_simples" id="nrDespachoInicial" name="nrDespachoInicial" value="<?php echo $this->ultimoDespachoDoAno == '' ? '1': $this->ultimoDespachoDoAno+1; ?>" maxlength="4" onblur="contarNumeracao();" onkeyup="contarNumeracao();" onkeypress="mascara(this, format_num);" /></td>
+            </tr>
+            <tr>
+                <td>Número despacho Final:</td>
+                <td colspan="2" id="lbnrDespachoFinal"><?php echo $this->ultimoDespachoDoAno+$this->qtdDePagamentos; ?></td>
+            </tr>
+            <tr>
+                <td colspan="3" class="titulo_tabela"></td>
+            </tr>
+            <tr>
+                <td width="160">Assinante/Cargo:</td>
+                <td class="centro">
+                    <select name="assinanteCargo" id="assinanteCargo" class="input_simples" style="width: 95%;">
+                    <?php foreach($this->assinantes as $a): ?>
+                        <option value="<?php echo $a['idAssinantes'].'-'.$this->configuracaoAtiva[0]->idConfigurarPagamento; ?>"><?php echo $a['Nome']; ?> / <?php echo $a['Cargo']; ?></option>
+                    <?php endforeach; ?>
+                    </select>
+                </td>
+                <td width="100" class="centro">
+                    <input type="button" id="btnAddAssinante" value=" " class="btn_adicionar" >
+                </td>
+            </tr>
+        </table>
+
+        <?php if(count($this->assinantesConfigurados) > 0): ?>
+        <table class="tabela" id="sortable">
+            <thead>
+                <tr>
+                    <td class="titulo_tabela">Assinante</td>
+                    <td class="titulo_tabela">Cargo</td>
+                    <td id="info" class="titulo_tabela"></td>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach($this->assinantesConfigurados as $a): ?>
+                <tr id="usuarioId_<?php echo $a->idAssinantes;?>" style="cursor: move;" title="Arraste para ordenar a lista de assinantes">
+                    <td width="400"><?php echo $a->Nome; ?></td>
+                    <td><?php echo $a->Cargo; ?></td>
+                    <td width="100" class="centro">
+                        <input type="button" title="Remover assinante" onclick="removeAssinante('<?php echo $a->idAssinantes.'-'.$this->configuracaoAtiva[0]->idConfigurarPagamento; ?>');" value=" " class="btn_excluir" />
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+        
+        <table class="tabela">
+            <tr>
+                <td style="text-align: center;"><input type="button" id="btnGerarDespachos" value=" " class="btn_gerar_despachos" onclick="gerarDespachos();"></td>
+            </tr>
+        </table>
+        <?php else: ?>
+        <table class="tabela">
+            <tr>
+                <td align="center"><b style="color: green">NENHUM ASSINANTE CONFIGURADO!</b></td>
+            </tr>
+        </table>
+        <?php endif; ?>
+        
+    </form>
+    
+    <br />
+
+    <table class="tabela">
+        <tr>
+            <td class="titulo_tabela">Existem <?php echo $this->qtdDePagamentos; ?> despachos a serem gerados.</td>
+        </tr>
+    </table>
+    <?php foreach($this->listaDePagamentos as $pa): ?>
+    <table class="tabela">
+        <tr>
+            <td width="100" class="fundo_linha1">
+                <input id="btnAbrir_<?php echo $pa['idParecerista']; ?>" type="button" class="btn_resumo" value=" " onclick="visualizarPagamentos('<?php echo $pa['idParecerista']; ?>');" />
+                <input id="btnFechar_<?php echo $pa['idParecerista']; ?>" type="button" class="btn_resumo sumir" value=" " onclick="esconderPagamentos('<?php echo $pa['idParecerista']; ?>');" />
+            </td>
+            <td class="fundo_linha1" style="font-size: 15px;">
+                Parecerista: <strong><?php echo $pa['nmParecerista']; ?></strong>
+            </td>
+        </tr>
+    </table>
+    <table class="tabela sumir pagamentos" id="t_<?php echo $pa['idParecerista']; ?>">
+        <tr id="t_<?php echo $pa['idParecerista']; ?>" class="titulo_tabela">
+            <th width="25">Item</th>
+            <th width="50">PRONAC</th>
+            <th width="">PROJETO</th>
+            <th width="300">Produto</th>
+            <th>Vinculada</th>
+            <th width="130">Valor a ser Pago</th>
+            <th width="1">Ação</th>
+        </tr>
+        <?php $i = 1;?>
+        <?php $total = 0;?>
+        <?php $nmProjeto = '';?>
+        <?php $nmPronac = '';?>
+        <?php foreach($pa['Projetos'] as $pag): ?>
+        <?php $total = $pag['vlPagamento'] + $total;?>
+        <tr id="d_<?php echo $pa['idParecerista']; ?>">
+            <td style="text-align: center;"><?php echo $i; ?></td>
+            <td style="text-align: center;">
+                <a target="_blank" href="<?php echo $this->url(array('controller' => '', 'action' => 'consultardadosprojeto')); ?>?idPronac=<?php echo $pag['idPronac']; ?>"><?php echo $pag['pronac'] == $nmPronac ? '': $pag['pronac']; ?></a>
+            </td>
+            <td><?php echo $pag['NomeProjeto'] == $nmProjeto ? '': $pag['NomeProjeto']; ?></td>
+            <td><?php echo $pag['Produto']; ?></td>
+            <td><?php echo $pag['UnidadeAnalise']; ?></td>
+            <td style="text-align: right;"><?php echo $this->formatarReal($pag['vlPagamento']); ?></td>
+            <td class="centro"><input type="button" class="btn_exclusao excluirPagamento" idexclusao="<?php echo $pag['idPagarParecerista']; ?>" pronac="<?php echo $pag['pronac']; ?>"></td>
+        </tr>
+
+        <?php $nmProjeto = $pag['NomeProjeto'];?>
+        <?php $nmPronac = $pag['pronac'];?>
+        <?php $i++; ?>
+        <?php endforeach; ?>
+
+        <tr id="r_<?php echo $pa['idParecerista']; ?>">
+            <td class="fundo_linha3" style="text-align: right;" colspan="5">Total:</td>
+            <td class="fundo_linha3" style="text-align: right;"><?php echo $this->formatarReal($total); ?></td>
+            <td class="fundo_linha3">&nbsp;</td>
+        </tr>
+    </table>
+    <?php endforeach; ?>
+    <!-- ========== PAGINAÇAO ========== -->
+    <?php if($this->qtdDePagamentos > 10){ echo "<p>" . $this->listaDePagamentos . "</p>"; } ?>
+    <!-- ========== FIM PAGINAÇ?O ========== -->
+    <?php else: ?>
+        <table class="tabela">
+            <tr>
+                <td align="center"><b style="color: green">NENHUM DESPACHO PARA SER GERADO!</b></td>
+            </tr>
+        </table>
+    <?php endif; ?>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<div id="confirmacao-exclusao" class="sumir">
+    Tem certeza que deseja excluir o registro?<br />Se sim, informe o número do Pronac antes de confirmar a ação.
+    <br clear="all" /><br clear="all" />
+    <form id="formExcluirRegistroPagamento" action="<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'excluir-registro-pagamento')); ?>" method="POST">
+        <table class="tabela">
+            <tr>
+                <td class="destacar bold w50">Pronac</td>
+                <td>
+                    <input type="text" class="input_simples" style="width: 70px;" id="campoNrConfirmacao">&nbsp;<span id="campoTxtConfirmacao" class="red"></span>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<div id="dialog"></div>
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />
+
+<script>
+    
+    $(function() {
+        
+        $("#sortable tbody").sortable({
+            update: function() {
+                var idConfigurarPagamento = $('#idConfigurarPagamento').val();
+                var order   = $('#sortable tbody').sortable('serialize');
+                $("#info").load("atualiza-lista-assinantes/usuarioId/"+order+"/idConfigurarPagamento/"+idConfigurarPagamento);
+            }
+        }).disableSelection();
+        
+//        var i = 0;
+//        // Percorre todas as linhas da tabela
+//        $("#sortable tbody").each(function(i){
+//        // Adiciona uma com o número corrente
+//            $(this).append(" " + (++i) + "");
+//        });
+    });
+
+    $(document).ready(function(){
+        
+        $('#btnAddAssinante').click(function(){
+            
+            $("#dialog").html('Deseja adicionar a assinatura?');
+        
+            $("#dialog").dialog("destroy");
+            $("#dialog").dialog({
+                width: '400px',
+                modal: true,
+                draggable: false,
+                resizable: false,
+                closeOnEscape: false,
+                title: 'Confirmação',
+                buttons: { 
+                    Cancelar:function() {
+                        $(this).dialog('close');
+                    },
+                    Confirmar:function() {
+                        $('#formConfigurarPagamento').attr('action','add-assinantes');
+                        $('#formConfigurarPagamento').submit();
+                        $("#dialog").dialog("destroy");
+                    }
+                }
+            });
+            $('.ui-dialog-titlebar-close').remove();
+        });
+        
+        $('.excluirPagamento').click(function(){
+            $('#campoNrConfirmacao').val('');
+            $('#campoTxtConfirmacao').html('');
+            
+            var idPagamento = $(this).attr('idexclusao'),
+                pronac = $(this).attr('pronac');
+            
+            $("#confirmacao-exclusao").dialog("destroy");
+            $("#confirmacao-exclusao").dialog({
+                width: '500px',
+                modal: true,
+                draggable: false,
+                resizable: false,
+                closeOnEscape: false,
+                title: 'Confirmação',
+                buttons: { 
+                    Cancelar:function() {
+                        $(this).dialog('close');
+                    },
+                    Confirmar:function() {
+                        if($('#campoNrConfirmacao').val() == pronac){
+                            $('#campoTxtConfirmacao').html('');
+//                            $("#confirmacao-exclusao").dialog("destroy");
+                            $("#formExcluirRegistroPagamento").append("<input type='hidden' name='idPagamentoCancelar' value='"+idPagamento+"'>");
+                            $("#formExcluirRegistroPagamento").submit();
+                        } else {
+                            $('#campoNrConfirmacao').val('');
+                            $('#campoTxtConfirmacao').html('O número do Pronac não confere.');
+                        }
+                    }
+                }
+            });
+            $('.ui-dialog-titlebar-close').remove();
+        });
+        
+    });
+
+    function removeAssinante(valor){
+        
+        $("#dialog").html('Deseja remover a assinatura?');
+        
+        $("#dialog").dialog("destroy");
+        $("#dialog").dialog({
+            width: '400px',
+            modal: true,
+            draggable: false,
+            resizable: false,
+            closeOnEscape: false,
+            title: 'Confirmação',
+            buttons: { 
+                Cancelar:function() {
+                    $(this).dialog('close');
+                },
+                Confirmar:function() {
+                    $('#assinanteCargoRemove').val(valor);
+                    $('#formConfigurarPagamento').attr('action','remove-assinantes');
+                    $('#formConfigurarPagamento').submit();
+                }
+            }
+        });
+        
+        $('.ui-dialog-titlebar-close').remove();
+
+        
+    }
+    
+
+    function visualizarPagamentos(id){
+        $('.pagamentos').hide();
+        $('#t_'+id).show();
+        
+        $('#btnAbrir_'+id).hide();
+        $('#btnFechar_'+id).show();
+    }
+
+    function esconderPagamentos(id){
+        $('#t_'+id).hide();
+        $('#btnAbrir_'+id).show();
+        $('#btnFechar_'+id).hide();
+    }
+
+    function contarNumeracao(){
+        var nrDespachoInicial   = parseInt($('#nrDespachoInicial').val());
+        var nrDespachoGeral     = parseInt($('#nrDespachos').val());
+        
+        var conta = (nrDespachoGeral) + (nrDespachoInicial);
+        $('#nrDespachoFinal').val(conta -1);
+        $('#lbnrDespachoFinal').html(conta -1);
+       
+        if($('#nrDespachoInicial').val() === ''){
+            $('#nrDespachoFinal').val('0');
+            $('#lbnrDespachoFinal').html('0');
+        }
+    }
+
+    function gerarDespachos(){
+        
+        var ultimoDespachoDoAno   = parseInt($('#ultimoDespachoDoAno').val());
+        var nrDespachoInicial   = parseInt($('#nrDespachoInicial').val());
+        
+        if(nrDespachoInicial <= ultimoDespachoDoAno){
+            $("#dialog").html('Número despacho inicial não pode ser menor ou igual ao Último despacho gerado!');
+        
+            $("#dialog").dialog("destroy");
+            $("#dialog").dialog({
+                width: '400px',
+                modal: true,
+                draggable: false,
+                resizable: false,
+                closeOnEscape: false,
+                title: 'Alerta',
+                buttons: { 
+                    Fechar:function() {
+                        $(this).dialog('close');
+                    }
+                }
+            });
+
+            $('.ui-dialog-titlebar-close').remove();
+            return false;
+        }
+        
+        $("#dialog").html('Deseja realmente gerar os despachos?');
+        
+        $("#dialog").dialog("destroy");
+        $("#dialog").dialog({
+            width: '400px',
+            modal: true,
+            draggable: false,
+            resizable: false,
+            closeOnEscape: false,
+            title: 'Confirmação',
+            buttons: { 
+                Não:function() {
+                    $(this).dialog('close');
+                },
+                Sim:function() {
+                     $('#formConfigurarPagamento').submit();
+                     $("#dialog").dialog("destroy");
+                }
+            }
+        });
+
+        $('.ui-dialog-titlebar-close').remove();
+        
+       
+        
+    }
+    
+</script>

@@ -1,0 +1,116 @@
+<?php
+/**
+ * Busca PRONAC (Acesso: PROPONENTES)
+ * @author Equipe RUP - Politec
+ * @since 28/06/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.execucaofisicadoprojeto
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#erro").dialog({
+            resizable: false,
+            width:300,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'OK': function() {
+                    $(this).dialog('close');
+                }
+            }
+        });
+        $('#btn_pesquisar').click(function(){
+            if($("#checkCpf").attr('checked') == true){
+                if($("#CgcCpf").val().length != 14){
+                    $("#erro").html('Dados obrigatórios não informados ou incorretos!');
+                    $("#erro").dialog('open');
+                }
+                else{
+                    $("#formBuscar").submit();
+                }
+            }
+            if($("#CheckCnpj").attr('checked') == true){
+                if($("#CgcCpf").val().length != 18){
+                    $("#erro").html('Dados obrigatórios não informados ou incorretos!');
+                    $("#erro").dialog('open');
+                }
+                else{
+                    $("#formBuscar").submit();
+                }
+            }
+        });
+
+    });
+    
+    <!--
+    function cpf()
+    {
+        document.getElementById('CgcCpf').value     = "";
+        document.getElementById('CgcCpf').maxLength = "14";
+        document.getElementById('CgcCpf').onkeyup   = function() { mascara(document.formBuscar.CgcCpf, format_cpf); };
+        document.getElementById('CgcCpf').focus();
+    }
+    function cnpj()
+    {
+        document.getElementById('CgcCpf').value     = "";
+        document.getElementById('CgcCpf').maxLength = "18";
+        document.getElementById('CgcCpf').onkeyup   = function() { mascara(document.formBuscar.CgcCpf, format_cnpj); };
+        document.getElementById('CgcCpf').focus();
+    }
+    //-->
+</script>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="last">Solicitar Readequação</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>SOLICITAR READEQUAÇÃO <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="erro" title="Erro"></div>
+<div id="conteudo">
+
+    <!-- ========== FORMULÁRIO PARA BUSCAR PRONAC ========== -->
+    <form class="form" name="formBuscar" id="formBuscar" method="post"
+          action="<?php echo $this->url(array('controller' => 'solicitaralteracao', 'action' => 'projetos')); ?>">
+
+        <table class="tabela_busca">
+            <tr>
+                <th colspan="2">Solicitar Readequação</th>
+            <tr>
+            <tr>
+                <th class="titulo_campo">
+                    <input type="radio" name="Tipo" id="checkCpf" checked="checked" value="0" onclick="cpf();" onkeypress="cpf();" /> <label for="0">CPF</label> &nbsp;&nbsp;&nbsp;
+                    <input type="radio" name="Tipo" id="CheckCnpj" value="1" onclick="cnpj();" onkeypress="cnpj();" /> <label for="1">CNPJ</label>
+                </th>
+                <td>
+                    <div class="left"></div>
+                    <label for="CgcCpf"> </label>
+                    <input class="input w100" name="CgcCpf" id="CgcCpf" maxlength="14" onkeyup="mascara(this, format_cpf)" />
+                    <input type="button" title="Pesquisar" class="right_busca" value="" id="btn_pesquisar"/>
+                    </td>
+            </tr>
+        </table>
+
+    </form>
+    <!-- ========== FIM FORMULÁRIO DE BUSCA PRONAC ========== -->
+
+</div>
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

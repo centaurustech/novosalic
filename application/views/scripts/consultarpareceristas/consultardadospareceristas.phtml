@@ -1,0 +1,405 @@
+<?php
+if($this->codPerfil == 94 || $this->codPerfil == 137)
+{
+	require_once "scripts/consultarpareceristas/inc/menu.inc.php";
+}
+?>
+<script>
+$(document).ready(function(){
+
+	$('.numero').keydown(function(event){
+        //		var texto = '';
+        //		 for(j in event){
+        //			 texto += j+' = '+event[j]+' | ';
+        //				}
+        //
+        //		alert(texto);return false;
+        if((event.keyCode >= 96 && event.keyCode <= 105) || (event.keyCode >= 48 && event.keyCode <= 57) || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 67 || event.keyCode == 86){
+            return true;
+        }
+        else
+            return false;
+        //$(this).val($(this).val().replace(/\D/g,''));
+    });
+});
+    function abrir_fechar(id_div){
+        $('#'+id_div).toggle();
+        $('#maiss'+id_div).toggle().focus();
+        $('#menoss'+id_div).toggle().focus();
+    }
+
+    $(document).ready(function(){
+        $(".btn_limpar").click(function(){
+            $("#datainicio").css("display", "none");
+            $("#datafim").css("display", "none");
+            $("#ldata").css("display", "none");
+        });
+    });
+
+    $(function() {
+        $.datepicker.regional['pt-BR'] = {
+            closeText: 'Fechar',
+            prevText: '&#x3c;Anterior',
+            nextText: 'Pr&oacute;ximo&#x3e;',
+            currentText: 'Hoje',
+            monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+            dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            weekHeader: 'Sm',
+            dateFormat: 'dd/mm/yy',
+            firstDay: 0,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: ''
+        };
+        $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+        $("#datainicio").datepicker($.datepicker.regional['pt-BR']);
+        $("#datafim").datepicker($.datepicker.regional['pt-BR']);
+
+        $("#datainicio,#datafim").blur(function(){
+            if($(this).val() == "00/00/0000"){ $(this).val(""); }
+            if($(this).val() == "00/00/0000"){ $(this).val(""); }
+        });
+
+        $("#area").change(function() {
+            $.ajax({
+                type: "POST",
+                data: {
+                    codigo: $(this).val()
+                },
+                url: '<?php echo $this->url(array('controller' => 'consultarpareceristas', 'action' => 'ajaxcarregarsegmentos')); ?>',
+                success: function(data) {
+                    if(data) {
+                        var dados = '<option value="">Todos</option>';
+                        dados += data;
+                        $("#segmento").html(dados);
+                        $("#segmento").parent().fadeIn('fast');
+                    } else {
+                        $("#segmento").parent().fadeOut('fast');
+                    }
+                }
+            });
+        });
+        $("#orgao").change(function() {
+            $.ajax({
+                type: "POST",
+                data: {
+                    idOrgao: $(this).val()
+                },
+                url: '<?php echo $this->url(array('controller' => 'consultarpareceristas', 'action' => 'ajaxcarregarpareceristas')); ?>',
+                success: function(data) {
+                    if(data) {
+                        var dados = '';
+                        dados += data;
+                        $("#parecerista").html(dados);
+                    } else {
+                        var dados = '<option value=""> - Nenhum Parecerista para o Órgão Selecionado - </option>';
+                        $("#parecerista").html(dados);
+                    }
+                }
+            });
+
+        });
+    });
+    function verificaDatas() { 
+        if(($("#pronac").val() == '') ||($("#pronac").val() == undefined)){
+        	switch($("#periodo").val())
+            {
+                case '2':
+                    if ($("#datainicio").val() != '' && $("#datafim").val() != '') {
+                        if (1 == compararDataInicialDataFinal($("#datainicio").val(),$("#datafim").val())) {
+                            alert("A Data Inicial n\xE3o pode ser maior que a Final");
+                        } else {
+                            $('#formConsulta').submit();
+                        }
+                    } else {
+                        alert ("Coloque as datas");
+                    }
+                    break;
+                case '1':
+                    if ($("#datainicio").val() < 1 ) {
+                        alert("Coloque a Data");
+                    } else {
+                        $('#formConsulta').submit();
+                    }
+                    break;
+                default:
+                	$('#formConsulta').submit();
+            }
+        }else{
+            pronac = $("#pronac").val();
+            $("#teste").val(pronac);
+            $('#formConsultaPronac').submit();
+        }
+    }
+    function datas(valor) {
+        switch(valor)
+        {
+            case 'exatamente':
+                $("#datainicio").show();
+                $("#datafim").val('');
+                $("#datafim").hide();
+                $("#ldata").hide();
+                break;
+            case 'entreDatas':
+                $("#datainicio").show();
+                $("#datafim").show();
+                $("#ldata").show();
+                break;
+            default:
+                $("#datafim").hide();
+                $("#datainicio").hide();
+                $("#ldata").hide();
+                break;
+        }
+    }
+
+    function buscarPronac(v)
+    {
+        if($("#pronac").val() != ''){
+	        if ( $("#pronac").val().length < 6)
+	    	{
+	    		$("#MsgPronac").html('O Pronac deve ter no mínimo 6 caracteres!');
+	    	}
+	        else{
+	    		$("#MsgPronac").html('');
+	    		$(".nome_projeto").show();
+	    		$(".block").attr("disabled", true);
+	    		dados = 'pronac=' + encodeURIComponent(v);
+	    		enviar_pag('<?php echo $this->url(array('controller' => 'consultarpareceristas', 'action' => 'buscaprojeto')); ?>', dados, "orgaoERROR");
+	    	}
+        }else{
+        	$("#orgaoERROR").html('');
+        	$(".nome_projeto").css("display", "none");
+        	$(".block").attr("disabled", false);
+        }
+    }
+</script>
+<div id="titulo">
+    <div><?php echo $this->titulo; ?><span>&nbsp;</span> <span class="voltar"><a href="javascript:history.back();">Voltar</a></span></div>
+</div>
+<div id="conteudo">
+    <form id="formConsulta" method="post" action="<?php echo $this->url(array('controller' => 'consultarpareceristas', 'action' => 'tratardadosrelatorio')); ?>">
+    	<input type="hidden" name="titulo" value="<?php echo $this->titulo; ?>" />
+        <table class="tabela" style="text-align: left;">
+        <?php if ($this->perfilAtual == 'Parecerista') {?>
+        	<tr>
+        		<td width="120">PRONAC</td>
+                <td colspan="7">
+                	<input type="text" class="input_simples valida numero" name="pronac" id="pronac" size="10" maxlength="7" onblur="buscarPronac(this.value);" size="7" />
+                	&nbsp;<span id="MsgPronac" style="color:red;"></span>
+                </td>
+			</tr>
+			<tr class="nome_projeto" style="display: none;">
+				<td>Nome do projeto:</td>
+				<td colspan="7">
+					<div id="orgaoERROR" class="bold"></div>
+                </td>
+			</tr>
+        <?php }?>
+        <?php if (!($this->perfilAtual == 'CoordenadorPRONAC')) { ?>
+                <tr>
+                	<td>Produto </td>
+                	<?php if ($this->perfilAtual == 'Parecerista') {?>
+                    <td colspan="7">
+                    <?php }?>
+                    <?php if ($this->perfilAtual == 'CoordenadorParecerista') { ?>
+                    <td colspan="2">
+                    <?php }?>
+                        <select name="filtro[produto]" class="input_simples block" style="width: 250px;">
+                            <option value="0">Selecione</option>
+                            <option value="1">Principal</option>
+                            <option value="2">Secundário</option>
+                        </select>
+                    </td>
+                    <?php if ($this->perfilAtual == 'CoordenadorParecerista') { ?>
+                    <td width="200px">Dias de An&aacute;lises</td>
+                    <td colspan="4">
+                        <input type="text" id="dias" class="input_simples numero" maxlength="4" name="dias"/>
+                    </td>
+                    <?php }?>
+                </tr>
+        <?php }?>  
+                <?php
+            if ($this->Areas) {
+                ?>
+                <?php
+            if ($this->Orgaos) {
+                ?>
+                <tr>
+                    <td>Órgão</td>
+                    <td colspan="8">
+                        <select id="orgao" name="filtro[orgao]" class="input_simples" style="width: 250px;">
+                            <option value="">Todos</option>
+                            <?php
+                            foreach ($this->Orgaos as $value) {
+                                echo "<option value='{$value->Codigo}'>{$value->Sigla}</option>";
+                            }
+                            ?>
+                        </select>
+                    </td>
+                </tr>
+                <?php
+            }?>
+                <tr>
+                    <td>Área</td>
+                    <td>
+                        <select id="area" name="filtro[area]" class="input_simples" style="width: 250px;">
+                            <option value="">Todas</option>
+                            <?php
+                            foreach ($this->Areas as $value) {
+                                echo "<option value='{$value->Codigo}'>{$value->Descricao}</option>";
+                            }
+                            ?>
+                        </select>
+                    </td>
+                    <td>Segmento</td>
+                    <td  colspan="5">
+                        <select id="segmento" name="filtro[segmento]" class="input_simples" style="width: 250px;">
+                            <option value="">Todos</option>
+                            <?php
+                            foreach ($this->Segmentos as $value) {
+                                echo "<option value='{$value->Codigo}'>{$value->Descricao}</option>";
+                            }
+                            ?>
+                        </select>
+                    </td>
+                </tr>
+                <?php
+            }
+            if ($this->pareceristas) {
+                ?>
+                <tr>
+                    <td>Parecerista *</td>
+                    <td colspan="7">
+                        <select id="parecerista" name="filtro[parecerista]" class="input_simples" style="width: 250px;">
+                        <option value="0">Selecione</option>
+                            <?php
+                            $idParecerista = '';
+                            foreach ($this->pareceristas as $key => $parecerista) 
+                            {
+								if($parecerista['idParecerista'] != $idParecerista)
+								{
+                            		echo "<option value='{$parecerista['idParecerista']}'>{$parecerista['Nome']} </option>";
+								}
+								
+								$idParecerista = $parecerista['idParecerista'];
+                            }
+                            ?>
+                        </select>
+                    </td>
+                </tr>
+                <?php
+            }
+            ?>
+            <?php
+            if ($this->perfilAtual == 'CoordenadorParecerista') {
+                ?>
+                <tr>
+                    <td>
+                        Atestado ou Férias
+                    </td>
+                    <td colspan="7">
+                        <input type="radio" name="filtro[statusParecerista]" value="3" checked="checked" /> Todos
+                        <input type="radio" name="filtro[statusParecerista]" value="2" /> Férias
+                        <input type="radio" name="filtro[statusParecerista]" value="1" /> Atestado
+                    </td>
+                </tr>
+                <?php
+            }
+            ?>
+            <?php
+            if ($this->perfilAtual == 'Parecerista') {
+                ?>
+                <tr>
+                    <td width="150">Pagamentos</td>
+                    <td colspan="7">
+                        <select name="filtro[pagamento]" class="input_simples block" style="width: 250px;">
+                            <?php
+                            foreach ($this->Pagamentos as $valor) {
+                                echo "<option value='{$valor['codigo']}'>{$valor['descricao']}</option>";
+                            }
+                            ?>
+                        </select>
+                    </td>
+                </tr>
+                <?php
+            }
+            ?>
+            <?php
+            if ($this->perfilAtual == 'CoordenadorParecerista' or $this->perfilAtual == 'CoordenadorPRONAC' or $this->perfilAtual == 'Parecerista') {
+                ?>
+                <tr>
+                    <td width="150">Per&iacute;odo da An&aacute;lise</td>
+                    <td width="150">
+                        <select name="filtro[periodo]" id="periodo" class="input_simples block" style="width: 250px;" onchange="datas(this.value);">
+                            <option value="0">Todo</option>
+                            <option value="exatamente">Exatamente igual</option>
+                            <option value="entreDatas">Entre dois valores</option>
+                        </select>
+                    </td>
+                    <td colspan="6">
+                        <input type="text" name="filtro[periodo][dataInicio]" id="datainicio" class="input_simples sumir" maxlength="10" value="" onkeyup="mascara(this, format_data);" onclick="limpar_campo(this, '00/00/0000');" onblur="restaurar_campo(this, '00/00/0000');" type="text">
+                        <label id="ldata" class="sumir"> &agrave;</label>
+                        <input type="text" name="filtro[periodo][datafim]" id="datafim" class="input_simples sumir" maxlength="10" value="" onkeyup="mascara(this, format_data);" onclick="limpar_campo(this, '00/00/0000');" onblur="restaurar_campo(this, '00/00/0000');" type="text">
+                    </td>
+                </tr>
+                <?php
+            } ?>
+<!--                <tr>-->
+<!--                    <td width="150">Mensal</td>-->
+<!--                    <td colspan="6">-->
+<!--                        <b>M&ecirc;s</b>-->
+<!--                        <select name="filtro[mes]" id="mes" class="input_simples" >-->
+<!--                            <option value="01">Janeiro</option>-->
+<!--                            <option value="02">Fevereiro</option>-->
+<!--                            <option value="03">Mar&ccedil;o</option>-->
+<!--                            <option value="04">Abril</option>-->
+<!--                            <option value="05">Maio</option>-->
+<!--                            <option value="06">Junho</option>-->
+<!--                            <option value="07">Julho</option>-->
+<!--                            <option value="08">Agosto</option>-->
+<!--                            <option value="09">Setembro</option>-->
+<!--                            <option value="10">Outubro</option>-->
+<!--                            <option value="11">Novembro</option>-->
+<!--                            <option value="12">Dezembro</option>                            -->
+<!--                        </select>-->
+<!--                        <b>Ano</b>-->
+<!--                        <input type="text" name="filtro[ano]" id="ano" class="input_simples" maxlength="4" onkeypress="if (!isNaN(String.fromCharCode(window.event.keyCode))) return true; else return false;"/>-->
+<!--                    </td>-->
+<!--                </tr>-->
+
+            <?php
+            if ($this->perfilAtual == 'CoordenadorPRONAC') {
+                ?>
+                <tr>
+                    <td>Parecer</td>
+                    <td colspan="7">
+                        <select name="filtro[parecer]" class="input_simples" style="width: 250px;">
+                            <option value="todos">Todos</option>
+                            <option value="pago">Pago</option>
+                            <option value="liberado">Liberado</option>
+                        </select>
+                    </td>
+                </tr>
+                <?php
+            }
+            ?>
+            <tr>
+                <td align="center" colspan="8">
+                    <input id="localizar" type="button" value=" " class="btn_localizar" onclick="verificaDatas()"/>
+                    <input type="reset" value=" " class="btn_limpar" />
+                </td>
+            </tr>
+        </table>
+    </form>
+    
+    <form id="formConsultaPronac" method="post" action="<?php echo $this->url(array('controller' => 'consultarpareceristas', 'action' => 'tratardadosrelatorio')); ?>">
+    	<input type="hidden" name="titulo" value="<?php echo $this->titulo; ?>" />
+    	<input type="hidden" name="pronac" id="teste" value="" />
+    </form>
+</div>
+<span id="rodapeConteudo" style="width: 1543px;"><span></span></span>
+<br clear="all" />

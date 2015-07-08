@@ -1,0 +1,180 @@
+<?php include_once 'inc/menu-proppedag.inc.php'; ?>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'verificarreadequacaodeprojeto', 'action' => 'verificarreadequacaodeprojetocoordacompanhamento')); ?>">Acompanhamento</a></li>
+        <li class="last">Verificar readequa&ccedil;&atilde;o de projeto</li>
+    </ul>
+</div>
+
+
+<?php if($this->dados){ ?>
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>READEQUAÇÃO: PROPOSTA PEDAGÓGICA
+        <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span>
+        <span style="vertical-align: middle;">
+        <?php foreach ($this->dados as $dados): ?>
+        <?php $dados = (object) $dados; ?>
+        <?php
+        $status_itemPedido = array("AP", "IN");
+        if (in_array($dados->stAvaliacaoItemPedidoAlteracao, $status_itemPedido)) {
+        ?>
+        <select name="status" class="select_simples" disabled="disabled" id="status">
+            <?php
+            if ($dados->stAvaliacaoItemPedidoAlteracao == "AG") {
+                echo "<option value='0' selected='selected'>Aguardando Análise&nbsp;</option>";
+            } else if ($dados->stAvaliacaoItemPedidoAlteracao == "EA") {
+                echo "<option value='1' selected='selected'>Em Análise&nbsp;</option>";
+            } else if ($dados->stAvaliacaoItemPedidoAlteracao == "AP") {
+                echo "<option value='2' selected='selected'>Aprovado&nbsp;</option>";
+            } else if ($dados->stAvaliacaoItemPedidoAlteracao == "IN") {
+                echo "<option value='3' selected='selected'>Indeferido&nbsp;</option>";
+            }
+            ?>
+        </select>
+        <?php } ?>
+        <?php endforeach; ?>
+        </span>
+    </div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="conteudo">
+    <script type='text/javascript' src='<?php echo $this->baseUrl(); ?>/public/js/projetosGerenciar.js'></script>
+
+    <!-- MODAL PARA NOTA TÉCNICA -->
+    <div style="display:none;" id="notatec" title="Nota Técnica do Projeto" >
+        <form name="formencaminhar" id="form" method="post">
+            <table>
+                <tr>
+                    <td>PRONAC</td>
+                    <td>Nome do Projeto</td>
+                </tr>
+                <tr>
+                    <?php foreach ($this->dados as $dados): ?>
+                    	<?php $dados = (object) $dados; ?>
+                        <td><?php echo $dados->PRONAC; ?></td>
+                        <td><?php echo $dados->NomeProjeto; ?></td>
+                    <?php endforeach; ?>
+                    </tr>
+                </table>
+
+                <br /><label for="justificativaencaminha">Observações:</label><br />
+                <textarea name="justificativa" id="justificativaencaminha" rows="6" cols="50" style="width:100%;"></textarea>
+
+                <p align="left" style="margin-top:1%;">
+                    <input id="btn_salvar" type="submit"  value=" " class="btn_salvar salvarencaminhamento" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="reset"  value=" " class="btn_cancelar" />
+                </p>
+            </form>
+        </div>
+        <!-- FIM DO MODAL NOTA TÉCNICA -->
+
+        <?php foreach ($this->dados as $dados): ?>
+        	<?php $dados = (object) $dados; ?>
+            <div>
+                    <table class="tabela">
+                        <thead>
+                            <tr>
+                                <th align="center">Nº PRONAC:</th>
+                                <th align="center">Nome do Projeto:</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="linha">
+                                <td align="center"><?php echo $dados->PRONAC; ?></td>
+                                <td align="center"><?php echo $dados->NomeProjeto; ?></td>
+                            </tr>
+                        </tbody>
+                        <tr>
+                            <th align="center">CNPJ/CPF:</th>
+                            <th align="center">Proponente:</th>
+                        </tr>
+                        <tbody>
+                            <tr class="linha">
+
+                                <td align="center"><?php echo $dados->CNPJCPF; ?></td>
+                                <td align="center"><?php echo $dados->proponente; ?></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                
+                <table class="tabela">
+                    <tr>
+                        <th colspan="2">CURSOS APROVADOS</th>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="destacar bold">ESPECIFICAÇÃO TÉCNICA</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><center><textarea name="justificativa" style="width: 99%" cols="70" rows="7" class="textarea_simples w1100" readonly="readonly"><?php echo empty($dados->EspecificacaoTecnica) ? strip_tags("Não Aplicável") : strip_tags($dados->EspecificacaoTecnica); ?></textarea></center></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="destacar bold">ESTRATÉGIA DE EXECUÇÃO</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><center><textarea name="justificativa" style="width: 99%" cols="70" rows="7" class="textarea_simples w1100" readonly="readonly"><?php echo empty($dados->EstrategiadeExecucao) ? strip_tags("Não Aplicável") : strip_tags($dados->EstrategiadeExecucao); ?></textarea></center></td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">SOLICITADO PELO PROPONENTE</th>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="destacar bold">NOVA ESPECIFICAÇÃO TÉCNICA</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><center><textarea name="solicitacao" style="width: 99%" cols="70" rows="7" class="textarea_simples w1100" readonly="readonly"><?php echo strip_tags($dados->dsEspecificacaoTecnica); ?></textarea></center></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="destacar bold">NOVA ESTRATÉGIA DE EXECUÇÃO</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><center><textarea name="solicitacao" style="width: 99%" cols="70" rows="7" class="textarea_simples w1100" readonly="readonly"><?php echo strip_tags($dados->dsEstrategiaExecucao); ?></textarea></center></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="destacar bold">JUSTIFICATIVA</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><center><textarea name="justificativa" style="width: 99%" cols="70" rows="7" class="textarea_simples w1100" readonly="readonly"><?php echo strip_tags($dados->dsJustificativa); ?></textarea></center></td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">ANÁLISE DA PROPOSTA DE READEQUAÇÃO</th>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="destacar bold">ANÁLISE TÉCNICA DA SOLICITAÇÃO</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <?php echo strip_tags($dados->dsAvaliacao); ?>
+                        </td>
+                    </tr>
+                </table>
+
+                <br>
+
+            </div>
+        <?php endforeach; ?>
+
+</div>
+
+<?php } else { ?>
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>READEQUAÇÃO: PROPOSTA PEDAGÓGICA
+        <span>ID #23A</span>
+        <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span>
+    </div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+<div id="conteudo">
+    <div style="float: left; margin-right: 15px; padding: 25px; font-size: 16px; color: red;">N&atilde;o foi encontrado os dados da readequa&ccedil;&atilde;o!</div>
+</div>
+
+<?php } ?>
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

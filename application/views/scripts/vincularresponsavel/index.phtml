@@ -1,0 +1,205 @@
+<script type="text/javascript">
+    function vincularproponente(idProponente){
+        $("#dadosemail").val('');
+        $("#error").addClass('sumir');
+
+        var idAgente = idProponente;
+
+        $("#email").dialog({
+            resizable: true,
+            width:450,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            closeOnEscape : false,
+            title : 'Alerta',
+            buttons: {
+                'N√O': function(){
+                    $(this).dialog('close');
+                },
+                'SIM': function(){
+                    $("#email").html("Aguarde...");
+
+                    $.ajax({
+                        async: true,
+                        dataType: 'json',
+                        type: "post",
+                        url: "<?php echo $this->url(array('controller' => 'vincularresponsavel', 'action' => 'vinculo')); ?>",
+                        data:{
+                            idAgente: idAgente,
+                            solicitarvinculo : '1'
+                        },
+                        success: function(data){
+                            if(!data.error){
+                                confirma('Sua solicita&ccedil;&atilde;o de vÌnculo foi enviada com sucesso.',
+                                    function(){
+                                        window.location = 'manterpropostaincentivofiscal/listar-propostas';
+                                    }
+                                );
+                            } else {
+                                confirma('Falha na recupera&ccedil;&atilde;o dos dados!',
+                                    function(){
+                                        $("#confirm").dialog("close");
+                                    }
+                                );
+                            }
+                        }
+                    });
+
+                }
+            }
+        });
+        $("#email").dialog('open');
+    }
+
+    function retirarAcento(text) {
+        var varString = text;
+        var stringAcentos = new String('‡‚ÍÙ˚„ı·ÈÌÛ˙Á¸¿¬ ‘€√’¡…Õ”⁄«‹');
+        var stringSemAcento = new String('aaeouaoaeioucuAAEOUAOAEIOUCU');
+
+        var i = new Number();
+        var j = new Number();
+        var cString = new String();
+        var varRes = '';
+
+        for (i = 0; i < varString.length; i++) {
+            cString = varString.substring(i, i + 1);
+            for (j = 0; j < stringAcentos.length; j++) {
+                if (stringAcentos.substring(j, j + 1) == cString){
+                    cString = stringSemAcento.substring(j, j + 1);
+                }
+            }
+            varRes += cString;
+        }
+        return varRes;
+    }
+
+    $(document).ready( function() {
+        $('#btn_pesquisar').click(function(){
+            $('#mostraproponente').html();
+            var cnpjcpf   = retirarAcento(document.getElementById('cnpjcpf').value);
+            var nome      = retirarAcento(document.getElementById('nome').value);
+
+            if(nome == '' && cnpjcpf == '') {
+                $("#error").removeClass('sumir');
+                $("#error").html('VocÍ deve preencher pelo menos um campo!');
+            } else if( (cnpjcpf != '') && (cnpjcpf.length < 14) ) {
+                $("#error").removeClass('sumir');
+                $("#error").html('O cpf/cnpj deve conter, no mÌnimo, 11 caracteres');
+            }
+            else if((cnpjcpf.length == 18) && (!valida_cnpj(cnpjcpf))) {
+                $("#error").removeClass('sumir');
+                $("#error").html('O CNPJ È inv·lido!');
+            }
+            else if((cnpjcpf.length == 14) && (!validaCPF(cnpjcpf))) {
+                $("#error").removeClass('sumir');
+                $("#error").html('O CPF È inv·lido!');
+            } else {
+                $("#error").addClass('sumir');
+                dados = 'cnpjcpf=' + encodeURIComponent(cnpjcpf);
+                dados+= '&nome=' + encodeURIComponent(nome);
+                enviar_pag("<?php echo $this->url(array('controller' => 'vincularresponsavel', 'action' => 'mostraragentes')) ?>", dados, 'mostraproponente');
+            }
+            return false;
+        });
+    });
+
+    function alerta(msg, functionsim, functionnao){
+        $("#mostraproponente[id='alerta']").remove();
+        $("#mostraproponente").append("<div id='alerta'></div>");
+        $("#alerta").html(msg);
+        $("#alerta").dialog({
+            resizable: true,
+            width:450,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            closeOnEscape : false,
+            title : 'Alerta',
+            buttons: {
+                'Nao': functionnao,
+                'Sim': functionsim
+            }
+        });
+        $("#alerta").dialog('open');
+    }
+
+    function confirma(msg, functionok){
+        $("#mostraproponente[id='confirm']").remove();
+        $("#mostraproponente").append("<div id='confirm'></div>");
+        $("#confirm").html(msg);
+        $("#confirm").dialog({
+            resizable: true,
+            width:450,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            closeOnEscape : false,
+            title : 'Alerta',
+            buttons: {
+                'OK': functionok
+            }
+        });
+        $("#confirm").dialog('open');
+    }
+
+    function novoproponente(){
+        var cpf = $("#novoproponente").val();
+        window.location = 'agentes/incluiragente?menuLateral=false&acao=prop&cpf='+cpf;
+    }
+</script>
+<!-- ========== INÔøΩCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para InÌcio">InÌcio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'manterpropostaincentivofiscal', 'action' => 'listar-propostas')); ?>" title="Ir para  Lista propostas">Lista propostas</a></li>
+        <li class="last">Solicitar v&iacute;nculo</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÔøΩCIO TÔøΩTULO ========== -->
+<div id="titulo">
+    <div>Solicitar v&iacute;nculo <span class="voltar"><a href="#" onclick="voltar();"></a></span></div>
+</div>
+<!-- ========== FIM TÔøΩTULO ========== -->
+
+<div id="conteudo">
+
+    <fieldset><legend> InformaÁıes do Proponente </legend>
+        <form id="formBuscar" name="formBuscar" method="post" action="#">
+            <table class="tabela" style="margin:1% auto; width:40%;" summary="Esta tabela contÈm o campo para pesquisa de Agentes Vinculados a InstituiÁ„o. Para que a pesquisa tenha efeito È necess·rio que seja feita atravÈs do CNPJ ou o nome da InstituiÁ„o que consta nos campos abaixo">
+                <tr>
+                    <th colspan="2" class="w800">PESQUISAR PROPONENTE</th>
+                </tr>
+                <tr>
+                    <td class="center destacar bold" tabindex="2" nowrap><label for="cnpj" >CPF / CNPJ:</label></td>
+                    <td>
+                        <input class="input_simples" type="text" name="cnpjcpf" id="cnpjcpf" maxlength="18"  tabindex="3" onkeyup="mascaraCnpjCpf(this);"class="input w500" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="destacar bold" nowrap><label for="nome">NOME / RAZ&Atilde;O SOCIAL:</label></td>
+                    <td>
+                        <input class="input_simples w400" type="text" name="nome" id="nome" tabindex="5" maxlength="70" value="" onkeypress="" class="input w500"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="centro">
+                        <div id="error" class="sumir" style="color: red; text-align: center; font-weight: 600;">Dados obrigat&oacute;rios n&atilde;o informados!</div>
+                        <input type="submit" title=" Pesquisar " tabindex="6" class="btn_pesquisar" id="btn_pesquisar" value=" " />
+                        &nbsp;&nbsp;&nbsp;
+                        <input type="reset" title=" Cancelar " tabindex="7" class="btn_limpar" value=" " />
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div id="mostraproponente"></div>
+    </fieldset>
+</div>
+<!-- ========== INÔøΩCIO RODAPÔøΩ DO CONTEÔøΩDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÔøΩ DO CONTEÔøΩDO ========== -->
+
+<br clear="all" />

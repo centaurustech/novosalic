@@ -1,0 +1,106 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(".btn_pesquisar").click(function(){
+            //jqAjaxLink("<?php echo $this->baseUrl()?>/operacional/tabelas?consulta="+$("#consulta").val(), null, "resultadoConsulta");
+            $("#resultadoConsulta").html("");
+            jqAjaxForm(document.getElementById("frmExtratoPauta"), "resultadoConsulta");
+        });
+
+    });
+
+    function abrirProjetosPorSituacao(situacao){
+        $("body").append("<div id='divDinamica'></div>");
+        $("#divDinamica").html("");
+        jqAjaxLink("<?php echo $this->baseUrl()?>/operacional/resultado-projetos-por-situacao?situacao=" + situacao, null, "divDinamica");
+        $("#divDinamica").dialog({
+            resizable: true,
+            width:$(window).width() - 100,
+            height:$(window).height() - 100,
+            modal: true,
+            autoOpen:true,
+            draggable:false,
+            title: "Projetos na Situa&ccedil;o " + situacao,
+            buttons: {
+                'OK': function() {
+                    $("#divDinamica").remove();
+                    $(this).dialog('close');
+                }
+            },
+            close: function() {
+                    $("#divDinamica").remove();
+                    $(this).dialog('close');
+                }
+        });
+    }
+</script>
+
+<?php include("scripts/operacional/inc/menu.inc.php"); ?>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'diagnostico')); ?>">In&iacute;cio</a></li>
+        <li class="last">Diagnóstico</li>
+    </ul>
+</div>
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Diagnóstico<span class="voltar"><a href="javascript:voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="conteudo" align="center">
+
+    <!--<fieldset>
+        <legend> Filtros de pesquisa </legend>-->
+        <form action="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-diagnostico')); ?>" method="post" name="frmExtratoPauta" id="frmExtratoPauta">
+            <table class="tabela">
+                <tbody>
+                    <tr>
+                        <th colspan="2">Selecionar campos para pesquisa</th>
+                    </tr>
+                    <tr>
+                        <td class="destacar bold">Org&atilde;o</td>
+                        <td align="left">
+                            <select name="orgao" id="orgao" style="width: 200px;" class="input_simples">
+                                <option value="">Selecione</option>
+                                <?php foreach ($this->orgaos as $orgao): ?>
+                                    <option value="<?php echo $orgao->Codigo; ?>"><?php echo $orgao->Sigla; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="destacar bold">Situa&ccedil;&atilde;o</td>
+                        <td align="left">
+                            <select name="situacao" id="situacao" class="input_simples">
+                                <option value="">Selecione</option>
+                                <?php foreach($this->situacoes as $situacao):?>
+                                <option value="<?php echo $situacao->Codigo; ?>"><?php echo $situacao->Codigo; ?> - <?php echo $situacao->Descricao; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="tabela">
+                <tr>
+                    <td align="center">
+                        <input type="button" class="btn_pesquisar" id="btn_pesquisar"/>
+                        <input type="reset" class="btn_limpar" id="btn_limpar" value=""/>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    <!--</fieldset>-->
+
+    <div id="resultadoConsulta"></div>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

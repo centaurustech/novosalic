@@ -1,0 +1,231 @@
+<?php
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+<script>
+    $(document).ready(function(){
+        
+    });
+    function JSVisualizar(idDiligencia,idPronac,idDiligenciaPreProjeto){
+
+        //jqAjaxLink('<?php //echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'visualizar-diligencia'));?>', '', 'linha'+idDiligencia);
+        $('#linha'+idDiligencia).toggle();
+        if($('#resultado'+idDiligencia).html() == '')
+        {
+            $('#resultado'+idDiligencia).html('<br><center>Aguarde, carregando dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br>');
+            
+            $.ajax({
+                url : '<?php echo $this->url ( array ('controller' => 'consultardadosprojeto', 'action' => 'visualizar-diligencia' ));?>',
+                data :
+                {
+                    idPronac : idPronac,
+                    idDiligencia : idDiligencia,
+                    idDiligenciaPreProjeto : idDiligenciaPreProjeto
+                },
+                success: function(data){
+                    $('#resultado'+idDiligencia).html(data);
+                },
+                type : 'post'
+
+            });
+        }
+    }
+</script>
+
+<?php
+    if($this->diligenciasProposta){
+    ?>
+    <fieldset><legend>Dilig&ecirc;ncia Proposta</legend>
+        <table class="tabela">
+            <tr>
+                <th>
+                    Visualizar
+                </th>
+                <th>
+                    NR PROPOSTA
+                </th>
+                <th>
+                    NOME DA PROPOSTA
+                </th>
+                <th>
+                    DATA DA SOLICITA&Ccedil;&Atilde;O
+                </th>
+                <th>
+                    DATA DA RESPOSTA
+                </th>
+                <th>
+                    PRAZO DA RESPOSTA
+                </th>
+                <th>
+                    PRORROGADO
+                </th>
+            </tr>
+            <?php
+            if(count($this->diligenciasProposta) > 0):
+                foreach ($this->diligenciasProposta as $value) {
+                ?>
+                <tr>
+                    <td style="text-align: center;">
+                        <img onclick="JSVisualizar('<?php echo $value->idDiligencia;?>','<?php echo $this->idPronac;?>','<?php echo $value->idDiligencia;?>')" src="<?php echo $this->baseUrl(); ?>/public/img/ico/kdict.png" width="20" style="cursor: pointer;"/>
+                    </td>
+                    <td>
+                            <?php echo $value->pronac;?>
+                    </td>
+                    <td>
+                            <?php echo $value->nomeProjeto;?>
+                    </td>
+                    <td>
+                            <?php echo date('d/m/Y  H:i',strtotime($value->dataSolicitacao));?>
+                    </td>
+                    <td>
+                            <?php if($value->stEnviado== 'S') echo date('d/m/Y  H:i',strtotime($value->dataResposta));?>
+                    </td>
+                    <td>
+                        <?php
+                        if($value->stEnviado== 'S'){
+                            echo '-';
+                        }
+                        else{
+                            $qtdia = 20;
+                            if($value->stProrrogacao == 'S')
+                                $qtdia+=20;
+                            echo date('d/m/Y  H:i',strtotime($value->dataSolicitacao.' +'.$qtdia.' day'));
+                        }
+                        ?>
+                    </td>
+                    <td>
+                        <?php
+                        if($value->stProrrogacao == 'N'){
+                            echo 'N&atilde;o Prorrogado';
+                        }
+                        else{
+                            echo 'Prorrogado';
+                        }
+                        ?>
+                    </td>
+                </tr>
+                <tr class="sumir" id="linha<?php echo $value->idDiligencia;?>">
+                    <td colspan="7" id="resultado<?php echo $value->idDiligencia;?>"></td>
+                </tr>
+                <?php
+                }
+            else: //se exite registros ?>
+                <tr>
+                    <td colspan="7" class="centro"><em>Nenhuma dilig&ecirc;ncia realizada para a Proposta</em></td>
+                </tr>
+            <?php endif;?>
+        </table>
+    </fieldset>
+    <?php
+    }
+    if($this->diligencias){
+    ?>
+    <fieldset>
+        <legend>Dilig&ecirc;ncia Projeto</legend>
+        <table class="tabela">
+            <tr>
+                <th>
+                    Visualizar
+                </th>
+                <th>
+                    PRONAC
+                </th>
+                <th>
+                    NOME DO PROJETO
+                </th>
+                <th>
+                    PRODUTO
+                </th>
+                <th>
+                    TIPO DA DILIG&Ecirc;NCIA
+                </th>
+                <th>
+                    DATA DA SOLICITA&Ccedil;&Atilde;O
+                </th>
+                <th>
+                    DATA DA RESPOSTA
+                </th>
+                <th>
+                    PRAZO DA RESPOSTA
+                </th>
+                <th>
+                    PRORROGADO
+                </th>
+            </tr>
+            <?php
+            if(count($this->diligencias) > 0):
+                foreach ($this->diligencias as $value) {
+                ?>
+                <tr>
+                    <td style="text-align: center;">
+                        <img onclick="JSVisualizar('<?php echo $value->idDiligencia;?>','<?php echo $this->idPronac;?>')" src="<?php echo $this->baseUrl(); ?>/public/img/ico/kdict.png" width="20" style="cursor: pointer;"/>
+                    </td>
+                    <td>
+                            <?php echo $value->pronac;?>
+                    </td>
+                    <td>
+                            <?php echo $value->nomeProjeto;?>
+                    </td>
+                    <td align="center">
+                        <?php
+                        if($value->produto)
+                            echo $value->produto;
+                        else
+                            echo '-';
+                        ?>
+                    </td>
+                    <td>
+                            <?php echo $value->tipoDiligencia;?>
+                    </td>
+                    <td>
+                            <?php echo date('d/m/Y  H:i',strtotime($value->dataSolicitacao));?>
+                    </td>
+                    <td>
+                            <?php if($value->stEnviado == 'S') echo date('d/m/Y  H:i',strtotime($value->dataResposta));?>
+                    </td>
+                    <td align="center">
+                        <?php
+                        if($value->stEnviado== 'S'){
+                            echo '-';
+                        }
+                        else{
+                            if($value->idTipoDiligencia == 124){
+                                $qtdia = 20;
+                                if($value->stProrrogacao == 'S')
+                                    $qtdia+=20;
+                                echo date('d/m/Y  H:i',strtotime($value->dataSolicitacao.' +'.$qtdia.' day'));
+                            }
+                            else{
+                                echo date('d/m/Y  H:i',strtotime($value->dataSolicitacao.' +30 day'));
+                            }
+                        }
+                        ?>
+                    </td>
+                    <td>
+                        <?php
+                        if($value->idTipoDiligencia == 124){
+                            if($value->stProrrogacao == 'N'){
+                                echo 'N&atilde;o Prorrogado';
+                            }
+                            else{
+                                echo 'Prorrogado';
+                            }
+                        }
+                        else{
+                            echo 'N&atilde;o &eacute; possivel prorrogar!';
+                        }
+                        ?>
+                    </td>
+                </tr>
+                <tr class="sumir" id="linha<?php echo $value->idDiligencia;?>">
+                    <td colspan="9" id="resultado<?php echo $value->idDiligencia;?>"></td>
+                </tr>
+        <?php
+                }
+            else: //se exite registros ?>
+                <tr>
+                    <td colspan="9" class="centro"><em>Nenhuma dilig&ecirc;ncia realizada para o Projeto</em></td>
+                </tr>
+            <?php endif;?>
+        </table>
+    </fieldset>
+<?php }?>

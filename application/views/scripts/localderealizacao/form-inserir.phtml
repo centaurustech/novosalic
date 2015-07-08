@@ -1,0 +1,147 @@
+<?php $edital = "";
+    if(isset($_GET['edital'])) {
+        require_once 'scripts/manterpropostaedital/inc/menu.inc.php'; // menu de manter proposta por edital
+        $edital = "&edital=s";
+    } else {
+        require_once "scripts/manterpropostaincentivofiscal/inc/menu.inc.php"; // menu de manter proposta por incentivo fiscal
+    }
+?>
+<script type="text/javascript">
+    $(document).ready(function(){
+
+        <?php if(isset($this->movimentacaoAtual) && $this->movimentacaoAtual != '95'): ?>
+             //DESABILITA ALTERACOES NOS DADOS DO FORMULARIO (INCLUIR/ALTERAR/EXCLUIR)
+             JSBloquearAlteracaoFormulario();
+        <?php endif; ?>
+            
+        $('#pais').change(function(){
+            if($(this).val() != '31'){ //Diferente do Brasil
+                $("#estados").attr("disabled", true);
+                $("#estados").hide();
+                $("#cidades").attr("disabled", true);
+                $("#cidades").hide();
+            } else {
+                $("#estados").attr("disabled", false);
+                $("#estados").show();
+                $("#cidades").attr("disabled", false);
+                $("#cidades").show();
+            }
+        });
+
+        $('#estados').change(function(){
+            $("#cidades").html("<option value=''>- Carregando - </option>");
+            var idEstado = $(this).val()
+            $.ajax({
+                url:'<?php echo $this->url(array('controller' => 'localderealizacao', 'action' => 'cidades')); ?>?idPreProjeto=<?php if($_GET['idPreProjeto'])echo $_GET['idPreProjeto'];?>',
+                async : true,
+                type: 'post',
+                data:{
+                    idEstado : idEstado
+                },
+                success : function(valor)
+                {
+                    $("#cidades").find('option').remove();
+                    $("#cidades").append("<option value=''>- Selecione - </option>");
+                    $("#cidades").append(valor);
+                }
+            });
+        });
+
+        $('#btn_salvar').click(function(){
+            var pais = $('#pais').val();
+            if(pais == 31){
+                var estados = $("#estados").val(),
+                    cidades = $("#cidades").val();
+
+                if(estados == '' || cidades == ''){
+                    $("#modalAlerta").dialog({
+                        title:'Alerta',
+                        width:320,
+                        height:150,
+                        EscClose:false,
+                        modal:true,
+                        buttons: {
+                            'Ok':function() {
+                                $(this).dialog('close'); // fecha a modal
+                            }
+                        }
+                    });
+                    return false;
+                }
+            }
+            $('#formulario').submit();
+        });
+
+    });
+</script>
+
+<!-- ==========  BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'localderealizacao', 'action' => 'index')); ?>?idPreProjeto=<?php if($_GET['idPreProjeto'])echo $_GET['idPreProjeto'];?>" title="Projetos">Local de Realiza&ccedil;&atilde;o</a></li>
+        <li class="last">Inserir Local de Realiza&ccedil;&atilde;o</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<div id="titulo">
+    <div>Local de Realiza&ccedil;&atilde;o <?php if (!isset($_GET['edital'])): ?>/ Deslocamento<?php endif; ?>
+        <span class="voltar">
+            <a href="javascript:history.back(1);">Voltar</a>
+        </span>
+    </div>
+</div>
+<div id="modalAlerta" class="sumir">Favor preencher os dados.</div>
+
+
+<div id="conteudo">
+    <div id="localderealizacao">
+        <form method="post" id="formulario" name="formulario" action="<?php echo $this->url(array('controller' => 'localderealizacao', 'action' => 'salvar-local-realizacao')); ?>?idPreProjeto=<?php if($_GET['idPreProjeto'])echo $_GET['idPreProjeto'];?>">
+            <table class="tabela">
+                <tr class="titulo_tabela">
+                    <th width="25%">Pa&iacute;s</th>
+                    <th width="25%">UF</th>
+                    <th width="30%">Cidade</th>
+                </tr>
+                <tr id="linha_locais">
+                    <td class="centro">
+                        <select id="pais" name="pais" class="select_simples w240">
+                            <option value="">- Selecione - </option>
+                            <?php foreach ($this->paises as $paises) { ?>
+                            <option <?php if($paises->idPais == 31){ echo 'selected="selected"'; } ?> value="<?php echo $paises->idPais; ?>"><?php echo $paises->Descricao; ?></option>
+                            <?php } ?>
+                        </select>
+                    </td>
+                    <td class="centro">
+                        <select id="estados" name="estados" class="select_simples w240">
+                            <option value="">- Selecione - </option>
+                            <?php foreach ($this->estados as $estados) { ?>
+                            <option value="<?php echo $estados->id; ?>"><?php echo $estados->descricao; ?></option>
+                            <?php } ?>
+                        </select>
+                    </td>
+                    <td class="centro">
+                        <select id="cidades" name="cidades" class="select_simples w240">
+                            <option value="">- Selecione - </option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <table class="tabela">
+                <tr>
+                    <td align="center">
+                        <input type="button" style="width: 87px" class="btn_salvar" id="btn_salvar" name="Salvar" value=""/>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div><!-- ========== FIM CONTEUDO ========== -->
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

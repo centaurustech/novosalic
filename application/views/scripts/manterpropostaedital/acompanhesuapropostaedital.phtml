@@ -1,0 +1,52 @@
+<?php
+include_once 'scripts/manterpropostaedital/inc/menu.inc.php';
+?>
+
+<!-- ==========  BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'projetos')); ?>" title="Projetos">Projetos</a></li>
+        <li class="last">Local e Per&iacute;odo de Realiza&ccedil;&atilde;o</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INULO ========== -->
+<div id="titulo">
+    <div>Acompanhe sua Proposta<span>Teste</span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+
+
+
+<!-- ========== IDO ========== -->
+<div id="conteudo">
+
+    <table class="tabela">
+
+        <tr class="titulo_tabela" >
+            <th colspan="5">Acompanhamento do Edital</th>
+
+        </tr>
+
+        <tr class="fundo">
+            <td class="centro" colspan="5">
+            <?php echo "
+            No Momento nao há pendencias" ?>
+            </td>
+
+        </tr>
+
+    </table>
+
+
+
+</div><!-- ========== FIM CONTEUDO ========== -->
+
+<!-- ========== I ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RO ========== -->
+<br clear="all" />

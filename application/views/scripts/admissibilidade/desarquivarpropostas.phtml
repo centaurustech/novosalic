@@ -1,0 +1,77 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+
+        $('#nrProposta').focus();
+        
+        $('.btn_localizar').click(function(){
+            var nrProposta = $('#nrProposta').val();
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'buscar-proposta')); ?>',
+                data: {
+                    nrProposta: nrProposta
+                },
+                success: function(data){
+                    var tabela = $('#desarquivarProposta');
+                    if(data.resposta){
+                        $('#desarquivarProposta tr.respostaAjax').remove();
+                        for ( i in data.conteudo){
+                            tabela.append('<tr class="respostaAjax"><td class="destacar bold" align="right">Nome da Proposta</td><td>'+data.conteudo[i].NomeProjeto+'</td></tr>');
+                            tabela.append('<tr class="respostaAjax"><td class="destacar bold" align="right">Desarquivar</td><td><select class="select_simples" name="desarquivamento"><option value="1">Sim</option></select></td></tr>');
+                            tabela.append('<tr class="respostaAjax"><td align="center" colspan="2"><input type="button" class="btn_salvar" /></td></tr>');
+                        }
+                    } else {
+                        $('#desarquivarProposta tr.respostaAjax').remove();
+                        tabela.append('<tr class="respostaAjax"><td align="center" colspan="2">Nenhum registro encontrado!</td></tr>');
+                    }
+                },
+                dataType : 'json'
+            });
+        });
+
+        $('.btn_salvar').live('click', function(){
+            $('#formulario').submit();
+        });
+
+        $("#nrProposta").keypress(function(event) {
+            $('.msgCONFIRM').remove();
+            if ( event.which == 13 ) {
+                $('.btn_localizar').click();
+                return false;
+            } else {
+                $('#desarquivarProposta tr.respostaAjax').remove();
+            }
+        });
+
+    });
+</script>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"> <a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="last">Desarquivar Propostas</li>
+    </ul>
+</div>
+
+<div id="titulo">
+    <div>Desarquivar Propostas <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+
+<div id="conteudo">
+    <form action="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'desarquivamento-proposta')); ?>" method="post" name="fomulario" id="formulario">
+        <table class="tabela" id="desarquivarProposta">
+            <tr>
+                <td class="destacar bold w150" align="right">N&ordm; da Proposta</td>
+                <td>
+                    <input type="text" class="input_simples" id="nrProposta" name="nrProposta" onkeypress="mascara(this, format_num);">
+                    <input type="button" class="btn_localizar">
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

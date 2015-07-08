@@ -1,0 +1,482 @@
+<?php
+// leitura das datas
+$dia = date('d');
+$mes = date('m');
+$ano = date('Y');
+// configuraï¿½ï¿½o mes
+$relatorio = '
+<html>
+<head>
+<style type="text/css">
+body
+{
+    /*width: 9cm;
+    heigth: 11 cm;*/
+
+}
+.TituloSecundario{
+    text-align: center;
+}
+
+#assinatura{
+    text-align: center;
+}
+
+#TituloGeral
+{
+    text-align: center;
+    text-transform: uppercase;
+}
+
+table {
+    width: 9cm;
+    font-family: "Times New Roman";
+    font-size: 8pt;
+    margin-top: 1cm;
+    margin-bottom:0;
+    margin-rigth:0;
+}
+#Texto {
+    text-align: justify;
+}
+p.saltoLinha {
+    margin: 0px 0px;
+    text-indent: 1cm;
+}
+p.saltoLinha_primeira {
+    margin: 40px 0px 0px 0px;
+    text-indent: 1cm;
+
+}
+
+.formatacao {
+    width: 9cm;
+    font-family: "Times New Roman";
+    font-size: 8pt;
+    margin-top: 1cm;
+    margin-bottom:0;
+    margin-rigth:0;
+}
+
+</style>
+</head>
+';
+$relatorio .= '<body>
+
+<div id="Texto" class="formatacao">
+    <p class="TituloSecundario">##ATO PORTARIA N.&ordm; ' . $this->portaria[0]->PortariaAprovacao . ', DE ' . $dia . ' DE ' . strtoupper($this->mes($mes)) . ' DE ' . $ano . '</p>';
+
+
+if($this->tipoPublicacao == 'prorrogacao') {
+    $relatorio .= '
+        <p class="saltoLinha">
+            ##TEX O ' . $this->cargo . ', no uso das atribui&ccedil;&otilde;es legais, que lhe confere a Portaria n&ordm; ' . $this->textoPortaria . ', RESOLVE:
+        </p>
+        <p class="saltoLinha">
+	   Art. 1.&ordm; - Prorrogar o prazo de capta&ccedil;&atilde;o de recursos do(s) projeto(s) cultural(is), relacionado(s) no(s) anexo(s) desta Portaria, para o(s) qual(is) o(s) proponente(s) fica(m) autorizado(s) a captar recursos, mediante doa&ccedil;&otilde;es ou patroc&iacute;nios, na forma prevista no &sect; 1&ordm; do Artigo 18 e no Artigo 26 da Lei n.&ordm; 8.313, de 23 de dezembro de 1991, alterada pela Lei n&ordm; 9.874, de 23 de novembro de 1999.
+        </p>
+        <p class="saltoLinha">
+            Art. 2.&ordm; - Esta portaria entra em vigor na data de sua publica&ccedil;&atilde;o.
+        </p>
+        <p style="text-align: center">##ASS ' . $this->nome . '</p>
+    ';
+} else if($this->tipoPublicacao == 'complementacao') {
+    $relatorio .= '
+        <p class="saltoLinha">
+            ##TEX O ' . $this->cargo . ', no uso das atribui&ccedil;&otilde;es legais, que lhe confere a Portaria n&ordm; ' . $this->textoPortaria . ', RESOLVE:
+        </p>
+        <p class="saltoLinha">
+            Art. 1.&ordm; - Aprovar a complementa&ccedil;&atilde;o de valor em favor do(s) projeto(s) cultural(is) relacionado(s) no(s) anexo(s) desta Portaria, para o(s) qual (is) o(s) proponente(s) fica(m) autorizado(s) a captar recursos, mediante doa&ccedil;&otilde;es ou patroc&iacute;nios, na forma prevista no &sect; 1&ordm; do artigo 18 e no artigo 26 da lei n.&ordm; 8.313, de 23 de dezembro de 1991, alterada pela Lei n&ordm; 9.874, de 23 de novembro de 1999.
+        </p>
+        <p class="saltoLinha">
+            Art. 2.&ordm; - Esta portaria entra em vigor na data de sua publica&ccedil;&atilde;o.
+        </p>
+        <p style="text-align: center">##ASS ' . $this->nome . '</p>
+    ';
+} else if($this->tipoPublicacao == 'reducao') {
+    $relatorio .= '
+        <p class="saltoLinha">
+            ##TEX O ' . $this->cargo . ', no uso das atribui&ccedil;&otilde;es legais, que lhe confere a Portaria n&ordm; ' . $this->textoPortaria . ', RESOLVE:
+        </p>
+        <p class="saltoLinha">
+            Art. 1.&ordm; - Aprovar a redu&ccedil;&atilde;o de valor em favor do(s) projeto(s) cultural(is) relacionado(s) no(s) anexo(s) desta Portaria, para o(s) qual (is) o(s) proponente(s) fica(m) autorizado(s) a captar recursos, mediante doa&ccedil;&otilde;es ou patroc&iacute;nios, na forma prevista no &sect; 1&ordm; do artigo 18 e no artigo 26 da Lei n.&ordm; 8.313, de 23 de dezembro de 1991, alterada pela Lei n&ordm; 9.874, de 23 de novembro de 1999.
+        </p>
+        <p class="saltoLinha">
+            Art. 2.&ordm; - Esta portaria entra em vigor na data de sua publica&ccedil;&atilde;o.
+        </p>
+        <p style="text-align: center">##ASS ' . $this->nome . '</p>
+    ';
+} else if($this->tipoPublicacao == 'aprovacaoPrestacao') {
+    $relatorio .= '
+        <p class="saltoLinha">
+            ##TEX O ' . $this->cargo . ', no uso da compet&ecirc;ncia delegada no art. 6&ordm; da Instru&ccedil;&atilde;o Normativa n&ordm; 1, de 24 de junho de 2013, RESOLVE:
+        </p>
+        <p class="saltoLinha">
+            Art. 1.&ordm; - Tornar p&uacute;blica a rela&ccedil;&atilde;o do(s) projeto(s) apoiado(s) por meio do mecanismo Incentivo a Projetos Culturais do Programa Nacional de Apoio &agrave; Cultura (PRONAC), instituído pela Lei n&ordm; 8.313, de 23 de dezembro de 1991, que tiveram sua(s) presta&ccedil;&atilde;o(&otilde;es) de contas aprovada(s) no &acirc;mbito desta Secretaria, em observ&acirc;ncia ao disposto no par&aacute;grafo &uacute;nico do art. 70 da Constitui&ccedil;&atilde;o Federal, do &sect; 1&ordm; do art. 20 da Lei n&ordm; 8.313, de 1991, e no art. 87 da Instru&ccedil;&atilde;o Normativa MinC n&ordm; 1, de 24 de junho de 2013, conforme anexo.
+        </p>
+        <p class="saltoLinha">
+            Art. 2.&ordm; - Informar que, nos termos do art. 83 da Instru&ccedil;&atilde;o Normativa MinC n&ordm; 01, de 2013, cabe ao proponente emitir comprovantes em favor dos doadores ou patrocinadores, bem como manter o controle documental das receitas e despesas do projeto pelo prazo de dez anos, contados da aprova&ccedil;&atilde;o da presta&ccedil;&atilde;o de contas, &agrave; disposi&ccedil;&atilde;o do MinC e dos &oacute;rg&atilde;os de controle e fiscaliza&ccedil;&atilde;o, caso seja instado a apresent&aacute;-las, conforme previsto no art. 36 da Instru&ccedil;&atilde;o Normativa RFB n&ordm; 1.131, de 21 de fevereiro de 2011.
+        </p>
+        <p class="saltoLinha">
+            Art. 3.&ordm;  Esta portaria entra em vigor na data de sua publica&ccedil;&atilde;o.
+        </p>
+        <p style="text-align: center">##ASS ' . $this->nome . '</p>
+    ';
+} else if($this->tipoPublicacao == 'reprovacaoPrestacao') {
+    $relatorio .= '
+        <p class="saltoLinha">
+            ##TEX O ' . $this->cargo . ', no uso da compet&ecirc;ncia delegada no art. 6&ordm; da Instru&ccedil;&atilde;o Normativa n&ordm; 1, de 24 de junho de 2013, RESOLVE:
+        </p>
+        <p class="saltoLinha">
+            Art. 1.&ordm; - Tornar p&uacute;blica a rela&ccedil;&atilde;o do(s) projeto(s) apoiado(s) por meio do mecanismo Incentivo a Projetos Culturais do Programa Nacional de Apoio &agrave; Cultura (PRONAC), instituído pela Lei n&ordm; 8.313, de 23 de dezembro de 1991, que tiveram sua(s) presta&ccedil;&atilde;o(&otilde;es) de contas reprovada(s) no &acirc;mbito desta Secretaria, em observ&acirc;ncia ao disposto no par&aacute;grafo &uacute;nico do art. 70 da Constitui&ccedil;&atilde;o Federal, do &sect; 1&ordm; do art. 20 da Lei n&ordm; 8.313, de 1991, e com os artigos 90, 91 e 94 da Instru&ccedil;&atilde;o Normativa MinC n&ordm; 1, de 2013, conforme anexo.
+        </p>
+        <p class="saltoLinha">
+            Art. 2.&ordm; - Aplicar a san&ccedil;&atilde;o administrativa de INABILITA&Ccedil;&Atilde;O, nos termos do art. 97 da Instru&ccedil;&atilde;o Normativa MinC n&ordm; 01, de 2013, aos proponentes relacionados no anexo abaixo, pelo prazo de 03 (tr&ecirc;s) anos, contados a partir da publica&ccedil;&atilde;o desta Portaria, que implicar&aacute;, junto ao Minist&eacute;rio da Cultura, nas restri&ccedil;&otilde;es contidas no art. 99 da referida Instru&ccedil;&atilde;o Normativa.
+        </p>
+        <p class="saltoLinha">
+            Art. 3.&ordm;  Esta portaria entra em vigor na data de sua publica&ccedil;&atilde;o.
+        </p>
+        <p style="text-align: center">##ASS ' . $this->nome . '</p>
+    ';
+} else if($this->tipoPublicacao == 'readequacao') {
+    $relatorio .= '';
+    
+} else {
+    $relatorio .= '
+        <p class="saltoLinha">
+            ##TEX O ' . $this->cargo . ', no uso de suas atribui&ccedil;&otilde;es legais, que lhe confere a Portaria n&ordm; ' . $this->textoPortaria . ', RESOLVE:
+        </p>
+        <p class="saltoLinha">
+            Art. 1.&ordm; - Aprovar o(s) projeto(s) cultural(is), relacionado(s) no(s) anexo(s) desta Portaria, para o(s) qual(is) o(s) proponente(s) fica(m) autorizado(s) a captar recursos, mediante doa&ccedil;&otilde;es ou patroc&iacute;nios, na forma prevista no &sect; 1&ordm; do artigo 18 e no artigo 26 da Lei n.&ordm; 8.313, de 23 de dezembro de 1991, alterada pela Lei n&ordm; 9.874, de 23 de novembro de 1999.
+        </p>
+        <p class="saltoLinha">
+            Art. 2.&ordm; - Esta portaria entra em vigor na data de sua publica&ccedil;&atilde;o.
+        </p>
+        <p style="text-align: center">##ASS ' . $this->nome . '</p>
+    ';
+}
+
+
+if($this->tipoPublicacao == 'readequacao') {
+    
+    $AtualIdTipoReadequacao = 0;
+    $nrArtigo = 1;
+    $relatorio .= '
+        <p class="saltoLinha">
+            ##TEX O ' . $this->cargo . ', no uso de suas atribui&ccedil;&otilde;es legais, que lhe confere a Portaria n&ordm; ' . $this->textoPortaria . ', RESOLVE:
+        </p>
+    ';
+    
+    foreach ($this->portaria as $portaria) {
+        
+        $dsSolicitacaoReadequacao = $portaria->dsSolicitacao;
+        $idTipoReadequacao = $portaria->idTipoReadequacao;
+        
+        $tbAprovacao = new Aprovacao();
+        $dadosAprovacaoInicial = $tbAprovacao->buscar(array('AnoProjeto+Sequencial=?'=>$portaria->pronac, 'TipoAprovacao=?'=>1))->current();
+        
+        if($idTipoReadequacao == 12){
+            if($AtualIdTipoReadequacao != $idTipoReadequacao){
+                $relatorio .= '
+                    <p></p>
+                    <p class="saltoLinha">
+                        Art. ' . $nrArtigo . '.&ordm; - Aprovar a(s) altera&ccedil;&atilde;o(&otilde;es) do(s) nome(s) do(s) projeto(s) abaixo relacionado(s):
+                    </p>
+                ';
+                $nrArtigo++;
+            }
+            $relatorio .= '
+                <p class="saltoLinha">
+                    PRONAC: '. $portaria->pronac .' - ' . $portaria->NomeProjeto . ', publicado na portaria n&ordm; '. $dadosAprovacaoInicial->PortariaAprovacao .' de '. Data::tratarDataZend($dadosAprovacaoInicial->DtPortariaAprovacao, 'brasileira') .', publicada no D.O.U. em '. Data::tratarDataZend($dadosAprovacaoInicial->DtPublicacaoAprovacao, 'brasileira') .', para '. $dsSolicitacaoReadequacao .'.
+                </p>
+            ';
+            $AtualIdTipoReadequacao = $idTipoReadequacao;
+            
+        } else if($idTipoReadequacao == 15){
+            if($AtualIdTipoReadequacao != $idTipoReadequacao){
+                $relatorio .= '
+                    <p></p>
+                    <p class="saltoLinha">
+                        Art. ' . $nrArtigo . '.&ordm; - Alterar o(s) resumo(s) do(s) projeto(s) abaixo relacionado(s):
+                    </p>
+                ';
+                $nrArtigo++;
+            }
+            $relatorio .= '
+                <p class="saltoLinha">
+                    PRONAC: '. $portaria->pronac .' - ' . $portaria->NomeProjeto . ', publicado na portaria n&ordm; '. $dadosAprovacaoInicial->PortariaAprovacao .' de '. Data::tratarDataZend($dadosAprovacaoInicial->DtPortariaAprovacao, 'brasileira') .', publicada no D.O.U. em '. Data::tratarDataZend($dadosAprovacaoInicial->DtPublicacaoAprovacao, 'brasileira') .'.
+                </p>
+                <p class="saltoLinha">
+                    Onde se lê: '.$portaria->ResumoProjeto.'
+                </p>
+                <p class="saltoLinha">
+                    Leia-se: '. strip_tags($dsSolicitacaoReadequacao).'
+                </p>
+            ';
+            $AtualIdTipoReadequacao = $idTipoReadequacao;
+            
+        } else if($idTipoReadequacao == 3){
+            if($AtualIdTipoReadequacao != $idTipoReadequacao){
+                $relatorio .= '
+                    <p></p>
+                    <p class="saltoLinha">
+                        Art. ' . $nrArtigo . '.&ordm; - Alterar a(s) razão(ões) social(ais) do(s) proponente(s) abaixo relacionado(s):
+                    </p>
+                ';
+                $nrArtigo++;
+            }
+            $relatorio .= '
+                <p class="saltoLinha">
+                    PRONAC: '. $portaria->pronac .' - ' . $portaria->NomeProjeto . ', publicado na portaria n&ordm; '. $dadosAprovacaoInicial->PortariaAprovacao .' de '. Data::tratarDataZend($dadosAprovacaoInicial->DtPortariaAprovacao, 'brasileira') .', publicada no D.O.U. em '. Data::tratarDataZend($dadosAprovacaoInicial->DtPublicacaoAprovacao, 'brasileira') .'.
+                </p>
+                <p class="saltoLinha">
+                    Onde se lê: '.$portaria->NomeProponente.'
+                </p>
+                <p class="saltoLinha">
+                    Leia-se: '. strip_tags($dsSolicitacaoReadequacao).'
+                </p>
+            ';
+            $AtualIdTipoReadequacao = $idTipoReadequacao;
+            
+        } else if($idTipoReadequacao == 10){
+            if($AtualIdTipoReadequacao != $idTipoReadequacao){
+                $relatorio .= '
+                    <p></p>
+                    <p class="saltoLinha">
+                        Art. ' . $nrArtigo . '.&ordm; - Alterar o(s) proponente(s) do(s) projeto(s) abaixo relacionado(s):
+                    </p>
+                ';
+                $nrArtigo++;
+            }
+            if(strlen($portaria->CgcCpf) == 14){
+                $portaria->CgcCpf = Mascara::addMaskCNPJ($portaria->CgcCpf);
+            } else {
+                $portaria->CgcCpf = Mascara::addMaskCPF($portaria->CgcCpf);
+            }
+            
+            $relatorio .= '
+                <p class="saltoLinha">
+                    PRONAC: '. $portaria->pronac .' - ' . $portaria->NomeProjeto . ', publicado na portaria n&ordm; '. $dadosAprovacaoInicial->PortariaAprovacao .' de '. Data::tratarDataZend($dadosAprovacaoInicial->DtPortariaAprovacao, 'brasileira') .', publicada no D.O.U. em '. Data::tratarDataZend($dadosAprovacaoInicial->DtPublicacaoAprovacao, 'brasileira') .'.
+                </p>
+                <p class="saltoLinha">
+                    Onde se lê: '.$portaria->CgcCpf.'
+                </p>
+                <p class="saltoLinha">
+                    Leia-se: '. $dsSolicitacaoReadequacao.'
+                </p>
+            ';
+            $AtualIdTipoReadequacao = $idTipoReadequacao;
+            
+        } else {
+            //xd('parou aqui');
+        }
+        
+    }
+    $relatorio .= '
+            <p></p>
+            <p class="saltoLinha">
+                Art. ' . $nrArtigo . '.&ordm; - Esta portaria entra em vigor na data de sua publica&ccedil;&atilde;o.
+            </p>
+            <p style="text-align: center">##ASS ' . $this->nome . '</p>';
+
+//    $txProcesso = '';
+//    $txValor = '';
+//    $txPrazoCaptacao = '';
+//    $txResumoProjeto = '<p class="saltoLinha">Resumo do Projeto:&nbsp;&nbsp;' . $resumoprojeto . '</p>';
+//    $txValor = '<p class="saltoLinha">Valor Solicitado R$:&nbsp;&nbsp;' . $this->formatarReal($ValorSolicitado) . '</p>';
+//    $txValor .= '<p class="saltoLinha">Valor Aprovado R$:&nbsp;&nbsp;' . $this->formatarReal($ValorAprovado) . '</p>';
+//    $txValor .= '<p class="saltoLinha">Valor Captado R$:&nbsp;&nbsp;' . $this->formatarReal($ValorCaptado) . '</p>';
+//    $txValor .= '<p class="saltoLinha">Valor a ser restituído ao FNC R$:&nbsp;&nbsp;' . $this->formatarReal($ValorAprovado-$ComprovacaoValidada) . '</p>';
+    
+} else {
+    
+    // inï¿½cio foreach Artigo 18
+    $existeArt18 = false;
+    $areaprojetoAnterior = 0;
+    $areaprojetoAnterior2 = 0;
+    foreach ($this->portaria as $portaria)
+    {
+        $pronac                = $portaria->pronac;
+        $nomeprojeto           = $portaria->NomeProjeto;
+        $nomeproponente        = $portaria->NomeProponente;
+        $cpfcnpj = Validacao::mascaraCPFCNPJ($portaria->CgcCpf);
+        $processo              = $portaria->Processo;
+        $ufprojeto             = $portaria->UfProjeto;
+        $cidadeprojeto         = $portaria->Cidade;
+        $vlapoio               = $portaria->AprovadoReal;
+        $iniciocaptacao        = $portaria->DataInicio;
+        $fimcaptacao           = $portaria->DataFim;
+        $resumoprojeto         = $portaria->ResumoProjeto;
+        $areaprojeto           = strtoupper(strtr($portaria->Area ,"áéíóúâêôãõàèìòùç","ÁÉÍÓÚÂÊÔÃÕÀÈÌÒÙÇ"));
+        $areaprojetoCodigo     = strtoupper(strtr($portaria->AreaCodigo ,"áéíóúâêôãõàèìòùç","ÁÉÍÓÚÂÊÔÃÕÀÈÌÒÙÇ"));
+        $situacaoprojeto       = $portaria->Situacao;
+        $artigo                = $portaria->Artigo;
+        $PortariaAprovacao     = $portaria->PortariaAprovacao;
+        $DtPortariaAprovacao   = $portaria->DataPortaria;
+        $DtPublicacaoAprovacao = $portaria->DataPublicacao;
+        $DtFimPublicacaoAprovacao = $portaria->DataFimPublicacao;
+        $ValorSolicitado        = $portaria->ValorSolicitado;
+        $ValorAprovado          = $portaria->ValorAprovado;
+        $ValorCaptado           = $portaria->ValorCaptado;
+        $ComprovacaoValidada    = $portaria->ComprovacaoValidada;
+
+        if($areaprojetoCodigo != $areaprojetoAnterior){
+            $linhaArea = '<p class="saltoLinha_primeira">&Aacute;REA:&nbsp;&nbsp;' . $areaprojetoCodigo . '&nbsp;&nbsp;' . $areaprojeto . '&nbsp;&nbsp;(' . $artigo . ' , &sect;  1&ordm; )</p>';
+        } else {
+            $linhaArea = '';
+        }
+
+        if($this->tipoPublicacao == 'prorrogacao'){
+            $txProcesso = '';
+            $txValor = '';
+            $txPrazoCaptacao = '<p class="saltoLinha">Prazo de Capta&ccedil;&atilde;o:&nbsp;&nbsp;' . $iniciocaptacao . '&nbsp;&nbsp;&agrave;&nbsp;&nbsp;' . $fimcaptacao . '</p>';
+            $txResumoProjeto = '';
+        } else if($this->tipoPublicacao == 'complementacao'){
+            $txProcesso = '';
+            $txValor = '<p class="saltoLinha">Valor Complementado:&nbsp;&nbsp;' . $this->formatarReal($vlapoio) . '</p>';
+            $txPrazoCaptacao = '';
+            $txResumoProjeto = '';
+        } else if($this->tipoPublicacao == 'reducao'){
+            $txProcesso = '';
+            $txValor = '<p class="saltoLinha">Valor Reduzido:&nbsp;&nbsp;' . $this->formatarReal($vlapoio) . '</p>';
+            $txPrazoCaptacao = '';
+            $txResumoProjeto = '';
+        } else if($this->tipoPublicacao == 'aprovacaoPrestacao'){
+            $txProcesso = '';
+            $txValor = '';
+            $txPrazoCaptacao = '';
+            $txResumoProjeto = '<p class="saltoLinha">Resumo do Projeto:&nbsp;&nbsp;' . $resumoprojeto . '</p>';
+            $txValor = '<p class="saltoLinha">Valor Solicitado:&nbsp;&nbsp;' . $this->formatarReal($ValorSolicitado) . '</p>';
+            $txValor .= '<p class="saltoLinha">Valor Aprovado:&nbsp;&nbsp;' . $this->formatarReal($ValorAprovado) . '</p>';
+            $txValor .= '<p class="saltoLinha">Valor Captado:&nbsp;&nbsp;' . $this->formatarReal($ValorCaptado) . '</p>';
+        } else if($this->tipoPublicacao == 'reprovacaoPrestacao'){
+            $txProcesso = '';
+            $txValor = '';
+            $txPrazoCaptacao = '';
+            $txResumoProjeto = '<p class="saltoLinha">Resumo do Projeto:&nbsp;&nbsp;' . $resumoprojeto . '</p>';
+            $txValor = '<p class="saltoLinha">Valor Solicitado:&nbsp;&nbsp;' . $this->formatarReal($ValorSolicitado) . '</p>';
+            $txValor .= '<p class="saltoLinha">Valor Aprovado:&nbsp;&nbsp;' . $this->formatarReal($ValorAprovado) . '</p>';
+            $txValor .= '<p class="saltoLinha">Valor Captado:&nbsp;&nbsp;' . $this->formatarReal($ValorCaptado) . '</p>';
+            $txValor .= '<p class="saltoLinha">Valor a ser restituído ao FNC:&nbsp;&nbsp;' . $this->formatarReal($ValorAprovado-$ComprovacaoValidada) . '</p>';
+        } else {
+            $txProcesso = '<p class="saltoLinha">Processo:&nbsp;&nbsp;' . $processo . '</p>';
+            $txValor = '<p class="saltoLinha">Valor Aprovado:&nbsp;&nbsp;' . $this->formatarReal($vlapoio) . '</p>';
+            $txPrazoCaptacao = '<p class="saltoLinha">Prazo de Capta&ccedil;&atilde;o:&nbsp;&nbsp;' . $DtPublicacaoAprovacao . '&nbsp;&nbsp;&agrave;&nbsp;&nbsp;' . $DtFimPublicacaoAprovacao . '</p>';
+            $txResumoProjeto = '<p class="saltoLinha">Resumo do Projeto:&nbsp;&nbsp;' . $resumoprojeto . '</p>';
+        }
+
+        if ($artigo == "Artigo 18")
+        {
+            $tituloAnexo = (($existeArt18 == true) ? '' : '<p id="TituloGeral">ANEXO I</p>');
+            $relatorio .= $tituloAnexo . $linhaArea .'
+                            <p class="saltoLinha">' . $pronac . '&nbsp;-&nbsp;' . $nomeprojeto . '</p>
+                            <p class="saltoLinha">' . htmlentities($nomeproponente) . '</p>
+                            <p class="saltoLinha">CNPJ/CPF:&nbsp;&nbsp;' . $cpfcnpj . '</p>
+                            '. $txProcesso .'
+                            <p class="saltoLinha">Cidade:&nbsp;&nbsp;' . htmlentities($cidadeprojeto) . ' - ' . $ufprojeto . ';</p>
+                            '. $txValor .'
+                            '. $txPrazoCaptacao .'
+                            '. $txResumoProjeto .'
+            ';
+            $existeArt18 = true;
+        } // fecha if
+        $areaprojetoAnterior = $areaprojetoCodigo;
+    } // fim foreach Artigo 18
+    // inï¿½cio foreach Artigo 26
+    $existeArt26 = false;
+    foreach ($this->portaria as $portaria)
+    {
+        $pronac = $portaria->pronac;
+        $nomeprojeto = $portaria->NomeProjeto;
+        $nomeproponente = $portaria->NomeProponente;
+        $cpfcnpj = Validacao::mascaraCPFCNPJ($portaria->CgcCpf);
+        $processo = $portaria->Processo;
+        $ufprojeto = $portaria->UfProjeto;
+        $cidadeprojeto = $portaria->Cidade;
+        $vlapoio = $portaria->AprovadoReal;
+        $iniciocaptacao = $portaria->DataInicio;
+        $fimcaptacao = $portaria->DataFim;
+        $resumoprojeto = $portaria->ResumoProjeto;
+        $areaprojeto = strtoupper(strtr($portaria->Area ,"áéíóúâêôãõàèìòùç","ÁÉÍÓÚÂÊÔÃÕÀÈÌÒÙÇ"));
+        $areaprojetoCodigo = strtoupper(strtr($portaria->AreaCodigo ,"áéíóúâêôãõàèìòùç","ÁÉÍÓÚÂÊÔÃÕÀÈÌÒÙÇ"));
+        $situacaoprojeto = $portaria->Situacao;
+        $artigo = $portaria->Artigo;
+        $PortariaAprovacao = $portaria->PortariaAprovacao;
+        $DtPortariaAprovacao = $portaria->DataPortaria;
+        $DtPublicacaoAprovacao = $portaria->DataPublicacao;
+        $DtFimPublicacaoAprovacao = $portaria->DataFimPublicacao;
+        $ValorSolicitado = $portaria->ValorSolicitado;
+        $ValorAprovado = $portaria->ValorAprovado;
+        $ValorCaptado = $portaria->ValorCaptado;
+        $ComprovacaoValidada = $portaria->ComprovacaoValidada;
+
+        if($areaprojetoCodigo != $areaprojetoAnterior2){
+            $linhaArea = '<p class="saltoLinha_primeira">&Aacute;REA:&nbsp;&nbsp;' . $areaprojetoCodigo . '&nbsp;&nbsp;' . $areaprojeto . '&nbsp;&nbsp;(' . $artigo . ' , &sect;  1&ordm; )</p>';
+        } else {
+            $linhaArea = '';
+        }
+
+        if($this->tipoPublicacao == 'prorrogacao'){
+            $txProcesso = '';
+            $txValor = '';
+            $txPrazoCaptacao = '<p class="saltoLinha">Prazo de Capta&ccedil;&atilde;o:&nbsp;&nbsp;' . $iniciocaptacao . '&nbsp;&nbsp;&agrave;&nbsp;&nbsp;' . $fimcaptacao . '</p>';
+            $txResumoProjeto = '';
+        } else if($this->tipoPublicacao == 'complementacao'){
+            $txProcesso = '';
+            $txValor = '<p class="saltoLinha">Valor Complementado:&nbsp;&nbsp;' . $this->formatarReal($vlapoio) . '</p>';
+            $txPrazoCaptacao = '';
+            $txResumoProjeto = '';
+        } else if($this->tipoPublicacao == 'reducao'){
+            $txProcesso = '';
+            $txValor = '<p class="saltoLinha">Valor Reduzido:&nbsp;&nbsp;' . $this->formatarReal($vlapoio) . '</p>';
+            $txPrazoCaptacao = '';
+            $txResumoProjeto = '';
+        } else if($this->tipoPublicacao == 'aprovacaoPrestacao'){
+            $txProcesso = '';
+            $txValor = '';
+            $txPrazoCaptacao = '';
+            $txResumoProjeto = '<p class="saltoLinha">Resumo do Projeto:&nbsp;&nbsp;' . $resumoprojeto . '</p>';
+            $txValor = '<p class="saltoLinha">Valor Solicitado:&nbsp;&nbsp;' . $this->formatarReal($ValorSolicitado) . '</p>';
+            $txValor .= '<p class="saltoLinha">Valor Aprovado:&nbsp;&nbsp;' . $this->formatarReal($ValorAprovado) . '</p>';
+            $txValor .= '<p class="saltoLinha">Valor Captado:&nbsp;&nbsp;' . $this->formatarReal($ValorCaptado) . '</p>';
+        } else if($this->tipoPublicacao == 'reprovacaoPrestacao'){
+            $txProcesso = '';
+            $txValor = '';
+            $txPrazoCaptacao = '';
+            $txResumoProjeto = '<p class="saltoLinha">Resumo do Projeto:&nbsp;&nbsp;' . $resumoprojeto . '</p>';
+            $txValor = '<p class="saltoLinha">Valor Solicitado:&nbsp;&nbsp;' . $this->formatarReal($ValorSolicitado) . '</p>';
+            $txValor .= '<p class="saltoLinha">Valor Aprovado:&nbsp;&nbsp;' . $this->formatarReal($ValorAprovado) . '</p>';
+            $txValor .= '<p class="saltoLinha">Valor Captado:&nbsp;&nbsp;' . $this->formatarReal($ValorCaptado) . '</p>';
+            $txValor .= '<p class="saltoLinha">Valor a ser restituído ao FNC:&nbsp;&nbsp;' . $this->formatarReal($ValorAprovado-$ComprovacaoValidada) . '</p>';
+        } else {
+            $txProcesso = '<p class="saltoLinha">Processo:&nbsp;&nbsp;' . $processo . '</p>';
+            $txValor = '<p class="saltoLinha">Valor Aprovado:&nbsp;&nbsp;' . $vlapoio . '</p>';
+            $txPrazoCaptacao = '<p class="saltoLinha">Prazo de Capta&ccedil;&atilde;o:&nbsp;&nbsp;' . $DtPublicacaoAprovacao . '&nbsp;&nbsp;&agrave;&nbsp;&nbsp;' . $DtFimPublicacaoAprovacao . '</p>';
+            $txResumoProjeto = '<p class="saltoLinha">Resumo do Projeto:&nbsp;&nbsp;' . $resumoprojeto . '<p/>';
+        }
+
+        if ($artigo == "Artigo 26")
+        {
+            $tituloAnexo = (($existeArt26 == true) ? '' : '<p id="TituloGeral">ANEXO II</p>');
+            $relatorio .= $tituloAnexo . $linhaArea . '
+                            <p class="saltoLinha">' . $pronac . '&nbsp;-&nbsp;' . $nomeprojeto . '</p>
+                            <p class="saltoLinha">' . htmlentities($nomeproponente) . '</p>
+                            <p class="saltoLinha">CNPJ/CPF:&nbsp;&nbsp;' . $cpfcnpj . '</p>
+                            '. $txProcesso .'
+                            <p class="saltoLinha">Cidade:&nbsp;&nbsp;' . htmlentities($cidadeprojeto) . ' - ' . $ufprojeto . ';</p>
+                            '. $txValor .'
+                            '. $txPrazoCaptacao .'
+                            '. $txResumoProjeto .'
+                            ';
+            $existeArt26 = true;
+        } // fecha if
+        $areaprojetoAnterior2 = $areaprojetoCodigo;
+    } // fim foreach Artigo 26
+}
+$relatorio .= '</div></body>
+</html>';
+//echo $relatorio;
+//die;
+$rtf = new PDF($relatorio, 'rtf', 'portaria','portaria'.$this->portaria[0]->PortariaAprovacao);
+echo $rtf->gerarRelatorio();
+?>

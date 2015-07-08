@@ -1,0 +1,223 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.btn_imprimir').click(function(){
+            $('#addCampoXls').remove();
+            $('#formImpressao').submit();
+        });
+        
+        $('.btn_xls').click(function(){
+            $('#addCampoXls').remove();
+            $('#formImpressao').append('<input id="addCampoXls" type="hidden" name="xls" value="1">');
+            $('#formImpressao').submit();
+        });
+        
+        $('.verinconsistencia').click(function(){
+            var url = $(this).attr('url-inconsistencia');
+            window.open(url, '_blank');
+        });
+    });
+</script>
+    
+<?php require_once 'scripts/controlarmovimentacaobancaria/inc/menu.inc.php'; ?>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'), '', true); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'liberarcontabancaria', 'action' => 'index'), '', true); ?>" title="Ir para In&iacute;cio">Movimenta&ccedil;&atilde;o banc&aacute;ria</a></li>
+        <li class="last">Relat&oacute;rio de inconsist&ecirc;ncias de conta capta&ccedil;&atilde;o</li>
+    </ul>
+</div>
+
+<div id="msgAlerta" class="sumir centro"></div>
+<div id="titulo">
+    <div>Relat&oacute;rio de inconsist&ecirc;ncias de conta capta&ccedil;&atilde;o <span class="voltar"><a href="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => '')); ?>" title="Ir para página anterior">Voltar</a></span></div>
+</div>
+
+<div id="conteudo">
+    <form id="formpronac" method="get">
+        <table class="tabela">
+            <tr>
+                <td width="100">PRONAC</td>
+                <td>
+                    <input id="pronac" type="text" name="pronac" class="input_simples" onkeypress="mascara(this, format_num);" maxlength="7" value="<?php echo isset($this->pronac) ? $this->pronac : ''; ?>" />
+                    <input type="hidden" name="pag" value="1">
+                    <input type="submit" class="btn_localizar" value="" />
+                </td>
+            </tr>
+        </table>
+    </form>
+    
+    <?php if(count($this->dados)>0){ ?>
+    <!-- ============ PAGINAÇÃO ============ -->
+    <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+        <tbody>
+            <tr>
+                <td align="center">
+                <form name="form1" id="form1" action="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'listar-inconsistencias'));?>" method="get">
+                    <?php if($this->paginacao['pag']>1) { ?>
+                    <input class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'listar-inconsistencias')).'?pag=1'."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronac='.$this->pronac; ?>'">
+                    <?php } ?>
+                    <input id="btn_p_anterior" type="button"
+                    <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                    <?php }else { ?>
+                           class="btn_p_anterior" onclick="location.href='<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'listar-inconsistencias')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronac='.$this->pronac; ?>'"
+                    <?php } ?>>
+                    <input id="btn_p_proximo" type="button"
+                           <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                           class="btn_p_proximo-off"
+                    <?php }else { ?>
+                           class="btn_p_proximo" onclick="location.href='<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'listar-inconsistencias')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronac='.$this->pronac; ?>'"
+                    <?php } ?>>
+                    <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                    <input class="btn_ultimo" id="btn_ultimo" type="button"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'listar-inconsistencias')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronac='.$this->pronac; ?>'">
+                    <?php } ?>
+                    Pág.:<select name="pag" id="pag" onchange="$('#form1').submit()" class="input_simples">
+                        <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                        <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                        <?php endfor; ?>
+                    </select>
+                    &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>"><input type="submit" class="btn_recarregar" value="">
+                    <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                    <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                    <!--<input type="hidden" name="pag" value="1">-->
+                    <input type="hidden" name="pronac" value="<?php echo $this->pronac;?>">
+                    <input type="button" class="btn_imprimir">
+                    <input type="button" class="btn_xls">
+                 </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <center>
+        <?php
+            echo $this->paginacao['inicio']." a ";
+            echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+            echo " de ". $this->paginacao['total']. " Projetos listados";
+        ?>
+    </center>
+    <!-- ========== FIM PAGINAÇÃO ========== -->
+    <?php } ?>
+    
+    <?php if($this->qtdRegistros > 0){ ?>
+    <table class="tabela tablesorter">
+        <thead>
+            <tr class="titulo_tabela">
+                <th>PRONAC</th>
+                <th>Nome do Projeto</th>
+                <th>Proponente</th>
+                <th>Ag&ecirc;ncia</th>
+                <th>Conta</th>
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            foreach ($this->dados as $projeto) {
+                $inconsistenciaUrl = $this->url(array(
+                    'controller' => 'movimentacaodeconta', 'action' => 'listar-inconsistencia-detalhe', 'idPronac' => $projeto->IdPRONAC
+                ));
+                ?>
+                <tr>
+                    <td align="center">
+                        <?php if (!empty($projeto->pronac)) { ?>
+                            <a target="_blank" href='<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index')) . "?idPronac={$projeto->IdPRONAC}" ?>'><?php echo $projeto->pronac; ?></a>
+                        <?php } else { ?>
+                            Conta sem PRONAC
+                        <?php } ?>
+                    </td>
+                    <td>
+                        <?php
+                        if (!empty($projeto->pronac)) {
+                            echo $projeto->NomeProjeto;
+                        } else {
+                            echo 'Conta sem Nome de Projeto';
+                        }
+                        ?>
+                    </td>
+                    <td align="center"><?php echo Validacao::mascaraCPFCNPJ($projeto->nrCpfCnpjProponente); ?></td>
+                    <td align="center"><?php echo!empty($projeto->Agencia) ? $projeto->Agencia : '<em>Não informada</em>'; ?></td>
+                    <td align="center"><?php echo!empty($projeto->ContaBloqueada) ? $projeto->ContaBloqueada : '<em>Não informada</em>'; ?></td>
+                    <td align="center">
+                        <input type="button" url-inconsistencia="<?php echo $inconsistenciaUrl; ?>" class="btn_ver verinconsistencia" />
+                    </td>
+                </tr>
+            <?php } ?>
+        </tbody>
+    </table>
+    
+    <?php if(count($this->dados)>0){ ?>
+    
+        <?php if($this->qtdRegistros > 10) { //echo $this->dados; ?>
+        <center>
+            <?php
+                echo $this->paginacao['inicio']." a ";
+                echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+                echo " de ". $this->paginacao['total'];
+            ?>
+        </center>
+        <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+            <tbody>
+                <tr>
+                    <td align="center">
+                    <form name="form2" id="form2" action="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'listar-inconsistencias'));?>" method="get">
+                        <?php if($this->paginacao['pag']>1) { ?>
+                        <input class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'listar-inconsistencias')).'?pag=1'."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronac='.$this->pronac; ?>'">
+                        <?php } ?>
+                        <input id="btn_p_anterior" type="button"
+                        <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                        <?php }else { ?>
+                               class="btn_p_anterior" onclick="location.href='<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'listar-inconsistencias')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronac='.$this->pronac; ?>'"
+                        <?php } ?>>
+                        <input id="btn_p_proximo" type="button"
+                               <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                               class="btn_p_proximo-off"
+                        <?php }else { ?>
+                               class="btn_p_proximo" onclick="location.href='<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'listar-inconsistencias')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronac='.$this->pronac; ?>'"
+                        <?php } ?>>
+                        <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                        <input class="btn_ultimo" id="btn_ultimo" type="button"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'listar-inconsistencias')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronac='.$this->pronac; ?>'">
+                        <?php } ?>
+                        Pág.:<select name="pag" id="pag" onchange="$('#form2').submit()" class="input_simples">
+                            <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                            <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                            <?php endfor; ?>
+                        </select>
+                        &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>"><input type="submit" class="btn_recarregar" value="">
+                        <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                        <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                        <!--<input type="hidden" name="pag" value="1">-->
+                        <input type="hidden" name="pronac" value="<?php echo $this->pronac;?>">
+                        <input type="button" class="btn_imprimir">
+                        <input type="button" class="btn_xls">
+                     </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    <?php } } ?>
+
+
+    <?php } else { ?>
+    <table class="tabela">
+        <tr>
+            <td align="center">Nenhum registro encontrado.</td>
+        </tr>
+    </table>
+    <?php } ?>
+    <br clear="all" />
+    
+    <form target="_blank" class="form" name="formImpressao" id="formImpressao" method="post" action='<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'imprimir-lista-inconsistencias-captacao')); ?>'>
+        <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+        <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+        <input type="hidden" name="pag" value="<?php echo $this->paginacao['pag'];?>">
+        <input type="hidden" name="qtde" value="<?php echo $this->intTamPag;?>">
+        <input type="hidden" name="pronac" value="<?php echo $this->pronac;?>">
+    </form>
+    
+</div>
+<div id="rodapeConteudo"><span></span></div>
+<br clear="all" />

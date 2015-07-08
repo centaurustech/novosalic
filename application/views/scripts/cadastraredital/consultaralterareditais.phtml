@@ -1,0 +1,53 @@
+<?php $i = 1;?> 
+<div id="mensagemGeral"></div>
+<div id="breadcrumb">
+
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index')); ?>">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'cadastraredital', 'action' => ''), '', true); ?>" title="Ir para Edital">Edital</a></li>
+        <li class="last">Consultar Edital</li>
+    </ul>
+
+</div>
+
+<div id="titulo">
+    <div>Consultar edital<span></span> <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+
+</div>
+
+<div id="conteudo">
+    <fieldset><legend>Informações Edital</legend>
+    <table class="tabela">
+        <tr>
+            <th>Nº Edital</th>
+            <th>Nome do Edital</th>
+            <th>Data de Cadastro</th>
+            <th>Célula Orçamentária</th>
+            <th>Objeto</th>
+        </tr>
+        <?php foreach ($this->buscaEdital as $edital) { ?>
+            <tr>
+                <td valign="top" nowrap="nowrap" bgcolor="" align="center" rowspan="1"><font face="Trebuchet MS, sans-serif" color="#333333" size="2"><?php echo $edital['NrEdital']; ?></font></td>
+                <td valign="top" bgcolor="" align="left" rowspan="1"><font face="Trebuchet MS, sans-serif" color="#333333" size="2">
+                    <a onmouseout="nm_apaga_hint()" onmouseover="nm_mostra_hint(this, event, '')" href="<?php echo $this->url(array('controller' => 'cadastraredital', 'action' => 'dadosgerais')); ?>?idEdital=<?php echo $edital['idEdital'] ?>&idUsuario=<?php echo $edital['Logon']?>&nrFormDocumento=<?php echo $edital['nrFormDocumento'] ?>&nrVersaoDocumento=<?php echo $edital['nrVersaoDocumento'] ?>"><font color="#8BA3B9"><?php echo $edital['nmFormDocumento']; ?></font></a>
+                    </font></td>
+                <td valign="top" nowrap="nowrap" bgcolor="" align="center" rowspan="1"><font face="Trebuchet MS, sans-serif" color="#333333" size="2"><?php echo $edital['DtEdital']; ?></font></td>
+                <td valign="top" bgcolor="" align="center" rowspan="1"><font face="Trebuchet MS, sans-serif" color="#333333" size="2"><?php echo $edital['CelulaOrcamentaria']; ?></font></td>
+                <td valign="top" bgcolor="" align="left" rowspan="1">
+                    <font face="Trebuchet MS, sans-serif" color="#333333" size="2">
+                    <?php
+                    echo $edital['Objeto'];
+                    $i++;
+                    ?>
+                    </font>
+                </td>
+            </tr>
+<?php } ?>
+    </table>
+     </fieldset>
+</div>
+<!-- ========== INï¿½CIO RODAPï¿½ DO CONTEï¿½DO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+
+<!-- ========== FIM RODAPï¿½ DO CONTEï¿½DO ========== -->
+<br clear="all" />

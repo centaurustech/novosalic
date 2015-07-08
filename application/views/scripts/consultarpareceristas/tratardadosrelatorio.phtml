@@ -1,0 +1,78 @@
+<?php
+if(!$this->codPerfil != 93)
+{
+	require_once "scripts/consultarpareceristas/inc/menu.inc.php";
+}
+?>
+<script>
+    function abrir_fechar(id_div){
+        $('#'+id_div).toggle();
+        $('#maiss'+id_div).toggle().focus();
+        $('#menoss'+id_div).toggle().focus();
+    }
+
+    $(function() {
+        $.datepicker.regional['pt-BR'] = {
+            closeText: 'Fechar',
+            prevText: '&#x3c;Anterior',
+            nextText: 'Pr&oacute;ximo&#x3e;',
+            currentText: 'Hoje',
+            monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+            dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            weekHeader: 'Sm',
+            dateFormat: 'dd/mm/yy',
+            firstDay: 0,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: ''};
+        $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+        $("#datainicio").datepicker($.datepicker.regional['pt-BR']);
+        $("#datafim").datepicker($.datepicker.regional['pt-BR']);
+    });
+
+    function datas(valor) {
+        if(valor == 1) {
+            $("#datafim").val('');
+            $("#datafim").hide();
+            $("#ldata").hide();
+        } else {
+            $("#datafim").show();
+            $("#ldata").show();
+        }
+    }
+</script>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''), '', true); ?>" title="Ir para Página Inicial">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'consultarpareceristas', 'action' => 'consultardadospareceristas'), '', true); ?>" title="Ir para Página Inicial">Consultar dados dos Pareceristas</a></li>
+		<li class="last">Resultado da consulta</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<div id="titulo">
+    <div>Resultado da consulta<span></span> <span class="voltar"><a href="javascript:history.back();">Voltar</a></span></div>
+</div>
+<div id="conteudo" align="left">
+    <br />
+    <?php 
+        if($this->perfilAtual == 'CoordenadorParecerista') {
+            require_once "scripts/consultarpareceristas/subInterface/coordenadorParecerista.php";
+        } else if($this->perfilAtual == 'CoordenadorPRONAC' && $this->prod) {
+            require_once "scripts/consultarpareceristas/relatoriomensaldepagamento.phtml";
+        } else if($this->perfilAtual == 'CoordenadorPRONAC'){ 
+        	require_once "scripts/consultarpareceristas/subInterface/coordenadorPronac.php";
+        }else if($this->perfilAtual == 'Parecerista' && $this->prod) {
+        	require_once "scripts/consultarpareceristas/tratardadosprodutos.phtml";
+        }else if($this->perfilAtual == 'Parecerista'){
+        	require_once "scripts/consultarpareceristas/subInterface/parecerista.php";
+        }
+    ?>
+    <br />
+</div>
+<div id="rodapeConteudo"><span></span></div>
+<br clear="all" />

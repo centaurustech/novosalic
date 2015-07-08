@@ -1,0 +1,32 @@
+<?php
+
+$this->url(array('controller' => 'Analisarprojetoparecer', 'action' => 'projetosprodutos'));
+$primeiro = 0;
+echo "<div style='margin: 0;margin-left: 52px; width: 90%;  padding: 0px;'>";
+if (isset($this->ProjetosProdutos['projetos'])) {
+    echo "<table class='tabelaRelatorio' cellspacing='1' style='margin: 0;width: 100%;  padding: 0px;'>";
+    $ProjetosProdutos = $this->ProjetosProdutos['projetos'];
+    if (count($ProjetosProdutos) > 0) {
+        foreach ($ProjetosProdutos as $idProjeto => $dsProjeto) {
+            $titulo = "<tr>";
+            $conteudo = "<tr>";
+            foreach ($dsProjeto as $t => $c) {
+                $titulo .= "<th>{$t}</th>";
+                $conteudo .= "<td>{$c}</td>";
+            }
+            $titulo .= "</tr>";
+            $conteudo .= "</tr>";
+            if ($primeiro == 0) {
+                echo $titulo;
+            }
+            echo $conteudo;
+            $primeiro++;
+        }
+    }
+    echo "</table>";
+} else {
+    echo '<table class="tabela" cellspacing="1" style="margin: 0;width: 100%;  padding: 0px;"><th>Nenhum Resultado</th></table>';
+}
+include 'inc/paginacao.inc.php';
+echo "</div";
+?>

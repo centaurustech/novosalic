@@ -1,0 +1,163 @@
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/listarsolicitacoestecnico.js"></script>
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl(); ?>/public/css/formularioAltProjeto.css" media="screen" />
+<table class="tabela">
+    <tr>
+        <td align="center" class="titulo_tabela">Solicitação de Alteração do Nome do Projeto</td>
+    </tr>
+    <tr align="center">
+        <th bgcolor="#ccc111">Identificação</th>
+    </tr>
+</table>
+<table class="tabela" style="margin:5px auto; width:1000px;">
+    <tr>
+        <td>PRONAC:</td>
+        <td>Nome do Projeto:</td>
+        <td>CNPJ/CPF</td>
+        <td>Proponente</td>
+    </tr>
+
+    <tr>
+        <td><?php echo $this->escape($this->resultConsulta['pronac']); ?></td>
+        <td><?php echo $this->escape($this->resultConsulta['NomeProjeto']); ?></td>
+        <td><?php echo $this->escape(Validacao::mascaraCPFCNPJ($this->resultConsulta['CgcCpf'])); ?></td>
+        <td><?php echo $this->escape($this->resultConsulta['proponente']); ?></td>
+    </tr>
+</table>
+
+<table class="tabela">
+    <th>Informações do Projeto</th>
+    <tr>
+        <td align="center">Objetivos do Projeto:</td>
+    </tr>
+    <td style="width: 100%;">
+        <textarea rows="10"><?php echo $this->resultAlteracaoNomeProjeto['Objetivos']; ?></textarea>
+    </td>
+</table>    
+
+
+<table class="tabela" style="margin:5px auto;">
+
+    <th>Solicitação de Alteração do Nome do Projeto</th>
+    <tr>
+        <td>Novo Nome do Projeto: <?php echo $this->escape($this->resultAlteracaoNomeProjeto['nmProjeto']); ?></td>
+    </tr>
+    <tr>
+        <td>
+            Justificativa:
+            <textarea><?php echo $this->resultAlteracaoNomeProjeto['dsJustificativa']; ?></textarea>
+        </td>
+    </tr>
+    <tr>
+        <td>
+             Anexos:
+             <?php
+            if(count($this->resultArquivo) > 0) {
+            foreach ($this->resultArquivo as $arquivo)
+            {
+            ?>
+                <td style="width: 25%; padding-left: 5%; text-decoration: underline;"><a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id=<?php echo $arquivo->idArquivo; ?>"><?php echo $arquivo->nmarquivo ?></a>
+            <?php
+                }
+            }
+            ?>
+        </td>
+    </tr>
+</table>  
+
+<table class="tabela" style="margin:5px auto;">
+    <tr>
+
+
+        <th>
+            Coment&aacute;rios para o Parecer ou Diligencia
+        </th>
+
+    </tr>
+    <tr>
+        <!-- ========== EDITOR 1 ========== -->
+
+
+
+
+        <td>
+            Comentários:
+            <label for="editor1"> </label>
+            <textarea cols="80" id="editor1" name="editor1" rows="10">&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;&lt;p&gt;Digite seu texto aqui...&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</textarea>
+            <script type="text/javascript">
+                //<![CDATA[
+                CKEDITOR.replace('editor1', { fullPage : true });
+                //]]>
+            </script>
+            <?php
+            /*$justificativa = "";
+            foreach ($this->resultParecerTecnico as $parecerTecnico)
+            {
+                $justificativa .= "<div style='border: 1px solid black;'>" . $parecerTecnico->dtparecertecnico . "/" . $parecerTecnico->nometecnico . " - " . $parecerTecnico->dsparecertecnico . "</div>";
+            }
+               echo $justificativa;*/
+            ?>
+        </td>
+
+
+
+    </tr>
+</table>
+
+    <form name="formularioAprovacao" method="post" action='<?php echo $this->url(array('controller' => 'verificaralteracaocoordenador', 'action' => 'solaltnomproj')); ?>'>
+<!--<table class="tabela" style="margin:5px auto; width:1000px;">
+
+
+        <tr>
+
+
+            <th>
+                Comentários do Coordenador
+            </th>
+
+        </tr>
+
+        <div class="dados">
+            <div style="width: 100%; float: left;">
+                <div id="editor" style="background-color: #ffffff; min-height: 100px;"></div>
+                <script type="text/javascript">
+                    $('#editor').de77_wysiwyg();
+                </script>
+            </div>
+
+            </table>
+
+            <table class="tabela" style="margin:5px auto; width:1000px;">
+                <input type="hidden" value="" name="dsJustificativaAvaliacao" id="dsJustificativaAvaliacao" />
+                <input type="hidden" value="<?php //echo $this->escape($this->resultConsulta[0]->idpedidoalteracao); ?>" name="idpedidoalteracao" />
+                <input type="hidden" value="<?php //echo $this->escape($this->resultConsulta[0]->dtParecerTecnico); ?>" name="dtparecertecnico" />
+                <input type="hidden" value="" name="stAprovacao" id="stAprovacao" />
+
+            </table>
+-->
+           
+
+                <?php
+                $disabled = '';
+                /*if ($this->StatusAvalicacaoPedidoAlteracao($this->resultConsulta[0]->idpedidoalteracao, true) != 2)
+                    $disabled = "disabled='disabled'";*/
+                ?>
+                
+                <input <?php echo $disabled; ?> id="btParecer" name="btParecer" value="Parecer" type="button" />
+                <input <?php echo $disabled; ?> id="btDiligenciar" name="btDiligenciar" value="Diligenciar" type="button"  />
+                <input <?php echo $disabled; ?> id="btCancelar" value="Cancelar" type="button" />
+
+<!--            <textarea id="textarea1" name="textarea1" style="height: 170px; width: 500px;"></textarea>
+            <script type="text/javascript">
+                generate_wysiwyg('textarea1');
+            </script> -->
+
+
+
+    </form>
+<script type="text/javascript">
+    $('#btDiligenciar').click(function(){
+        $('[name=formularioAprovacao]').submit();
+    });
+</script>

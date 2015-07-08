@@ -1,0 +1,695 @@
+<?php 
+include_once 'scripts/prototipos/propostas/inc/menu.inc.php';
+?>
+<!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'propostas')); ?>" title="Ir para Propostas">Propostas</a></li>
+        <li class="last">Dados da Proposta</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INICIO TITULO ========== -->
+<div id="titulo">
+    <div>DADOS DA PROPOSTA<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+<div id="conteudo">
+
+    <script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/ckeditor.js"></script>
+    <script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.js"></script>
+    <link type="text/css" rel="stylesheet" href="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.css" />
+
+    <script>
+        $(function() {
+            $( "#tabs" ).tabs({
+                ajaxOptions: {
+                    error: function( xhr, status, index, anchor ) {
+                        $( anchor.hash ).html(
+                        "Couldn't load this tab. We'll try to fix this as soon as possible. " +
+                            "If this wouldn't be a demo." );
+                    }
+                }
+            });
+        });
+
+        function mostrar_aba(item)
+        {
+            $('#identificacao, #objetivos, #justificativa, #acessibilidade, #democratizacao, #etapas, #fichatecnica, #detalheproposta').hide();
+            $('#' + item).show();
+            CKEDITOR.replaceAll();
+        }
+    </script>
+
+
+    <div class="demo" >
+
+        <div id="tabs" style="border: 0px; margin: 1em;">
+            <ul>
+                <li><a href="#identificacao" onclick="mostrar_aba('identificacao');">IDENTIFICA&Ccedil;&Atilde;O</a></li>
+                <li><a href="#objetivos" onclick="mostrar_aba('objetivos');">OBJETIVOS</a></li>
+                <li><a href="#justificativa" onclick="mostrar_aba('justificativa');">JUSTIFICATIVA</a></li>
+                <li><a href="#acessibilidade" onclick="mostrar_aba('acessibilidade');">ACESSIBILIDADE</a></li>
+                <li><a href="#democratizacao" onclick="mostrar_aba('democratizacao');">DEMOCRATIZA&Ccedil;&Atilde;O</a></li>
+                <li><a href="#etapas" onclick="mostrar_aba('etapas');">ETAPAS</a></li>
+                <li><a href="#fichatecnica" onclick="mostrar_aba('fichatecnica');">FICHA T&Eacute;CNICA </a></li>
+                <li><a href="#detalheproposta" onclick="mostrar_aba('detalheproposta');">DETALHAMENTO DE PROPOSTA</a></li>
+            </ul>
+
+            <div id="identificacao">
+                <table class="tabela" cellpadding="1" cellspacing="1">
+                    <tr class="titulo_tabela">
+                        <th colspan="5">Identifica&ccedil;&atilde;o da Proposta Cultural</th>
+                    </tr>
+                    <tr>
+                        <td class="esquerda" colspan="4"><label for="proponente" ><b>Proponente</b></label></td>
+                        <td class="esquerda" colspan="1" ><label for="nrproposta"><b>N&uacute;mero da Proposta</b></label></td>
+                    </tr>
+                    <tr class="esquerda">
+                        <td colspan="5"><label for="nomeproposta" ><b>Nome da Proposta Cultural</b></label>
+                            <input type="text" class="input_simples" name="nomeproposta" id="nomeproposta" maxlength="500"  style="width:50em;"/>
+                        </td>
+                    </tr>
+                    <tr class="titulo_tabela">
+                        <th colspan="5">Resumo da Proposta Cultural</th>
+                    </tr>
+                    <tr>
+                        <td  colspan="5" class="centro">Explique de forma clara, objetiva e suscinta o que ser&aacute; realizado - m&aacute;ximo de 5 linhas. * <br/>
+                            <table class="tabela">
+                                <tr>
+                                    <td colspan="2">
+                                        <!-- ========== EDITOR ========== -->
+                                        <textarea cols="80" id="resumoproposta" name="resumoproposta" rows="10">&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;&lt;p&gt;Digite seu texto aqui...&lt;/p&gt;&lt;/body&gt;&lt;/html&gt; identificacao</textarea>
+                                        <script type="text/javascript">
+                                            //CKEDITOR.replaceAll();
+                                            $('#form').submit(function()
+                                            {
+                                                var texto = CKEDITOR.instances['resumoproposta'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+
+                                                if (texto.length > 0 && texto != 'Digiteseutextoaqui...')
+                                                {
+                                                    // verifica se o usuário clicou no botão 'Reintegração'
+
+                                                    $('#resumoproposta').val(CKEDITOR.instances['resumoproposta'].getData());
+                                                }
+                                                else
+                                                {
+                                                    $("#dialog").dialog("destroy");
+                                                    $("#dialog-alert").dialog
+                                                    ({
+                                                        modal: true,
+                                                        draggable: false,
+                                                        resizable: false,
+                                                        closeOnEscape: false,
+                                                        title: 'Dados obrigatórios não informados!',
+                                                        buttons:
+                                                            {
+                                                            Ok:function()
+                                                            {
+                                                                $(this).dialog('close');
+                                                            }
+                                                        }
+                                                    });
+                                                    $('.ui-dialog-titlebar-close').remove();
+                                                    return false;
+                                                }
+                                            });
+                                            
+                                        </script>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr class="titulo_tabela">
+                        <th colspan="5">Informa&ccedil;&otilde;es Complementares</th>
+                    </tr>
+                    <tr>
+                        <td class="centro">Mecanismo</td>
+                        <td class="centro"><label for="datafixa"><b>Data Fixa</b></label>
+                            <select class="select_simples" name="datafixa" id="datafixa" style="width: 5em">
+                                <option value="sim" selected="selected">Sim</option>
+                                <option value="nao">N&atilde;o</option>
+                            </select>
+                        </td>
+                        <td class="centro"><label for="planoanual"><b>Plano Anual</b></label>
+                            <select class="select_simples" name="planoanual" id="planoanual" style="width: 5em">
+                                <option value="sim" selected="selected">Sim</option>
+                                <option value="nao">N&atilde;o</option>
+                            </select>
+                        </td>
+                        <td class="centro"><label for="agbancaria"><b>Ag&ecirc;ncia Banc&aacute;ria *</b></label>
+                            <input type="text" class="input_simples" name="agbancaria" id="agbancaria" maxlength="12"  style="width:150px;"/>
+                        </td>
+                        <td class="centro"><label for="propostaaudiovisual"><b>&Eacute; proposta de audiovisual?</b></label>
+                            <select class="select_simples" name="propostaaudiovisual" id="propostaaudiovisual" style="width: 5em">
+                                <option value="sim" selected="selected">Sim</option>
+                                <option value="nao">N&atilde;o</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="3">Per&iacute;odo de Realiza&ccedil;&atilde;o</th>
+                        <th colspan="2">No caso de bem tombado</th>
+                    </tr>
+                    <tr>
+                        <td class="centro"><label for="dtinicio"><b>Data de In&iacute;cio *</b></label></td>
+                        <td><input type="text" class="input_simples" name="dtinicio" id="dtinicio" maxlength="10" onkeyup="mascara(this, format_data);"/></td>
+                        <td>dd/mm/aaaa. A data inicial de realiza&ccedil;&atilde;o dever&aacute; ser no m&iacute;nimo 90 dias ap&oacute;s a data atual.</td>
+                        <td><label for="nrato"><b>N&uacute;mero do Ato *</b></label> </td>
+                        <td><input type="text" class="input_simples" name="nrato" id="nrato" maxlength="12" /></td>
+                    </tr>
+                    <tr>
+                        <td class="centro"><label for="dtfinal"><b>Data Final *</b></label></td>
+                        <td><input type="text" class="input_simples" name="dtfinal" id="dtfinal" maxlength="10" onkeyup="mascara(this, format_data);"/> </td>
+                        <td>dd/mm/aaaa</td>
+                        <td><label for="dtato"><b>Data do Ato *</b></label> </td>
+                        <td><input type="text" class="input_simples" name="dtato" id="dtato" maxlength="10" onkeyup="mascara(this, format_data);"/></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"></td>
+                        <td><label for="esferaato"><b>Esfera do Ato*</b></label></td>
+                        <td><select class="select_simples" name="esferaato" id="esferaato" style="width: 7em">
+                                <option value="distrital" selected="selected">Distrital</option>
+                                <option value="municipal">Municipal</option>
+                                <option value="estadual">Estadual</option>
+                                <option value="federal">Federal</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+
+            <div id="objetivos" class="sumir">
+                <table class="tabela" cellpadding="1" cellspacing="1">
+                    <tr>
+                        <th>Objetivos</th>
+                    </tr>
+                    <tr>
+                        <td>Indique os objetivos gerais da proposta cultural, isto &eacute;, o que deseja realizar, inclusive seus resultados.*</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <!-- ========== EDITOR ========== -->
+                            <textarea cols="80" id="objetivos" name="objetivos" rows="10">&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;&lt;p&gt;Digite seu texto aqui...&lt;/p&gt;&lt;/body&gt;&lt;/html&gt; objetivos</textarea>
+                            <script type="text/javascript">
+                                //CKEDITOR.replaceAll();
+                                $('#form').submit(function()
+                                {
+                                    var texto = CKEDITOR.instances['objetivos'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+
+                                    if (texto.length > 0 && texto != 'Digiteseutextoaqui...')
+                                    {
+                                        // verifica se o usuário clicou no botão 'Reintegração'
+
+                                        $('#objetivos').val(CKEDITOR.instances['objetivos'].getData());
+                                    }
+                                    else
+                                    {
+                                        $("#dialog").dialog("destroy");
+                                        $("#dialog-alert").dialog
+                                        ({
+                                            modal: true,
+                                            draggable: false,
+                                            resizable: false,
+                                            closeOnEscape: false,
+                                            title: 'Dados obrigatórios não informados!',
+                                            buttons:
+                                                {
+                                                Ok:function()
+                                                {
+                                                    $(this).dialog('close');
+                                                }
+                                            }
+                                        });
+                                        $('.ui-dialog-titlebar-close').remove();
+                                        return false;
+                                    }
+                                });
+                            </script>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="justificativa" class="sumir">
+                <table class="tabela" cellpadding="1" cellspacing="1">
+                    <tr><th>Justificativa</th></tr>
+                    <tr><td>Descreva a justificativa do projeto *</td></tr>
+                    <tr>
+                        <td colspan="2">
+                            <!-- ========== EDITOR ========== -->
+                            <textarea cols="80" id="justificativa" name="justificativa" rows="10">&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;&lt;p&gt;Digite seu texto aqui...&lt;/p&gt;&lt;/body&gt;&lt;/html&gt; justificativa</textarea>
+                            <script type="text/javascript">
+                                //CKEDITOR.replaceAll();
+                                $('#form').submit(function()
+                                {
+                                    var texto = CKEDITOR.instances['justificativa'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+
+                                    if (texto.length > 0 && texto != 'Digiteseutextoaqui...')
+                                    {
+                                        // verifica se o usuário clicou no botão 'Reintegração'
+
+                                        $('#justificativa').val(CKEDITOR.instances['justificativa'].getData());
+                                    }
+                                    else
+                                    {
+                                        $("#dialog").dialog("destroy");
+                                        $("#dialog-alert").dialog
+                                        ({
+                                            modal: true,
+                                            draggable: false,
+                                            resizable: false,
+                                            closeOnEscape: false,
+                                            title: 'Dados obrigatórios não informados!',
+                                            buttons:
+                                                {
+                                                Ok:function()
+                                                {
+                                                    $(this).dialog('close');
+                                                }
+                                            }
+                                        });
+                                        $('.ui-dialog-titlebar-close').remove();
+                                        return false;
+                                    }
+                                });
+                            </script>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="acessibilidade" class="sumir">
+                <table class="tabela" cellpadding="1" cellspacing="1">
+                    <tr><th>Acessibilidade</th></tr>
+                    <tr><td>Descreva as medidas para garantir o acesso aos Portadores de Necessidades Especiais. *</td></tr>
+                    <tr>
+                        <td colspan="2">
+                            <!-- ========== EDITOR ========== -->
+                            <textarea cols="80" id="acessibilidade" name="acessibilidade" rows="10">&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;&lt;p&gt;Digite seu texto aqui...&lt;/p&gt;&lt;/body&gt;&lt;/html&gt; acess</textarea>
+                            <script type="text/javascript">
+                                //CKEDITOR.replaceAll();
+                                $('#form').submit(function()
+                                {
+                                    var texto = CKEDITOR.instances['acessibilidade'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+
+                                    if (texto.length > 0 && texto != 'Digiteseutextoaqui...')
+                                    {
+                                        // verifica se o usuário clicou no botão 'Reintegração'
+
+                                        $('#acessibilidade').val(CKEDITOR.instances['acessibilidade'].getData());
+                                    }
+                                    else
+                                    {
+                                        $("#dialog").dialog("destroy");
+                                        $("#dialog-alert").dialog
+                                        ({
+                                            modal: true,
+                                            draggable: false,
+                                            resizable: false,
+                                            closeOnEscape: false,
+                                            title: 'Dados obrigatórios não informados!',
+                                            buttons:
+                                                {
+                                                Ok:function()
+                                                {
+                                                    $(this).dialog('close');
+                                                }
+                                            }
+                                        });
+                                        $('.ui-dialog-titlebar-close').remove();
+                                        return false;
+                                    }
+                                });
+                            </script>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="democratizacao" class="sumir">
+                <table class="tabela" cellpadding="1" cellspacing="1">
+                    <tr><th>Democratiza&ccedil;&atilde;o de Acesso</th></tr>
+                    <tr><td>Descreva as medidas para garantir a democratiza&ccedil;&atilde;o de acesso.*</td></tr>
+                    <tr>
+                        <td colspan="2">
+                            <!-- ========== EDITOR ========== -->
+                            <textarea cols="80" id="democratizacao" name="democratizacao" rows="10">&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;&lt;p&gt;Digite seu texto aqui...&lt;/p&gt;&lt;/body&gt;&lt;/html&gt; democratizacao</textarea>
+                            <script type="text/javascript">
+                                //CKEDITOR.replaceAll();
+                                $('#form').submit(function()
+                                {
+                                    var texto = CKEDITOR.instances['democratizacao'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+
+                                    if (texto.length > 0 && texto != 'Digiteseutextoaqui...')
+                                    {
+                                        // verifica se o usuário clicou no botão 'Reintegração'
+
+                                        $('#democratizacao').val(CKEDITOR.instances['democratizacao'].getData());
+                                    }
+                                    else
+                                    {
+                                        $("#dialog").dialog("destroy");
+                                        $("#dialog-alert").dialog
+                                        ({
+                                            modal: true,
+                                            draggable: false,
+                                            resizable: false,
+                                            closeOnEscape: false,
+                                            title: 'Dados obrigatórios não informados!',
+                                            buttons:
+                                                {
+                                                Ok:function()
+                                                {
+                                                    $(this).dialog('close');
+                                                }
+                                            }
+                                        });
+                                        $('.ui-dialog-titlebar-close').remove();
+                                        return false;
+                                    }
+                                });
+                            </script>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="etapas" class="sumir">
+                <table class="tabela" cellpadding="1" cellspacing="1">
+                    <tr><th>Etapas de Trabalho</th></tr>
+                    <tr><td>Enumere e descreva todas as fases do projeto, informando quando e como pretende realiz&aacute;-las. *</td></tr>
+                    <tr>
+                        <td colspan="2">
+                            <!-- ========== EDITOR ========== -->
+                            <textarea cols="80" id="etapas" name="etapas" rows="10">&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;&lt;p&gt;Digite seu texto aqui...&lt;/p&gt;&lt;/body&gt;&lt;/html&gt; etapas</textarea>
+                            <script type="text/javascript">
+                                //CKEDITOR.replaceAll();
+                                $('#form').submit(function()
+                                {
+                                    var texto = CKEDITOR.instances['etapas'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+
+                                    if (texto.length > 0 && texto != 'Digiteseutextoaqui...')
+                                    {
+                                        // verifica se o usuário clicou no botão 'Reintegração'
+
+                                        $('#etapas').val(CKEDITOR.instances['etapas'].getData());
+                                    }
+                                    else
+                                    {
+                                        $("#dialog").dialog("destroy");
+                                        $("#dialog-alert").dialog
+                                        ({
+                                            modal: true,
+                                            draggable: false,
+                                            resizable: false,
+                                            closeOnEscape: false,
+                                            title: 'Dados obrigatórios não informados!',
+                                            buttons:
+                                                {
+                                                Ok:function()
+                                                {
+                                                    $(this).dialog('close');
+                                                }
+                                            }
+                                        });
+                                        $('.ui-dialog-titlebar-close').remove();
+                                        return false;
+                                    }
+                                });
+                            </script>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="fichatecnica" class="sumir">
+                <table class="tabela" cellpadding="1" cellspacing="1">
+                    <tr><th>Ficha T&eacute;cnica</th></tr>
+                    <tr><td>Ficha T&eacute;cnica, com breve curr&iacute;culo dos participantes do projeto *</td></tr>
+                    <tr>
+                        <td colspan="2">
+                            <!-- ========== EDITOR ========== -->
+                            <textarea cols="80" id="fichatecnica" name="fichatecnica" rows="10">&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;&lt;p&gt;Digite seu texto aqui...&lt;/p&gt;&lt;/body&gt;&lt;/html&gt; ficha</textarea>
+                            <script type="text/javascript">
+                                //CKEDITOR.replaceAll();
+                                $('#form').submit(function()
+                                {
+                                    var texto = CKEDITOR.instances['fichatecnica'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+
+                                    if (texto.length > 0 && texto != 'Digiteseutextoaqui...')
+                                    {
+                                        // verifica se o usuário clicou no botão 'Reintegração'
+
+                                        $('#fichatecnica').val(CKEDITOR.instances['fichatecnica'].getData());
+                                    }
+                                    else
+                                    {
+                                        $("#dialog").dialog("destroy");
+                                        $("#dialog-alert").dialog
+                                        ({
+                                            modal: true,
+                                            draggable: false,
+                                            resizable: false,
+                                            closeOnEscape: false,
+                                            title: 'Dados obrigatórios não informados!',
+                                            buttons:
+                                                {
+                                                Ok:function()
+                                                {
+                                                    $(this).dialog('close');
+                                                }
+                                            }
+                                        });
+                                        $('.ui-dialog-titlebar-close').remove();
+                                        return false;
+                                    }
+                                });
+                            </script>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="detalheproposta" class="sumir">
+                <table class="tabela" cellpadding="1" cellspacing="1">
+                    <tr><th>Sinopse da obra</th></tr>
+                    <tr><td>Sinopse da obra (textos teatrais, livros, filmes e similares) *</td></tr>
+                    <tr>
+                        <td colspan="2">
+                            <!-- ========== EDITOR ========== -->
+                            <textarea cols="80" id="detalheproposta1" name="detalheproposta1" rows="10">&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;&lt;p&gt;Digite seu texto aqui...&lt;/p&gt;&lt;/body&gt;&lt;/html&gt; detalhe prop</textarea>
+                            <script type="text/javascript">
+                                //CKEDITOR.replaceAll();
+                                $('#form').submit(function()
+                                {
+                                    var texto = CKEDITOR.instances['detalheproposta1'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+
+                                    if (texto.length > 0 && texto != 'Digiteseutextoaqui...')
+                                    {
+                                        // verifica se o usuário clicou no botão 'Reintegração'
+
+                                        $('#detalheproposta1').val(CKEDITOR.instances['detalheproposta1'].getData());
+                                    }
+                                    else
+                                    {
+                                        $("#dialog").dialog("destroy");
+                                        $("#dialog-alert").dialog
+                                        ({
+                                            modal: true,
+                                            draggable: false,
+                                            resizable: false,
+                                            closeOnEscape: false,
+                                            title: 'Dados obrigatórios não informados!',
+                                            buttons:
+                                                {
+                                                Ok:function()
+                                                {
+                                                    $(this).dialog('close');
+                                                }
+                                            }
+                                        });
+                                        $('.ui-dialog-titlebar-close').remove();
+                                        return false;
+                                    }
+                                });
+                            </script>
+                        </td>
+                    </tr>
+                </table>
+                <table class="tabela" cellpadding="1" cellspacing="1">
+                    <tr><th>Impacto Ambiental</th></tr>
+                    <tr><td>Para minimizar o impacto ambiental: propostas de eventos ao ar livre *</td></tr>
+                    <tr>
+                        <td colspan="2">
+                            <!-- ========== EDITOR ========== -->
+                            <textarea cols="80" id="detalheproposta2" name="detalheproposta2" rows="10">&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;&lt;p&gt;Digite seu texto aqui...&lt;/p&gt;&lt;/body&gt;&lt;/html&gt; detalhe prop</textarea>
+                            <script type="text/javascript">
+                                //CKEDITOR.replaceAll();
+                                $('#form').submit(function()
+                                {
+                                    var texto = CKEDITOR.instances['detalheproposta2'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+
+                                    if (texto.length > 0 && texto != 'Digiteseutextoaqui...')
+                                    {
+                                        // verifica se o usuário clicou no botão 'Reintegração'
+
+                                        $('#detalheproposta2').val(CKEDITOR.instances['detalheproposta2'].getData());
+                                    }
+                                    else
+                                    {
+                                        $("#dialog").dialog("destroy");
+                                        $("#dialog-alert").dialog
+                                        ({
+                                            modal: true,
+                                            draggable: false,
+                                            resizable: false,
+                                            closeOnEscape: false,
+                                            title: 'Dados obrigatórios não informados!',
+                                            buttons:
+                                                {
+                                                Ok:function()
+                                                {
+                                                    $(this).dialog('close');
+                                                }
+                                            }
+                                        });
+                                        $('.ui-dialog-titlebar-close').remove();
+                                        return false;
+                                    }
+                                });
+                            </script>
+                        </td>
+                    </tr>
+                </table>
+                <table class="tabela" cellpadding="1" cellspacing="1">
+                    <tr><th>Especifica&ccedil;&otilde;es t&eacute;cnicas do produto</th></tr>
+                    <tr>
+                        <td>
+                            <p>- Especifica&ccedil;&otilde;es t&eacute;cnicas: propostas de edi&ccedil;&atilde;o de livro, revistas e peri&oacute;dicos</p>
+                            <p>- Projeto Pedag&oacute;gico/ plano de execu&ccedil;&atilde;o: propostas de cursos/workshops *</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <!-- ========== EDITOR ========== -->
+                            <textarea cols="80" id="detalheproposta3" name="detalheproposta3" rows="10">&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;&lt;p&gt;Digite seu texto aqui...&lt;/p&gt;&lt;/body&gt;&lt;/html&gt; detalhe prop</textarea>
+                            <script type="text/javascript">
+                                //CKEDITOR.replaceAll();
+                                $('#form').submit(function()
+                                {
+                                    var texto = CKEDITOR.instances['detalheproposta3'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+
+                                    if (texto.length > 0 && texto != 'Digiteseutextoaqui...')
+                                    {
+                                        // verifica se o usuário clicou no botão 'Reintegração'
+
+                                        $('#detalheproposta3').val(CKEDITOR.instances['detalheproposta3'].getData());
+                                    }
+                                    else
+                                    {
+                                        $("#dialog").dialog("destroy");
+                                        $("#dialog-alert").dialog
+                                        ({
+                                            modal: true,
+                                            draggable: false,
+                                            resizable: false,
+                                            closeOnEscape: false,
+                                            title: 'Dados obrigatórios não informados!',
+                                            buttons:
+                                                {
+                                                Ok:function()
+                                                {
+                                                    $(this).dialog('close');
+                                                }
+                                            }
+                                        });
+                                        $('.ui-dialog-titlebar-close').remove();
+                                        return false;
+                                    }
+                                });
+                            </script>
+                        </td>
+                    </tr>
+                </table>
+                <table class="tabela" cellpadding="1" cellspacing="1">
+                    <tr><th>Outras Informa&ccedil;&otilde;es </th></tr>
+                    <tr>
+                        <td>
+                            <p>- Proposta museogr&aacute;fica: propostas de exposi&ccedil;&atilde;o tempor&aacute;ria ou acervo</p>
+                            <p>- Destina&ccedil;&atilde;o do bem patrimonial adquirido, ap&oacute;s o t&eacute;rmino do projeto: propostas com aquisi&ccedil;&atilde;o de material permanente</p>
+                            <p>- Listas dos bens hist&oacute;ricos: propostas de invent&aacute;rios e organiza&ccedil;&atilde;o de acervos</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <!-- ========== EDITOR ========== -->
+                            <textarea cols="80" id="detalheproposta" name="detalheproposta" rows="10">&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;&lt;p&gt;Digite seu texto aqui...&lt;/p&gt;&lt;/body&gt;&lt;/html&gt; detalhe prop</textarea>
+                            <script type="text/javascript">
+                                //CKEDITOR.replaceAll();
+                                $('#form').submit(function()
+                                {
+                                    var texto = CKEDITOR.instances['detalheproposta'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+
+                                    if (texto.length > 0 && texto != 'Digiteseutextoaqui...')
+                                    {
+                                        // verifica se o usuário clicou no botão 'Reintegração'
+
+                                        $('#detalheproposta').val(CKEDITOR.instances['detalheproposta'].getData());
+                                    }
+                                    else
+                                    {
+                                        $("#dialog").dialog("destroy");
+                                        $("#dialog-alert").dialog
+                                        ({
+                                            modal: true,
+                                            draggable: false,
+                                            resizable: false,
+                                            closeOnEscape: false,
+                                            title: 'Dados obrigatórios não informados!',
+                                            buttons:
+                                                {
+                                                Ok:function()
+                                                {
+                                                    $(this).dialog('close');
+                                                }
+                                            }
+                                        });
+                                        $('.ui-dialog-titlebar-close').remove();
+                                        return false;
+                                    }
+                                });
+                            </script>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        mostrar_aba('identificacao');
+    </script>
+
+    <center>
+        <a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'listardadospropostas')); ?>"><img src="<?php echo $this->baseUrl(); ?>/public/img/buttons/salvar.gif" /></a>
+    </center>
+
+    <br/>
+
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+
+
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

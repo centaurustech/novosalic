@@ -1,0 +1,108 @@
+<script>
+    function incluirTermo(orgao){
+
+            location.href="<?php echo $this->url(array('controller' => 'mantertermodecisao', 'action' => 'incluirtermodecisao')); ?>";
+    }
+</script>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''), null, true); ?>" title="Ir para p&aacute;gina inicial">In&iacute;cio</a></li>
+        <li>Administrativo</li>
+        <li class="last">Manter termo de decis&atilde;o</li>
+    </ul>
+</div> <!-- final: #breadcrumb -->
+
+<!-- início: #titulo -->
+<div id="titulo">
+        <div>Manter termo de decis&atilde;o <!-- <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span> --></div>
+</div>
+<!-- final: #titulo -->
+
+<!-- início: área principal #conteudo -->
+<div id="conteudo">
+    <fieldset><legend>Incluir/Alterar termo de decisão</legend>
+
+            <table class="tabela">
+                <tr>
+                    <th colspan="4">
+                <div id="incluir" style="float:right">
+                    <input id="btIncluir" name="btIncluir" type="button" value=" " class="btn_incluir" onclick="incluirTermo()" />
+                </div>
+                Termos de Decis&atilde;o
+                </th>
+                </tr>
+                <tr class="destacar centro">
+                    <td>
+                        Órg&atilde;o
+                    </td>
+                    <td>
+                        Tipo de Termo
+                    </td>
+                    <td>
+                        Tipo de Parecer
+                    </td>
+                    <td>
+                        A&ccedil;&atilde;o
+                    </td>
+                </tr>
+                <?php //foreach ($this->termo as $termo) { ?>
+                <form class="form" id="frmTermoDecisaoSav" name="frmTermoDecisaoSav" method="post" action='<?php echo $this->url(array('controller' => 'mantertermodecisao', 'action' => 'termodecisao')); ?>' >
+                    <tr>
+                        <td>
+                            SAV
+                        </td>
+                        <td>
+                            <select id="tipoTermo" name="tipoTermo" class="input_simples">
+                                <option value="<?php echo $this->buscarTextoTermoDecisao()->retornarCodigoTipoTermo('AN'); ?>" >An&aacute;lise Inicial</option>
+                                <option value="<?php echo $this->buscarTextoTermoDecisao()->retornarCodigoTipoTermo('AR'); ?>">Readequa&ccedil;&atilde;o</option>
+                                <option value="<?php echo $this->buscarTextoTermoDecisao()->retornarCodigoTipoTermo('RE'); ?>">Recurso</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select id="tipoParecer" name="tipoParecer" class="input_simples">
+                                <option value="1" >Aprovado</option>
+                                <option value="0">Indeferido</option>
+                            </select>
+                        </td>
+                        <td align="center">
+                            <input id="btAlterar" name="btAlterar" type="submit" value=" " class="btn_alterar" />
+                            <input id="orgao" name="orgao" type="hidden" value="sav"/>
+                        </td>
+                    </tr>
+                </form>
+                <form class="form" id="frmTermoDecisaoSefic" name="frmTermoDecisaoSefic" method="post" action='<?php echo $this->url(array('controller' => 'mantertermodecisao', 'action' => 'termodecisao')); ?>' >
+                    <tr>
+                        <td>
+                            SEFIC
+                        </td>
+                        <td>
+                            <select id="tipoTermo" name="tipoTermo" class="input_simples">
+                                <option value="<?php echo $this->buscarTextoTermoDecisao()->retornarCodigoTipoTermo('AN'); ?>" >An&aacute;lise Inicial</option>
+                                <option value="<?php echo $this->buscarTextoTermoDecisao()->retornarCodigoTipoTermo('AR'); ?>">Readequa&ccedil;&atilde;o</option>
+                                <option value="<?php echo $this->buscarTextoTermoDecisao()->retornarCodigoTipoTermo('RE'); ?>">Recurso</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select id="tipoParecer" name="tipoParecer" class="input_simples">
+                                <option value="1" >Aprovado</option>
+                                <option value="0">Indeferido</option>
+                            </select>
+                        </td>
+                        <td align="center">
+                            <input id="btAlterar" name="btAlterar" type="submit" value=" " class="btn_alterar" />
+                            <input id="orgao" name="orgao" type="hidden" value="sefic"/>
+                        </td>
+                    </tr>
+                    </form>
+                <?php //} ?>
+            </table>
+    </fieldset>
+</div>
+<!-- final: conteúdo principal #conteudo -->
+
+<!-- início: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+<br clear="all" />

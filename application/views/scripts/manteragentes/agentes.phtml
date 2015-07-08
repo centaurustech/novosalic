@@ -1,0 +1,95 @@
+<?php  
+
+if($this->grupoAtivo != 118)
+{
+    require_once "inc/menu.inc.php";
+} // menu lateral 
+
+?>
+
+
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->baseUrl(); ?>" title="Ir para Início">Início</a></li>
+		<li class="last">Manter Agentes</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Manter Agentes 
+		<span class="voltar">
+
+		<?php if (isset($_GET['acao']) && $_GET['acao'] == 'cc' && isset($_GET['cpf']) && !empty($_GET['cpf']) && isset($_GET['idpronac'])) { // pega do readequação ?>
+		<a href="<?php echo $this->url(array('controller'=>'solicitaralteracao', 'action'=>'acaoprojeto')); ?>?idpronac=<?php echo $_GET['idpronac']; ?>" title="Voltar">Voltar para a Solicitação de Readequação</a>
+		<?php } else {?>
+		<a href="#" onclick="voltar();">Voltar</a>
+		<?php } ?>
+
+		</span>
+	</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+<div id="confirma"></div>
+
+
+	<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/proponentes.js"></script>
+	<script type="text/javascript">
+
+		$(function(){mostrar_menu_dados_agente(<?php echo $this->grupoativo; ?>);});
+
+		$(function(){mostrar_menu_dados_agente(<?php echo $this->grupoativo?>);});
+
+	</script>
+
+
+
+	<div id="erroGeral" class="msgERROR sumir">
+		<div class="float_right"><input type="button" class="btn_close" title="Fechar mensagem" id="msgERROR" onclick="$('.msgERROR').hide();" onkeypress="$('.msgERROR').hide();"/></div>
+		<div>Dados obrigatórios não informados!</div>
+	</div>
+
+
+
+    <form class="formAgentes form" name="formCadAgentes" id="formCadAgentes" method="post" 
+		action="<?php echo $this->url(array('controller' => 'manteragentes', 'action' => 'gravaragentecompleto')); ?>">
+
+		<input type="hidden" value="<?php echo $this->grupoativo; ?>" id="grupologado" name="grupologado" />
+
+		<div><?php require_once "inc/menuabas.phtml"; // menu abas ?></div>
+		<div><?php require_once "inc/form.phtml"; // formulário ?></div>
+
+		<table class="tabela">
+			<tr>
+				<td class="centro">
+					<div class="botao_texto">
+						<a class="salvar" href="#" title="Salvar" onclick="verificaValidacaoAgente();">Confirmar</a>
+					</div>
+				</td>
+			</tr>
+		</table>
+
+	</form>
+
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

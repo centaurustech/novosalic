@@ -1,0 +1,74 @@
+<?php header('Content-Type: text/plain; charset=ISO-8859-1'); ?>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#inc8_pronac').keypress(function(event){
+            var pronac = $(this).val();
+            if ( event.which == 13 ) {
+                $('tr.inc8_resultado.'+pronac).removeClass('sumir');
+                $('tr.inc8_resultado:not(.'+pronac+'*)').addClass('sumir');
+            } else {
+                $('tr.inc8_resultado').removeClass('sumir');
+            }
+        });
+    });
+</script>
+
+<table class="tabela">
+    <?php if ($this->registros->count() <= 0) : ?>
+    <tr>
+        <td align="center" ><em>Consulta efetuada com sucesso, por&eacute;m, n&atilde;o existem contas com captações identificadas para o filtro solicitado!</em></td>
+    </tr>
+    <?php else: ?>      
+        <?php $ct=1; $arrProjeto =array(); $arrIncentivador =array();
+            foreach($this->registros as $projeto): //xd($projeto);?>
+            <?php if($ct==1) { ?>
+            <thead>
+            <tr class="">
+                <th width="10%"><!--<a href="#" class="orderBy" valorOrdenacao="1">-->Pronac</th>
+                <th width="20%"><!--<a href="#" class="orderBy" valorOrdenacao="8">-->Nome do Projeto</th>
+                <th width="12%"><!--<a href="#" class="orderBy" valorOrdenacao="3">-->Proponente</th>
+                <th width="10%" nowrap><!--<a href="#" class="orderBy" valorOrdenacao="14">-->Ag&ecirc;ncia</th>
+                <th width="10%" nowrap><!--<a href="#" class="orderBy" valorOrdenacao="15">-->Conta</th>
+                <th width="13%" nowrap><!--<a href="#" class="orderBy" valorOrdenacao="4">-->Incentivador</th>
+                <th width="15%" nowrap><!--<a href="#" class="orderBy" valorOrdenacao="5">-->Data de Cr&eacute;dito</th>
+                <th width="10%" nowrap><!--<a href="#" class="orderBy" valorOrdenacao="6">-->Valor do Cr&eacute;dito</th>
+                <th width="5%" nowrap>Dilig&ecirc;ncia</th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php } ?>
+            <tr class="inc8_resultado <?php echo $projeto->pronac; ?>">
+                <td align="center">
+                    <?php //if(!in_array($projeto->pronac,$arrProjeto)): $arrProjeto[] = $projeto->pronac; ?>
+                        <?php if (!empty($projeto->pronac)) { ?>
+                            <a target="_blank" href='<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'))."?idPronac={$projeto->IdPRONAC}"?>'><?php echo $projeto->pronac;?></a>
+                        <?php }else{ ?>
+                            Conta sem PRONAC
+                        <?php } ?>
+                    <?php //endif; ?>
+                </td>
+                <td>
+                    <?php if (!empty($projeto->pronac)) { ?>
+                        <?php echo $projeto->NomeProjeto;?>
+                    <?php }else{ ?>
+                        Conta sem Nome de Projeto
+                    <?php } ?>
+                </td>
+                <td align="center"><?php echo Validacao::mascaraCPFCNPJ($projeto->nrCpfCnpjProponente); ?></td>
+                <td align="center"><?php echo !empty($projeto->Agencia) ? $projeto->Agencia : '<em>Não informada</em>'; ?></td>
+                <td align="center"><?php echo !empty($projeto->ContaBloqueada) ? $projeto->ContaBloqueada : '<em>Não informada</em>'; ?></td>
+                <td align="center"><?php echo Validacao::mascaraCPFCNPJ($projeto->nrCpfCnpjIncentivador); ?></td>
+                <td align="center"><?php echo $projeto->dtCredito; ?></td>
+                <td align="right" class="<?php echo ($projeto->vlValorCredito == 'D') ? 'red' : 'blue' ; ?>"><?php echo $this->formatarReal($projeto->vlValorCredito); ?></td>
+                <td align="center" >
+                    <?php $arrPrazo = $this->prazoRespostaDiligencia($projeto->IdPRONAC, 183);
+                    $icone = $arrPrazo['iconeDiligencia']['icone'];
+                    $title = $arrPrazo['iconeDiligencia']['title']; ?>
+                    <a target="_blank" href="<?php echo $this->url(array('controller' => 'diligenciar', 'action' =>'listardiligenciaanalista')).'?idPronac=' . $projeto->IdPRONAC . '&situacao=E50&tpDiligencia=183';?>" ><img src="<?php echo $this->baseUrl(); ?>/public/img/<?php echo $icone; ?>" title="<?php echo $title; ?>" width="30px"/></a><br>
+                </td>
+            </tr>
+        <?php $ct++; endforeach;?>
+            </tbody>
+    <?php endif;?>
+</table>

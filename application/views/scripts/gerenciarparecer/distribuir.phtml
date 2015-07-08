@@ -1,0 +1,175 @@
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        CKEDITOR.replace( 'obs', { toolbar: [] } );
+    });
+
+    function tipo(tipo) {
+        if(tipo =='1') {
+            $('#parecerista').show();
+            $('#entidades').hide();
+            $('#pareceristaCombo').show();
+            $('#entidadesCombo').hide();
+        } else {
+            $('#parecerista').hide();
+            $('#entidades').show();
+            $('#pareceristaCombo').hide();
+            $('#entidadesCombo').show();
+            $('#infoparecerista').hide();
+            $('#infopareceristal').hide();
+        }
+    }
+
+    function distribuirprojeto(){
+        var texto = CKEDITOR.instances['obs'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+        if (texto.length <= 11) {
+            alertar('O campo justificativa deve ter no mínimo 11 caracteres!');
+            return false;
+        }
+
+        if($('#distribuir').is(':checked') && $('#pareceristaCombo').val()==0) {
+            alertar('Favor preencher os dados obrigatórios!');
+            return false;
+        }
+
+        $('#obs').val(CKEDITOR.instances['obs'].getData());
+        $('#form').submit();
+    }
+
+    function infoparecerista(idAgente) {
+        var idpronac = $("#idpronac").val();
+        if(idAgente != 0) {
+            $("#infoparecerista").hide();
+            $("#infopareceristal").show();
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                data: {
+                    idAgente: idAgente,
+                    idpronac: idpronac
+                },
+                url: '<?php echo $this->url(array("controller"=>"gerenciarparecer", "action"=>"infoparecerista")); ?>',
+                success: function (data) {
+                    $("#infoparecerista").show();
+                    $("#infopareceristal").hide();
+                    $("#infoparecerista").html(data[0].situacaoTexto);
+
+                    if (data[0].situacao == '1') {
+                        $("#btnenviar").show();
+                    } else if (data[0].situacao == '0') {
+                        $("#btnenviar").hide();
+                    }
+                },
+                error: function (data){
+                    $("#infoparecerista").html("Falha na recuperação dos dados.\nNão foi possível carregar agente!");
+                }
+            });
+        } else {
+            $("#infoparecerista").hide();
+            $("#infopareceristal").hide();
+            $("#btnenviar").hide();
+        }
+    }
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'index'),'',true); ?>" title="Ir para Início">Início</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'listaprojetos'),'',true); ?>" title="Localizar Parecer">Gerenciar Pareceres</a></li>
+        <li class="last">Distribuir projeto</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Distribuir Projeto <span class="voltar"><a href="javascript:voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <form id="form" action="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'distribuiu')); ?>" method="POST" >
+        <input id="idpronac" name="idpronac"  type="hidden" value="<?php echo $this->idpronac; ?>" />
+        <table class="tabela">
+            <tr>
+                <th colspan="4" style="font-family: sans-serif; font-size: 13px;">
+                    <input type="radio" value="1" name="tipodistribuir" id="distribuir" checked="checked" onclick="tipo(1);" />
+                    <label for="distribuir">Distribuir</label>
+                    <b style="margin-left: 30px; margin-right: 30px;">|</b>
+                    <input type="radio" value="2" name="tipodistribuir" id="encaminhar"  onclick="tipo(2);" />
+                    <label for="encaminhar">Encaminhar para outra unidade vinculada</label>
+                </th>
+            </tr>
+            <tr>
+                <td class="destacar bold">PRONAC</td>
+                <td class="destacar bold">Nome do Projeto</td>
+            </tr>
+            <tr>
+                <td><?php echo $this->dadosProjeto[0]->NrProjeto; ?></td>
+                <td><?php echo $this->dadosProjeto[0]->NomeProjeto; ?></td>
+            </tr>
+            <tr>
+                <td class="destacar bold">&Aacute;rea Cultural</td>
+                <td class="destacar bold">Segmento Cultural</td>
+            </tr>
+            <tr>
+                <td><?php echo $this->dadosProjeto[0]->Area; ?></td>
+                <td><?php echo $this->dadosProjeto[0]->Segmento; ?></td>
+            </tr>
+        </table>
+        
+        <table class="tabela">
+            <tr>
+                <td class="destacar bold sumir" id="entidades" width="120" align="right">Destino <span style="color: red;">*</span></td>
+                <td class="destacar bold" id="parecerista" width="120" align="right">Parecerista <span style="color: red;">*</span></td>
+                <td width="1">
+                    <select name="orgao" class="input_simples sumir" id="entidadesCombo">
+                        <?php foreach($this->orgaos as $p):?>
+                        <option value="<?php echo $p->Codigo; ?>"><?php echo $p->Sigla; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    
+                    <select name="idAgenteParecerista" class="input_simples" id="pareceristaCombo" onchange="infoparecerista(this.value);">
+                        <option value="0" selected="selected">Selecione</option>
+                        <?php foreach ($this->pareceristas as $p){ ?>
+                            <option value="<?php echo $p->idParecerista; ?>"><?php echo $p->Nome; ?></option>
+                        <?php } ?>
+                    </select>
+                </td>
+                <td>
+                    <span id="infopareceristal" class="sumir">Carregando...<br /><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></span>
+                    <span id="infoparecerista" class="sumir" style="font-weight:bold;"></span>
+                </td>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <th style="font-family: sans-serif; font-size: 13px;">Observa&ccedil;&atilde;o <span style="color: red;">*</span></th>
+            </tr>
+            <tr>
+                <td>
+                    <textarea id="obs" name="obs" rows="5" cols="100" class="input_simples"></textarea>
+                </td>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <td align="center"><input type="button" value=" " class="btn_enviar" id="btnenviar" onclick="distribuirprojeto();"/></td>
+            </tr>
+        </table>
+    </form>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+<div id="confirma"></div>
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

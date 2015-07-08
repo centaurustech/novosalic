@@ -1,0 +1,156 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        CKEDITOR.replace( 'solicitacao', { toolbar: [] } );
+        $('#salvar').click(function(){
+            $('#btnEnvio').val('');
+            var texto = CKEDITOR.instances['solicitacao'].getData();
+            if(texto == ''){
+                $("#erro").dialog("destroy");
+                $("#erro").html("Favor preecher os dados obrigat&oacute;rios!");
+                $("#erro").dialog({
+                    resizable: false,
+                    title: 'Alerta!',
+                    width:300,
+                    height:160,
+                    modal: true,
+                    buttons : {
+                        'OK' : function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+                $('.ui-dialog-titlebar-close').remove();
+            } else {
+                $('#cadastro').submit();
+            }
+        });
+
+        $('.btn_enviar').click(function(){
+
+            $('#btnEnvio').val(1);
+            var texto = CKEDITOR.instances['solicitacao'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+            if(texto != '' && $('#idTipoDiligencia').val() != ''){
+                $('#solicitacao').val(CKEDITOR.instances['solicitacao'].getData());
+                $('#cadastro').submit();
+            } else {
+                var mensagem = '';
+                if(texto == ''){
+                    mensagem += 'Dados obrigatórios n&atilde;o informados! <br />';
+                }
+                if($('#idTipoDiligencia').val() == ''){
+                    mensagem += 'Selecione o Tipo da Diligência! <br />';
+                }
+                $("<div></div>").appendTo('body').attr('title','Alerta!').html(mensagem).dialog({
+                    resizable: false,
+                    width:400,
+                    height:200,
+                    modal: true,
+                    buttons: {
+                        'OK': function() {
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+            }
+        });
+
+        $(".btn_voltar").click(function (){
+            window.history.back(-1);
+        });
+    });
+</script>
+
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.js"></script>
+
+<div id="erro"></div>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&&iacute;io">Início</a></li>
+        <li class="last">Envio de Dilig&ecirc;ncia</li>
+    </ul>
+</div>
+
+<div id="titulo">
+    <div>Envio de Dilig&ecirc;ncia <span class="voltar"><a href="<?php echo $this->url(array('controller' => 'diligenciar', 'action' => 'listardiligenciaanalista')); ?>?idPronac=<?php echo $this->idPronac;?>&tpDiligencia=<?php echo $this->tpDiligencia;?>&situacao=<?php echo $this->situacao;?>">Voltar</a></span></div>
+</div>
+
+<div id="conteudo">
+
+    <?php $link = isset($this->ultimo) ? 'salvardiligencia' : 'inserirdiligencia'; ?>
+    <form id="cadastro" action="<?php echo $this->url(array('controller' => 'diligenciar', 'action' => $link)); ?>" method="post">
+        <input type="hidden" name="idPronac" value="<?php echo $this->idPronac;?>" />
+        <input type="hidden" name="idPreProjeto" value="<?php echo $this->idPreProjeto;?>" />
+        <input type="hidden" name="idProduto" value="<?php echo $this->idProduto;?>" />
+        <input type="hidden" name="situacao" value="<?php echo $this->situacao;?>" />
+        <input type="hidden" name="tpDiligencia" value="<?php echo $this->tpDiligencia;?>" />
+        <input type="hidden" name="btnEnvio" id="btnEnvio" value="" />
+        <?php if(isset($this->ultimo)) { ?>
+        <input type="hidden" name="idDiligencia" id="idDiligencia" value="<?php echo $this->ultimo->idDiligencia; ?>" />
+        <?php } ?>
+
+        <table class="tabela">
+            <tr>
+                <th align="left"><?php echo $this->nmCodigo;?></th>
+                <th align="left">NOME <?php echo $this->nmTipo;?></th>
+            </tr>
+            <tr>
+                <td><?php echo $this->pronac;?></td>
+                <td><?php echo $this->nomeProjeto;?></td>
+            </tr>
+            <tr>
+                <th align="left">TIPO DA DILIG&Ecirc;NCIA</th>
+                <th align="left">DATA DA SOLICITA&Ccedil;&Atilde;O</th>
+            </tr>
+            <tr>
+                <td><?php echo $this->tipoDiligencia;?></td>
+                <td><?php echo $this->dataSolicitacao;?></td>
+            </tr>
+            <tr>
+                <td colspan="2" class="destacar" style="text-align: center;">SOLICITA&Ccedil;&Atilde;O</td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <textarea name="solicitacao" id="solicitacao">
+                        <?php if(isset($this->ultimo)) {
+                            echo $this->ultimo->Solicitacao;
+                        } ?>
+                    </textarea>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center">
+                    <input type="button" id="enviar" class="btn_enviar">
+                </td>
+            </tr>
+        </table>
+    </form>
+
+    <?php if(count($this->historicoDiligencia) > 0){ ?>
+    <table class="tabela">
+        <tr>
+            <th colspan="4">Hist&oacute;rico de Encaminhamento</th>
+        </tr>
+        <tr>
+            <th>Data de Envio</th>
+            <th>Remetente</th>
+            <th>Destinat&aacute;rio</th>
+            <th>&Oacute;rg&atilde;o</th>
+        </tr>
+        <?php foreach($this->historicoDiligencia as $diligencia){ ?>
+        <tr>
+            <td><?php echo $diligencia["dtEnvio"]?></td>
+            <td><?php echo $diligencia["remetente"]?></td>
+            <td><?php echo $diligencia["destinatario"]?></td>
+            <td><?php echo $diligencia["orgao"]?></td>
+        </tr>
+        <?php } ?>
+    </table>
+    <?php } ?>
+</div>
+
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

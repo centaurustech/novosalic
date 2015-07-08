@@ -1,0 +1,126 @@
+<script>
+
+    $(document).ready( function() {
+	$("#alterarSenha").validate({
+		// Define as regras
+		rules:{
+                        senhaAtual:{
+				// campoNome será obrigatório (required) e terá tamanho mínimo (minLength)
+				required: true, minlength: 2
+			},
+			senhaNova:{
+				// campoNome será obrigatório (required) e terá tamanho mínimo (minLength)
+				required: true, minlength: 2
+			},
+			repeteSenha:{
+				// campoEmail será obrigatório (required) e precisará ser um e-mail válido (email)
+				required: true, minlength: 2
+			}
+
+		},
+		// Define as mensagens de erro para cada regra
+		messages:{
+                        senhaAtual:{
+				required: "Digite a senha atual",
+				minLength: "O seu nome deve conter, no mínimo, 11 caracteres"
+			},
+			senhaNova:{
+				required: "Digite senha nova",
+				minLength: "O seu nome deve conter, no mínimo, 2 caracteres"
+			},
+			repeteSenha:{
+				required: "Repetir senha nova",
+                                minLength: "O seu nome deve conter, no mínimo, 2 caracteres"
+				
+			}
+		}
+	});
+});
+
+
+
+</script>
+<!-- ========== INï¿½CIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="confirm"></div>
+<div id="breadcrumb">
+
+<ul>
+<li class="first"><a href="/exemplo/cadastrarusuario/index">In&iacute;cio</a></li>
+<li class="last">Cadastrar Usuário</li>
+</ul>
+
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INï¿½CIO Tï¿½TULO ========== -->
+
+<div id="titulo">
+<div>Alterar Usuário<span></span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+
+</div>
+<!-- ========== FIM Tï¿½TULO ========== -->
+
+
+
+<!-- ========== INï¿½CIO CONTEï¿½DO ========== -->
+
+	<div id="conteudo">
+
+
+            <fieldset><legend>Informações</legend>
+
+            <form method="POST" action="/NovoSalic/manterlogin/alterarsenha" name="alterarSenha" id="alterarSenha">
+
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th colspan="2">Cadastro de Usuário</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Senha Atual *</td>
+                            <td><input maxlength="50" class="input_simples" type="password" name="senhaAtual" id="senhaAtual"  /> </td>
+                        </tr>
+                        <tr>
+                            <td>Senha nova *</td>
+                            <td><input maxlength="50" class="input_simples" type="password" name="senhaNova" id="senhaNova"  /> </td>
+                        </tr>
+                        <tr>
+                            <td>Repetir senha nova *</td>
+                            <td><input maxlength="50" class="input_simples" type="password" name="repeteSenha" id="repeteSenha"  /> </td>
+                        </tr>
+                        <tr>
+                            <td align="center" colspan="2">
+                            <input id='btIncluir' type='submit' value='' class='btn_salvar enviar' />
+                            <input id='btLimpar' type='reset' value='' class='btn_limpar enviar'   />
+                            <input id='btCancelar' type='button' value='' class='btn_cancelar enviar' onClick="history.go(-1)" onkeypress=" " />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <input id='idUsuario' name="idUsuario" type='hidden' value='<?php echo $_GET['idUsuario']?>'   />
+
+            </form>
+</fieldset>
+
+
+        </div>
+
+
+<!-- ========== FIM CONTEï¿½DO ========== -->
+
+
+
+<!-- ========== INï¿½CIO RODAPï¿½ DO CONTEï¿½DO ========== -->
+	<div id="rodapeConteudo"><span></span></div>
+
+<!-- ========== FIM RODAPï¿½ DO CONTEï¿½DO ========== -->
+			<br clear="all" />
+
+
+
+
+</body>
+</html>

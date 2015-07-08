@@ -1,0 +1,373 @@
+
+<script>
+$(document).ready(function(){
+	 $('.soma').keyup(function(){
+		 somaValores();
+     });
+
+	 if($('#uf').val() != '' &&  $('#municipio').val() != '' && $('#item').val() != '' && $('#etapa').val() != '' ){
+			$('#uf').attr('disabled','disabled');
+			$('#municipio').attr('disabled','disabled');
+			$('#item').attr('disabled','disabled');
+			$('#etapa').attr('disabled','disabled');
+
+			somaValores();
+	}
+
+	 $('.numero').keydown(function(event){
+//		var texto = '';
+//		 for(j in event){
+//			 texto += j+' = '+event[j]+' | ';
+//				}
+//
+//		alert(texto);return false;
+		 if((event.keyCode >= 96 && event.keyCode <= 105) || (event.keyCode >= 48 && event.keyCode <= 57) || event.keyCode == 8 || event.keyCode ==9 ){
+				return true;
+				 }
+			 else
+			 return false;
+         //$(this).val($(this).val().replace(/\D/g,''));
+     });
+     
+    $("#error").dialog({
+        resizable: true,
+        width:450,
+        height:150,
+        modal: true,
+        autoOpen:false,
+        buttons: {
+            'OK': function() {
+                $(this).dialog('close');
+            }
+        }
+    });
+$('.btn_salvar').click(function(){
+	var validar = true;
+	$('.valida').each(function(){
+		if($(this).val() == ''){
+			validar = false;
+		}
+	});
+	if(validar == false){
+		$("#error").html('Dados obrigat�rios n�o informados!');
+		$("#error").dialog('open');
+//		$(".ui-dialog-titlebar-close").remove();
+	}
+	else{
+		$('#uf').removeAttr('disabled');
+		$('#municipio').removeAttr('disabled');
+		$('#item').removeAttr('disabled');
+		$('#etapa').removeAttr('disabled');
+			$("#form").submit();
+		}
+});
+	
+	$('#uf').change(function(){
+		if($(this).val() == 0){
+            $("#municipio").find('option').remove();
+            $("#municipio").append('<option value="">Selecione...</option>');
+		}
+		else{
+        $.ajax({
+            url : '<?php echo $this->url(array('controller' => 'Manterorcamento', 'action' => 'cadastrarprodutos')); ?>',
+            type: "POST",
+            data :{
+                iduf : $(this).val()
+            },
+            success: function(valor){
+                $("#municipio").find('option').remove();
+                $("#municipio").append('<option value="">Selecione...</option>');
+
+				for(a in valor){
+	                $("#municipio").append('<option value="'+valor[a].idCidade+'">'+valor[a].nomeCidade+'</option>');
+				}
+            }
+            , dataType : 'json'
+        });
+		}
+	});
+	$('#etapa').change(function(){
+		if($(this).val() == 0){
+            $("#item").find('option').remove();
+            $("#item").append('<option value="">Selecione...</option>');
+		}
+		else{
+        $.ajax({
+            url : '<?php echo $this->url(array('controller' => 'Manterorcamento', 'action' => 'cadastrarprodutos')); ?>',
+            type: "POST",
+            data :{
+                idetapa : $(this).val()
+            },
+            success: function(valor){
+                $("#item").find('option').remove();
+                $("#item").append('<option value="">Selecione...</option>');
+
+				for(a in valor){
+	                $("#item").append('<option value="'+valor[a].idItem+'">'+valor[a].nomeItem+'</option>');
+				}
+            }
+            , dataType : 'json'
+        });
+		}
+	});
+	
+	//Ao clicar no municipio ele desabilita a UF e o Municipio
+	$("#municipio").change(function(){
+		$('#uf').attr('disabled','disabled');
+		$('#municipio').attr('disabled','disabled');
+	})
+	$("#alterarlocalidade").click(function(){
+		$('#uf').removeAttr('disabled');
+		$('#municipio').removeAttr('disabled');
+	})
+	
+	//Ao clicar no Item ele desabilita a Etapa e o Item	
+	$("#item").change(function(){
+		$('#item').attr('disabled','disabled');
+		$('#etapa').attr('disabled','disabled');
+	})
+	$("#alteraretapa").click(function(){
+		$('#item').removeAttr('disabled');
+		$('#etapa').removeAttr('disabled');
+	})
+
+});
+
+
+function somaValores(){
+	var soma = 0;
+    var vlunitario = $("#vlunitario").val().replace('R$','');
+    var vlunitario = $.trim(vlunitario.replace(',','.'));
+    soma = $("#qtd").val()*$("#ocorrencia").val() * vlunitario;
+    soma = soma.toFixed(2).replace('.',',');
+    $("#total").val('R$ '+soma);
+}
+
+</script>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<?php
+include_once 'scripts/manterorcamento/inc/menu.inc.php';
+?>
+<body>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+<div id='error'></div>
+<ul>
+	<li class="first"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'propostas')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+	<li class="last">Or&ccedil;amento</li>
+	<li class="first"><a href="<?php echo $this->url(array('controller' => 'manterorcamento', 'action' => 'produtoscadastrados')); ?>" title="Ir para In&iacute;cio">Produtos Cadastrados</a></li>
+	<li class="last">Cadastrar Planilha por Produto</li>
+</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+<div>Cadastrar Planilha por Produto <span class="voltar"><a href="#"
+	onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo"><!-- ========== INÍCIO TABELA DADOS ========== -->
+	<?php foreach ($this->Dados as $dados):?>
+	<form name="form" id="form" action='<?php echo $this->url(array('controller' => 'manterorcamento', 'action' => 'editarprodutos')); ?>' method='post'>
+	<input type="hidden" name="produto" id="produto" value="<?php echo $dados->CodigoProduto ?>"></input>
+	<input type="hidden" name="proposta" id="proposta" value="<?php echo $dados->idPlanilhaProposta ?>"></input>
+	<!-- <input type="hidden" name="idPlanilhaProposta" id="idPlanilhaProposta" value="<?php // echo $this->Item[0]->idPlanilhaProposta ?>"></input> -->
+	<div style="float: left; width: 50%">
+        <fieldset>
+            <legend>Localiza&ccedil;&atilde;o</legend>
+            <table cellpadding="0" cellspacing="0" width="100%">
+                  <tr>
+                    <td align="justify" width="20%">
+                    	<label for="uf">UF*</label> <br />
+                    		<select class="select_simples valida" id='uf' name='uf'>
+                    			<option>Selecione...</option>
+                    			<?php foreach($this->Estados as $estados){
+                    			if($dados->IdUf == $estados->id){?>
+                    				<option selected="selected" value="<?php echo $estados->id ?>"><?php echo $estados->descricao ?></option>
+                    			<?php } else { ?>
+                    			<option value="<?php echo $estados->id ?>"><?php echo $estados->descricao ?></option>
+                    			<?php } } ?>
+                    		</select> 
+                    </td>
+                    <td align="left">
+                    	<label for="cidade">MUNIC&Iacute;PIO*</label><br />
+                    		<select class="select_simples valida" style="width: 80%" id='municipio' name='municipio'>
+                    			<option>Selecione...</option>
+                    			<?php foreach($this->Cidades as $cidades){
+                    			if($dados->Municipio == $cidades->id){?>
+                    				<option selected="selected" value="<?php echo $cidades->id ?>"><?php echo $cidades->descricao ?></option>
+                    			<?php } else { ?>
+                    			<option value="<?php echo $cidades->id ?>"><?php echo $cidades->descricao ?></option>
+                    			<?php } } ?>
+                    		</select> 
+                    </td>
+                    <td align="center">
+                    	<br />
+                    	<label><input type="button" class="btn_alterar" id='alterarlocalidade'></input></label>
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    </div>
+    
+    <div style="float: left; width: 50%">
+        <fieldset>
+            <legend>Etapa / Meta</legend>
+            <table cellpadding="0" cellspacing="0" width="100%">
+                  <tr>
+                    <td align="justify" width="20%">
+                    	<label for="etapa">ETAPA / META*</label> <br />
+                    		<select class="select_simples valida" id='etapa' name='etapa'>
+                    			<option value="<?php echo "" ?>">Selecione...</option>
+                    			<?php foreach($this->Etapa as $etapa){
+                    			if ($dados->idEtapa == $etapa->idplanilhaetapa) { ?>
+                    			<option selected="selected" value="<?php echo $etapa->idplanilhaetapa ?>"><?php echo $etapa->Descricao ?></option>
+                    			<?php } else { ?>
+                    			<option value="<?php echo $etapa->idplanilhaetapa ?>"><?php echo $etapa->Descricao ?></option>
+                    			<?php } } ?>
+                    		</select> 
+                    </td>
+                    <td align="left">
+                    	<label for="item">&Iacute;TEM*</label><br />
+                    		<select class="select_simples valida" style="width: 80%" id='item' name='item'>
+                    			<option value="<?php echo "" ?>">Selecione...</option>
+                    			<?php foreach($this->Item as $itens){
+                    			if ($dados->idItem == $itens->idPlanilhaItens) { ?>
+                    			<option selected="selected" value="<?php echo $itens->idPlanilhaItens ?>"><?php echo $itens->Descricao ?></option>
+                    			<?php } else { ?>
+                    			<option value="<?php echo $itens->idPlanilhaItens ?>"><?php echo $itens->Descricao ?></option>
+                    			<?php } } ?>
+                    		</select> 
+                    </td>
+                    <td align="center">
+                    	<br />
+                    	<label><input type="button" class="btn_alterar" id='alteraretapa'></input></label>
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    </div>
+
+    <div style="float: left; width: 24%">
+        <fieldset>
+            <legend>Despesas</legend>
+            <table cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td align="justify">
+                    	<label for="uf">FONTE DE RECURSO</label> <br />
+                    		<select class="select_simples" style="width: 90%" id="fonterecurso" name='fonterecurso'>
+                    			<option value="<?php echo "" ?>">Selecione...</option>
+                    			<?php foreach($this->Recurso as $recursos){
+                    			if ($dados->Recurso == $recursos->idVerificacao) { ?>
+                    			<option selected="selected" value="<?php echo $recursos->idVerificacao ?>"><?php echo $recursos->VerificacaoDescricao ?></option>
+                    			<?php } else { ?>
+                    			<option value="<?php echo $recursos->idVerificacao ?>"><?php echo $recursos->VerificacaoDescricao ?></option>
+                    			<?php } } ?>
+                    		</select> 
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    </div>
+    <div style="float: left; width: 26%">
+        <fieldset style="width: 60%">
+            <legend>Indicadores F&iacute;sicos</legend>
+            <table cellpadding="0" cellspacing="0" width="100%">
+                <tr align="left" lang="">
+                    <td>
+                    	<label for="uf">UNIDADE*</label> <br />
+                    		<select class="select_simples valida" id="unidade" name='unidade'>
+                    			<option value="<?php echo "" ?>">Selecione...</option>
+                    			<?php foreach($this->Unidade as $unidades){
+                    			if ($dados->Unidade == $unidades->idUnidade) { ?>
+                    			<option selected="selected" value="<?php echo $unidades->idUnidade ?>"><?php echo $unidades->Descricao ?></option>
+                    			<?php } else { ?>
+                    			<option value="<?php echo $unidades->idUnidade ?>"><?php echo $unidades->Descricao ?></option>
+                    			<?php } } ?>
+                    		</select>  
+                    </td>
+                    <td>
+                    	<label for="qtd">QTD*</label><br />
+                    		<input type="text" class="input_simples valida soma numero" size="1" id="qtd" name="qtd" value="<?php echo $dados->Quantidade?>"></input>
+                    </td>
+                    <td>
+                    	<label for="ocorrencia">OCORR&Ecirc;NCIA*</label><br />
+                    		<input type="text" class="input_simples valida soma numero" size="1" id="ocorrencia" name="ocorrencia" value="<?php echo $dados->Ocorrencia?>"></input>
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    </div>
+    <div style="float: left; width: 25%" >
+        <fieldset>
+            <legend>Indicadores Financeiros</legend>
+            <table cellpadding="0" cellspacing="0" width="100%" id="indicadores" >
+                <tr>
+                    <td>
+                    	<label for="uf">VALOR UNIT&Aacute;RIO*</label> <br />
+                    		<input type="text" class="input_simples valida soma numero" size="10" id="vlunitario" name="vlunitario" value="<?php echo $dados->ValorUnitario?>"></input>
+                    </td>
+                    <td>
+                    	<label for="uf">TOTAL*</label> <br />
+                    		<input type="text" value="" class="input_simples valida" size="15" name="total" id="total" readonly="readonly"></input> 
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    </div>
+    
+    <div style="float: left; width: 25%">
+        <fieldset>
+            <legend>Tempo de Dura&ccedil;&atilde;o</legend>
+            <table cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td align="justify">
+                    	<label for="uf">QTD DE DIAS*</label> <br />
+                    		<input type="text" class="input_simples valida numero" size="15" value="<?php echo $dados->QtdDias?>" name='qtdDias' id='qtdDias' /> 
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    </div>
+    
+    <div style="float: left; width: 100%">
+        <fieldset>
+        <legend>Detalhamento / Justificativa / Observa&ccedil;&otilde;es</legend>
+            <table cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td align="justify">
+                    	<!-- ========== EDITOR 1 ========== -->
+                    <script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/ckeditor.js"></script>
+                    <script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.js"></script>
+
+                    <label for="editor1"> </label>
+                    <textarea cols="80" id="editor1" name="editor1" rows="10">&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;&lt;p&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;<?php echo $dados->Justificativa?></textarea>
+                    <script type="text/javascript">
+                        //<![CDATA[
+                        CKEDITOR.replace('editor1', {	fullPage : true });
+                        //]]>
+                    </script>
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    </div>
+</form> 
+
+            <table class="tabela" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td align="center">
+                    	<input type="button" class="btn_salvar">                   	
+                    </td>
+                </tr>
+            </table>
+<?php endforeach;?>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== --> <!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== --> <br clear="all" />
+</body>

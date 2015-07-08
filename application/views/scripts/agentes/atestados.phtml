@@ -1,0 +1,190 @@
+<?php require_once "inc/menu.inc.php"; ?>
+
+<script type="text/javascript">
+
+    $(function(){
+        $.datepicker.regional['pt-BR'] = {
+            closeText: 'Fechar',
+            prevText: '&#x3c;Anterior',
+            nextText: 'Pr&oacute;ximo&#x3e;',
+            currentText: 'Hoje',
+            monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+            dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            weekHeader: 'Sm',
+            dateFormat: 'dd/mm/yy',
+            firstDay: 0,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: ''};
+        $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+        $("#dtinicio").datepicker($.datepicker.regional['pt-BR']);
+        $("#dtfim").datepicker($.datepicker.regional['pt-BR']);
+    });
+
+    function validaForm(){
+        var arquivo = $("#arquivo").val();
+        var dtinicio = $("#dtinicio").val();
+        var dtfim = $("#dtfim").val();
+        var dtAtual = $("#dtatual").val();
+        var arrAtual = dtAtual.split("/");
+        dtAtual = arrAtual[2]+arrAtual[1]+arrAtual[0];
+
+        if(dtinicio != ''){
+            var arrInicio = dtinicio.split("/");
+            dtinicio = arrInicio[2]+arrInicio[1]+arrInicio[0];
+        } else {
+            alertar('Informe a data inicial!');
+            return false;
+        }
+
+        if(dtfim != ''){
+            var arrFim = dtfim.split("/");
+            dtfim = arrFim[2]+arrFim[1]+arrFim[0];
+        } else {
+            alertar('Informe a data final!');
+            return false;
+        }
+
+        if((dtfim < dtinicio) || (dtfim == dtinicio)) {
+            alertar('A data final deve ser maior que a data inicial!');
+            return false;
+        } else if(dtinicio < dtAtual) {
+            alertar('O período não pode ser inferior a data de hoje!');
+            return false;
+        } else if((arquivo == '')){
+            alertar("Dados obrigatórios não preenchidos!");
+        } else {
+            $("#form").submit();
+        }
+    }
+
+    function msgImpacto(impacto){
+        if(impacto == 'sim'){
+            $("#impactosim").show();
+            $("#impactonao").hide();
+        } else {
+            $("#impactosim").hide();
+            $("#impactonao").show();
+        }
+    }
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'),'',true);?>" title="Ir para Início">Início</a></li>
+        <li>Manter Agentes</li>
+        <li class="last">Principal</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Atestados do Parecerista <span class="voltar"><a href="javascript:voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <?php require_once "inc/cabecalho.php";?>
+    <?php if(($this->grupoativo == "94")){ ?>
+    <table class="tabela">
+        <tr>
+            <td>Para adicionar um novo atestado, clique em novo ao lado!</td>
+            <th width="150"><input type="button" class="btn_novo" value=" " onclick="novo();"/></th>
+        </tr>
+    </table>
+    <?php } ?>
+
+    <div id="formNovo" class="sumir">
+
+        <center>
+            <div id="impactosim" class="msgALERT sumir" style="width: 96%;">
+                <div style="float: left;">Todos os projetos dentro deste prazo serão retirados de sua responsabilidade e você não receberá por eles!</div>
+            </div>
+            <div id="impactonao" class="msgALERT" style="width: 96%;">
+                <div style="float: left;">Você continuará com os projetos se comprometer a entregar no dia!</div>
+            </div>
+        </center>
+
+        <form id="form" action="<?php echo $this->url(array('controller' => 'agentes', 'action' => 'salvaatestado'));?>" method="post" enctype="multipart/form-data">
+            <input type="hidden" value="<?php echo date('d/m/Y');?>" id="dtatual" name="dtatual" />
+            <table class="tabela">
+                <tr>
+                    <th colspan="4">ATESTADO MÉDICO</th>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <span style="padding-right: 20px;">O atestado vai afetar a entrega de seus pareceres?</span>
+                        <input type="radio" name="impacto" id="impactoS" value="1" class="checkradio"  style="background: none; border: 0%; float:none; clear:auto; display:inline;" onclick="msgImpacto('sim');" />
+                        <label for="impactoS" style="padding-right: 20px;">Sim</label>
+                        <input type="radio" name="impacto" id="impactoN" value="0" class="checkradio" checked="checked"  style="background: none; border: 0%; float:none; clear:auto; display:inline;" onclick="msgImpacto('nao');" />
+                        <label for="impactoN">Não</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="200"><span style="color: red; font-weight: bold;">*</span> Data saída:</td>
+                    <td width="300"><input type="text" name="dtinicio" id="dtinicio" class="input_simples w100" maxlength="10" value="" onkeyup="mascara(this, format_data);" onclick="limpar_campo(this, '');" ></td>
+                    <td width="100"><span style="color: red; font-weight: bold;">*</span> Data volta:</td>
+                    <td><input type="text" name="dtfim" id="dtfim" class="input_simples w100" maxlength="10" value="" onkeyup="mascara(this, format_data);" onclick="limpar_campo(this, '');" ></td>
+                </tr>
+                <tr>
+                    <td><span style="color: red; font-weight: bold;">*</span> Documento:</td>
+                    <td colspan="3"><input class="input_simples" type="file" id="arquivo" name="arquivo" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td colspan="4" align="center">
+                        <input type="button" value=" " class="btn_salvar" onclick="validaForm();"/>
+                        <input id="btncancelar" type="button" class="btn_cancelar" onclick="salvo();" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+
+    <?php if(count($this->atestados) != 0){ ?>
+    <table class="tabela" id="salvos">
+        <tr>
+            <th colspan="5">Atestados médicos cadastrados</th>
+        </tr>
+        <tr>
+            <td width="130" align="center"><b>Dias de atestado</b></td>
+            <td width="130" align="center"><b>Data inicio</b></td>
+            <td width="130" align="center"><b>Data final</b></td>
+            <td width="150" align="center"><b>Algum impacto?</b></td>
+            <td align="center"><b>Arquivo</b></td>
+        </tr>
+        <?php foreach($this->atestados as $at){ ?>
+        <tr>
+            <td align="center"><?php echo $at->qtdDias;?></td>
+            <td align="center"><?php echo $at->dtInicio;?></td>
+            <td align="center"><?php echo $at->dtFim;?></td>
+            <td align="center"><?php echo $at->stImpacto == 1 ? 'SIM' : 'NÃO';?></td>
+            <td>
+                <a href="<?php echo $this->url(array('controller' => 'agentes', 'action' => 'abrirarquivo'), '', true); ?>?id=<?php echo $at->idArquivo; ?>"><?php echo $at->nmArquivo;?></a>
+            </td>
+        </tr>
+        <?php } ?>
+    </table>
+    <?php } else { ?>
+    <table class="tabela" id="salvos">
+        <tr>
+            <td>Nenhum atestado cadastrado!</td>
+        </tr>
+    </table>
+    <?php } ?>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

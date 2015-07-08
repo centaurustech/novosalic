@@ -1,0 +1,342 @@
+<script type="text/javascript">
+
+function AbrirFecharPlanilha(elemento)
+{
+	$('.' + elemento).toggle();
+
+	if ($('#' + elemento).hasClass('icn_mais'))
+	{
+		$('#' + elemento).addClass('icn_menos');
+		$('#' + elemento).removeClass('icn_mais');
+	}
+	else
+	{
+		$('#' + elemento).addClass('icn_mais');
+		$('#' + elemento).removeClass('icn_menos');
+	}
+}
+
+</script>
+
+<div id="imprimir">
+
+	
+	<!-- Calculo da Porcentagem -->
+	<?php if ($this->verifica15porcento): ?>
+		<!-- <div style="padding-bottom: 1em; padding-top: 1em; color: red; font-size: 12pt; text-align: center;">Segundo a IN nº 1, de 05/10/2010, o valor da Etapa de Custos/Administrativos não pode ser maior que 15% do valor total do projeto. O valor atual é de <?php echo $this->porcentagemAdministrativo; ?>% do total do projeto. Favor readeque!</div> -->
+		<div style="color:red; text-align: center; font-size: 16pt;  padding-bottom: 2em;">Aten&ccedil;ão! O valor dos custos administrativos do projeto estão: <?php echo $this->porcentagemAdministrativo; ?>% acima permitido pela IN n°1 de 05/10/2010 Artigo 24 Inciso V.<br /><br />Favor readequar para finalizar sua analise!</div>
+	<?php endif; ?>
+	<!-- Fim do calculo da porcentagem -->
+
+
+	<table class="tabela">
+		<tr>
+			<th colspan="13" class="center">Planilha de Or&ccedil;amento Sugerido</th>
+		</tr>
+
+		<?php
+		$item = 1;
+
+		$totalVal_01_Fonte = (float) 0;
+		$totalVal_02_Fonte = (float) 0;
+		
+		// inicializa valor total por produto
+		$totalVal_01_Produto = (float) 0;
+		$totalVal_02_Produto = (float) 0;
+		$totalVal_03_Produto = (float) 0;
+
+		// inicializa valor total por etapa
+		$totalVal_01_Etapa = (float) 0;
+		$totalVal_02_Etapa = (float) 0;
+		$totalVal_03_Etapa = (float) 0;
+
+		// inicializa valor total por uf
+		$totalVal_01_UF = (float) 0;
+		$totalVal_02_UF = (float) 0;
+		$totalVal_03_UF = (float) 0;
+
+		// arrays que servem para armazenar os elementos, e, posteriormente,
+		// verificar se o elemento j&aacute; encontra-se no array e evitar a sua "impressão" duplicada na tela
+		$arrayIncentivo = array();
+		$arrayProdutos  = array();
+		$arrayEtapas    = array();
+		$arrayUFs       = array();
+
+		// total geral
+		$totalVal_01_Geral = (float) 0;
+		$totalVal_02_Geral = (float) 0;
+		
+
+        foreach ($this->buscarProd as $resposta) :
+		// contador dos itens
+		/**
+		 * INÍCIO FOREACH PRODUTOS
+		 * Percorre todos os produtos
+		 */
+
+			// vari&aacute;veis que servirão para fazer compara&ccedil;ão dos itens j&aacute; existentes,
+			// e, evitar "imprimir" um iten j&aacute; "impresso"
+            $comparadorIncentivo = $resposta->idFonte;
+			$comparadorProdutos  = $resposta->idFonte . $resposta->idProduto;
+			$comparadorEtapas    = $resposta->idFonte . $resposta->idProduto . $resposta->idPlanilhaEtapa;
+			$comparadorUFs       = $resposta->idFonte . $resposta->idProduto . $resposta->idPlanilhaEtapa . $resposta->idUF . $resposta->idMunicipio;
+
+        ?>
+
+		<!-- ========== INÍCIO TÍTULO INCENTIVO FISCAL FEDERAL ========== -->
+        <?php if (!in_array($comparadorIncentivo, $arrayIncentivo)): ?>
+		<tr>
+			<td colspan="13">&nbsp;</td>
+		</tr>
+		<tr>
+			<td colspan="13">
+				<strong>
+					<div><a href="#IFF<?php echo $comparadorIncentivo; ?>" onclick="AbrirFecharPlanilha('IFF<?php echo $comparadorIncentivo; ?>');" onkeypress=" "><div id="IFF<?php echo $comparadorIncentivo; ?>" class="icn_menos" style="width:90%"><span class="red del_link" style="font-size: 18pt;"><?php echo utf8_decode(htmlentities($resposta->FonteRecurso));?></span></div></a></div>
+				</strong>
+			</td>
+		</tr>
+		<?php endif; ?>
+		<!-- ========== FIM TÍTULO INCENTIVO FISCAL FEDERAL ========== -->
+        
+
+
+		<!-- ========== INÍCIO BUSCA POR PRODUTO ========== -->
+
+			<?php if (!in_array($comparadorProdutos, $arrayProdutos)): ?>
+			<!-- ========== INÍCIO TÍTULO PRODUTOS ========== -->
+			<tr class="IFF<?php echo $comparadorIncentivo; ?> linha">
+				<td colspan="13">
+					<strong>
+						<div><a href="#IFF_PRODUTO<?php echo $comparadorProdutos; ?>" onclick="AbrirFecharPlanilha('IFF_PRODUTO<?php echo $comparadorProdutos; ?>');" onkeypress=" "><div id="IFF_PRODUTO<?php echo $comparadorProdutos; ?>" class="icn_menos" style="width:98%; margin-left:2%;"><span class="green del_link"><?php echo utf8_decode(htmlentities($resposta->Produto)); ?></span></div></a></div>
+					</strong>
+				</td>
+			</tr>
+			<!-- ========== FIM TÍTULO PRODUTOS ========== -->
+			<?php endif; ?>
+
+
+
+			<?php if (!in_array($comparadorEtapas, $arrayEtapas)): ?>
+			<!-- ========== INÍCIO TÍTULO ETAPAS ========== -->
+			<tr class="IFF<?php echo $comparadorIncentivo; ?> IFF_PRODUTO<?php echo $comparadorProdutos; ?>">
+				<td colspan="13">
+					<strong style="margin-left:2%;">
+						<div><a href="#IFF_ETAPA<?php echo $comparadorEtapas; ?>" onclick="AbrirFecharPlanilha('IFF_ETAPA<?php echo $comparadorEtapas; ?>');" onkeypress=" "><div id="IFF_ETAPA<?php echo $comparadorEtapas; ?>" class="icn_menos" style="width:90%; margin-left:4%;"><span class="orange del_link"><?php echo $resposta->idPlanilhaEtapa; ?> - <?php echo utf8_decode(htmlentities($resposta->Etapa)); ?></span></div></a></div>
+					</strong>
+				</td>
+			</tr>
+			<!-- ========== INÍCIO TÍTULO ETAPAS ========== -->
+			<?php endif; ?>
+
+
+
+			<?php if (!in_array($comparadorUFs, $arrayUFs)): ?>
+			<!-- ========== INÍCIO TÍTULO UF ========== -->
+			<tr class="IFF<?php echo $comparadorIncentivo; ?> IFF_PRODUTO<?php echo $comparadorProdutos; ?> IFF_ETAPA<?php echo $comparadorEtapas; ?>">
+				<td colspan="13">
+					<strong style="margin-left:3%;">
+						<div><a href="#IFF_UF<?php echo $comparadorUFs; ?>" onclick="AbrirFecharPlanilha('IFF_UF<?php echo $comparadorUFs; ?>');" onkeypress=" "><div id="IFF_UF<?php echo $comparadorUFs; ?>" class="icn_menos" style="width:90%; margin-left:6%"><span class="black del_link"><?php echo $resposta->UF; ?> - <?php echo utf8_decode(htmlentities($resposta->Municipio)); ?></span></div></a></div>
+					</strong>
+				</td>
+			</tr>
+			<!-- ========== FIM TÍTULO UF ========== -->
+
+
+			<!-- ========== INÍCIO TITULO ÍTENS ========== -->
+			<tr class="IFF<?php echo $comparadorIncentivo; ?> IFF_PRODUTO<?php echo $comparadorProdutos; ?> IFF_ETAPA<?php echo $comparadorEtapas; ?> IFF_UF<?php echo $comparadorUFs; ?>">
+				<th>&nbsp;</th>
+                                <th width="20%">Item</th>
+				<th>Dias</th>
+				<th>Unidade</th>
+				<th>Qtde</th>
+				<th>Ocor.</th>
+                                <th width="12%">Vl. Unit&aacute;rio</th>
+				<th width="12%">Vl. Solicitado</th>
+				<th width="12%">Vl. Sugerido do Parecerista</th>
+                                <th width="20%">Justificativa do Proponente</th>
+                                <th width="20%">Justificativa do Parecerista</th>
+				<!--<th width="12%">Vl. Sugerido do Relator</th>
+				<th>Justificativa do Relator</th>-->
+			</tr>
+			<!-- ========== FIM TITULO ÍTENS ========== -->
+			<?php endif; ?>
+
+			<!-- ========== INÍCIO ÍTENS ========== -->
+			<?php
+			$totalItens = 0;
+
+			$i = $resposta->idPlanilhaProjeto; // criar&aacute; id único
+			?>
+
+			<tr onmouseover="over_tr(this);" onfocus="over_tr(this);" onmouseout="out_tr(this);" onblur="out_tr(this);" onclick="click_tr(this);" onkeypress="click_tr(this);"
+				class="IFF<?php echo $comparadorIncentivo; ?> IFF_PRODUTO<?php echo $comparadorProdutos; ?> IFF_ETAPA<?php echo $comparadorEtapas; ?> IFF_UF<?php echo $comparadorUFs; ?> 
+				<?php
+				$totalItens--;
+				?>
+				">
+				<td><?php echo $item; ?></td>
+				<td><?php echo $this->escape($resposta->Item);?></td>
+				<td class="direita"><?php echo $this->escape($resposta->QtdeDias); ?></td>
+				<td class="centro"><?php echo $this->escape($resposta->Unidade); ?></td>
+				<td class="direita"><?php echo $this->escape($resposta->Quantidade); ?></td>
+				<td class="direita"><?php echo $this->escape($resposta->Ocorrencia); ?></td>
+				<td class="direita"><?php echo $this->formatarReal($this->escape($resposta->ValorUnitario)); ?></td>
+				<td class="direita blue"><?php echo $this->formatarReal($this->escape($resposta->VlSolicitado)); ?></td>
+				<td class="direita green"><?php echo $this->formatarReal($this->escape($resposta->Sugerido)); ?></td>
+				<td><?php echo $this->escape($resposta->JustificativaProponente); ?></td>
+                                <td><?php echo $this->escape($resposta->Justificativa); ?></td>
+				<!--<td class="direita"><?php if($resposta->VlSugeridoConselheiro) echo $this->formatarReal($this->escape($resposta->VlSugeridoConselheiro)); ?></td>
+				<td><?php echo $this->escape($this->LimitadorCaracteres($resposta->dsJustificativaConselheiro)); ?></td>-->
+			</tr>
+			<!-- ========== FIM ÍTENS ========== -->
+
+
+
+			<!-- ========== INÍCIO TOTAL UF ========== -->
+			<?php
+			// ===== CALCULA TOTAL UFS =====
+			$totalVal_01_UF += (float) $resposta->VlSolicitado;
+			$totalVal_02_UF += (float) $resposta->Sugerido;
+
+			$ultimaUF = isset($this->buscarProd[$item]->idMunicipio) ? $this->buscarProd[$item]->idFonte . $this->buscarProd[$item]->idProduto . $this->buscarProd[$item]->idPlanilhaEtapa . $this->buscarProd[$item]->idUF . $this->buscarProd[$item]->idMunicipio : null;
+
+			// compara a uf atual com a próxima uf para poder exibir o valor total
+			if ($resposta->idFonte . $resposta->idProduto . $resposta->idPlanilhaEtapa . $resposta->idUF . $resposta->idMunicipio != $ultimaUF) : 
+			?>
+			<tr class="IFF<?php echo $comparadorIncentivo; ?> IFF_PRODUTO<?php echo $comparadorProdutos; ?> IFF_ETAPA<?php echo $comparadorEtapas; ?> IFF_UF<?php echo $comparadorUFs; ?>">
+				<td colspan="6"><strong>Total de UF</strong></td>
+				<td>&nbsp;</td>
+				<td class="direita"><strong><?php echo $this->formatarReal($totalVal_01_UF); ?></strong></td>
+				<td class="direita"><strong><?php echo $this->formatarReal($totalVal_02_UF); ?></strong></td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+			<?php
+				// ===== ZERA TOTAL UFS =====
+				$totalVal_01_UF = (float) 0;
+				$totalVal_02_UF = (float) 0;
+			endif;
+			?>
+			<!-- ========== FIM TOTAL UF ========== -->
+
+
+
+			<!-- ========== INÍCIO TOTAL ETAPAS ========== -->
+			<?php
+			// ===== CALCULA TOTAL ETAPAS =====
+			$totalVal_01_Etapa += (float) $resposta->VlSolicitado;
+			$totalVal_02_Etapa += (float) $resposta->Sugerido;
+
+			$ultimaEtapa = isset($this->buscarProd[$item]->idPlanilhaEtapa) ? $this->buscarProd[$item]->idFonte . $this->buscarProd[$item]->idProduto . $this->buscarProd[$item]->idPlanilhaEtapa : null;
+
+			// compara a etapa atual com a próxima etapa para poder exibir o valor total
+			if ($resposta->idFonte . $resposta->idProduto . $resposta->idPlanilhaEtapa != $ultimaEtapa) : 
+			?>
+			<tr class="IFF<?php echo $comparadorIncentivo; ?> IFF_PRODUTO<?php echo $comparadorProdutos; ?> IFF_ETAPA<?php echo $comparadorEtapas; ?>">
+				<td colspan="6" class="orange"><strong>Total da Etapa</strong></td>
+				<td>&nbsp;</td>
+				<td class="direita orange"><strong><?php echo $this->formatarReal($totalVal_01_Etapa); ?></strong></td>
+				<td class="direita orange"><strong><?php echo $this->formatarReal($totalVal_02_Etapa); ?></strong></td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+			<?php
+				// ===== ZERA TOTAL ETAPAS =====
+				$totalVal_01_Etapa = (float) 0;
+				$totalVal_02_Etapa = (float) 0;
+			endif;
+			?>
+			<!-- ========== FIM TOTAL ETAPAS ========== -->
+
+
+
+			<!-- ========== INÍCIO TOTAL PRODUTOS ========== -->
+			<?php
+			// ===== CALCULA TOTAL PRODUTOS =====
+			$totalVal_01_Produto += (float) $resposta->VlSolicitado;
+			$totalVal_02_Produto += (float) $resposta->Sugerido;
+
+			$ultimoProduto = isset($this->buscarProd[$item]->idProduto) ? $this->buscarProd[$item]->idFonte . $this->buscarProd[$item]->idProduto : null;
+
+			// compara o produto atual com o próximo produto para poder exibir o valor total
+			if ($resposta->idFonte . $resposta->idProduto != $ultimoProduto) : 
+			?>
+			<tr class="IFF<?php echo $comparadorIncentivo; ?> IFF_PRODUTO<?php echo $comparadorProdutos; ?>">
+				<td colspan="6" class="green"><strong>Total dos Custos Administrativos ou do Produto</strong></td>
+				<td>&nbsp;</td>
+				<td class="direita green"><strong><?php echo $this->formatarReal($totalVal_01_Produto); ?></strong></td>
+				<td class="direita green"><strong><?php echo $this->formatarReal($totalVal_02_Produto); ?></strong></td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+			<?php
+				// ===== ZERA TOTAL PRODUTOS =====
+				$totalVal_01_Produto = (float) 0;
+				$totalVal_02_Produto = (float) 0;
+			endif;
+			?>
+			<!-- ========== FIM TOTAL PRODUTOS ========== -->
+
+
+
+
+
+		<!-- ========== INICIO TOTAL GERAL ========== -->
+		<?php
+			// ===== CALCULA TOTAL UFS =====
+			$totalVal_01_Fonte += (float) $resposta->VlSolicitado;
+			$totalVal_02_Fonte += (float) $resposta->Sugerido;
+
+			$ultimaFonte = isset($this->buscarProd[$item]->idFonte) ? $this->buscarProd[$item]->idFonte : null;
+
+			// compara a etapa atual com a próxima etapa para poder exibir o valor total
+			if ($resposta->idFonte != $ultimaFonte) :
+		?>
+		<tr class="IFF<?php echo $comparadorIncentivo; ?>">
+			<td colspan="6" class="red" style="font-size: 12pt;"><strong>Total por mecanismo de incentivo</strong></td>
+			<td>&nbsp;</td>
+			<td class="direita red" style="font-size: 12pt;"><strong><?php echo $this->formatarReal($totalVal_01_Fonte); ?></strong></td>
+			<td class="direita red" style="font-size: 12pt;"><strong><?php echo $this->formatarReal($totalVal_02_Fonte); ?></strong></td>
+                        <td colspan="4">&nbsp;</td>
+		</tr>
+		<?php 
+			// ===== ZERA TOTAL FONTE =====
+			$totalVal_01_Fonte = (float) 0;
+			$totalVal_02_Fonte = (float) 0;
+		endif;
+
+		// total geral
+		$totalVal_01_Geral += (float) $resposta->VlSolicitado;
+		$totalVal_02_Geral += (float) $resposta->Sugerido;		
+		?>
+		<!-- ========== FIM TOTAL PRODUTOS ========== -->
+
+		<?php
+			// adiciona os elementos no array para guardar no histórico
+			$arrayIncentivo[] = $resposta->idFonte;
+			$arrayProdutos[]  = $resposta->idFonte . $resposta->idProduto;
+			$arrayEtapas[]    = $resposta->idFonte . $resposta->idProduto . $resposta->idPlanilhaEtapa;
+			$arrayUFs[]       = $resposta->idFonte . $resposta->idProduto . $resposta->idPlanilhaEtapa . $resposta->idUF . $resposta->idMunicipio;
+
+			$item++; // incrementa o contador de itens
+
+		endforeach;
+		/**
+		 * FIM FOREACH PRODUTOS
+		 */
+		?>
+		<!-- ========== FIM BUSCA POR PRODUTO ========== -->
+
+
+
+		<!-- ========== INICIO TOTAL GERAL ========== -->
+		<tr>
+			<th class="left" colspan="6" style="font-size: 12pt;"><strong>Total Geral</strong></th>
+			<th>&nbsp;</th>
+			<th class="direita red" style="font-size: 12pt;"><strong><?php echo $this->formatarReal($totalVal_01_Geral); ?></strong></th>
+			<th class="direita red" style="font-size: 12pt;"><strong><?php echo $this->formatarReal($totalVal_02_Geral); ?></strong></th>
+                        <th colspan="4">&nbsp;</th>
+		</tr>
+	</table>
+
+</div> 

@@ -1,0 +1,162 @@
+<?php $projetoUrl = $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index')) . "?idPronac={$this->projeto->IdPRONAC}"; ?>
+<div id="titulo"><div>Detalhe Projeto / Inconsistência</div></div>
+<div id="conteudo">
+    <table class="tabela">
+        <thead>
+            <tr>
+                <th>Pronac</th>
+                <th>Nome do Projeto</th>
+                <th>Ag&ecirc;ncia</th>
+                <th>Conta</th>
+                <th>Valor Captado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="inc2_resultado <?php echo $this->projeto->pronac; ?>">
+                <td align="center">
+                    <a target="_blank" href='<?php echo $projetoUrl; ?>'><?php echo $this->projeto->pronac; ?></a>
+                </td>
+                <td><?php echo $this->projeto->NomeProjeto; ?></td>
+                <td align="center"><?php echo!empty($this->projeto->Agencia) ? $this->projeto->Agencia : '<em>Não informada</em>'; ?></td>
+                <td align="center"><?php echo!empty($this->projeto->ContaBloqueada) ? $this->projeto->ContaBloqueada : '<em>Não informada</em>'; ?></td>
+                <td align="center">
+                    <b><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'dados-bancarios-captacao')); ?>?idPronac=<?php echo $this->idPronac; ?>" style="color: blue !important;" target="new">R$ <?php echo number_format($this->projeto->ValorCaptado, 2, ',', '.'); ?></a></b>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="tabela">
+        <thead>
+            <tr>
+                <td align="center" class="destacar bold" colspan="8">CAPTAÇÕES</td>
+            </tr>
+            <tr>
+                <th>#</th>
+                <th>Nome Incentivador</th>
+                <th>CPF / CNPJ Proponente</th>
+                <th>CPF / CNPJ Incentivador</th>
+                <th>Data do Crédito</th>
+                <th>Valor do Crédito</th>
+                <th width="10px">Diligência</th>
+                <th width="10px">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            foreach ($this->captacoes as $captacao) :
+                $arrPrazo = $this->prazoRespostaDiligencia($captacao->IdPRONAC, 183);
+                $icone = $arrPrazo['iconeDiligencia']['icone'];
+                $title = $arrPrazo['iconeDiligencia']['title'];
+                ?>
+                <tr>
+                    <td rowspan="<?php echo count($this->inconsistencias[$captacao->idTmpCaptacao]) + 1; ?>"><?php echo isset($index) ? ++$index : $index = 1; ?></td>
+                    <td><?php echo $captacao->nomeIncentivador; ?></td>
+                    <td><?php echo Validacao::mascaraCPFCNPJ($captacao->nrCpfCnpjProponente); ?></td>
+                    <td><?php echo Validacao::mascaraCPFCNPJ($captacao->nrCpfCnpjIncentivador); ?></td>
+                    <td><?php echo $captacao->dtCredito; ?></td>
+                    <td><?php echo $this->formatarReal($captacao->vlValorCredito); ?></td>
+                    <td align="center">
+                        <a target="_blank" href="<?php echo $this->url(array('controller' => 'diligenciar', 'action' => 'listardiligenciaanalista')) . '?idPronac=' . $captacao->IdPRONAC . '&situacao=E50&tpDiligencia=183'; ?>" ><img src="<?php echo $this->baseUrl(); ?>/public/img/<?php echo $icone; ?>" title="<?php echo $title; ?>" width="30px"/></a>
+                    </td>
+                    <td align="center">
+                        <a href="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'deposito-equivocado', 'captacao' => $captacao->idTmpCaptacao, 'format' => 'json')); ?>" data-acao="depositoEquivocado">
+                            <input type="button" class="btn_deposito_equivocado" />
+                        </a>
+                    </td>
+                </tr>
+                <?php
+                foreach ($this->inconsistencias[$captacao->idTmpCaptacao] as $inconsistencia) :
+                    $inconsistenciaPartial = "listar-inconsistencia-detalhe-{$inconsistencia->idTipoInconsistencia}.phtml";
+                    ?>
+                    <tr>
+                        <td colspan="6"><?php echo $inconsistencia->dsTipoInconsistencia; ?></td>
+                        <td align="center">
+                            <?php
+                            try {
+                                echo $this->partial($inconsistenciaPartial, array('projeto' => $this->projeto, 'captacao' => $captacao,));
+                            } catch (Exception $e) {
+                                echo "Partial Missing {$inconsistenciaPartial}";
+                            }
+                            ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+    <div id="msgAlerta"></div>
+    <p align="center">
+        <a href="#" id="btn_finalizar"><img src="<?php echo $this->baseUrl(); ?>/public/img/btn-validarItens.png" /></a>
+    </p>
+</div>
+<div id="rodapeConteudo"><span></span></div>
+<br clear="all" />
+
+<script>
+    $("a[data-acao='depositoEquivocado']").click(function(event) {
+        event.preventDefault();
+        var clickedElement = $(this);
+        $("#msgAlerta").dialog("destroy");
+        $("#msgAlerta").html("Tem certeza que deseja remover esta captação?");
+        $("#msgAlerta").dialog
+        ({
+            width:310,
+            height:180,
+            EscClose:true,
+            draggable: true,
+            resizable: true,
+            closeOnEscape: false,
+            modal:true,
+            title: "Remover Captação",
+            buttons:
+            {
+                'Cancelar': function(){
+                    $(this).dialog('close');
+                },
+                'Ok': function(){
+                	$(this)
+	                    .html('<br><center>Aguarde, atualizando dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br>')
+	                ;
+                	$.ajax({
+                        type: "post",
+                        url: clickedElement.attr('href'),
+                        success: function(response) {
+                            var trToRemove = clickedElement.closest('tr').find('td').attr('rowspan');
+                            for (var index = 1; index < trToRemove; index++) {
+                                clickedElement.closest('tr').next().remove();
+                            }
+                            clickedElement.closest('tr').remove();
+                            $("#msgAlerta").dialog("destroy");
+                        },
+                        error: function(response) {
+                            $("#msgAlerta").dialog("destroy");
+                            message('Ocorreu um erro ao tentar realizar a operação para atualizar as inconsistências.', 'ERROR');
+                        }
+                    });
+                }
+            }
+        });
+    });
+    $("#btn_finalizar").click(function() {
+        $("#msgAlerta")
+                .html('<br><center>Aguarde, atualizando dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br>')
+                .dialog({resizable: false, title: 'Alerta!', width: 300, height: 150, modal: true});
+        $.ajax({
+            async: true,
+            type: "post",
+            url: "<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'finalizar')); ?>",
+            data: {modal: "s"},
+            success: function(data) {
+                window.location.reload();
+                if (window.opener) {
+                    window.opener.location.href = window.opener.location.href;
+                }
+            },
+            error: function(data) {
+                message('Ocorreu um erro ao tentar realizar a operação para atualizar as inconsistências.', 'ERROR');
+            },
+            dataType: 'json'
+        });
+    });
+</script>

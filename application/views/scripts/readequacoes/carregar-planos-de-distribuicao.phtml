@@ -1,0 +1,648 @@
+<?php header('Content-Type: text/plain; charset=ISO-8859-1'); ?>
+
+<?php if($this->idPerfil == 1111){ ?>
+<table class="tabela">
+    <tr>
+        <td><input type="button" class="btn_incluir" id="adicionarPlanosDeDistribuicao" title="Adicionar Planos de Distribuição" /></td>
+    </tr>
+</table>
+<?php } ?>
+
+<table class="tabela">
+    <tr>
+        <th>Produto</th>
+        <th>Área</th>
+        <th>Segmento</th>
+        <th style="width: 150px;">Solicitação Proponente</th>
+        <?php if(in_array($this->siEncaminhamento, array(4,5,6,7,9,10))){ ?>
+        <th style="width: 150px;">Avaliação Técnica</th>
+        <?php } ?>
+        
+        <?php if(in_array($this->siEncaminhamento, array(7,9))){ ?>
+        <th style="width: 150px;">Avaliação Conselheiro</th>
+        <?php } ?>
+    </tr>
+    
+    <?php foreach ($this->planosDeDistribuicao as $p){
+        $corLinha = '';
+        switch ($p['tpSolicitacao']) {
+            case 'E':
+                $corLinha = 'red';
+                if($this->idPerfil == 1111){
+                    $corLinha = 'silver';
+                }
+                break;
+            case 'I':
+                $corLinha = 'green';
+                break;
+            case 'A':
+                $corLinha = 'blue';
+                break;
+            default:
+                $corLinha = '';
+                break;
+        }
+    ?>
+    <tr style="color: <?php echo $corLinha; ?> !important;">
+        <td><?php echo $p->Produto; echo ($p['stPrincipal']==1) ? ' <span class="red bold">(Produto principal)</span>' : ''; ?></td>
+        <td><?php echo $p->Area; ?></td>
+        <td><?php echo $p->Segmento; ?></td>
+        <td class="centro">
+            <?php if($this->idPerfil == 1111){
+                    if($p['tpSolicitacao'] == 'E'){
+                        echo '<span style="margin: 10px;">Excluído</span>';
+                        echo '<img src="'.$this->baseUrl().'/public/img/refresh.gif" style="cursor: pointer;" class="restaurarItemPlanoDiistribuicao" tipo="'.$p['tpSolicitacao'].'" idPlanoDistribuicao="'.$p['idPlanoDistribuicao'].'" title="restaurar plano de distribuição"/>';
+                    } else {
+                        if($p['stPrincipal']!=1){ ?>
+                        <input type="button" class="btn_excluir btnExcluirPDDist" idPlanoDistribuicao="<?php echo $p['idPlanoDistribuicao']; ?>">
+            <?php } } } else {
+                    $title = '';
+                    switch ($p['tpSolicitacao']) {
+                        case 'E':
+                            echo 'Excluído';
+                            $title = 'restaurar plano de distribuição';
+                            break;
+                        case 'I':
+                            echo 'Incluído';
+                            $title = 'recusar inclusão de plano de distribuição';
+                            break;
+                        case 'A':
+                            echo 'Alterado';
+                            $title = 'reintegrar plano de distribuição';
+                            break;
+                        default:
+                            echo '';
+                            break;
+                        } ?>
+
+                    <?php /*if(in_array($this->idPerfil, array(94,121)) && $p['tpSolicitacao'] != 'N' && $p['stPrincipal']!=1){ ?>
+                    <img src="<?php echo $this->baseUrl(); ?>/public/img/refresh.gif" style="cursor: pointer;" class="restaurarItemPlanoDiistribuicao" tipo="<?php echo $p['tpSolicitacao']; ?>" idPlanoDistribuicao="<?php echo $p['idPlanoDistribuicao']; ?>" title="<?php echo $title; ?>"/>
+                    <?php } ?>
+
+                    <?php if($this->idPerfil == 118 && $p['tpSolicitacao'] != 'N' && $p['stPrincipal']!=1 && $this->link){ ?>
+                    <img src="<?php echo $this->baseUrl(); ?>/public/img/refresh.gif" style="cursor: pointer;" class="restaurarItemPlanoDiistribuicao "tipo="<?php echo $p['tpSolicitacao']; ?>" idPlanoDistribuicao="<?php echo $p['idPlanoDistribuicao']; ?>" title="<?php echo $title; ?>"/>
+                    <?php }*/ ?>
+                <?php } ?>
+        </td>
+        
+        <?php if(in_array($this->siEncaminhamento, array(4))){ ?>
+        <td class="centro">
+            <?php if($p->tpSolicitacao != 'N'){ ?>
+            <select class="select_simples comboPlanoDeDistribuicao" style="width: 115px;" idpldd="<?php echo $p->idPlanoDistribuicao; ?>">
+                <option value=""> - Selecione - </option>
+                <option value="D" <?php echo ($p->tpAnaliseTecnica == 'D') ? 'selected="selected"' : ''; ?>>Deferir</option>
+                <option value="I" <?php echo ($p->tpAnaliseTecnica == 'I') ? 'selected="selected"' : ''; ?>>Indeferir</option>
+            </select>
+            <?php } ?>
+        </td>
+        <?php } ?>
+        
+        <?php if(in_array($this->siEncaminhamento, array(5,6,7,9,10))){ ?>
+        <td class="centro">
+            <?php
+                 switch ($p->tpAnaliseTecnica) {
+                     case 'D':
+                         echo '<span style="color: black !important;">Deferido</span>';
+                         break;
+                     case 'I':
+                         echo '<span style="color: black !important;">Indeferido</span>';
+                         break;
+                     default:
+                         echo '<span style="color: black !important;">-</span>';
+                         break;
+            } ?>
+        </td>
+        <?php } ?>
+        
+        <?php if(in_array($this->siEncaminhamento, array(7))){ ?>
+        <td class="centro">
+            <?php if($p->tpSolicitacao != 'N'){ ?>
+            <select class="select_simples comboPlanoDeDistribuicao" style="width: 115px;" idpldd="<?php echo $p->idPlanoDistribuicao; ?>">
+                <option value=""> - Selecione - </option>
+                <option value="D" <?php echo ($p->tpAnaliseComissao == 'D') ? 'selected="selected"' : ''; ?>>Deferir</option>
+                <option value="I" <?php echo ($p->tpAnaliseComissao == 'I') ? 'selected="selected"' : ''; ?>>Indeferir</option>
+            </select>
+            <?php } ?>
+        </td>
+        <?php } ?>
+        
+        <?php if(in_array($this->siEncaminhamento, array(9))){ ?>
+        <td class="centro">
+            <?php
+                 switch ($p->tpAnaliseComissao) {
+                     case 'D':
+                         echo '<span style="color: black !important;">Deferido</span>';
+                         break;
+                     case 'I':
+                         echo '<span style="color: black !important;">Indeferido</span>';
+                         break;
+                     default:
+                         echo '<span style="color: black !important;">-</span>';
+                         break;
+            } ?>
+        </td>
+        <?php } ?>
+    </tr>
+    <?php } ?>
+</table>
+
+<div id="modalInclusaoPDDist" class="sumir">
+    <table class="tabela">
+        <tr>
+            <td class="destacar bold" colspan="2">Produto</td>
+            <td class="destacar bold">Posição da Logomarca</td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <select class="select_simples w300 obrigatoriosPlanosDeDistribuicao" name="newPlanoDistribuicao" id="newPlanoDistribuicao">
+                    <option value=""> - Selecione - </option>
+                    <?php foreach ($this->produtos as $produtos){ ?>
+                    <option value="<?php echo $produtos->Codigo; ?>"><?php echo $produtos->Descricao; ?></option>
+                    <?php } ?>
+                </select>
+            </td>
+            <td>
+                <select class="select_simples w200 obrigatoriosPlanosDeDistribuicao" name="newPosicaoLogomarca" id="newPosicaoLogomarca">
+                    <option value=""> - Selecione - </option>
+                    <?php foreach ($this->posicoesLogomarca as $posicoes){ ?>
+                    <option value="<?php echo $posicoes->idVerificacao; ?>"><?php echo $posicoes->Descricao; ?></option>
+                    <?php } ?>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="destacar bold">Área</td>
+            <td class="destacar bold" colspan="2">Segmento</td>
+        </tr>
+        <tr>
+            <td>
+                <select class="select_simples w200 obrigatoriosPlanosDeDistribuicao" name="newArea" id="newArea">
+                    <option value=""> - Selecione - </option>
+                    <?php foreach ($this->areas as $areas){ ?>
+                    <option value="<?php echo $areas->Codigo; ?>"><?php echo $areas->Descricao; ?></option>
+                    <?php } ?>
+                </select>
+            </td>
+            <td colspan="2">
+                <select class="select_simples w200 obrigatoriosPlanosDeDistribuicao" name="newSegmento" id="newSegmento">
+                    <option value=""> - Selecione - </option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="destacar bold" style="width: 33%">Patrocinador (Qntd)</td>
+            <td class="destacar bold" style="width: 33%">Divulgação (Qntd)</td>
+            <td class="destacar bold" style="width: 33%">População de baixa renda (Qntd)</td>
+        </tr>
+        <tr>
+            <td><input type="text" class="input_simples obrigatoriosPlanosDeDistribuicao" name="newQntdPatrocinador" id="newQntdPatrocinador" maxlength="8"></td>
+            <td><input type="text" class="input_simples obrigatoriosPlanosDeDistribuicao" name="newQntdDivulgacao" id="newQntdDivulgacao" maxlength="8"></td>
+            <td><input type="text" class="input_simples obrigatoriosPlanosDeDistribuicao" name="newQntdPopulacaoBaixaRenda" id="newQntdPopulacaoBaixaRenda" maxlength="8"></td>
+        </tr>
+        <tr>
+            <td class="destacar bold" style="width: 33%" nowrap>Normal (Qntd)</td>
+            <td class="destacar bold" style="width: 33%" nowrap>Promocional (Qntd)</td>
+            <td class="destacar bold" style="width: 33%" nowrap>N&ordm; Exemplares / Ingressos (Qntd)</td>
+        </tr>
+        <tr>
+            <td><input type="text" class="input_simples obrigatoriosPlanosDeDistribuicao" name="newQntdNormal" id="newQntdNormal" maxlength="8"></td>
+            <td><input type="text" class="input_simples obrigatoriosPlanosDeDistribuicao" name="newQntdPromocional" id="newQntdPromocional" maxlength="8"></td>
+            <td><input type="text" class="input_simples" name="newQntdExemplares" id="newQntdExemplares" disabled="disabled"></td>
+        </tr>
+        <tr>
+            <td class="destacar bold" style="width: 33%" nowrap>Normal (R$)</td>
+            <td class="destacar bold" style="width: 33%" nowrap>Promocional (R$)</td>
+            <td class="destacar bold" style="width: 33%" nowrap>Total Previsto (R$)</td>
+        </tr>
+        <tr>
+            <td><input type="text" class="input_simples obrigatoriosPlanosDeDistribuicao" name="newVlNormal" id="newVlNormal" maxlength="10"></td>
+            <td><input type="text" class="input_simples obrigatoriosPlanosDeDistribuicao" name="newVlPromocional" id="newVlPromocional" maxlength="10"></td>
+            <td>
+                <input name="newPrevistoNormal" id="newPrevistoNormal" disabled="disabled" class="input_simples sumir" type="text" maxlength="10" size="10">
+                <input name="newPrevistoPromocional" id="newPrevistoPromocional" disabled="disabled" class="input_simples sumir" type="text" maxlength="10" size="10">
+                <input name="newTotalPrevisto" id="newTotalPrevisto" disabled="disabled" class="input_simples" type="text" maxlength="10">
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div id="alertaPDDist" class="sumir"></div>
+
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        
+        <?php if(!in_array($this->siEncaminhamento, array(7,8,9))){ ?>
+        $("#newQntdPatrocinador").numeric();
+        $("#newQntdDivulgacao").numeric();
+        $("#newQntdPopulacaoBaixaRenda").numeric();
+        $("#newQntdNormal").numeric();
+        $("#newQntdPromocional").numeric();
+        $("#newVlNormal").priceFormat();
+        $("#newVlPromocional").priceFormat();
+        
+        $("#newQntdNormal").keyup(function(){
+            somaValores('newQntdNormal', 'newQntdPromocional', 'newQntdExemplares', 0, true);
+            somaValores('newQntdExemplares', 'newQntdPatrocinador', 'newQntdExemplares', 0, true);
+            somaValores('newQntdExemplares', 'newQntdDivulgacao', 'newQntdExemplares', 0, true);
+            somaValores('newQntdExemplares', 'newQntdPopulacaoBaixaRenda', 'newQntdExemplares', 0, true);
+            multiplicaValores('newQntdNormal', 'newVlNormal', 'newPrevistoNormal', 2, true);
+            somaValores('newPrevistoNormal', 'newPrevistoPromocional', 'newTotalPrevisto', 2, true);
+        });
+
+        $("#newQntdPromocional").keyup(function(){
+            somaValores('newQntdNormal', 'newQntdPromocional', 'newQntdExemplares', 0, true);
+            somaValores('newQntdExemplares', 'newQntdPatrocinador', 'newQntdExemplares', 0, true);
+            somaValores('newQntdExemplares', 'newQntdDivulgacao', 'newQntdExemplares', 0, true);
+            somaValores('newQntdExemplares', 'newQntdPopulacaoBaixaRenda', 'newQntdExemplares', 0, true);
+            multiplicaValores('newQntdPromocional', 'newVlPromocional', 'newPrevistoPromocional', 2, true);
+            somaValores('newPrevistoNormal', 'newPrevistoPromocional', 'newTotalPrevisto', 2, true);
+        });
+
+        $("#newQntdPatrocinador,#newQntdDivulgacao,#newQntdPopulacaoBaixaRenda").keyup(function(){
+            somaValores('newQntdNormal', 'newQntdPromocional', 'newQntdExemplares', 0, true);
+            somaValores('newQntdExemplares', 'newQntdPatrocinador', 'newQntdExemplares', 0, true);
+            somaValores('newQntdExemplares', 'newQntdDivulgacao', 'newQntdExemplares', 0, true);
+            somaValores('newQntdExemplares', 'newQntdPopulacaoBaixaRenda', 'newQntdExemplares', 0, true);
+        });
+
+        $("#newVlNormal").keyup(function(){
+            multiplicaValores('newQntdNormal', 'newVlNormal', 'newPrevistoNormal', 2, true);
+            somaValores('newPrevistoNormal', 'newPrevistoPromocional', 'newTotalPrevisto', 2, true);
+        });
+
+        $("#newVlPromocional").keyup(function(){
+            multiplicaValores('newQntdPromocional', 'newVlPromocional', 'newPrevistoPromocional', 2, true);
+            somaValores('newPrevistoNormal', 'newPrevistoPromocional', 'newTotalPrevisto', 2, true);
+        });
+
+        //===========================================================================================================
+
+        $("#newQntdNormal").blur(function(){
+            somaValores('newQntdNormal', 'newQntdPromocional', 'newQntdExemplares', 0, true);
+            somaValores('newQntdExemplares', 'newQntdPatrocinador', 'newQntdExemplares', 0, true);
+            somaValores('newQntdExemplares', 'newQntdDivulgacao', 'newQntdExemplares', 0, true);
+            somaValores('newQntdExemplares', 'newQntdPopulacaoBaixaRenda', 'newQntdExemplares', 0, true);
+            multiplicaValores('newQntdNormal', 'newVlNormal', 'newPrevistoNormal', 2, true);
+            somaValores('newPrevistoNormal', 'newPrevistoPromocional', 'newTotalPrevisto', 2, true);
+        });
+
+        $("#newQntdPromocional").blur(function(){
+            somaValores('newQntdNormal', 'newQntdPromocional', 'newQntdExemplares', 0, true);
+            somaValores('newQntdExemplares', 'newQntdPatrocinador', 'newQntdExemplares', 0, true);
+            somaValores('newQntdExemplares', 'newQntdDivulgacao', 'newQntdExemplares', 0, true);
+            somaValores('newQntdExemplares', 'newQntdPopulacaoBaixaRenda', 'newQntdExemplares', 0, true);
+            multiplicaValores('newQntdPromocional', 'newVlPromocional', 'newPrevistoPromocional', 2, true);
+            somaValores('newPrevistoNormal', 'newPrevistoPromocional', 'newTotalPrevisto', 2, true);
+        });
+
+        $("#newQntdPatrocinador,#newQntdDivulgacao,#newQntdPopulacaoBaixaRenda").blur(function(){
+            somaValores('newQntdNormal', 'newQntdPromocional', 'newQntdExemplares', 0, true);
+            somaValores('newQntdExemplares', 'newQntdPatrocinador', 'newQntdExemplares', 0, true);
+            somaValores('newQntdExemplares', 'newQntdDivulgacao', 'newQntdExemplares', 0, true);
+            somaValores('newQntdExemplares', 'newQntdPopulacaoBaixaRenda', 'newQntdExemplares', 0, true);
+        });
+
+        $("#newVlNormal").blur(function(){
+            multiplicaValores('newQntdNormal', 'newVlNormal', 'newPrevistoNormal', 2, true);
+            somaValores('newPrevistoNormal', 'newPrevistoPromocional', 'newTotalPrevisto', 2, true);
+        });
+
+        $("#newVlPromocional").blur(function(){
+            multiplicaValores('newQntdPromocional', 'newVlPromocional', 'newPrevistoPromocional', 2, true);
+            somaValores('newPrevistoNormal', 'newPrevistoPromocional', 'newTotalPrevisto', 2, true);
+        });
+        <?php } ?>
+        
+        $('#adicionarPlanosDeDistribuicao').unbind('click').click(function(){
+            
+            $("#modalInclusaoPDDist").dialog({
+                resizable: false,
+                title: 'Inclusão de Plano de Distribuição!',
+                width: 800,
+                modal: true,
+                buttons : {
+                    'Cancelar' : function(){
+                        $(this).dialog('close');
+                    },
+                    'Salvar' : function(){
+                        
+                        var i=0,
+                            erros = null,
+                            nExemplares = parseInt($('input#newQntdExemplares').val()),
+                            patrocinador = parseInt($('input#newQntdPatrocinador').val()),
+                            divulgacao = parseInt($('input#newQntdDivulgacao').val()),
+                            baixarenda = parseInt($('input#newQntdPopulacaoBaixaRenda').val()),
+                            qtdenormal = parseInt($('input#newQntdNormal').val()),
+                            qtdepromocional = parseInt($('input#newQntdPromocional').val()),
+                            preconormal = parseInt($('input#newVlNormal').val().replace(',', '')),
+                            precopromocional = parseInt($('input#newVlPromocional').val().replace(',', ''));
+
+                        if( patrocinador > (nExemplares/10) ){
+                            i++;
+                            erros = erros + i+' - A quantidade destinada ao patrocinador n&atilde;o pode ser maior do que 10% do n&uacute;mero Exemplares/Ingressos.<br />';
+                        }
+                        if( divulgacao > (nExemplares/10) ){
+                            i++;
+                            erros = erros + i+' - A quantidade destinada &agrave; divulga&ccedil;&atilde;o n&atilde;o pode ser maior do que 10% do n&uacute;mero Exemplares/Ingressos.<br />';
+                        }
+                        if( baixarenda < (nExemplares/10) ){
+                            i++;
+                            erros = erros + i+' - A quantidade destinada &agrave; popula&ccedil;&atilde;o de baixa renda n&atilde;o pode ser menor do que 10% do n&uacute;mero Exemplares/Ingressos.<br />';
+                        }
+                        if( precopromocional > preconormal){
+                            i++;
+                            erros = erros + i+' - Valor normal n&atilde;o pode ser menor do que o valor promocional.<br />';
+                        }
+                        if( qtdenormal == null ){
+                            i++;
+                            erros = erros + i+' - Favor preencher o campo Normal(Qntd).<br />';
+                        }
+                        if( qtdepromocional == null ){
+                            i++;
+                            erros = erros + i+' - Favor preencher o campo Promocional(Qntd).<br />';
+                        }
+                        if( patrocinador==0 && divulgacao==0 && baixarenda==0 && qtdenormal==0 && qtdepromocional==0){
+                            i=0;
+                        }
+
+                        var preenchimento = true;
+                        $('.obrigatoriosPlanosDeDistribuicao').each(function(){
+                            if($.trim($(this).val()) == ''){
+                                preenchimento = false;
+                            }
+                        });
+
+                        if(!preenchimento){
+                            i++;
+                            erros = erros + i+' - Favor preencher os campos obrigatórios.';
+                        }
+
+                        if(i>0){
+                            //$("#alertaPDDist").dialog("destroy");
+                            $("#alertaPDDist").html(erros);
+                            $("#alertaPDDist").dialog({
+                                resizable: false,
+                                title: 'Alerta!',
+                                width: 440,
+                                modal: true,
+                                buttons : {
+                                    'OK' : function(){
+                                        $(this).dialog('close');
+                                    }
+                                }
+                            });
+                            $('.ui-dialog-titlebar-close').remove();
+                        
+                        } else {
+
+                            $.ajax({
+                                type: 'POST',
+                                url: '<?php echo $this->url(array('controller' => 'readequacoes', 'action' => 'incluir-planos-de-distribuicao'), '', true); ?>?idPronac=<?php echo Seguranca::encrypt($this->idPronac); ?>',
+                                data: {
+                                    newPlanoDistribuicao: $('#newPlanoDistribuicao').val(),
+                                    newPosicaoLogomarca: $('#newPosicaoLogomarca').val(),
+                                    newArea: $('#newArea').val(),
+                                    newSegmento: $('#newSegmento').val(),
+                                    newQntdPatrocinador: $('#newQntdPatrocinador').val(),
+                                    newQntdDivulgacao: $('#newQntdDivulgacao').val(),
+                                    newQntdPopulacaoBaixaRenda: $('#newQntdPopulacaoBaixaRenda').val(),
+                                    newQntdNormal: $('#newQntdNormal').val(),
+                                    newQntdPromocional: $('#newQntdPromocional').val(),
+                                    newVlNormal: $('#newVlNormal').val(),
+                                    newVlPromocional: $('#newVlPromocional').val()
+                                },
+                                success: function(data){
+                                    $("#modalInclusaoPDDist").dialog('destroy');
+                                    $("#modalInclusaoPDDist").html('');
+                                    $("#modalInclusaoPDDist").dialog( "widget" ).remove();
+
+                                    if(!data.resposta){
+                                        $("#alertaPDDist").dialog("destroy");
+                                        $("#alertaPDDist").html(data.msg);
+                                        $("#alertaPDDist").dialog({
+                                            resizable: false,
+                                            title: 'Alerta!',
+                                            width:320,
+                                            modal: true,
+                                            buttons : {
+                                                'OK' : function(){
+                                                    $(this).dialog('close');
+                                                }
+                                            }
+                                        });
+                                        $('.ui-dialog-titlebar-close').remove();
+                                    }
+                                    atualizarDadosPlanosDeDistribuicao();
+                                },
+                                dataType : 'json'
+                            });
+                        }
+                    }
+                }
+            });
+            $('.ui-dialog-titlebar-close').remove();
+        });
+        
+        $('.btnExcluirPDDist').click(function(){
+            var idPlanoDistribuicao = $(this).attr('idPlanoDistribuicao');
+                
+            //ABRE O MODAL DE CONFIRMAÇÃO DA AÇÃO REALIZADA
+            $("#alertaPDDist").dialog("destroy");
+            $("#alertaPDDist").html('Tem certeza que deseja excluir o plano de distribuição?');
+            $("#alertaPDDist").dialog({
+                resizable: false,
+                title: 'Alerta!',
+                width:400,
+                height:160,
+                modal: true,
+                buttons : {
+                    'Não' : function(){
+                        $(this).dialog('close');
+                    },
+                    'Sim' : function(){
+                        $(this).dialog('close');
+                        $.ajax({
+                            type: 'POST',
+                            url: '<?php echo $this->url(array('controller' => 'readequacoes', 'action' => 'excluir-plano-de-distribuicao'), '', true); ?>?idPronac=<?php echo $this->idPronac; ?>',
+                            data: {
+                                idPlanoDistribuicao: idPlanoDistribuicao
+                            },
+                            success: function(data){
+                                $("#alertaPDDist").dialog("destroy");
+                                atualizarDadosPlanosDeDistribuicao();
+                            },
+                            dataType : 'json'
+                        });
+                    }
+                }
+            });
+            $('.ui-dialog-titlebar-close').remove();
+        });
+        
+        $('.restaurarItemPlanoDiistribuicao').click(function(){
+            var idPlanoDistribuicao = $(this).attr('idPlanoDistribuicao'),
+                tpAcao = $(this).attr('tipo'),
+                msg = '';
+                
+            if(tpAcao == 'I'){
+                msg = 'Tem certeza que deseja excluir o plano de distribuição adicionado?';
+            } else {
+                msg = 'Tem certeza que deseja restaurar o plano de distribuição excluído?';
+            }
+            
+            $("#alertaPDDist").dialog("destroy");
+            $("#alertaPDDist").html(msg);
+            $("#alertaPDDist").dialog({
+                resizable: false,
+                width:340,
+                modal: true,
+                title: 'Alerta!',
+                buttons : {
+                    'Não' : function(){
+                        $(this).dialog('close');
+                    },
+                    'Sim' : function(){
+                        $(this).dialog('close');
+                        $.ajax({
+                            type: 'POST',
+                            url: '<?php echo $this->url(array('controller' => 'readequacoes', 'action' => 'alteracoes-tecnicas-no-plano-de-distribuicao'), '', true); ?>?idPronac=<?php echo $this->idPronac; ?>',
+                            data: {
+                                idPlanoDistribuicao: idPlanoDistribuicao,
+                                tpAcao: tpAcao
+                            },
+                            success: function(data){
+                                 <?php if($this->idPerfil == 1111){ ?>
+                                    atualizarDadosPlanosDeDistribuicao();
+                                <?php } else { ?>
+                                    jqAjaxLinkSemLoading('<?php echo $this->Url(array('controller' => 'readequacoes', 'action' => 'carregar-planos-de-distribuicao-readequacoes'), '', true) ?>?idPronac=<?php echo $this->idPronac; ?>&idReadequacao=<?php echo $this->idReadequacao; ?>', '', 'planosDeDistribuicao');
+                                <?php } ?>
+                            },
+                            dataType : 'json'
+                        });
+                    }
+                }
+            });
+            $('.ui-dialog-titlebar-close').remove();
+        });
+    
+        // carrega a combo de segmentos culturais
+        $('#newArea').change(function() {
+            $('#newSegmento').html('<option value=""> - Carregando - </option>');
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo $this->url(array('controller' => 'segmento', 'action' => 'combo')); ?>',
+                data: {
+                    id: $('#newArea').val()
+                },
+                success: function(dados) {
+                    $('#newSegmento').find('option').remove();
+                    $('#newSegmento').append(dados);
+                }
+            });
+        });
+        
+        $('.comboPlanoDeDistribuicao').change(function(){
+            var tpAcao = $(this).val(),
+                idPlanoDistribuicao = $(this).attr('idpldd'),
+                select = $(this);
+                
+            if(tpAcao != ''){
+                $("#alertaPDDist").dialog("destroy");
+                $("#alertaPDDist").html('Deseja realmente avaliar o item?');
+                $("#alertaPDDist").dialog({
+                    resizable: false,
+                    width:340,
+                    modal: true,
+                    title: 'Alerta!',
+                    buttons : {
+                        'Não' : function(){
+                            $(this).dialog('close');
+                            select.val('');
+                        },
+                        'Sim' : function(){
+                            $(this).dialog('close');
+                            $.ajax({
+                                type: 'POST',
+                                url: '<?php echo $this->url(array('controller' => 'readequacoes', 'action' => 'alteracoes-tecnicas-no-plano-de-distribuicao'), '', true); ?>?idPronac=<?php echo $this->idPronac; ?>',
+                                data: {
+                                    idPlanoDistribuicao: idPlanoDistribuicao,
+                                    tpAcao: tpAcao
+                                },
+                                success: function(data){
+                                    <?php if($this->idPerfil == 1111){ ?>
+                                        atualizarDadosPlanosDeDistribuicao();
+                                    <?php } else { ?>
+                                        jqAjaxLinkSemLoading('<?php echo $this->Url(array('controller' => 'readequacoes', 'action' => 'carregar-planos-de-distribuicao-readequacoes'), '', true) ?>?idPronac=<?php echo $this->idPronac; ?>&idReadequacao=<?php echo $this->idReadequacao; ?>', '', 'planosDeDistribuicao');
+                                    <?php } ?>
+                                },
+                                dataType : 'json'
+                            });
+                        }
+                    }
+                });
+                $('.ui-dialog-titlebar-close').remove();
+            }
+        });
+    });
+    
+    <?php if(!in_array($this->siEncaminhamento, array(7,8,9))){ ?>
+    //SOMA VALORES NUMERICOS
+    function somaValores(id1, id2, idDestino, precisao, tratarMascara){
+        var cmp1 = $("#" + id1).val();
+        var cmp2 = $("#" + id2).val();
+        var valor1 = 0;
+        var valor2 = 0;
+        var soma_valores = 0;
+
+        if(!cmp1){ cmp1 = "0"; }
+        if(!cmp2){ cmp2 = "0"; }
+
+        if(tratarMascara == true){
+            valor1 = cmp1.replace(".","");
+            valor1 = valor1.replace(",", ".");
+            valor2 = cmp2.replace(".", "");
+            valor2 = valor2.replace(",", ".");
+        } else {
+            valor1 = cmp1;
+            valor2 = cmp2;
+        }
+
+        soma_valores = parseFloat(valor1) + parseFloat(valor2);
+        soma_valores = Math.abs(soma_valores);
+        soma_valores = soma_valores.toFixed(precisao);
+        if (precisao == 0) {
+            $('#' + idDestino).val(soma_valores);
+        } else {
+            $('#' + idDestino).val(soma_valores).priceFormat();
+        }
+    }
+
+    //MULTIPLICA VALORES NUMERICOS
+    function multiplicaValores(id1, id2, idDestino, precisao, tratarMascara){
+        var cmp1 = $("#" + id1).val();
+        var cmp2 = $("#" + id2).val();
+        var valor1 = 0;
+        var valor2 = 0;
+        var soma_valores = 0;
+
+        if(!cmp1){ cmp1 = "0"; }
+        if(!cmp2){ cmp2 = "0"; }
+
+        if(tratarMascara == true){
+            valor1 = cmp1.replace(".","");
+            valor1 = valor1.replace(",",".");
+            valor2 = cmp2.replace(".","");
+            valor2 = valor2.replace(",",".");
+        }else{
+            valor1 = cmp1;
+            valor2 = cmp2;
+        }
+
+        soma_valores = parseFloat(valor1) * parseFloat(valor2);
+        soma_valores = Math.abs(soma_valores);
+        soma_valores = soma_valores.toFixed(precisao);
+        $('#'+idDestino).val(soma_valores).priceFormat();
+    }
+    <?php } ?>
+</script>

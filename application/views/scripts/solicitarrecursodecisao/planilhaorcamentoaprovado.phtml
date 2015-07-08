@@ -1,0 +1,409 @@
+<?php
+/**
+ * Solicitar REcurso da Decisão 
+ * @author Equipe RUP - Politec
+ * @since 21/07/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.solicitarrecursodedecisao
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+
+
+				
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+	<div id="breadcrumb">
+		<ul>
+			<li class="last">Solicitar Recurso da Decisão </li>
+		</ul>
+	</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+				
+				
+				
+				
+<!-- ========== INÍCIO TÍTULO ========== -->
+	<div id="titulo">
+		<div>Planilha de Orçamento Aprovado <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+	</div>
+<!-- ========== FIM TÍTULO ========== -->
+				
+				
+				
+				
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+	<div id="conteudo">
+				
+		<?php require_once "topo.phtml"; ?>
+
+
+
+
+
+
+
+
+	<table class="tabela">
+		<tr>
+			<th colspan="12" class="center">Planilha de Orçamento Aprovado</th>
+		</tr>
+
+
+
+		<!-- ========== INCENTIVO FISCAL FEDERAL ========== -->
+	
+		<tr>
+			<td colspan="12">
+				<strong>
+					<div id="icn_maisIFF" class="sumir"><a href="#icn_maisIFF" onclick="closeIFF('IFF');" onkeypress=" "><div class="icn_mais" style="width:90%"><span class="red del_link">Planilha de Orçamento</span></div></a></div>
+					<div id="icn_menosIFF"><a href="#icn_menosIFF" onclick="openIFF('IFF');" onkeypress=" "><div class="icn_menos" style="width:90%"><span class="red del_link">Planilha de Orçamento</span></div></a></div>
+				</strong>
+			</td>
+		</tr>
+		<tr class="IFF">
+			<td colspan="12">&nbsp;</td>
+		</tr>
+
+
+
+		<!-- ========== INÍCIO BUSCA POR PRODUTO ========== -->
+		<?php
+		$item = 1; // contador para os itens
+		$contadorProd  = 0;
+		$contadorEtapa = 0;
+		$contadorUF    = 0;
+		?>
+		<?php foreach ($this->buscarProd as $buscarProd) : ?>
+		<tr class="IFF linha">
+			<td colspan="12">
+				<strong>
+					<div id="icn_maisIFF_PRODUTO<?php echo $contadorProd; ?>" class="sumir"><a href="#icn_menosIFF_PRODUTO<?php echo $contadorProd; ?>" onclick="$('#icn_menosIFF_PRODUTO<?php echo $contadorProd; ?>, .IFF_PRODUTO<?php echo $contadorProd; ?>').show(); $('#icn_maisIFF_PRODUTO<?php echo $contadorProd; ?>').hide();" onkeypress=" "><div class="icn_mais" style="width:98%; margin-left:2%;"><span class="green del_link"><?php echo $buscarProd->Produto; ?></span></div></a></div>
+					<div id="icn_menosIFF_PRODUTO<?php echo $contadorProd; ?>"><a href="#icn_maisIFF_PRODUTO<?php echo $contadorProd; ?>" onclick="$('#icn_maisIFF_PRODUTO<?php echo $contadorProd; ?>').show(); $('#icn_menosIFF_PRODUTO<?php echo $contadorProd; ?>, .IFF_PRODUTO<?php echo $contadorProd; ?>').hide();" onkeypress=" "><div class="icn_menos" style="width:98%; margin-left:2%;"><span class="green del_link"><?php echo $buscarProd->Produto; ?></span></div></a></div>
+				</strong>
+			</td>
+		</tr>
+
+
+
+			<!-- ========== INÍCIO BUSCA POR ETAPA ========== -->
+			<?php
+			// inicializa valor total por etapa
+			$totalVal_01_Etapa = (float) 0;
+			$totalVal_02_Etapa = (float) 0;
+			$totalVal_03_Etapa = (float) 0;
+
+			foreach (RealizarAnaliseProjetoDAO::analiseDeCustosBuscarEtapa($buscarProd->IdPRONAC, $buscarProd->idProduto, true) as $buscarEtapa) :
+			?>
+
+			<tr class="IFF IFF_PRODUTO<?php echo $contadorProd; ?>">
+				<td colspan="12">
+					<strong style="margin-left:2%;">
+						<?php foreach ($this->planilhaEtapa as $etapa) : // Nome ou Descrição da Etapa ?>
+							<?php if ($buscarEtapa->idEtapa == $etapa->idPlanilhaEtapa) : ?>
+								<div id="icn_maisIFF_ETAPA<?php echo $contadorEtapa; ?>" class="sumir"><a href="#icn_menosIFF_ETAPA<?php echo $contadorEtapa; ?>" onclick="$('#icn_menosIFF_ETAPA<?php echo $contadorEtapa; ?>, .IFF_ETAPA<?php echo $contadorEtapa; ?>').show(); $('#icn_maisIFF_ETAPA<?php echo $contadorEtapa; ?>').hide();" onkeypress=" "><div class="icn_mais" style="width:90%; margin-left:4%;"><span class="orange del_link"><?php echo $buscarEtapa->idEtapa; ?> - <?php echo $etapa->Descricao; ?></span></div></a></div>
+								<div id="icn_menosIFF_ETAPA<?php echo $contadorEtapa; ?>"><a href="#icn_maisIFF_ETAPA<?php echo $contadorEtapa; ?>" onclick="$('#icn_maisIFF_ETAPA<?php echo $contadorEtapa; ?>').show(); $('#icn_menosIFF_ETAPA<?php echo $contadorEtapa; ?>, .IFF_ETAPA<?php echo $contadorEtapa; ?>').hide();" onkeypress=" "><div class="icn_menos" style="width:90%; margin-left:4%;"><span class="orange del_link"><?php echo $buscarEtapa->idEtapa; ?> - <?php echo $etapa->Descricao; ?></span></div></a></div>
+							<?php endif; ?>
+						<?php endforeach; ?>
+					</strong>
+				</td>
+			</tr>
+
+
+
+				<!-- ========== INÍCIO BUSCA POR UF ========== -->
+				<?php
+				// inicializa valor total por uf
+				$totalVal_01_UF = (float) 0;
+				$totalVal_02_UF = (float) 0;
+				$totalVal_03_UF = (float) 0;
+
+				foreach (RealizarAnaliseProjetoDAO::analiseDeCustosBuscarUF($buscarEtapa->IdPRONAC, $buscarEtapa->idProduto, $buscarEtapa->idEtapa, true) as $buscarUF) :
+				?>
+
+				<tr class="IFF IFF_PRODUTO<?php echo $contadorProd; ?> IFF_ETAPA<?php echo $contadorEtapa; ?>">
+					<td colspan="12">
+						<strong style="margin-left:3%;">
+							<?php
+							$uf     = EstadoDAO::buscar($buscarUF->idUFDespesa); // nome da UF
+							$cidade = CidadeDAO::buscar($buscarUF->idUFDespesa, $buscarUF->idMunicipioDespesa); // nome da cidade
+							?>
+							<div id="icn_maisIFF_UF<?php echo $contadorUF; ?>" class="sumir"><a href="#icn_menosIFF_UF<?php echo $contadorUF; ?>" onclick="$('#icn_menosIFF_UF<?php echo $contadorUF; ?>, .IFF_UF<?php echo $contadorUF; ?>').show(); $('#icn_maisIFF_UF<?php echo $contadorUF; ?>').hide();" onkeypress=" "><div class="icn_mais" style="width:90%; margin-left:6%"><span class="black del_link"><?php echo $uf[0]->descricao; ?> - <?php echo $cidade[0]->descricao; ?></span></div></a></div>
+							<div id="icn_menosIFF_UF<?php echo $contadorUF; ?>"><a href="#icn_maisIFF_UF<?php echo $contadorUF; ?>" onclick="$('#icn_maisIFF_UF<?php echo $contadorUF; ?>').show(); $('#icn_menosIFF_UF<?php echo $contadorUF; ?>, .IFF_UF<?php echo $contadorUF; ?>').hide();" onkeypress=" "><div class="icn_menos" style="width:90%; margin-left:6%"><span class="black del_link"><?php echo $uf[0]->descricao; ?> - <?php echo $cidade[0]->descricao; ?></span></div></a></div>
+						</strong>
+					</td>
+				</tr>
+
+
+
+					<!-- ========== INÍCIO ÍTENS ========== -->
+				    <tr class="IFF IFF_PRODUTO<?php echo $contadorProd; ?> IFF_ETAPA<?php echo $contadorEtapa; ?> IFF_UF<?php echo $contadorUF; ?>">
+						<th>&nbsp;</th>
+				        <th>Item</th>
+						<th>Dias</th>
+						<th>Unidade</th>
+						<th>Qtde</th>
+						<th>Ocor.</th>
+				        <th width="12%">Vl. Unitário</th>
+				        <th width="12%">Vl. Solicitado</th>
+				        <th width="12%">Vl. Sugerido do Parecerista</th>
+				        <th>Justificativa do Parecerista</th>
+				        <th width="12%">Vl. Sugerido do Relator</th>
+				        <th>Justificativa do Relator</th>
+				    </tr>
+
+					<?php
+					// caso tenha projetos
+					$totalItens = 0;
+					if (count(RealizarAnaliseProjetoDAO::analiseDeConta($buscarUF->IdPRONAC, $buscarUF->idProduto, $buscarUF->idEtapa, $buscarUF->idUFDespesa, $buscarUF->idMunicipioDespesa, true)) > 0)
+					{
+						// inicializa valor total de ítens
+						$totalVal_01 = (float) 0;
+						$totalVal_02 = (float) 0;
+						$totalVal_03 = (float) 0;
+
+						foreach (RealizarAnaliseProjetoDAO::analiseDeConta($buscarUF->IdPRONAC, $buscarUF->idProduto, $buscarUF->idEtapa, $buscarUF->idUFDespesa, $buscarUF->idMunicipioDespesa, true) as $resposta) :
+							$i = $resposta->idPlanilhaAprovacao; // criará id únido
+
+							// ===== CALCULA TOTAL ITENS =====
+							$totalVal_01 += (float) $resposta->VlSolicitado;
+							$totalVal_02 += (float) $resposta->VlSugeridoParecerista;
+							$totalVal_03 += (float) $resposta->VlSugeridoConselheiro;
+					?>
+
+				    <tr onmouseover="over_tr(this);" onfocus="over_tr(this);" onmouseout="out_tr(this);" onblur="out_tr(this);" onclick="click_tr(this);" onkeypress="click_tr(this);" 
+				    	class="IFF IFF_PRODUTO<?php echo $contadorProd; ?> IFF_ETAPA<?php echo $contadorEtapa; ?> IFF_UF<?php echo $contadorUF; ?> 
+				    		<?php
+				    		if ($i == $_GET['Ativo'])
+				    		{
+				    			echo "fundo_linha4";
+				    		}
+				    		else
+				    		{
+				    			echo $this->corLinha($totalItens);
+				    		}
+				      		if ($resposta->VlSugeridoParecerista != $resposta->VlSugeridoConselheiro)
+				    		{
+				    			echo " red";
+				    		}
+				    		$totalItens--;
+				    		?>">
+				        <td><?php echo $item; ?></td>
+				        <td>
+
+
+							<!-- ========== INÍCIO MODAL ========== -->
+							<div id="dialog-modal<?php echo $i; ?>" class="sumir" title="Atualização da Planilha de Projeto">
+								<form id='form<?php echo $i; ?>' class="form" action="<?php echo $this->url(array('controller' => 'realizaranaliseprojeto','action' => 'analisedecustos')); ?>" method="post">
+								<input type="hidden" name="idProduto" value="<?php echo $resposta->idProduto; ?>" />
+								<input type="hidden" name="idPronac" value="<?php echo $resposta->IdPRONAC; ?>" />
+								<input type="hidden" name="idPlanilha" value="<?php echo $resposta->idPlanilhaAprovacao; ?>" />
+								<table class="tabela">
+									<tr valign="top">
+										<td colspan="3"><strong>PRONAC:</strong><br /><?php echo $resposta->IdPRONAC; ?></td>
+										<td colspan="3"><strong>Nome do Projeto:</strong><br /><?php echo $resposta->NomeProjeto; ?></td>
+									</tr>
+									<tr valign="top">
+										<td colspan="2"><strong>Produto:</strong><br /><?php echo (empty($resposta->Produto) ? 'Administração do Projeto' : $resposta->Produto); ?></td>
+										<td colspan="2">
+											<strong>Etapa:</strong><br />
+											<?php echo $resposta->idEtapa; ?> - 
+											<?php foreach ($this->planilhaEtapa as $etapa) : ?>
+											<?php if ($resposta->idEtapa == $etapa->idPlanilhaEtapa) echo $etapa->Descricao; ?>
+											<?php endforeach; ?>
+										</td>
+										<td colspan="2"><strong>Item:</strong><br /><?php echo $resposta->Item; ?></td>
+									</tr>
+									<tr valign="top">
+										<td>
+											<label for="unidade<?php echo $i; ?>"><strong>Unidade:</strong></label><br />
+											<select class="input_simples" name="unidade" id="unidade<?php echo $i; ?>">
+												<?php foreach ($this->planilhaUnidade as $unidade) : ?>
+												<option value="<?php echo $unidade->idUnidade;?>" <?php if ($unidade->idUnidade == $resposta->idUnidade) echo "selected=\"selected\""; ?>>
+													<?php echo $this->escape($unidade->Descricao);?>
+												</option>
+												<?php endforeach; ?>
+											</select>
+										</td>
+										<td class="w50">
+											<label for="qtd<?php echo $i; ?>"><strong>Qtd:</strong></label><br />
+											<input class="input_simples w50" type="text" onkeyup="calcular_planilha_projeto(<?php echo $i; ?>); validar_val_parec_relat(<?php echo $i; ?>, <?php echo $resposta->VlSugeridoParecerista; ?>); mascara(this, format_num);" onkeydown="calcular_planilha_projeto(<?php echo $i; ?>); mascara(this, format_num);" name="qtd" id="qtd<?php echo $i; ?>" maxlength="5" value="<?php echo (int) $resposta->quantidade_con; ?>" />
+										</td>
+										<td>
+											<label for="ocorrencia<?php echo $i; ?>"><strong>Ocorrência:</strong></label><br />
+											<input class="input_simples w50" type="text" onkeyup="calcular_planilha_projeto(<?php echo $i; ?>); validar_val_parec_relat(<?php echo $i; ?>, <?php echo $resposta->VlSugeridoParecerista; ?>); mascara(this, format_num);" onkeydown="calcular_planilha_projeto(<?php echo $i; ?>); mascara(this, format_num);" name="ocorrencia" id="ocorrencia<?php echo $i; ?>" maxlength="5" value="<?php echo (int) $resposta->ocorrencia_con; ?>" />
+										</td>
+										<td>
+											<label for="vlunitario<?php echo $i; ?>"><strong>Vl Unitário:</strong></label><br />
+											<input class="input_simples w100" type="text" onkeyup="calcular_planilha_projeto(<?php echo $i; ?>); validar_val_parec_relat(<?php echo $i; ?>, <?php echo $resposta->VlSugeridoParecerista; ?>); mascara(this, format_moeda);" onkeydown="calcular_planilha_projeto(<?php echo $i; ?>); mascara(this, format_moeda);" name="vlunitario" id="vlunitario<?php echo $i; ?>" maxlength="13" value="<?php echo str_replace("R$ ", "", $this->formatarReal($resposta->valorUnitario_con)); ?>" />
+										</td>
+										<td>
+											<label for="dias<?php echo $i; ?>"><strong>Dias:</strong></label><br />
+											<input class="input_simples w50" type="text" onkeyup="mascara(this, format_num);" name="dias" id="dias<?php echo $i; ?>" maxlength="4" value="<?php echo $resposta->dias_con; ?>" />
+										</td>
+										<td>
+											<strong>Total do Item:</strong><br />
+											<div id="calcular_total<?php echo $i; ?>" style="height:2%"></div>
+										</td>
+									</tr>
+									<tr valign="top">
+										<td colspan="6">
+											<label for="justificativa<?php echo $i; ?>"><strong>Justificativa</strong></label><br />
+											<textarea class="textarea_simples w680 h180" name="justificativa" id="justificativa<?php echo $i; ?>" cols="70" rows="10" <?php echo $this->contadorTextarea('form.justificativa', 'form.exibirContadorTextarea', 5000); ?>><?php echo $resposta->dsJustificativaConselheiro; ?> </textarea>
+											<?php echo $this->exibirContadorTextarea('exibirContadorTextarea', 4, 5000, strlen($resposta->dsJustificativaConselheiro)); ?>
+										</td>
+									</tr>
+								</table>
+								</form>
+								<br />
+							</div>
+							<!-- ========== FIM MODAL ========== -->
+
+
+							<a style="text-decoration:underline;cursor:pointer;" onclick="modal(<?php echo $i; ?>)"><?php echo $this->escape($resposta->Item); ?></a> 
+				        </td>
+				        <td class="direita"><?php echo $this->escape($resposta->dias_con); ?></td>
+				        <td class="centro">
+							<?php foreach ($this->planilhaUnidade as $unidade) : ?>
+							<?php if ($unidade->idUnidade == $resposta->idUnidade) echo $this->escape($unidade->Descricao); ?>
+							<?php endforeach; ?>
+				        </td>
+				        <td class="direita"><?php echo $this->escape($resposta->quantidade_con); ?></td>
+				        <td class="direita"><?php echo $this->escape($resposta->ocorrencia_con); ?></td>
+				        <td class="direita"><?php echo $this->formatarReal($this->escape($resposta->valorUnitario_con)); ?></td>
+				        <td class="direita<?php if ($resposta->VlSugeridoParecerista == $resposta->VlSugeridoConselheiro) echo " blue"; ?>"><?php echo $this->formatarReal($this->escape($resposta->VlSolicitado)); ?></td>
+				        <td class="direita<?php if ($resposta->VlSugeridoParecerista == $resposta->VlSugeridoConselheiro) echo " green"; ?>"><?php echo $this->formatarReal($this->escape($resposta->VlSugeridoParecerista)); ?></td>
+				        <td><?php echo $this->escape($resposta->dsJustificativaParecerista); ?></td>
+						<td class="direita"><?php echo $this->formatarReal($this->escape($resposta->VlSugeridoConselheiro)); ?></td>
+						<td><?php echo $this->escape($resposta->dsJustificativaConselheiro); ?></td>
+					</tr>
+
+
+
+					<?php
+							$item++; // incrementa o contador de itens
+						endforeach; // fecha foreach itens		
+					} // fecha if (caso tenha projetos)
+
+
+
+					// ===== CALCULA TOTAL UF =====
+					$totalVal_01_UF += (float) $totalVal_01;
+					$totalVal_02_UF += (float) $totalVal_02;
+					$totalVal_03_UF += (float) $totalVal_03;
+					?>
+					<!-- ========== FIM ÍTENS ========== -->
+
+
+
+					<!-- EXIBE TOTAL UF -->
+					<tr class="IFF IFF_PRODUTO<?php echo $contadorProd; ?> IFF_ETAPA<?php echo $contadorEtapa; ?> IFF_UF<?php echo $contadorUF; ?>">
+						<td colspan="7"><strong>Total de UF</strong></td>
+						<td class="direita"><strong><?php echo $this->formatarReal($totalVal_01); ?></strong></td>
+						<td class="direita"><strong><?php echo $this->formatarReal($totalVal_02); ?></strong></td>
+						<td>&nbsp;</td>
+						<td class="direita"><strong><?php echo $this->formatarReal($totalVal_03); ?></strong></td>
+						<td>&nbsp;</td>
+					</tr>
+
+
+
+					<?php $contadorUF++; ?>
+				<?php endforeach; ?>
+				<!-- ========== FIM BUSCA POR UF ========== -->
+
+
+
+			<?php
+				// ===== CALCULA TOTAL ETAPA =====
+				$totalVal_01_Etapa += (float) $totalVal_01_UF;
+				$totalVal_02_Etapa += (float) $totalVal_02_UF;
+				$totalVal_03_Etapa += (float) $totalVal_02_UF;
+
+
+
+				$contadorEtapa++;
+			endforeach;
+			?>
+			<!-- ========== FIM BUSCA POR ETAPA ========== -->
+
+
+
+			<!-- EXIBE TOTAL ETAPA -->
+			<tr class="IFF IFF_PRODUTO<?php echo $contadorProd; ?> IFF_ETAPA<?php echo $contadorEtapa-1; ?>">
+				<td colspan="7" class="orange"><strong>Total da Etapa</strong></td>
+				<td class="direita orange"><strong><?php echo $this->formatarReal($totalVal_01_Etapa); ?></strong></td>
+				<td class="direita orange"><strong><?php echo $this->formatarReal($totalVal_02_Etapa); ?></strong></td>
+				<td>&nbsp;</td>
+				<td class="direita orange"><strong><?php echo $this->formatarReal($totalVal_03_Etapa); ?></strong></td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr class="IFF">
+				<td colspan="12">&nbsp;</td>
+			</tr>
+
+
+
+		<?php $contadorProd++; ?>
+		<?php endforeach; ?>
+		<!-- ========== FIM BUSCA POR PRODUTO ========== -->
+
+
+
+
+
+		<!-- ========== INICIO TOTAL GERAL ========== -->
+		<tr class="IFF">
+			<td colspan="7" class="red"><strong>Total por mecanismo de incentivo</strong></td>
+			<td class="direita red"><strong><?php echo $this->formatarReal($this->totVal01); ?></strong></td>
+			<td class="direita red"><strong><?php echo $this->formatarReal($this->totVal02); ?></strong></td>
+			<td>&nbsp;</td>
+			<td class="direita red"><strong><?php echo $this->formatarReal($this->totVal03); ?></strong></td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<th class="left" colspan="7"><strong>Total Geral</strong></th>
+			<th class="direita red"><strong><?php echo $this->formatarReal($this->totVal01); ?></strong></th>
+			<th class="direita red"><strong><?php echo $this->formatarReal($this->totVal02); ?></strong></th>
+			<th>&nbsp;</th>
+			<th class="direita red"><strong><?php echo $this->formatarReal($this->totVal03); ?></strong></th>
+			<th>&nbsp;</th>
+		</tr>
+		<!-- ========== FIM TOTAL GERAL ========== -->
+
+	</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
+				
+	</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+				
+				
+				
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+	<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

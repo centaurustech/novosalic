@@ -1,0 +1,181 @@
+<link type="text/css" rel="stylesheet" media="all" href="../css/geral.css" />
+        <link type="text/css" rel="stylesheet" media="all" href="../css/chrome.css" />
+        <link type="text/css" rel="stylesheet" media="screen" href="../css/recursos/importar.css" />
+        <link type="text/css" rel="stylesheet" media="all" href="../css/ajustes.css" />
+        <link type="text/css" rel="stylesheet" media="all" href="../css/botoes.css" />
+        <link type="text/css" rel="stylesheet" media="print" href="../css/estilo_print.css" />
+        <link type="text/css" rel="stylesheet" media="all" href="../css/OrderTabela.css" />
+
+        <script language="javascript" type="text/javascript" src="../js/jquery-1.4.2.min.js"></script>
+<script language="javascript" type="text/javascript" src="../scripts/script_sem_menu.js"></script>
+
+<noscript>
+<link type="text/css" rel="stylesheet" media="all" href="../css/noscript.css" />
+</noscript>
+<!-- Jquery -->
+<link type="text/css" href="../css/custom-theme/jquery-ui-1.8.2.custom.css" rel="stylesheet" />
+<script type="text/javascript" src="../js/jquery-ui-1.8.2.custom.min.js"></script>
+
+<style type="text/css">
+/*demo page css*/
+.demoHeaders { margin-top: 2em; }
+#dialog_link {padding: .4em 1em .4em 20px;text-decoration: none;position: relative;}
+#dialog_link span.ui-icon {margin: 0 5px 0 0;position: absolute;left: .2em;top: 50%;margin-top: -8px;}
+ul#icons {margin: 0; padding: 0;}
+ul#icons li {margin: 2px; position: relative; padding: 4px 0; cursor: pointer; float: left;  list-style: none;}
+ul#icons span.ui-icon {float: left; margin: 0 4px;}
+</style>
+
+<!-- Manter Agentes -->
+<link href="../css/manteragentes.css" rel="stylesheet" type="text/css"/>
+<link href="../css/gerenciarpautareuniao.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="../js/manteragentes.js"></script>
+<script type="text/javascript" src="../js/ajax.js"></script>
+<script type="text/javascript" src="../js/scripts.js"></script>
+<script type="text/javascript" src="../js/json.js"></script>
+<script type="text/javascript" src="../js/proponentes.js"></script>
+
+<!-- Editor de Html -->
+<script type="text/javascript" src="../js/jquery.wysiwyg.min.js"></script>
+<link rel="stylesheet" type="text/css" href="../css/jquery.wysiwyg.css"/>
+
+<!-- Realizar Análise Projeto -->
+<script type="text/javascript" src="../js/realizaranaliseprojeto.js"></script>
+<script type="text/javascript" src="../js/openwysiwyg/wysiwyg.js"></script>
+
+<link type="text/css" rel="stylesheet" media="screen" href="../css/recursos/importar.css" />
+<script language="javascript" type="text/javascript" src="../scripts/fg.menu.js"></script>
+<script src='../js/jquery.MultiFile.js' type="text/javascript" language="javascript"></script>
+<script type="text/javascript">
+	<!--
+	function addTodos() // adiciona todos os options da esquerda para direita
+	{
+		visao       = document.getElementById("visao"); // select de origem
+		visaoAgente = document.getElementById("visaoAgente"); // select de destino
+		for (i = 0; i < visao.length; i++) // varre todo o option de origem
+		{
+			var novoOption = document.createElement("option"); // cria um novo option
+			novoOption.text  = visao.options[i].text; // texto do option
+			novoOption.value = visao.options[i].value; // valor do option
+			visaoAgente.options.add(novoOption); // adiciona o novo option no select de destino
+			visao.remove(i); // remove o option do select de origem
+			i--;
+		}
+	} // fecha função addTodos()
+
+
+	function delTodos() // deleta todos os options da direita
+	{
+		visao       = document.getElementById("visao"); // select de origem
+		visaoAgente = document.getElementById("visaoAgente"); // select de destino
+		for (i = 0; i < visaoAgente.length; i++) // varre todo o option de origem
+		{
+			if (visaoAgente.options[i].value != "144")
+			{
+				var novoOption = document.createElement("option"); // cria um novo option
+				novoOption.text  = visaoAgente.options[i].text; // texto do option
+				novoOption.value = visaoAgente.options[i].value; // valor do option
+				visao.options.add(novoOption); // adiciona o novo option no select de destino
+				visaoAgente.remove(i); // remove o option do select de origem
+				i--;
+			}
+		}
+	} // fecha função delTodos()
+
+
+	function addSelecionado() // adiciona o option selecionado da esquerda para direita
+	{
+		visao       = document.getElementById("visao"); // select de origem
+		visaoAgente = document.getElementById("visaoAgente"); // select de destino
+		for (i = 0; i < visao.length; i++) // varre todo o option de origem
+		{
+			if (visao.options[i].selected == true) // caso o option esteja selecionado
+			{
+				var novoOption = document.createElement("option"); // cria um novo option
+				novoOption.text  = visao.options[i].text; // texto do option
+				novoOption.value = visao.options[i].value; // valor do option
+				visaoAgente.options.add(novoOption); // adiciona o novo option no select de destino
+				visao.remove(i); // remove o option do select de origem
+				i--;
+			}
+		}
+	} // fecha função addSelecionado()
+
+
+	function delSelecionado() // deleta o option selecionado da direita
+	{
+		visao       = document.getElementById("visao"); // select de origem
+		visaoAgente = document.getElementById("visaoAgente"); // select de destino
+		for (i = 0; i < visaoAgente.length; i++) // varre todo o option de origem
+		{
+			if (visaoAgente.options[i].selected == true && visaoAgente.options[i].value != "144") // caso o option esteja selecionado
+			{
+				var novoOption = document.createElement("option"); // cria um novo option
+				novoOption.text  = visaoAgente.options[i].text; // texto do option
+				novoOption.value = visaoAgente.options[i].value; // valor do option
+				visao.options.add(novoOption); // adiciona o novo option no select de destino
+				visaoAgente.remove(i); // remove o option do select de origem
+				i--;
+			}
+		}
+	} // fecha função delSelecionado()
+
+
+	function selecionarOptions() // função para selecionar todos os options antes do envio do formulário
+	{
+		visaoAgente = document.getElementById("visaoAgente"); // select de destino
+		for (i = 0; i < visaoAgente.length; i++) // varre todo o option de origem
+		{
+			visaoAgente.options[i].selected = true; // adiciona o novo option no select de destino
+		}
+		document.getElementById('form').submit();
+	} // fecha função selecionarOptions()
+	//-->
+	</script>
+<form class="form" id="form">
+
+		
+
+		<table class="tabela">
+			<tr>
+				<th colspan="3">Colunas</th>
+			</tr>
+                        <tr>
+				<td class="centro" valign="top">
+					<label for="visao"> </label>
+					<select class="select w150" name="visao[]" id="visao" multiple="multiple" size="7">
+
+						<option value="N.Reuniao">N. Reunião</option>
+						<option value="Dt.Inicio ">Dt. Início </option>
+						<option value="Dt.Final">Dt. Final</option>
+						<option value="Dt.Fechamento">Dt. Fechamento</option>
+						<option value="Mecanismo">Mecanismo </option>
+						<option value="Status">Status</option>
+					</select>
+				</td>
+				<td class="centro" valign="middle">
+					<p><input class="btn" value=" &gt;&gt;  " onkeypress=" " onclick="addTodos();" title="Adicionar todas as visões para o Agente" type="button"></p>
+					<p><input class="btn" value="  &gt;  " onkeypress=" " onclick="addSelecionado();" title="Adicionar a visão selecionada para o Agente" type="button"></p>
+					<p><input class="btn" value="  &lt;  " onkeypress=" " onclick="delSelecionado();" title="Remover a visão selecionada do Agente" type="button"></p>
+					<p><input class="btn" value=" &lt;&lt;  " onkeypress=" " onclick="delTodos();" title="Remover todas as visões do Agente" type="button"></p>
+				</td>
+				<td class="centro" valign="top">
+					<label for="visaoAgente"> </label>
+					<select class="select w150" name="visaoAgente[]" id="visaoAgente" multiple="multiple" size="7">
+					</select>
+				</td>
+			</tr>
+
+		</table>
+
+		<table class="tabela">
+			<tbody><tr>
+				<td class="centro">
+					<input class="btn_montarconsulta" title=" Salvar " onclick="selecionarOptions(); return false;" onkeypress=" " value=" " type="submit">
+				</td>
+			</tr>
+		</tbody></table>
+
+		<br>
+
+	</form>

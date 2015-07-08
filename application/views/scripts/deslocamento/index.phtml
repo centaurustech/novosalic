@@ -1,0 +1,345 @@
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $("#quantidade").numeric();
+
+        <?php if(isset($this->movimentacaoAtual) && $this->movimentacaoAtual != '95'){ ?>
+            //DESABILITA ALTERACOES NOS DADOS DO FORMULARIO (INCLUIR/ALTERAR/EXCLUIR)
+            JSBloquearAlteracaoFormulario();
+        <?php } ?>
+    });
+
+    function alerta(ms){
+        document.getElementById("alerta").innerHTML = ms;
+        $("#alerta").dialog("destroy");
+        $("#alerta").dialog({
+            width:350,
+            height:170,
+            EscClose:false,
+            modal:true,
+            buttons:{
+                'Fechar':function(){
+                    $(this).dialog('close'); // fecha a modal
+                }
+            }
+        });
+        $("#alerta").dialog('open');
+    }
+
+    function confirma(idPreProjeto, id){
+        $("#confirm").dialog("destroy");
+        $("#confirm").dialog({
+            width:350,
+            height:150,
+            EscClose:false,
+            modal:true,
+            buttons:{
+                'Cancelar':function(){
+                    $(this).dialog('close'); // fecha a modal
+                },
+                'Confirmar':function(){
+                    location.href ='<?php echo $this->baseUrl(); ?>/deslocamento/excluir?idPreProjeto='+idPreProjeto+'&id='+id;;
+                }
+            }
+        });
+        $("#confirm").dialog('open');
+    }
+
+    function validaForm(){
+        paisOrigem =  $("#paisOrigem").val();
+        paisDestino = $("#paisDestino").val();
+
+        uf =  $("#uf").val();
+        ufD = $("#ufD").val();
+
+        cidade =  $("#cidade").val();
+        cidadeD = $("#cidadeD").val();
+
+        qtd = $("#quantidade").val();
+
+        if(paisOrigem == 0){
+            alerta('Selecione o País de origem!');
+            $("#LpaisOrigem").css("color","red");
+        }
+        else if(paisDestino == 0){
+            alerta('Selecione o País de destino!');
+            $("#LpaisDestino").css("color","red");
+        }
+        else if((uf == 0) && (paisOrigem == 31)){
+            alerta('Selecione a UF de Origem!');
+            $("#Luf").css("color","red");
+        }
+        else if((ufD == 0) && (paisDestino == 31)){
+            alerta('Selecione a UF de Destino!');
+            $("#LudD").css("color","red");
+        }
+        else if((cidade == 0) && (paisOrigem == 31)){
+            alerta('Selecione a cidade de origem!');
+            $("#Lcidade").css("color","red");
+        }
+        else if((cidadeD == 0) && (paisDestino == 31)){
+            alerta('Selecione a cidade de destino!');
+            $("#LcidadeD").css("color","red");
+        }
+        else if((cidade == cidadeD) && (cidade != 0) && (cidadeD != 0)){
+            alerta('N&atilde;o &eacute; permitido o cadastro de trecho com origem e destinos iguais.');
+            $("#LpaisDestino").css("color","red");
+        }
+        else if(((paisDestino != 31) || (paisOrigem != 31)) && paisDestino == paisOrigem){
+            alerta('N&atilde;o &eacute; permitido o cadastro de trecho com origem e destinos iguais.');
+            $("#LcidadeD").css("color","red");
+        }
+        else if(qtd == ''){
+            alerta('Informe a quantidade de trechos!');
+            $("#Lquantidade").css("color","red");
+        }
+        else{
+            $("#form").submit();
+        }
+    }
+
+    function FpaisOrigem(value){
+        if(value == 31){
+            $("#uf").attr("disabled", "");
+            $("#cidade").attr("disabled", "");
+            $("#Luf").css("display", "");
+            $("#uf").css("display", "");
+            $("#Lcidade").css("display", "");
+            $("#cidade").css("display", "");
+            $("#cidade").css("width", "300px");
+        } else {
+            $("#uf").attr("disabled", "disabled");
+            $("#Luf").css("display", "none");
+            $("#uf").css("display", "none");
+            $("#Lcidade").css("display", "none");
+            $("#cidade").css("display", "none");
+            $("#cidade").attr("disabled", "disabled");
+        }
+    }
+
+    function FpaisDestino(value){
+        if(value == 31){
+            $("#ufD").attr("disabled", "");
+            $("#cidadeD").attr("disabled", "");
+            $("#LudD").css("display", "");
+            $("#ufD").css("display", "");
+            $("#LcidadeD").css("display", "");
+            $("#cidadeD").css("display", "");
+            $("#cidadeD").css("width", "300px");
+        } else {
+            $("#LudD").css("display", "none");
+            $("#ufD").css("display", "none");
+            $("#LcidadeD").css("display", "none");
+            $("#cidadeD").css("display", "none");
+            $("#ufD").attr("disabled", "disabled");
+            $("#cidadeD").attr("disabled", "disabled");
+        }
+    }
+</script>
+
+<?php if(isset($_REQUEST['id'])) { require_once "scripts/manterpropostaincentivofiscal/inc/menu.inc.php"; } ?>
+<?php if ( isset ( $_GET['s'] ) ) {?>
+<!-- ========== INULO ========== -->
+<div id="titulo">
+    <div>Local de Realiza&ccedil;&atilde;o <?php if(!isset($_GET['edital'])): ?>/ Deslocamento<?php endif; ?>
+        <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+<div id="conteudo">
+<?php } ?>
+
+    <div id="alerta" title="Alerta" style="display: none">Tem certeza que deseja excluir o registro?</div>
+    <div id="confirm" title="Confirma&ccedil;&atilde;o" style="display: none">Tem certeza que deseja excluir o registro?</div>
+    <div id="miolo">
+
+        <form name="form" id="form" action="<?php echo $this->url(array('controller'=>'deslocamento', 'action'=>'salvar')); ?>" method="post">
+            <input type="hidden" name="idDeslocamento" value="<?php echo $this->idDeslocamento; ?>" style="border:red solid 1px;" />
+            <input type="hidden" name="idPreProjeto" value="<?php echo $this->idPreProjeto; ?>" style="border:red solid 1px;" />
+
+            <table class="tabela">
+                <tr class="titulo_tabela">
+                    <th colspan="4">Instru&ccedil;&otilde;es</th>
+                </tr>
+                <tr>
+                    <td colspan="4" style="padding-left: 30px;">
+                        <ul>
+                            <li>Esta tela dever&aacute; ser preenchida com um ou mais Deslocamentos da proposta cultural.</li>
+                            <li>Se o Deslocamento for no exterior, selecione apenas o pa&iacute;s.</li>
+                            <li>Se o Deslacamento for no Brasil, selecione a UF e a Cidade.</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="3" valign="top"><label>Origem</label></th>
+                </tr>
+                <tr>
+                    <td valign="top" width="33%">
+                        <label id="LpaisOrigem">Pa&iacute;s de Origem</label>
+                        <br />
+                        <select name="paisOrigem" id="paisOrigem" onchange="FpaisOrigem(this.value);" class="select_simples">
+                            <?php foreach ($this->paises as $paises){ ?>
+                            <option value="<?php echo $paises->idPais; ?>"
+                                <?php if(($this->idPaisO == '') && ($paises->idPais == 31)) {
+                                        echo "selected=\"selected\"";
+                                    } else if($paises->idPais == $this->idPaisO ) {
+                                        echo "selected=\"selected\"";
+                                    }
+                                ?>>
+                                <?php echo utf8_decode(htmlentities($paises->Descricao)); ?>
+                            </option>
+                            <?php } ?>
+                        </select>
+                    </td>
+                    <td valign="top" width="33%">
+                        <label id="Luf" <?php if(($this->idPaisO) && ($this->idPaisO != 31)) echo 'style="display:none"'; ?>>UF de Origem</label>
+                        <br />
+                        <select name="uf" id="uf" class="w100 select_simples" <?php if(($this->idPaisO) && ($this->idPaisO != 31))  echo 'style="display:none"'; ?>
+                                onchange="carregar_combo(this.value,'cidade','<?php echo $this->url(array('controller'=>'cidade', 'action'=>'combo')); ?>',' - Selecione primeiro o UF - ');">
+                            <?php if (!isset($this->uf) || empty($this->uf)) {?>
+                            <option value="0"> -- </option>
+                            <?php } ?>
+
+                            <?php foreach ($this->comboestados as $comboestado){ ?>
+                            <option value="<?php echo $comboestado->id; ?>" <?php if ($this->idUFO == $comboestado->id) echo "selected=\"selected\""; ?>>
+                                <?php echo $comboestado->descricao; ?>
+                            </option>
+                            <?php } ?>
+                        </select>
+                    </td>
+                    <td valign="top" width="33%">
+                        <label id="Lcidade" <?php if(($this->idPaisO) && ($this->idPaisO != 31))echo 'style="display:none"'; ?>>Cidade de Origem</label>
+                        <br />
+                        <select name="cidade" id="cidade" class="select_simples" <?php if(($this->idPaisO) && ($this->idPaisO != 31)) {
+                                echo 'style="display:none; width:300px;"';
+                            } else {
+                                echo 'style="width:300px;"';
+                        }?>>
+                            <option value="0"> - Selecione - </option>
+                            <?php foreach ($this->combocidadesO as $combocidade){ ?>
+                            <option value="<?php echo $combocidade->id; ?>" id="<?php echo $combocidade->idUF; ?>" <?php if ($this->idCidadeO == $combocidade->id) echo "selected=\"selected\""; ?>>
+                                <?php echo $combocidade->descricao; ?>
+                            </option>
+                            <?php } ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="3" valign="top"><label>Destino</label></th>
+                </tr>
+                <tr>
+                    <td valign="top">
+                        <label id="LpaisDestino">Pa&iacute;s de Destino</label>
+                        <br />
+                        <select name="paisDestino" id="paisDestino" onchange="FpaisDestino(this.value);" class="select_simples" >
+                            <?php foreach ($this->paises as $paises){ ?>
+                            <option value="<?php echo $paises->idPais; ?>"
+                                <?php if(($this->idPaisD == '') && ($paises->idPais == 31)) {
+                                        echo "selected=\"selected\"";
+                                    } else if($paises->idPais == $this->idPaisD ) {
+                                        echo "selected=\"selected\"";
+                                    }?>>
+                                    <?php echo utf8_decode(htmlentities($paises->Descricao)); ?>
+                            </option>
+                            <?php } ?>
+                        </select>
+                    </td>
+                    <td valign="top">
+                        <label id="LudD" <?php if(($this->idPaisD) && ($this->idPaisD != 31))echo 'style="display:none;"'; ?>>UF de Destino</label>
+                        <br />
+                        <select name="ufD" id="ufD" class="w100 input_simples"
+                            onchange="carregar_combo(this.value,'cidadeD','<?php echo $this->url(array('controller'=>'cidade', 'action'=>'combo')); ?>',' - Selecione primeiro o UF - ');"
+                            <?php if(($this->idPaisD) && ($this->idPaisD != 31))echo 'style="display:none; width:50px;"'; ?> class="select_simples" >
+                            <?php if (!isset($this->uf) || empty($this->uf)) { ?>
+                            <option value="0"> -- </option>
+                            <?php } ?>
+
+                            <?php foreach ($this->comboestados as $comboestado){ ?>
+                            <option value="<?php echo $comboestado->id; ?>" <?php if ($this->idUFD == $comboestado->id) echo "selected=\"selected\""; ?>>
+                                <?php echo $comboestado->descricao; ?>
+                            </option>
+                            <?php } ?>
+                        </select>
+                    </td>
+                    <td valign="top">
+                        <label id="LcidadeD" <?php if(($this->idPaisD) && ($this->idPaisD != 31))echo 'style="display:none;"'; ?>>Cidade de Destino</label>
+                        <br />
+                        <select name="cidadeD" id="cidadeD" class="select_simples" <?php if(($this->idPaisD) && ($this->idPaisD != 31)) {
+                                echo 'style="display:none; width:300px;"';
+                            }else {
+                                echo 'style="width:300px;"';
+                            }?>>
+                            <option value="0"> - Selecione - </option>
+
+                            <?php foreach ($this->combocidadesD as $combocidade){ ?>
+                                <option value="<?php echo $combocidade->id; ?>" id="<?php echo $combocidade->idUF; ?>" <?php if ($this->idCidadeD == $combocidade->id) echo "selected=\"selected\""; ?>>
+                                <?php echo $combocidade->descricao; ?>
+                                </option>
+                            <?php } ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="3" valign="top"><label>Quantidade</label></th>
+                </tr>
+                <tr>
+                    <td colspan="3" valign="top">
+                        <label id="Lquantidade">Quantidade de Trechos</label>
+                        <input class="input_simples" value="<?php echo $this->Qtde; ?>" type="text" name="quantidade" id="quantidade" size="5" maxlength="9" />
+                    </td>
+                </tr>
+            </table>
+
+            <table class="tabela">
+                <tr>
+                    <td class="centro">
+                        <?php //if($this->Qtde == ''){ ?>
+                        <input id="" type="button" title="Salvar" class="btn_salvar" onclick="validaForm();" />
+                        <?php //}else{ ?>
+                            <!-- <input id="" type="button" title="Alterar" class="btn_alterar" onclick="validaForm();" />-->
+                            <?php //} ?>
+                            <!-- <input id="" type="button" title="Voltar" class="btn_voltar" onclick="voltar();" />-->
+                    </td>
+                </tr>
+            </table>
+
+            <br />
+            <?php if($this->deslocamentos){ ?>
+            <table class="tabela">
+                <tr>
+                    <th class="centro">Pa&iacute;s Origem</th>
+                    <th class="centro">UF Origem</th>
+                    <th class="centro">Cidade Origem</th>
+                    <th class="centro">Pa&iacute;s Destino</th>
+                    <th class="centro">UF Destino</th>
+                    <th class="centro">Cidade Destino</th>
+                    <th class="centro">Quantidade</th>
+                    <th>A&ccedil;&otilde;es</th>
+                </tr>
+                <?php foreach($this->deslocamentos as $desloca){ ?>
+                <tr>
+                    <td class="centro"><?php echo utf8_decode(htmlentities($desloca->PO));?></td>
+                    <td class="centro"><?php echo utf8_decode(htmlentities($desloca->UFO));?></td>
+                    <td class="centro"><?php echo utf8_decode(htmlentities($desloca->MUO));?></td>
+                    <td class="centro"><?php echo utf8_decode(htmlentities($desloca->PD));?></td>
+                    <td class="centro"><?php echo utf8_decode(htmlentities($desloca->UFD));?></td>
+                    <td class="centro"><?php echo utf8_decode(htmlentities($desloca->MUD));?></td>
+                    <td class="centro"><?php echo utf8_decode(htmlentities($desloca->Qtde));?></td>
+                    <td class="centro" width="200px">
+                        <input id="" type="button" title="Editar" class="btn_editar" value=" " onclick="location.href ='<?php echo $this->baseUrl(); ?>/deslocamento/index?s=s&verifica=S&idPreProjeto=<?php echo $this->idPreProjeto; ?>&id=<?php echo $desloca->idDeslocamento; ?>'" />
+                        <input id="" type="button" title="Excluir" class="btn_exclusao" value=" " onclick="confirma(<?php echo $this->idPreProjeto; ?>,<?php echo $desloca->idDeslocamento; ?>);" />
+                    </td>
+                </tr>
+                <?php } ?>
+            </table>
+            <?php } ?>
+        </form>
+    </div>
+<?php if(isset($_GET['s'])){ ?>
+</div>
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RO ========== -->
+<br clear="all" />
+<?php } ?>
+
+

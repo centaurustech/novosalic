@@ -1,0 +1,44 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#btn_imprimir').click(function(){
+            $('#formImprimirChecklist').submit();
+        });
+    });
+</script>
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Imprimir CheckList - Assinaturas</div>
+</div>
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">           
+    <form class="form" name="formImprimirChecklist" id="formImprimirChecklist" method="post" action='<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'imprimir-checklist')); ?>'>
+        <table class="tabela">
+            <tr>
+                <td class="destacar bold">Cargos</td>
+                <td class="destacar bold">Nomes</td>
+            </tr>
+            <tr>
+                <td><input class="input_simples w300" type="text" name="agenteAdministrativoCargo" value="Agente Administrativo" /></td>
+                <td><input class="input_simples w300" style="border-color: #CCC; color: #BBB;" type="text" readonly="readonly" name="agenteAdministrativoNome" value="<?php echo $this->nomeUsuario; ?>" /></td>
+            </tr>
+            <tr>
+                <td><input class="input_simples w300" type="text" name="chefeDivisaoCargo" value="Chefe de Divisão" /></td>
+                <td><input class="input_simples w300" type="text" name="chefeDivisaoNome" value="" /></td>
+            </tr>
+            <tr>
+                <td><input class="input_simples w300" type="text" name="coordAprovacaoCargo" value="Coordenadora de Aprovação de Projetos" /></td>
+                <td><input class="input_simples w300" type="text" name="coordAprovacaoNome" value="" /></td>
+            </tr>
+        </table>
+        <input type="hidden" name="idPronac" value="<?php echo $this->idPronac; ?>" />
+        <p align="center"><input class="btn_imprimir" id="btn_imprimir" type="button" /></p>
+    </form>
+    <br clear="all" />
+</div>
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

@@ -1,0 +1,171 @@
+<?php require_once "inc/menu.inc.php"; // menu lateral ?> 
+
+<script type="text/javascript">
+
+    function addTodos() // adiciona todos os options da esquerda para direita
+    {
+        visao       = document.getElementById("visao"); // select de origem
+        visaoAgente = document.getElementById("visaoAgente"); // select de destino
+        for (i = 0; i < visao.length; i++) // varre todo o option de origem
+        {
+            var novoOption = document.createElement("option"); // cria um novo option
+            novoOption.text  = visao.options[i].text; // texto do option
+            novoOption.value = visao.options[i].value; // valor do option
+            visaoAgente.options.add(novoOption); // adiciona o novo option no select de destino
+            visao.remove(i); // remove o option do select de origem
+            i--;
+        }
+    } // fecha função addTodos()
+
+
+    function delTodos() // deleta todos os options da direita
+    {
+        visao       = document.getElementById("visao"); // select de origem
+        visaoAgente = document.getElementById("visaoAgente"); // select de destino
+        for (i = 0; i < visaoAgente.length; i++) // varre todo o option de origem
+        {
+            if (visaoAgente.options[i].value != "144")
+            {
+                var novoOption = document.createElement("option"); // cria um novo option
+                novoOption.text  = visaoAgente.options[i].text; // texto do option
+                novoOption.value = visaoAgente.options[i].value; // valor do option
+                visao.options.add(novoOption); // adiciona o novo option no select de destino
+                visaoAgente.remove(i); // remove o option do select de origem
+                i--;
+            }
+        }
+    } // fecha função delTodos()
+
+
+    function addSelecionado() // adiciona o option selecionado da esquerda para direita
+    {
+        visao       = document.getElementById("visao"); // select de origem
+        visaoAgente = document.getElementById("visaoAgente"); // select de destino
+        for (i = 0; i < visao.length; i++) // varre todo o option de origem
+        {
+            if (visao.options[i].selected == true) // caso o option esteja selecionado
+            {
+                var novoOption = document.createElement("option"); // cria um novo option
+                novoOption.text  = visao.options[i].text; // texto do option
+                novoOption.value = visao.options[i].value; // valor do option
+                visaoAgente.options.add(novoOption); // adiciona o novo option no select de destino
+                visao.remove(i); // remove o option do select de origem
+                i--;
+            }
+        }
+    } // fecha função addSelecionado()
+
+
+    function delSelecionado() // deleta o option selecionado da direita
+    {
+        visao       = document.getElementById("visao"); // select de origem
+        visaoAgente = document.getElementById("visaoAgente"); // select de destino
+        for (i = 0; i < visaoAgente.length; i++) // varre todo o option de origem
+        {
+            if (visaoAgente.options[i].selected == true && visaoAgente.options[i].value != "144") // caso o option esteja selecionado
+            {
+                var novoOption = document.createElement("option"); // cria um novo option
+                novoOption.text  = visaoAgente.options[i].text; // texto do option
+                novoOption.value = visaoAgente.options[i].value; // valor do option
+                visao.options.add(novoOption); // adiciona o novo option no select de destino
+                visaoAgente.remove(i); // remove o option do select de origem
+                i--;
+            }
+        }
+    } // fecha função delSelecionado()
+
+
+    function selecionarOptions() // função para selecionar todos os options antes do envio do formulário
+    {
+        visaoAgente = document.getElementById("visaoAgente"); // select de destino
+        for (i = 0; i < visaoAgente.length; i++) // varre todo o option de origem
+        {
+            visaoAgente.options[i].selected = true; // adiciona o novo option no select de destino
+        }
+        document.getElementById('form').submit();
+    } // fecha função selecionarOptions()
+
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->baseUrl(); ?>" title="Ir para Início">Início</a></li>
+        <li class="last">Adicionar Visão</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Adicionar Visão <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+    <?php require_once "inc/cabecalho.php";?>
+    <?php
+        // array com o id das visões do agente
+        if($this->visaoAgente) {
+            foreach ($this->visaoAgente as $visao) {
+                $arrayIdVisao[] = $visao['idVerificacao'];
+            }
+        }
+    ?>
+
+    <form class="form" name="form" id="form" method="post"	action="<?php echo $this->url(array('controller' => 'agentes', 'action' => 'alterarvisao')); ?>">
+        <table class="tabela">
+            <tr>
+                <th>Visões disponíveis</th>
+                <th>Ação</th>
+                <th>Visões do Agente</th>
+            </tr>
+            <tr>
+                <td class="centro" valign="top">
+
+                    <label for="visao"> </label>
+                    <select class="select w300" name="visao[]" id="visao" multiple="multiple" size="7">
+                        <?php foreach ($this->visao as $visao) : ?>
+                            <?php if(!in_array($visao['idVerificacao'], $arrayIdVisao)) : // só mostra as visões que o agente NÃO possui ?>
+                            <option value="<?php echo $visao['idVerificacao']; ?>"><?php echo $visao['Descricao']; ?></option>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </select>
+                </td>
+                <td class="centro" valign="middle">
+                    <p><input class="btn" type="button" value=" >>  " onkeypress=" " onclick="addTodos();" 		 title="Adicionar todas as visões para o Agente" /></p>
+                    <p><input class="btn" type="button" value="  >  " onkeypress=" " onclick="addSelecionado();" title="Adicionar a visão selecionada para o Agente" /></p>
+                    <p><input class="btn" type="button" value="  <  " onkeypress=" " onclick="delSelecionado();" title="Remover a visão selecionada do Agente" /></p>
+                    <p><input class="btn" type="button" value=" <<  " onkeypress=" " onclick="delTodos();" 		 title="Remover todas as visões do Agente" /></p>
+                </td>
+                <td class="centro" valign="top">
+                    <label for="visaoAgente"> </label>
+                    <select class="select w300" name="visaoAgente[]" id="visaoAgente" multiple="multiple" size="7">
+                        <?php foreach ($this->visaoAgente as $visao) : ?>
+                            <option value="<?php echo $visao['idVerificacao']; ?>"><?php echo $visao['Descricao']; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <table class="tabela">
+            <tr>
+                <td class="centro">
+                    <input type="button" class="btn_cancelar" title=" Cancelar " value=" " onclick="voltar();" onkeypress=" " />
+                    <input type="submit" class="btn_salvar" title=" Salvar " onclick="selecionarOptions(); return false;" onkeypress=" " value=" " />
+                </td>
+            </tr>
+        </table>
+        <br />
+    </form>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

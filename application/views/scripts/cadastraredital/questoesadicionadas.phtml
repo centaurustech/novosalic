@@ -1,0 +1,92 @@
+<?php 
+$operacoescustomizavelhref  =   $this->url(array('controller' => 'cadastraredital', 'action' => 'operacoescustomizavel'));
+?>
+<div id="informativo" >
+    &nbsp;H&aacute; <?php echo count($this->questoes) ?> quest&atilde;o(&otilde;es) adicionada(s)!
+</div>
+<div class="ui-state-default" style="height: 30px;line-height: 30px; font-size: 16px; margin: 1%; width: 98%; ">
+    Quest&otilde;es adicionadas
+</div>
+<div id="alerta"></div>
+<ul id="sortable">
+    <?php
+    if(is_object($this->questoes) and count($this->questoes)>0)
+    foreach ($this->questoes as $questao){
+    ?>
+        <li class="ui-state-default-branco" nrPergunta="<?php echo $questao->nrPergunta ?>" style="margin-left: 1%; width: 99%; cursor: move;">
+            <div style="float: left; width: 90%;overflow: hidden; height: 18px;text-align: left;">
+                <?php echo utf8_encode($questao->dsPergunta);?>
+            </div>
+            <div class="excluirQ" style="float: right; ">
+                <img src="<?php echo $this->baseUrl(); ?>/public/img/botaoExcluir.png" alt="Excluir Pergunta <?php echo $questao->nrPergunta ?>"  style="cursor: pointer"  />
+            </div>
+            <div class="alterarQ" style="float: right;margin-right: 5px;">
+                <img src="<?php echo $this->baseUrl(); ?>/public/img/botaoEditarNovo.gif" style="cursor: pointer;" alt="Alterar Pergunta "/>
+            </div>
+        </li>
+    <?php
+    }
+    ?>
+</ul>
+
+<script type="text/javascript">
+function excluirQuestao(nrPergunta){
+    $('#formInclusaoPergunta').find('#operacao').val('excluirQuestao');
+    $('#formInclusaoPergunta').find('#nrPergunta').val(nrPergunta);
+    $('#formInclusaoPergunta').submit();
+}
+$(function() {
+    $('.alterarQ').click(function(){
+        var este = this;
+        var data = {
+            operacao:'buscarQuestao',
+            nrFormDocumento:<?php echo $this->nrFormDocumento;?>,
+            nrVersaoDocumento:<?php echo $this->nrVersaoDocumento;?>,
+            nrPergunta:$(este).parent().attr('nrPergunta')
+        }
+        $.ajax({
+          type: 'post',
+          url:  '<?php echo $operacoescustomizavelhref;?>',
+          data: data,
+          success: function(data){
+              $('#formInclusaoPergunta').find('#btSubmit').addClass('btn_salvar');
+              $('#formInclusaoPergunta').find('#btSubmit').removeClass('btn_incluir');
+              $('#formInclusaoPergunta').find('#operacao').val('alterarPergunta');
+              $('#cancelarAlteracao').css('display','');
+              $('#auxTipoObjeto').css('display','none');
+              if(data.stTipoObjetoPgr){
+              if(data.stTipoObjetoPgr == 'CB' || data.stTipoObjetoPgr == 'CK' ||  data.stTipoObjetoPgr == 'RB')
+                $('#auxTipoObjeto').css('display','');
+              }
+              $('#nrPergunta').val(data.nrPergunta);
+              $('#dsPergunta').val(data.dsPergunta);
+              $('#dsLabelPergunta').val(data.dsLabelPergunta);
+              $('#stTipoObjetoPgr').val(data.stTipoObjetoPgr);
+              listaOpcao();
+          }
+          ,dataType:'json'
+        });
+    });
+    $('.excluirQ').click(function(){
+        var este = this;
+        alerta('Tem certeza que deseja excluir o registro?','Alerta!',{
+            'N\u00e3o': function() {
+                $(this).dialog('close');
+            },
+            'Sim': function() {
+                excluirQuestao($(este).parent().attr('nrPergunta'));
+//                $(este).parent().remove();
+//                $(this).dialog('close');
+            }
+        });
+    });
+    $( "#sortable" ).sortable({
+        placeholder: "ui-state-highlight",
+        stop:function(event,ui){
+            recadastrarPosicao('#sortable',{operacao:'ordenar',nrFormDocumento:<?php echo $this->nrFormDocumento;?>,nrVersaoDocumento:<?php echo $this->nrVersaoDocumento;?>},'#requisicaoAjaxQuestoes #alerta','nrOrdemPergunta','nrPergunta');
+        }
+    });
+    $( "#sortable" ).disableSelection();
+
+});
+</script>

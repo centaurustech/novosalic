@@ -1,0 +1,312 @@
+<?php require_once"inc/menu.inc.php"; ?>
+<style>
+    .tabela p { font: 12px/14pt "Trebuchet MS",Georgia,"Times New Roman",Times,serif; }
+</style>
+<script language="JavaScript" type="text/javascript">
+    $(document).ready(function() {
+        $('.btn_cancelar').click(function(){
+            window.location = "<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'index')); ?>";
+        });
+        
+        $("#btn_salvar").click(function() {
+            isLaudoAprovado = $("[name=IN]:checked").val();
+
+            if (!$("input[type='checkbox']:checked").length) {
+                JSJanela();
+                return false;
+            }
+
+            if($("#parecerdotecnico").val() == "" || isLaudoAprovado == undefined) {
+                $("#obrigatorio").html("Dados obrigat&oacute;rios n&atilde;o informados!");
+                $("#obrigatorio").dialog("destroy");
+                $("#obrigatorio").dialog
+                ({
+                    width: 350,
+                    height: 180,
+                    resizable: true,
+                    EscClose:false,
+                    modal:true,
+                    buttons: {
+                        'OK' : function(){
+                            $(this).dialog('close');
+                        }
+                    } 
+                });
+                return false;
+            } else {
+                var mensagem = 'Tem certeza que deseja salvar e finalizar a análise do projeto?';
+                if (isLaudoAprovado == 'aprovado') {
+                    mensagem + '<br>Será gerado a guia de arquivamento para seu projeto.';
+                }
+                $("#enviar-confirm").html(mensagem);
+                $("#enviar").dialog("destroy");
+                $("#enviar-confirm").dialog
+                ({
+                    height: 210,
+                    width: 450,
+                    modal: true,
+                    draggable: false,
+                    resizable: true,
+                    closeOnEscape: false,
+                    buttons: {
+                        'Não': function(){
+                            $(this).dialog('close');
+                        },
+                        'Sim': function() {
+                            $('#formLaudoFinal').attr('action', '<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'gravarlaudofinal'), null, true); ?>');
+                            $("#formLaudoFinal").submit();
+                            window.setTimeout('retornarTela()', 1000);
+                        }
+                    }
+                });
+            }
+            return false;
+        });
+
+        $("#btn_imprimir, #btn_imprimir_guia").click(function() {
+            console.log('btn_imprimir_guia');
+            if (
+                    'btn_imprimir' == $(this).attr('id') &&
+                    !$("input[type='checkbox']:checked").length
+            ) {
+                JSJanela();
+                return false;
+            }
+            $('#formLaudoFinal').attr('action', '<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'gerarpdf'), null, true); ?>');
+            $("#formLaudoFinal").submit();
+        });
+
+        <?php if(isset($_GET['gerarGuia']) && $_GET['gerarGuia'] == "true"): ?>
+        //GERA GUIA ATUOMATICO
+        $('#formLaudoFinal').attr('action', '<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'gerarpdf'), null, true); ?>');
+        $('#formLaudoFinal').removeAttr('target');
+        $("#formLaudoFinal").submit();
+        <?php endif; ?>
+    });
+    
+    function retornarTela(){
+        window.location = "<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'painel')); ?>?msg=sucessoLaudoFinal";
+    }
+
+    function JSJanela() {
+        $("body").append("<div id='divDinamica'></div>");
+        $('#divDinamica')
+                .css('overflow', 'hidden')
+                .html("É necessário informar ao menos um parecer para impressão.")
+                .dialog({
+                    resizable: true,
+                    width:320,
+//                    height:180,
+                    modal: true,
+                    autoOpen:true,
+                    draggable:false,
+                    title: 'Alerta',
+                    buttons: {
+                        'OK': function() {
+                            $("#divDinamica").remove();
+                            $(this).dialog('close');
+                            $('html').css('overflow', 'auto');
+                        }
+                    },
+                    close: function() {
+                        $("#divDinamica").remove();
+                        $(this).dialog('close');
+                        $('html').css('overflow', 'auto');
+                    }
+                });
+    }
+</script>
+
+<div id="enviar-confirm" class="sumir" title="Envio de Projeto"></div>
+<div id="obrigatorio"></div>
+<div id="conteudoParaImpressao"></div>
+<div id="total">
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''), '', true); ?>" title="Ir para p&aacute;gina inicial">Início</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'painel'));?>">Presta&ccedil;&atilde;o de contas</a></li>
+        <li class="last">Laudo final de presta&ccedil;&atilde;o de contas</li>
+    </ul>
+</div>
+<div id="titulo">
+    <div>
+        Laudo final de presta&ccedil;&atilde;o de contas 
+        <span class="voltar" style="float:right;">
+            <a href="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'planilhaorcamentaria'),'',true) , "?idPronac={$this->idPronac}"; ?>" title="Ir para p&aacute;gina anterior">Voltar</a>
+        </span>
+    </div>
+</div>
+<div id="conteudo">
+    <form id="formLaudoFinal" method="post" target="_blank">
+        <input type="hidden" name="idPronac" id="idPronac" value="<?php echo $this->idPronac;?>" />
+        <input type="hidden" name="processo" value="<?php echo $this->processo;?>" />
+        <input type="hidden" name="pronac" value="<?php echo $this->pronac;?>" />
+        <input type="hidden" name="nomeProjeto" value="<?php echo $this->nomeProjeto;?>" />
+        <input type="hidden" name="nomeProponente" value="<?php echo $this->nomeProponente;?>" />
+        <div id="conteudoPDF">
+            <table cellspacing="1" class="tabela" id="cabecalho" class="checks">
+                <tr>
+                    <th width="30%">PRONAC</th>
+                    <th width="70%">NOME DO PROJETO</th>
+                </tr>
+                <tr>
+                    <td><?php echo $this->pronac;?><input type="hidden" name="idPronac" value="<?php echo $this->idPronac;?>"></td>
+                    <td><?php echo $this->nomeProjeto;?></td>
+                </tr>
+            </table>
+            <table cellspacing="1" class="tabela">
+                    <div id="divParecerTecnico">
+                    <tr>
+                        <th style="text-align:left" colspan="1">
+                            <input type="checkbox" name="pt" id="pt" value="1" class="checks" />
+                            <label for="pt">Parecer Técnico</label>
+                            <br/>
+                        </th>
+                    </tr>
+                    <tr class="sumir destacar" id="linha_pt">
+                        <td>
+                            Nome: <input type="text" class="input_simples w300" name="nome_tecnico" id="nome_tecnico" value="Elton Pereira dos Santos">
+                            Cargo: <input type="text" class="input_simples w300" name="cargo_tecnico" id="cargo_tecnico" value="Coordenador de Prestação de Contas">
+                            Matrícula: <input type="text" class="input_simples" name="matricula_tecnico" id="matricula_tecnico" value="SIAPE 2701536">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="1">
+                            <textarea readonly class="input_simples" id="parecerdotecnico" style="width: 99%" rows="15" name="parecerDoTecnico"><?php if(!empty($this->parecerTecnico)):echo $this->parecerTecnico->meRelatorio;endif;?></textarea>
+                            <?php
+                            if ($this->parecerTecnico) :
+                                $parecerTecnico = $this->parecerTecnico->siManifestacao == 0 ? 'Irregular' : 'Regular';
+                                ?>
+                            <input type="hidden" name="manifestacaoParecerTecnico" value="<?php echo $parecerTecnico; ?>"/>
+                            <span style="color: #35953F; font-size: 16px; font-weight: bold; padding: 5px;">Manifestação Final: </span>
+                            <?php
+                                echo $parecerTecnico;
+                            endif;
+                            ?>
+                        </td>
+                    </tr>
+                    </div>
+                    <div id="divParecerChefe">
+                    <tr>
+                        <th style="text-align:left" colspan="1">
+                            <input type="checkbox" name="pch" id="pch" value="2" class="checks" />
+                            <label for="pch">Parecer Chefe de Divisão</label>
+                            <br>
+                        </th>
+                    </tr>
+                    <tr class="destacar sumir" id="linha_pch">
+                        <td>
+                            Nome: <input type="text" class="input_simples w300" name="nome_tecnico" id="nome_tecnico" value="Denise Terra Nunes Ribas">
+                            Cargo: <input type="text" class="input_simples w300" name="cargo_tecnico" id="cargo_tecnico" value="Coordenadora-Geral de Prestação de Contas">
+                            Matrícula: <input type="text" class="input_simples" name="matricula_tecnico" id="matricula_tecnico" value="">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="1">
+                            <textarea readonly class="input_simples" id="parecerchefe" style="width: 99%" rows="15" name="parecerDoChefeDeDivisao"><?php if(!empty($this->parecerChefe)):echo $this->parecerChefe->meRelatorio;endif;?></textarea>
+                            <?php
+                                if ($this->parecerChefe) :
+                                    $parecerDoChefeDeDivisao = $this->parecerChefe->siManifestacao ? 'Regular' : 'Irregular';
+                                ?>
+                            <input type="hidden" name="manifestacaoChefeDeDivisao" value="<?php echo $parecerDoChefeDeDivisao; ?>"/>
+                            <span style="color: #35953F; font-size: 16px; font-weight: bold; padding: 5px;">Pronunciamento: </span>
+                            <?php 
+                                echo $parecerDoChefeDeDivisao;
+                            endif;
+                            ?>
+                        </td>
+                    </tr>
+                    </div>
+            </table>
+        </div>
+
+        <?php if(!empty($this->parecerCoord)) : ?>
+        <input type="hidden" name="IN" value="reprovado" />
+        <table cellspacing="1" class="tabela">
+            <tr>
+                <th style="text-align: left" <?php echo (!empty($this->tipoInabilitacao)) ? '' : 'colspan="2"'; ?> class="" align="center" width="50%"><b>Conforme IN nº 1 de 05/10/2010.&nbsp;&nbsp;Seção III Art. 76 a Art. 80</b></th>
+                <?php if(!empty($this->tipoInabilitacao)) { ?>
+                <th style="text-align: left" class="" align="center"><b>Conforme IN nº 1 de 05/10/2010. Art. 88</b></th>
+                <?php } ?>
+            </tr>
+            <tr>
+                <td><?php echo (!empty($this->resultadoParecer)) ? "<b>".$this->resultadoParecer."</b>" : 'Dados n&atilde;o informados';?></td>
+                <td><?php echo (!empty($this->tipoInabilitacao)) ? "Inabilita&ccedil;&atilde;o: <b>".$this->tipoInabilitacao."</b>" : 'Dados n&atilde;o informados';?></td>
+            </tr>
+        </table>
+        <?php else: //fecha else(mostra ou nao radios de aprovacao) ?>
+        <table cellspacing="1" class="tabela">
+            <tr>
+                <th style="text-align: left" colspan="3">Manifestação</th>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <input type="radio" id="aprovacao" class="radio" name="IN" value="aprovado" />
+                    <label for="aprovacao">Aprovação</label>
+                    <input type="radio" id="reprovacao" class="radio" name="IN" value="reprovado" />
+                    <label for="reprovacao">Reprovação</label>
+                </td>
+            </tr>
+        </table>
+        <?php endif; //fecha if(mostra ou nao radios de aprovacao)?>
+        <table cellspacing="1" class="tabela">
+            <tr>
+                <th style="text-align: left" colspan="4">ESCOLHA DE RESPONSÁVEIS</th>
+            </tr>
+            <tr>
+                <td>
+                    <p>Coordenador(a) de Incentivos Fiscais e Apoio Técnico</p>
+                    <select name="coordenadorIncentivoFiscal" class="input_simples">
+                        <?php foreach ($this->CoordIncFisc as $a){ ?>
+                        <option value="<?php echo $a->nmAssinante; ?>"><?php echo $a->nmAssinante; ?></option>
+                        <?php } ?>
+                    </select>
+                </td>
+                <td>
+                    <p>Coordenador(a) Geral de Prestação de Contas</p>
+                    <select name="coordenadorPrestacaoDeContas" class="input_simples">
+                        <?php foreach ($this->CoordGeral as $b){ ?>
+                        <option value="<?php echo $b->nmAssinante; ?>"><?php echo $b->nmAssinante; ?></option>
+                        <?php } ?>
+                    </select>
+                </td>
+                <td>
+                    <p>Diretor(a) de Incentivo à Cultura</p>
+                    <select name="diretorIncentivoACultura" class="input_simples">
+                        <?php foreach ($this->Diretores as $c){ ?>
+                        <option value="<?php echo $c->nmAssinante; ?>"><?php echo $c->nmAssinante; ?></option>
+                        <?php } ?>
+                    </select>
+                </td>
+                <td>
+                    <p>Secretário(a) de Fomento e Incentivo à Cultura</p>
+                    <select name="coordenadorIncentivoACultura" class="input_simples">
+                        <?php foreach ($this->Secretarios as $d){ ?>
+                        <option value="<?php echo $d->nmAssinante; ?>"><?php echo $d->nmAssinante; ?></option>
+                        <?php } ?>
+                    </select>
+                </td>
+            </tr>
+        </table>
+
+        <table cellspacing="1" class="tabela">
+            <tr>
+                <td colspan="3" class="centro">
+                    <?php if(isset($this->cdGruposDestinoAtual) && $this->cdGruposDestinoAtual == "125"): ?>
+                    <input
+                    	class="btn_salvar <?php echo empty($this->parecerCoord) ? '' : 'sumir' ?>"
+                        id="btn_salvar"
+                        type="button"
+                        />
+                    <?php endif; ?>
+                    <input type="button" name="cancelar" class="btn_cancelar">
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<!--            <INPUT TYPE="RADIO" NAME="OPCAO" VALUE="op1"> opção1 -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== --> <br clear="all" />
+</div>

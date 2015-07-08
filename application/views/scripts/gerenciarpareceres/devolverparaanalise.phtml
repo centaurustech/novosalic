@@ -1,0 +1,72 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#frmDevolver").validate({
+            rules: {
+                observacao: { required: true,  minlength: 10 }
+            },
+            messages: {
+                observacao: { required: "<br>Dados obrigat&oacute;rios n&atilde;o informado", minlength: "<br>Digite ao menos 10 caracteres." }
+            },
+            submitHandler: function(form) {
+                form.submit();
+                $("#conteudoDevolucao").html("<center><br><br><br><br><br>Devolvendo para An&aacute;lise <br><img src='<?php echo $this->baseUrl(); ?>/public/img/ajax.gif' /></center>");
+            }
+        });
+    });
+
+    $("textarea[maxlength]").keypress(function(event){
+        var key = event.which;
+        //todas as teclas incluindo enter
+        if(key >= 33 || key == 13) {
+            var maxLength = $(this).attr("maxlength");
+            var length = this.value.length;
+            if(length >= maxLength) {
+                event.preventDefault();
+            }
+        }
+    });
+</script>
+
+<style type="text/css">
+    label.error{ color:red; font-weight: normal; }
+</style>
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<form name="frmDevolver" id="frmDevolver" action="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'devolverprojeto')); ?>" method="post">
+    <?php foreach($this->dados as $d):?>
+    <input type="hidden" class="input_simples" name="idpronac"  value="<?php echo $d->IdPRONAC; ?>" />
+    <input type="hidden" class="input_simples" name="idorgao"  value="<?php echo $d->idOrgao; ?>" />
+    <div id="conteudoDevolucao">
+        <table class="tabela">
+            <tr>
+                <td class="destacar bold w150" align="center">PRONAC:</td>
+                <td class="destacar bold" align="center">Projeto:</td>
+            </tr>
+            <tr>
+                <td align="center"><?php echo $d->PRONAC; ?></td>
+                <td align="center"><?php echo utf8_decode(htmlentities($d->NomeProjeto)); ?></td>
+            </tr>
+        </table>
+        
+        <table class="tabela">
+            <tr>
+                <td class="destacar bold w150" align="center">Devolver para:</td>
+            </tr>
+            <tr>
+                <td><?php echo utf8_decode(htmlentities($d->Orgao)); ?></td>
+            </tr>
+        
+            <tr>
+                <td class="destacar bold w150" align="center">Justificativa <span style="color: red;">*</span></td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <textarea class="input_simples" name="observacao" maxlength="500" id="observacao" rows="6" cols="" style="width: 98%;"></textarea>
+                    <br><div id="msg"></div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <?php endforeach; ?>
+</form>
+<!-- ========== FIM CONTEÚDO ========== -->

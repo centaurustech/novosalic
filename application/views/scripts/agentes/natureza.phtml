@@ -1,0 +1,158 @@
+<?php require_once "inc/menu.inc.php"; ?>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+
+        $("#btnsalvar").click(function(){
+            var preenchimento = false;
+            $('.obrigatorio').each(function(){
+                if($.trim($(this).val()) == '')
+                    preenchimento = true;
+            });
+
+            if(preenchimento) {
+                $("#camposObrigatorios").dialog("destroy");
+                $("#camposObrigatorios").html("Favor preencher os dados obrig&aacute;torios!");
+                $("#camposObrigatorios").dialog({
+                    resizable: false,
+                    title: 'Alerta!',
+                    width:320,
+                    height:160,
+                    modal: true,
+                    buttons : {
+                        'OK' : function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+                $('.ui-dialog-titlebar-close').remove();
+
+            } else {
+                $('#formNatureza').submit();
+            }
+        });
+
+        $('#direito').change(function(){
+            if($(this).val() == 1){
+                $('#esfera').removeAttr('disabled');
+                $('#esfera').addClass('obrigatorio');
+                $('#poder').removeAttr('disabled');
+                $('#poder').addClass('obrigatorio');
+                $('#administracao').removeAttr('disabled');
+                $('#administracao').addClass('obrigatorio');
+                $('.asterisco').removeClass('sumir');
+            } else {
+                $('#esfera').attr('disabled','disabled');
+                $('#esfera').removeClass('obrigatorio');
+                $('#poder').attr('disabled','disabled');
+                $('#poder').removeClass('obrigatorio');
+                $('#administracao').attr('disabled','disabled');
+                $('#administracao').removeClass('obrigatorio');
+                $('.asterisco').addClass('sumir');
+            }
+        });
+
+    });
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="#" title="Ir para Início">Início</a></li>
+        <li>Manter Agentes</li>
+        <li class="last">Natureza</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Natureza <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<div class="sumir" id="camposObrigatorios"></div>
+
+<?php
+    if(isset($this->dadosNatureza) && $this->dadosNatureza->Direito == 1){
+        $disable = '';
+        $asterisco = '<span style="color: red;" class="asterisco">*</span>';
+        $obrigatoriedade = 'obrigatorio';
+    } else {
+        $disable = 'disabled="disabled"';
+        $asterisco = '<span style="color: red;" class="asterisco sumir">*</span>';
+        $obrigatoriedade = '';
+    }
+?>
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+    <form id="formNatureza" action="<?php echo $this->url(array('controller' => 'agentes', 'action' => 'salvar-natureza'));?>" method="post">
+        <table class="tabela" style="width:40%;">
+            <input type="hidden" name="agente" id="agente" value="<?php echo $this->id; ?>" />
+            <th colspan="2">Dados do Proponente</th>
+            <tr>
+                <td class="destacar bold" align="right" width="150px" nowrap>Direito<span style="color: red;">*</span></td>
+                <td>
+                    <select name="direito" id="direito" class="select_simples obrigatorio">
+                        <option value="">- Selecione -</option>
+                        <?php foreach ($this->direito as $direito){ ?>
+                        <option value="<?php echo $direito->idVerificacao; ?>" <?php echo isset($this->dadosNatureza) && $this->dadosNatureza->Direito == $direito->idVerificacao ? 'selected="selected"' : ''; ?>><?php echo $direito->Descricao; ?></option>
+                        <?php } ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right" width="150px" nowrap>Esfera<?php echo $asterisco; ?></td>
+                <td>
+                    <select name="esfera" id="esfera" class="select_simples <?php echo $obrigatoriedade; ?>" <?php echo $disable; ?>>
+                        <option value="">- Selecione -</option>
+                        <?php foreach ($this->esfera as $esfera){ ?>
+                        <option value="<?php echo $esfera->idVerificacao; ?>" <?php echo isset($this->dadosNatureza) && $this->dadosNatureza->Esfera == $esfera->idVerificacao ? 'selected="selected"' : ''; ?>><?php echo $esfera->Descricao; ?></option>
+                        <?php } ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right" width="150px" nowrap>Poder<?php echo $asterisco; ?></td>
+                <td>
+                    <select name="poder" id="poder" class="select_simples <?php echo $obrigatoriedade; ?>" <?php echo $disable; ?>>
+                        <option value="">- Selecione -</option>
+                        <?php foreach ($this->poder as $poder){ ?>
+                        <option value="<?php echo $poder->idVerificacao; ?>" <?php echo isset($this->dadosNatureza) && $this->dadosNatureza->Poder == $poder->idVerificacao ? 'selected="selected"' : ''; ?>><?php echo $poder->Descricao; ?></option>
+                        <?php } ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right" width="150px" nowrap>Administração<?php echo $asterisco; ?></td>
+                <td>
+                    <select name="administracao" id="administracao" class="select_simples <?php echo $obrigatoriedade; ?>" <?php echo $disable; ?>>
+                        <option value="">- Selecione -</option>
+                        <?php foreach ($this->administracao as $administracao){ ?>
+                        <option value="<?php echo $administracao->idVerificacao; ?>" <?php echo isset($this->dadosNatureza) && $this->dadosNatureza->Administracao == $administracao->idVerificacao ? 'selected="selected"' : ''; ?>><?php echo $administracao->Descricao; ?></option>
+                        <?php } ?>
+                    </select>
+                </td>
+            </tr>
+        </table>
+
+        <div style="width: 100%; margin: 15px 0;" align="center">
+            <input type="button" class="btn_salvar" id="btnsalvar" /> <!--&nbsp;
+            <input type="button"class="btn_cancelar" id="btncancelar" />-->
+        </div>
+
+    </form>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

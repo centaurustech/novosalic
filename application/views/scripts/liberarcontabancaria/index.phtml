@@ -1,0 +1,412 @@
+<!-- ========== MENU ========== -->
+<?php require_once 'scripts/controlarmovimentacaobancaria/inc/menu.inc.php'; ?>
+
+<script type="text/javascript">
+     $(document).ready(function(){
+
+        $('.visualizarTextoModal').click(function(){
+            var situacao = $(this).attr('Situacao'),
+                dtsituacao = $(this).attr('DtSituacao'),
+                providencia = $(this).attr('ProvidenciaTomada');
+            $("#situacaoModal").html(situacao);
+            $("#dtsituacaoModal").html(dtsituacao);
+            $("#providenciaModal").html(providencia);
+            $("#visualizarTextoModal").dialog("destroy");
+            $("#visualizarTextoModal").dialog({
+                resizable: true,
+                modal: true,
+                autoOpen:true,
+                EscClose:false,
+                width:600
+            });
+            $("#visualizarTextoModal").dialog('open');
+        });
+
+        $('.btn_imprimir').click(function(){
+            $('#formImpressao').submit();
+        });
+
+        $("#btn_pesquisar").click(function(){
+            var pronac = $('#pronacPesquisa').val();
+            window.location = "<?php echo $this->url(array('controller' => 'liberarcontabancaria', 'action' => 'index')); ?>?pag=1&pronac="+pronac;
+        });
+
+        $('#pronacPesquisa').keydown(function(event){
+            if(event.keyCode == 13){
+                $("#btn_pesquisar").click();
+            }
+        });
+
+        $('.numero').keydown(function(event){
+            if((event.keyCode >= 96 && event.keyCode <= 105) || (event.keyCode >= 48 && event.keyCode <= 57) || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 67 || event.keyCode == 86){
+                return true;
+            } else{
+                return false;
+            }
+        });
+
+       $('.btn_salvar').click(function(){
+            var pronac = $(this).attr('pronac'),
+                valor = $(this).attr('vlcaptado'),
+                valorEditado = $(this).attr('vlEditado');
+            $("#msgAlerta").dialog("destroy");
+            $("#msgAlerta").html('Deseja realmente liberar o valor de R$'+valorEditado+' para o Pronac '+pronac+'?');
+            $("#msgAlerta").dialog({
+                resizable:false,
+                title:'Alerta!',
+                width:300,
+                height:180,
+                modal:true,
+                buttons: {
+                    'Não': function(){
+                        $("#msgAlerta").dialog("destroy");
+                    },
+                    'Sim': function() {
+                        $("#msgAlerta").dialog("destroy");
+                        $.ajax({
+                            type: 'POST',
+                            url: '<?php echo $this->url(array('controller' => 'liberarcontabancaria', 'action' => 'liberacao')); ?>',
+                            data: {
+                                pronac: pronac,
+                                vlCaptado: valor
+                            },
+                            success: function(data){
+                                if(data.resposta){
+                                    $("#msgAlerta").dialog("destroy");
+                                    $("#msgAlerta").html('<center><br /><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" alt="carregando"><br />Por favor, aguarde!!</center>');
+                                    $("#msgAlerta").dialog({
+                                        resizable:false,
+                                        title:'Alerta!',
+                                        width:300,
+                                        height:150,
+                                        modal:true
+                                    });
+                                    $('.ui-dialog-titlebar-close').remove();
+
+                                    //window.setInterval(function() {
+                                        location.reload();
+                                        //$("#msgAlerta").dialog("destroy");
+                                    //}, 1000);
+                                } else {
+                                    $("#msgAlerta").dialog("destroy");
+                                    $("#msgAlerta").html('Ocorreu um erro durante a operação. Contate o administrador do sistema!');
+                                    $("#msgAlerta").dialog({
+                                        resizable:false,
+                                        title:'Alerta!',
+                                        width:320,
+                                        height:180,
+                                        modal:true
+                                    });
+                                    $('.ui-dialog-titlebar-close').remove();
+                                }
+                            },
+                            dataType : 'json'
+                        });
+                    }
+                }
+            });
+            $('.ui-dialog-titlebar-close').remove();
+        });
+
+        //window.open('<?php //echo $this->Url(array('controller' => 'mantercontabancaria', 'action' => 'imprimir-consulta-regularidade')) ?>?cpfCnpj='+data.cgccpf, '_blank');
+       //CARREGA - PROJETOS EM AGUARDANDO ANALISE
+       //jqAjaxLink('<?php //echo $this->Url(array('controller' => 'liberarcontabancaria', 'action' => 'listar-projetos')) ?>', '', 'listaDeProjeto');
+    }); //fecha document.read
+
+    function JSEncaminharParaAnalise(cpfCnpj, caminho){
+        //alert(cpfCnpj);
+        $('html').css('overflow', 'hidden');
+        $("body").append("<div id='divDinamicaCertidoes'></div>");
+        $("#divDinamicaCertidoes").html("");
+        $('#divDinamicaCertidoes').html("<br><br><center>Carregando dados...</center>");
+        $.ajax({
+            url : '<?php echo $this->url(array('controller' => 'manterregularidadeproponente', 'action' => 'manterregularidadeproponente')); ?>',
+            data :
+                {
+                cpfCnpj : cpfCnpj,
+                caminho: caminho,
+                modal : "s"
+            },
+            success: function(data){
+                if (data.error)
+                {
+                    $('#divDinamicaCertidoes').html(data.msg);
+                }else{
+                    $('#divDinamicaCertidoes').html(data);
+                }
+            },
+            type : 'post'
+
+        });
+
+        var title = 'Certid&otilde;es negativas';
+        //jqAjaxLink("<?php echo $this->baseUrl() ?>/operacional/resultado-projetos-por-situacao?situacao=" + situacao, null, "divDinamicaCertidoes");
+        $("#divDinamicaCertidoes").dialog({
+            resizable: true,
+            width:1300,
+            height:600,
+            modal: true,
+            autoOpen:true,
+            draggable:false,
+            title: title,
+            buttons: {
+                'Cancelar': function() {
+                    $("#divDinamicaCertidoes").remove();
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');
+                }
+            },
+            close: function() {
+                $("#divDinamicaCertidoes").remove();
+                $(this).dialog('close');
+                $('html').css('overflow', 'auto');
+            }
+        });
+    }
+</script>
+
+<!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'), '', true); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second">Movimenta&ccedil;&atilde;o banc&aacute;ria</li>
+        <li class="last">Liberar conta banc&aacute;ria</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<div id="msgAlerta" class="sumir"></div>
+<div id="visualizarTextoModal" title="Informações Adicionais do Projeto" class="sumir">
+    <table class="tabela">
+        <!--<tr>
+            <th colspan="2">Dados do Projeto</th>
+        </tr>-->
+        <tr>
+            <td class="destacar bold" nowrap>Dt. Situação</td>
+            <td><span id="dtsituacaoModal"></span></td>
+        </tr>
+        <tr>
+            <td class="destacar bold">Situação</td>
+            <td><span id="situacaoModal"></span></td>
+        </tr>
+        <tr>
+            <td class="destacar bold" width="1">Providência Tomada</td>
+            <td><span id="providenciaModal"></span></td>
+        </tr>
+    </table>
+</div>
+
+<!-- ========== BUTTON VOLTAR ========== -->
+<div id="titulo">
+    <div>Liberar conta banc&aacute;ria<span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+
+
+<div id="conteudo">
+    <table class="tabela">
+	<tr>
+            <td class="destacar bold" width="1" align="center">PRONAC</td>
+            <td align="left">
+                <input type="text" class="input_simples numero" name="pronacPesquisa" id="pronacPesquisa" maxlength="7" style="width: 90px;" value="<?php echo $this->pronacProjeto;?>">
+                <input type="button" name="btn_pesquisar" id="btn_pesquisar" class="btn_pesquisar" value="">
+            </td>
+        </tr>
+    </table>
+
+    <?php if(count($this->dados)>0){ ?>
+    <!-- ============ PAGINAÇÃO ============ -->
+    <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+        <tbody>
+            <tr>
+                <td align="center">
+                <form name="form1" id="form1" action="<?php echo $this->url(array('controller' => 'liberarcontabancaria', 'action' => 'index'));?>" method="get">
+                    <?php if($this->paginacao['pag']>1) { ?>
+                    <input class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'liberarcontabancaria', 'action' => 'index')).'?pag=1'."&qtde=".$this->paginacao['qtde'].'&pronac='.$this->pronac; ?>'">
+                    <?php } ?>
+                    <input id="btn_p_anterior" type="button"
+                    <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                    <?php }else { ?>
+                           class="btn_p_anterior"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'liberarcontabancaria', 'action' => 'index')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].'&pronac='.$this->pronac; ?>'"
+                    <?php } ?>>
+                    <input id="btn_p_proximo" type="button"
+                           <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                           class="btn_p_proximo-off"
+                    <?php }else { ?>
+                           class="btn_p_proximo"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'liberarcontabancaria', 'action' => 'index')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].'&pronac='.$this->pronac; ?>'"
+                    <?php } ?>>
+                    <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                    <input class="btn_ultimo" id="btn_ultimo" type="button"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'liberarcontabancaria', 'action' => 'index')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].'&pronac='.$this->pronac; ?>'">
+                    <?php } ?>
+                    Pág.:<select name="pag" id="pag" onchange="$('#form1').submit()" class="input_simples">
+                        <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                        <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                        <?php endfor; ?>
+                    </select>
+                    &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>"><input type="submit" class="btn_recarregar" value="">
+                    <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                    <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                    <input type="hidden" name="pronac" value="<?php echo $this->pronac;?>">
+                    <input type="button" value=" " class="btn_imprimir" title="Imprimir" />
+                 </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <center>
+        <?php
+            echo $this->paginacao['inicio']." a ";
+            echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+            echo " de ". $this->paginacao['total']. " projetos listados";
+        ?>
+    </center>
+    <!-- ========== FIM PAGINAÇÃO ========== -->
+    <?php } ?>
+
+
+    <?php if($this->qtdRegistros != 0){ ?>
+    <table class="tabela tablesorter">
+        <thead>
+            <tr class="titulo_tabela">
+                <th><a href="<?php echo $this->url(array('controller' => 'liberarcontabancaria', 'action' => 'index')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=3&ordem='.$this->paginacao['novaOrdem'].'&pronac='.$this->pronac; ?>">PRONAC</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'liberarcontabancaria', 'action' => 'index')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=5&ordem='.$this->paginacao['novaOrdem'].'&pronac='.$this->pronac; ?>">Nome do Projeto</a></th>
+                <th>Informações</th>
+                <th><a href="<?php echo $this->url(array('controller' => 'liberarcontabancaria', 'action' => 'index')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=10&ordem='.$this->paginacao['novaOrdem'].'&pronac='.$this->pronac; ?>">Inabilitado</a></th>
+                <th nowrap><a href="<?php echo $this->url(array('controller' => 'liberarcontabancaria', 'action' => 'index')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=8&ordem='.$this->paginacao['novaOrdem'].'&pronac='.$this->pronac; ?>">% Captado</a></th>
+                <th nowrap><a href="<?php echo $this->url(array('controller' => 'liberarcontabancaria', 'action' => 'index')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=9&ordem='.$this->paginacao['novaOrdem'].'&pronac='.$this->pronac; ?>">Vl. Captado</a></th>
+                <!--<th width="10%" nowrap><a href="#listaDeProjeto" class="orderBy" valorOrdenacao="9">Certid&otilde;es Negativas</a></th>-->
+                <th>Diligenciar</th>
+                <th>Liberar</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach($this->dados as $d){ ?>
+            <tr>
+                <td align="center"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')); ?>?idPronac=<?php echo $d->IdPRONAC; ?>" title="Consultar dados do projeto" target="_blank"><?php echo $d->Pronac; ?></a></td>
+                <td><?php echo $d->NomeProjeto; ?></td>
+                <td align="center">
+                    <img src="<?php echo $this->baseUrl(); ?>/public/img/table_multiple.png" style="cursor:pointer;" class="visualizarTextoModal" Situacao="<?php echo $d->Situacao; ?>" DtSituacao="<?php echo Data::tratarDataZend($d->DtSituacao,'Brasileira'); ?>" ProvidenciaTomada="<?php echo $d->ProvidenciaTomada; ?>" alt="Visualizar Informações" />
+                </td>
+                <td align="center">
+                    <?php if ($d->Inabilitado == 'SIM'){ ?>
+                        <font color='red'><a href="<?php echo $this->url(array('controller' => 'liberarcontabancaria', 'action' => 'inabilitados')); ?>?Cpf=<?php echo $d->CgcCpf; ?>"><font color='red'><?php echo $d->Inabilitado; ?></font></a></font>
+                    <?php } else { ?>
+                        <font color='green'><?php echo $d->Inabilitado; ?></font>
+                    <?php } ?>
+                </td>
+                <!--<td align="center">
+                    <?php /*if ($projeto['Certidao'] == 'VENCIDA' || $projeto['Cadin'] == "CADIN PENDENTE"): ?>
+                            <!--<a href="<?php //echo $this->url(array('controller' => 'manterregularidadeproponente', 'action' => 'manterregularidadeproponente', 'cpfcnpj' => $projeto['CgcCpf']), null, true); ?>" title="Ir para Manter regularidade do proponente" target="_blank"><font color='red'><?php //echo $projeto['Certidao'];?></font></a>-->
+                            <font color='red' style="text-decoration:underline; cursor: pointer; " title="Ir para Manter regularidade do proponente"  onclick="JSEncaminharParaAnalise('<?php echo $projeto['CgcCpf']; ?>', '<?php echo '/liberarcontabancaria/index' ?>')"><?php echo ($projeto['Certidao'] == 'VENCIDA') ? $projeto['Certidao'] : $projeto['Cadin'];?></font>
+                    <?php else: ?>
+                            <font color='green'><?php echo $projeto['Certidao'];?></font>
+                    <?php endif;*/ ?>
+                </td>-->
+                <td align="right"><?php echo $d->PercentualCaptado.'%';?></td>
+                <td align="right" nowrap><?php echo 'R$ '.@number_format($d->vlCaptado, 2, ",", "."); ?></td>
+                <td align="center" >
+                    <?php /*if(($projeto['Inabilitado'] == 'SIM') || ($projeto['Certidao'] == 'VENCIDA') || ($projeto['Cadin'] == "CADIN PENDENTE")){
+                    */?>
+                    <?php $arrPrazo = $this->prazoRespostaDiligencia($d->IdPRONAC, 183);
+                    $icone = $arrPrazo['iconeDiligencia']['icone'];
+                    $title = $arrPrazo['iconeDiligencia']['title']; ?>
+                    <a target="_blank" href="<?php echo $this->url(array('controller' => 'diligenciar', 'action' =>'listardiligenciaanalista')).'?idPronac=' . $d->IdPRONAC . '&situacao=E50&tpDiligencia=183';?>" ><img src="<?php echo $this->baseUrl(); ?>/public/img/<?php echo $icone; ?>" title="<?php echo $title; ?>" width="30px"/></a><br>
+                </td>
+                <td align="center" >
+                <?php //if(($projeto['Inabilitado'] != 'SIM') && ($projeto['Certidao'] != 'VENCIDA') && $projeto['Cadin'] != "CADIN PENDENTE"){ ?>
+                <?php if(($d->Inabilitado != 'SIM')){ ?>
+                    <input type="button" class="btn_salvar" pronac="<?php echo $d->Pronac; ?>" vlcaptado="<?php echo $d->vlCaptado; ?>" vlEditado="<?php echo @number_format($d->vlCaptado, 2, ",", "."); ?>">
+                <?php } ?>
+                </td>
+            </tr>
+
+            <?php } ?>
+        </tbody>
+    </table>
+
+    <br clear="all" />
+
+    <?php if(count($this->dados)>0){ ?>
+
+        <!-- ============ PAGINAÇÃO ============ -->
+        <?php if($this->qtdRegistros > 10) { //echo $this->dados; ?>
+        <center>
+            <?php
+                echo $this->paginacao['inicio']." a ";
+                echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+                echo " de ". $this->paginacao['total']. " projetos listados";
+            ?>
+        </center>
+        <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+            <tbody>
+                <tr>
+                    <td align="center">
+                    <form name="form2" id="form2" action="<?php echo $this->url(array('controller' => 'liberarcontabancaria', 'action' => 'index'));?>" method="get">
+                        <?php if($this->paginacao['pag']>1) { ?>
+                        <input class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'liberarcontabancaria', 'action' => 'index')).'?pag=1'."&qtde=".$this->paginacao['qtde'].'&pronac='.$this->pronac; ?>'">
+                        <?php } ?>
+                        <input id="btn_p_anterior" type="button"
+                        <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                        <?php }else { ?>
+                               class="btn_p_anterior"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'liberarcontabancaria', 'action' => 'index')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].'&pronac='.$this->pronac; ?>'"
+                        <?php } ?>>
+                        <input id="btn_p_proximo" type="button"
+                               <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                               class="btn_p_proximo-off"
+                        <?php }else { ?>
+                               class="btn_p_proximo"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'liberarcontabancaria', 'action' => 'index')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].'&pronac='.$this->pronac; ?>'"
+                        <?php } ?>>
+                        <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                        <input class="btn_ultimo" id="btn_ultimo" type="button"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'liberarcontabancaria', 'action' => 'index')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].'&pronac='.$this->pronac; ?>'">
+                        <?php } ?>
+                        Pág.:<select name="pag" id="pag" onchange="$('#form2').submit()" class="input_simples">
+                            <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                            <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                            <?php endfor; ?>
+                        </select>
+                        &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>"><input type="submit" class="btn_recarregar" value="">
+                        <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                        <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                        <input type="hidden" name="pronac" value="<?php echo $this->pronac;?>">
+                        <input type="button" value=" " class="btn_imprimir" title="Imprimir" />
+                     </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- ========== FIM PAGINAÇÃO ========== -->
+
+    <?php } } ?>
+
+
+    <?php } else { ?>
+    <br clear="all" />
+    <table class="tabela">
+        <tr>
+            <td align="center">Nenhum registro encontrado!</td>
+        </tr>
+    </table>
+    <?php } ?>
+    
+    <br clear="all" />
+
+    <form name="formImpressao" id="formImpressao" action="<?php echo $this->url(array('controller' => 'liberarcontabancaria', 'action' => 'imprimir-projetos-a-liberar'));?>" method="post" target="_blank">
+        <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+        <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+        <input type="hidden" name="pronac" value="<?php echo $this->pronac;?>">
+     </form>
+    
+</div>
+
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

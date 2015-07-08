@@ -1,0 +1,116 @@
+<script type="text/javascript">
+
+function sumiraqui(id)
+{
+	$('img[class='+id+']').toggle();
+	$('tr[class='+id+']').toggle();
+	
+}
+
+</script>
+
+<?php
+
+
+require_once "inc/menu.inc.php"; // menu
+?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para p&aacute;gina inicial">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'index')); ?>" title="Ir para Tramitar documentos">Tramitar documentos</a></li>
+        <li class="last">Anexar documentos</li>
+    </ul>
+</div>
+<!-- ========== FIM BRADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Anexar documentos <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+<fieldset><legend> Receber / Anexar Documentos </legend>
+
+<form method="get" >
+    <table class="tabela">
+        <tr>
+            <td class="destacar bold" width="1" align="center">PRONAC</td>
+            <td width="435" align="center">
+                <input type="text" class="input_simples" name="pronac" maxlength="7" style="width: 90px;" value="<?php echo $this->pronac;?>">
+            </td>
+            <td class="destacar bold" width="1" align="center">Lote</td>
+            <td width="435" align="center">
+                <input type="text" class="input_simples" name="lote" maxlength="7" style="width: 90px;" value="<?php echo $this->lote;?>">
+            </td>
+            <td>
+                <input type="submit" name="btn_pesquisar" id="btn_pesquisar" class="btn_pesquisar" value="">
+            </td>
+            <td align="center" width="70%"><?php if(count($this->registros)  > 0){echo count($this->registros).' Projetos listados';}else{ echo 'Nenhum Registro encontrado!';}?></td>
+        </tr>
+    </table>
+</form>
+<?php
+    echo $this->registros;
+    $loteAnterior = null;
+    foreach($this->registros as $registro):
+        if ($loteAnterior != $registro->idLote) :
+            if (!is_null($loteAnterior)) :
+                echo '</table>';
+            endif;
+            $loteAnterior = $registro->idLote;
+?>
+        <table class="tabela">
+            <tr class="fundo_linha2">
+                <td colspan="7" align="left">
+                    <img src="<?php echo $this->baseUrl(); ?>/public/img/icn_menos.gif" class="<?php echo $registro->idLote; ?>" style="cursor:pointer;" onclick="sumiraqui('<?php echo $registro->idLote; ?>');" />
+                    <img src="<?php echo $this->baseUrl(); ?>/public/img/icn_mais.gif" class="<?php echo $registro->idLote; ?>" style="cursor:pointer; display:none;" onclick="sumiraqui('<?php echo $registro->idLote; ?>');" />
+                    &nbsp;&nbsp;&nbsp;&nbsp; <strong>Lote Nr:</strong> <?php echo $registro->idLote; ?> - Origem: <?php echo $registro->Origem; ?> | 
+                    <a href="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'anexarlote')); ?>?idLote=<?php echo $registro->idLote; ?>">Anexar Lote </a>
+                </td>
+            </tr>
+            <tr class="<?php echo $registro->idLote; ?>">
+                <th width="120">Processo</th>
+                <th width="50">PRONAC</th>
+                <th width="150">Nome do Projeto</th>
+                <th width="120">Documento</th>
+                <th width="70">Data</th>
+                <th>Arquivo</th>
+                <th width="50">Anexar</th>
+            </tr>
+        <?php endif; ?>
+        <tr class="<?php //echo $lote->idLote; ?>">
+            <td align="center"><?php echo $registro->Processo; ?></td>
+            <td align="center"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')); ?>?idPronac=<?php echo $registro->IdPRONAC; ?>" title="Consultar dados do projeto" target="_blank"><?php echo $registro->Pronac; ?></a></td>
+            <td align="center"><?php echo $registro->NomeProjeto; ?></td>
+            <td align="center"><?php echo $registro->dsTipoDocumento; ?></td>
+            <td align="center"><?php echo $registro->dtDocumentoBR; ?></td>
+            <td align="center"><a href="<?php echo $this->url(array('controller' => 'tramitardocumentos', 'action' => 'abrir')); ?>?id=<?php echo $registro->idDocumento; ?>"><?php echo $registro->NoArquivo; ?></a></td>
+            <td align="center"> <img src="<?php echo $this->baseUrl(); ?>/public/img/ico/copy.gif" style="cursor:pointer;" onclick="location.href='<?php echo $this->baseUrl(); ?>/tramitardocumentos/anexardocumento?idDocumento=<?php echo $registro->idDocumento;; ?>'""  /> </td>
+        </tr>
+<?php
+    endforeach;
+    echo '</table>' , $this->registros;
+    if(!$this->registros->count()) :
+        echo '<table class="tabela"><tr><td class="centro">Não há Documento para Anexar!</td></tr></table>';
+    endif;
+?>
+
+</fieldset>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

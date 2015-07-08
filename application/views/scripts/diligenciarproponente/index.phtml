@@ -1,0 +1,169 @@
+<?php
+/**
+ * Diligenciar
+ * @author Equipe RUP - Politec
+ * @since 12/05/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.views.scripts.execucaofisicaprojeto
+ * @copyright © 2010 - Ministário da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+require_once "inc/menu.inc.php"; // menu
+?>
+<script>
+    $(document).ready(function(){
+        $('.btn_enviar').click(function(){
+            var justificativa =  CKEDITOR.instances['justificativa'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+            if($.trim(justificativa).length == 0 ){
+                $("#erro").dialog
+                ({
+                    title : 'Confirma' ,
+                    width:400,
+                    height:150,
+                    EscClose:true,
+                    modal:true,
+                    buttons:
+                        {
+                        'OK':function()
+                        {
+                            $(this).dialog('close'); // fecha a modal
+                        }
+                    }
+                });
+                $("#erro").dialog('open')
+            }
+            else{
+                $("#Confirma").dialog
+                ({
+                    title : 'Confirma' ,
+                    width:400,
+                    height:150,
+                    EscClose:true,
+                    modal:true,
+                    buttons:
+                        {
+                        'Não':function()
+                        {
+                            $(this).dialog('close'); // fecha a modal
+                        },
+                        'Sim':function()
+                        {
+                            $("#formulario").submit(); // envia o formulário
+                        }
+                    }
+                });
+                $("#Confirma").html('Deseja enviar a diligência para o proponente?')
+                $("#Confirma").dialog('open')
+            }
+        });
+
+    });
+</script>
+<div id="Confirma" style="display: none;"></div>
+<div id="erro" style="display: none;">Dados Obrigatórios n&atilde;o preenchidos</div>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->baseUrl(); ?>" title="Ir para Início">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'areadetrabalho', 'action' => 'index')); ?>" title="Ir para Realizar an&aacute;lise">Realizar an&aacute;lise</a></li>
+        <li class="last">Diligenciar Proponente</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Diligenciar Proponente <span>ID #23A</span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+
+
+    <!-- ========== INÍCIO TÍTULO PÁGINA ========== -->
+    <table class="tabela">
+
+        <?php foreach ($this->pronac as $p) : ?>
+            <tr>
+                <th>Pronac</th>
+                <th>Nome do Projeto</th>
+            </tr>
+            <tr>
+                <td><?php echo $p->pronac; ?></td>
+                <td><?php echo $p->NomeProjeto; ?></td>
+            </tr>
+        <?php endforeach; ?>
+
+        </table>
+        <?php if($this->Respostas) {?>
+        <table class="tabela">
+            <tr>
+                <th>Solicita&ccedil;&atilde;o</th>
+                <th>Data Solicita&ccedil;&atilde;o</th>
+                <th>Data Resposta</th>
+                <th>Resposta</th>
+            </tr>
+            <?php foreach($this->Respostas as $respostas){ ?>
+            <tr>
+                <td><?php echo $respostas->Solicitacao?></td>
+                <td><?php echo Data::tratarDataZend($respostas->DtSolicitacao,'Brasileiro')?></td>
+                <td><?php echo Data::tratarDataZend($respostas->DtResposta,'Brasileiro')?></td>
+                <td><?php echo $respostas->Resposta?></td>
+            </tr>
+            <?php } ?>
+        </table>
+        <?php } ?>
+        <!-- ========== FIM TÍTULO PÁGINA ========== -->
+
+
+
+        <!-- ========== INÍCIO FORMULÁRIO ========== -->
+        <form id="formulario" action="<?php echo $this->url(array('controller' => 'diligenciarproponente', 'action' => 'index')); ?>" method="post">
+            <input type="hidden" name="idPronac" value="<?php echo $this->idpronac?>" />
+
+            <input type="hidden" name="aprovacao" value="IC" />
+
+            <table class="w1000" style="margin:auto;">
+                <tr>
+                    <td colspan="6">
+                        <label for="justificativa">Dilig?ncia</label><br />
+                        <textarea name="justificativa" id="justificativa" cols="70" rows="10" class="textarea_simples w1000"></textarea>
+                         <script>
+                            CKEDITOR.replace('justificativa', {	fullPage : true });
+                        </script>
+                </td>
+            </tr>
+        </table>
+
+
+
+        <!-- ========== BOTÕES ========== -->
+        <br />
+        <p class="centro" style="margin-right:10px;">
+            <input type="button" class="btn_enviar" value=" " />
+            <input type="reset" class="btn_cancelar" value=" " onclick="voltar();" />
+        </p>
+        <br />
+
+    </form>
+    <!-- ========== FIM FORMULÁRIO ========== -->
+
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

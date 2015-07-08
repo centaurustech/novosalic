@@ -1,0 +1,90 @@
+<script type="text/javascript">
+ function areadetrabalho()
+    {
+        $('#pinicial').click(function(){
+            $('#analiseinicial').toggle('slow');
+        });
+        $('#preadequacao').click(function(){
+            $('#readequacao').toggle('slow');
+        });
+
+    }
+    window.onload = function() {areadetrabalho();};
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'index'),'',true); ?>" title="Ir para Início">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'index'),'',true); ?>" title="Gerenciar Pareceres">Gerenciar Pareceres</a></li>
+                <li class="last">Produtos Distribu&iacute;dos</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Produtos Distribu&iacute;dos<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">                    <!--============================================INICIO GRID=====================================================================-->
+    <table class="tabela">
+        <tr>
+            <td width="200"><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'enviarpagamento'),'',true);?>"><b>Enviar Pareceres para Pagamento</b></a></td>
+        </tr>
+    </table>
+    
+    <table class="tabela tablesorter">
+	<thead>
+		<tr class="titulo_tabela">
+			<th width="150">Nome Parecerista</th>
+            <th width="80">Quantidade de dia diligenciado</th>
+			<th width="50">Data de Dilig&ecirc;ncia</th>
+            <th width="75">Status da avalia&ccedil;&atilde;o</th>
+            <th width="80">Quantidade de avalia&ccedil;&otilde;es</th>
+			<th width="150">Nome do Produto</th>
+            <th width="40">Registro de avalia&ccedil;&atilde;o</th>
+		</tr>
+	</thead>
+        <tbody>
+            <?php
+			$nomeProjeto            = '';
+			$pronac                 = '';
+			$produto                 = '';
+
+			foreach($this->dadospainel as $dp):
+
+			$tbDiligencia           = new tbDiligencia();
+			$rsDilig                = $tbDiligencia->buscarDados($dp->IdPRONAC);
+			$dilig                  = count($rsDilig);
+                        $tbDistribuirParecer    = new tbDistribuirParecer();
+                        $qtdAvaliacoes          = $tbDistribuirParecer->buscarHistoricoCoordenador(array("d.idPronac = ?" => $dp->IdPRONAC, "d.idProduto = ?" => $dp->idProduto, "d.stPrincipal = ?" => $dp->stPrincipal));
+
+            ?>
+            <tr>
+                        <td align="center"><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'visaoparecerista'));?>?parecerista=<?php echo $dp->idAgenteParecerista; ?>"><?php echo $dp->nomeParecerista; ?></a></td>
+                        <td align="center"><?php echo $dp->nrDias; ?></td>
+			<td align="center"><?php echo $dp->DtDistribuicaoPT; ?></td>
+                        <td align="center"><?php if ($dp->Status == 1)
+                            {
+                                echo 'Favorável';
+                            }else{
+                               echo'Desfavorável';
+                           };
+                            ?>
+                        </td>
+                        <td align="center"><?php echo count($qtdAvaliacoes) ; ?></td>
+			<td align="center"><?php if(($produto !=$dp->Produto)|| ($pronac != $dp->NrProjeto))echo $dp->Produto; ?></td>
+                        <td align="center"><img style="cursor:pointer;" title="Registro de Avalia&ccedil;&otilde;es" src="<?php echo $this->baseUrl(); ?>/public/img/edit_ico.gif" onclick="redirecionar('<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'historico'));?>?idPronac=<?php echo $dp->IdPRONAC; ?>&idProduto=<?php echo $dp->idProduto; ?>&stPrincipal=<?php echo $dp->stPrincipal;?>');" /></td>
+            </tr>
+	<tbody>
+            <?php $nomeProjeto = $dp->NomeProjeto; $pronac = $dp->NrProjeto; $produto = $dp->Produto;?>
+            <?php endforeach; ?>
+       </table>
+ <!-- ========== PAGINAÇ?O ========== -->
+    <?php if($this->qtdDocumentos > 5){ echo "<p>" . $this->dadospainel . "</p>"; } ?>
+    <!-- ========== FIM PAGINAÇ?O ========== -->
+</div>
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

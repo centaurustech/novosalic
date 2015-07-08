@@ -1,0 +1,141 @@
+<script language="javascript" type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        window.print();
+    });
+</script>
+
+<style type="text/css">
+    body {
+        margin:0;
+        font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+        color:#000;
+        line-height:14pt;
+    }
+    a:link, a:active, a:visited {
+        text-decoration:underline;
+    }
+    a:hover {
+        text-decoration:none;
+    }
+    .tabela { /* tamanho de tabelas com registros */
+        margin:10px auto;
+        width:97%;
+        font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+        border: 1px #CCC solid;
+    }
+    table td {
+        background:#fff;
+        padding:4px;
+        color:auto;
+        font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+        border: 1px #CCC solid;
+    }
+    table tr.destacar td, table td.destacar {
+        background:#e2e2e2;
+        font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+        border: 1px #CCC solid;
+    }
+    table th {
+        background:#cccccc;
+        padding:4px;
+        text-transform:uppercase;
+        font-size:11px;
+        border: 1px #CCC solid;
+        color: #000;
+    }
+    #brasao{
+        width : 85px;
+        height: 86px;
+    }
+    legend{
+        font-size:13px;
+        font-weight: bold;
+    }
+    .paginaA4{
+        width:auto;
+        margin: 1.111cm 1cm 1cm 1.005cm;
+        page-break-after: always;
+    }
+    .TituloMinC{
+        font-size: 14px;
+        text-transform: uppercase;
+    }
+    .TituloDoDocumento{
+        font-size: 12px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    .DataDoDocumento{
+        font-size: 10px;
+    }
+    .QntdRegistros{
+        font-size: 12px;
+    }
+</style>
+
+<div class="paginaA4">
+    <div align="center">
+        <img id="brasao" src="<?php echo $this->baseUrl(); ?>/public/img/brasaoArmas.jpg" alt="Ministério da Cultura"/>
+        <br clear="all" /><span class="TituloMinC">Ministério da Cultura</span>
+        <br clear="all" /><span class="TituloDoDocumento">Situação do Projeto</span>
+        <br clear="all" /><span class="DataDoDocumento">Data da impressão: <?php echo date('d/m/Y - H:i:s'); ?></span>
+    </div>
+
+    <table class="tabela">
+        <tr>
+            <th colspan="2" class="centro">Identifica&ccedil;&atilde;o</th>
+        </tr>
+        <tr class="destacar">
+            <td style="width: 30%" align="center"><b>PRONAC</b></td>
+            <td align="center"><b>Nome do Projeto</b></td>
+        </tr>
+        <tr>
+            <td align="center"><?php echo $this->parecer->pronac; ?></td>
+            <td align="center"><?php echo $this->parecer->NomeProjeto; ?></td>
+        </tr>
+        <tr class="destacar">
+            <td align="center"><b>Data Situa&ccedil;&atilde;o Atual</b></td>
+            <td align="center"><b>Situa&ccedil;&atilde;o Atual</b></td>
+        </tr>
+        <tr>
+            <td align="center"><?php echo ConverteData(strtotime($this->parecer->DtSituacao),5) ?></td>
+            <td align="center"><?php echo $this->parecer->Situacao." - ".$this->parecer->dsSituacao ?></td>
+        </tr>
+    </table>
+
+    <table class="tabela">
+        <tr>
+            <th>Provid&ecirc;ncia Tomada</th>
+        </tr>
+        <tr class="destacar">
+            <td><?php echo $this->parecer->ProvidenciaTomada; ?></td>
+        </tr>
+    </table>
+
+    <table class="tabela">
+        <tr>
+            <th colspan="4">Documentos Anexados</th>
+        </tr>
+        <?php if(count($this->documentos)>0){ ?>
+        <tr class="destacar">
+            <td class="destacar"><b>Tipo Documento</b></td>
+            <td class="destacar"><b>Data</b></td>
+            <td class="destacar"><b>Classifica&ccedil;&atilde;o</b></td>
+            <td class="destacar"><b>Documento</b></td>
+        </tr>
+        <?php foreach($this->documentos as $doc) { ?>
+        <tr>
+            <td><?php echo !empty($doc->AgenteDoc) ? 'Proponente' : 'Projeto' ?></td>
+            <td><?php echo date("d/m/Y H:i:s",strtotime($doc->dtHistoricoAlteracaoProjeto)) ?></td>
+            <td><?php echo $doc->Descricao ?></td>
+            <td><a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id=<?php echo $doc->idArquivo; ?>"><?php echo $doc->nmArquivo ?></a></td>
+        </tr>
+        <?php } ?>
+        <?php } else { ?>
+        <tr>
+            <td colspan="4">Nenhum registro encontrado.</td>
+        </tr>
+        <?php } ?>
+    </table>
+</div>

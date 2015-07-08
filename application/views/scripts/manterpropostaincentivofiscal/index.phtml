@@ -1,0 +1,77 @@
+<!-- ===== --> 
+<div id="titulo">
+    <div>Lista das propostas cadastradas no Ministério da Cultura</div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+
+<script>
+    function abrir_fechar(id_div){
+
+        $('#'+id_div).slideToggle(400);
+
+        $('#maiss'+id_div).toggle().focus();
+
+        $('#menoss'+id_div).toggle().focus();
+
+    }
+
+    function excluir(cod)
+    {
+        if(confirm("Deseja realmente excluir sua proposta?"))
+        {
+           window.location.href="<?php echo $this->acaoExcluir ?>?idPreProjeto="+cod;
+        }
+    }
+</script>
+
+
+<div id="conteudo" align="center">
+    <div style="float:none; width:75%;">
+        <form name="formulario" action="#" >
+
+            <?php if($this->dados){ ?>
+            <table style="width: 97%; margin-top: 2em;" border="0" cellpadding="0" cellspacing="1">
+                <tr>
+                    <td width="4%"  align="center"><img style="cursor: pointer;" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/btn_adicionar.gif" onclick="return abrir_fechar('lista')" onkeypress="return abrir_fechar('lista')" alt="Adicionar" /></td>
+                    <td width="88%" style="text-align:left; padding-left:2%;">Proponente:</td>
+                </tr>
+            </table>
+            <div id="lista" style="display:inherit;">
+                
+                <table class="tabela" border="0" cellpadding="0" cellspacing="1" style="margin: 0px;">
+                    <tr>
+                        <th width="40%">Nome da Proposta Cultural</th>
+                        <th width="40%">Mecanismo</th>
+                        <th width="20%">A&ccedil;&otilde;es</th>
+                    </tr>
+                    <?php foreach($this->dados as $row): ?>
+                    <tr>
+                        <td align="left"><a href="<?php echo $this->acaoAlterar ?>?idPreProjeto=<?php echo $row->idPreProjeto; ?>"><?php echo $row->NomeProjeto; ?></a></td>
+                        <td align="left"><?php if($row->stTipoDemanda == 'NA'){ echo 'Incentivo Fiscal'; } ?></td>
+                        <td class="centro"><input type="button" id="btn_editar" name="editar" style="width: 88px" class="btn_editar" onclick="window.location.href='<?php echo $this->acaoAlterar ?>?idPreProjeto=<?php echo $row->idPreProjeto;?>'"><input type="button" id="btn_excluir" name="sair" style="width: 88px" class="btn_exclusao" onclick="excluir(<?php echo $row->idPreProjeto;?>);"></td>
+                    </tr>
+                    <?php endforeach; }else{ echo '<br/><span style="color:red; font-size:15px;">N&atilde;o h&aacute; propostas cadastradas para este proponente.</span><br/>'; } ?>
+                </table>
+            </div>
+
+            <br/>
+
+            <center>
+                <input id="btn_novo" type="button" value=" " name="incluir" class="btn_novo" style="cursor: pointer;" onclick="return novo();" />
+            </center>
+            <br/>
+        </form>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    function novo(){
+        window.location='<?php echo $this->url(array('controller' => 'manterpropostaincentivofiscal', 'action' => 'declaracaonovaproposta')); ?>';
+    }
+</script>
+
+<!-- ========== FIM ======== -->
+
+<div id="rodapeConteudo"><span></span></div>
+<br clear="all" />

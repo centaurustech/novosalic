@@ -1,0 +1,127 @@
+<script type="text/javascript">
+     
+     //jQuery.validator.messages.required = "Campo obrigat&oacute;rio n&atilde;o informado.";
+        
+    $(document).ready(function(){
+        
+        $("#frmBloquearConta").validate({
+            rules: {
+                tipoConta: { required: true },
+                justificativa: { required: true },
+                arqDecisaoJudicial: { required: true }
+            },
+            messages: {
+                tipoConta: { required: " Campo obrigat&oacute;rio n&atilde;o informado." },
+                justificativa: { required: " Campo obrigat&oacute;rio n&atilde;o informado." },
+                arqDecisaoJudicial: { required: " <br>Campo obrigat&oacute;rio n&atilde;o informado." }
+            },
+            errorPlacement: function(error, element) {
+                if ( element.is(":radio") ) {
+                    error.appendTo( element.parent() );
+                }
+                else { 
+                    error.insertAfter( element );
+                }
+            },
+            submitHandler: function(form) {
+                form.submit();
+            }
+        });
+        
+        $("#msgContaCaptacao").html("");
+        $("#msgContaMovimento").html("");
+        
+        //radio Conta Captacao
+        <?php if(!empty($this->contaCapatacaoBloqueada)): ?>
+            $("#lbContaCaptacao").before("&nbsp;&nbsp;&nbsp;&nbsp;");
+            $("#lbContaCaptacao").after(" <font color='red'>(bloqueada)</font>");
+            $("#tipoContaCaptacao").remove();
+        <?php endif; ?>
+        
+        //radio Conta Movimento
+        <?php if(!empty($this->contaMovimentoBloqueada)): ?>
+            $("#lbContaMovimento").before("&nbsp;&nbsp;&nbsp;&nbsp;");
+            $("#lbContaMovimento").after(" <font color='red'>(bloqueada)</font>");
+            $("#tipoContaMovimento").remove();
+        <?php endif; ?>
+        
+        //radio Ambas
+        <?php if(!empty($this->contaCapatacaoBloqueada) || !empty($this->contaMovimentoBloqueada)): ?>
+            $("#tipoContaAmbas").attr("disabled",true);
+        <?php endif; ?>
+            
+    });
+    
+        
+</script>
+<?php 
+    require_once 'scripts/controlarmovimentacaobancaria/inc/menu.inc.php';
+?>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'manterbloqueioconta', 'action' => 'form-pesquisar-conta')); ?>" title="Ir para Pesquisar conta para bloqueio">Pesquisar conta para bloqueio</a></li>
+        <li class="last">Bloquear conta</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Bloquear conta</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="conteudo" style="width: 98%; ">
+    <form name="frmBloquearConta" id="frmBloquearConta" action="<?php echo $this->url(array('controller' => 'manterbloqueioconta', 'action' => 'gravar-bloqueio-conta')); ?>" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="idPronac" id="idPronac" value="<?php echo $this->projeto->IdPRONAC; ?>"> 
+    <table class="tabela">
+        <tr>
+            <th class='destacar' width="20%" nowrap><b>PRONAC</b></th>
+            <th class='destacar' width="80%"><b>Nome Projeto</b></th>
+        </tr>
+        <tr>
+            <td id="nrPronacJudicial" nowrap class="centro"><?php echo $this->projeto->AnoProjeto.$this->projeto->Sequencial;?></td>
+            <td id="nmProjetoJudicial" class="centro"><?php echo $this->projeto->NomeProjeto;?></td>
+        </tr>
+        <tr>
+            <td nowrap>
+                <b>Conta a ser bloqueada:</b>&nbsp;&nbsp;
+            </td>
+            <td>
+                <input type="radio" name="tipoConta" id="tipoContaCaptacao" value="1"> <label id="lbContaCaptacao">Conta captação</label> &nbsp;<br>
+                <input type="radio" name="tipoConta" id="tipoContaMovimento" value="2"> <label id="lbContaMovimento">Conta movimento</label> &nbsp;<br>
+                <input type="radio" name="tipoConta" id="tipoContaAmbas" value="3"> <label id="lbAmbas">Ambas</label>
+                <div id="msgErroTipoConta"></div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <b>Justificativa:</b><br />
+                <textarea style="width: 98%" class="input_simples" rows="7" name="justificativa" id="justificativa"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div>Tamanho máximo permitido: 10 MB &nbsp;&nbsp; <br>Tipos de arquivos permitidos: .doc e .pdf</div><br>
+                <b>Arquivo:</b>&nbsp;&nbsp;<input type="file" name="arqDecisaoJudicial" id="arqDecisaoJudicial" class="input_simples"></input>
+            </td>
+        </tr>
+        <?php if(empty($this->contaCapatacaoBloqueada) || empty($this->contaMovimentoBloqueada)): ?>
+        <tr>
+            <td colspan="2" class="centro">
+                <input type="submit" class="btn_salvar" value="">
+            </td>
+        </tr>
+        <?php endif; ?>
+    </table>
+    </form>
+    <!-- ========== FIM FORMULÁRIO DE BUSCA ========== -->
+</div>
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

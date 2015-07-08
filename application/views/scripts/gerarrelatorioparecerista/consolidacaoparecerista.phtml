@@ -1,0 +1,177 @@
+<?php
+$pareceristaHref                = $this->url(array('controller' => 'gerarrelatorioparecerista', 'action' => 'parecerista'));
+$resconsolidacaopareceristaHref = $this->url(array('controller' => 'gerarrelatorioparecerista', 'action' => 'resconsolidacaoparecerista'));
+
+include_once 'inc/funcoes.inc.php';
+?>
+<div id="menu">
+    <!-- início: conteúdo principal #container -->
+    <div id="container">
+        <?php include_once 'inc/menu.inc.php';?>
+        <!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+        <div id="breadcrumb">
+            <ul>
+                <li class="first"><a href="index.phtml" title="Ir para Início">Início</a></li>
+
+                <li class="last">Principal</li>
+            </ul>
+        </div>
+        <!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+        <!-- ========== BUTTON VOLTAR ========== -->
+        <div id="titulo">
+            <div>Análise por Parecerista<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+        </div>
+        <!-- ========== FIM TÍTULO ========== -->
+        <!-- ========== GRID NOME DA PROPOSTA ========== -->
+        <div id="conteudo" align="center">
+            <form id="formConsolidacaoParecerista" action="<?php echo $resconsolidacaopareceristaHref;?>" method="post">
+                <table class="tabela">
+                    <tr>
+                        <td>&Oacute;rg&atilde;o</td>
+                        <td colspan="3">
+                            <select name="orgao" id="orgao" style="width: 250px;">
+                                <option value="">Todas Unidades</option>
+                                <?php
+                                foreach ($this->Orgaos as $val) {
+                                    ?>
+                                    <option value="<?php echo $val->Codigo;?>"><?php echo $val->Sigla;?></option>
+                                    <?php
+                                }
+                                ?>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Parecerista *</td>
+                        <td colspan="3">
+                            <select name="parecerista" id="parecerista" null="false" style="width: 250px;">
+                                <option value="">Selecione</option>
+                                <?php
+                                foreach ($this->Pareceristas as $val) {
+                                    ?>
+                                <option value="<?php echo $val->idAgente;?>"><?php echo $val->Nome;?></option>
+                                    <?php
+                                }
+                                ?>
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td width="150">Per&iacute;odo</td>
+                        <td>
+                            <select  name="tp_dt_periodo" label="periodo" style="width: 250px;">
+                                <option value="1">Exatamente igual</option>
+                                <option value="2">Entre dois valores</option>
+                            </select>
+                        </td>
+                        <td colspan="2">
+                            <input type="text" name="dt_i_periodo" id="dt_i_periodo" data="true" value="" type="text" menorque="dt_f_periodo" title="Data inicial do periodo">
+                            <label id="l_dt_periodo" class="sumir"> &agrave;</label>
+                            <input type="text" name="dt_f_periodo" id="dt_f_periodo" class="sumir" data="true" value=""  type="text" maiorque="dt_i_periodo" title="Data final do periodo">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Área</td>
+                        <td>
+	                        <select name="Area" id="Area" onchange="carregar_combo(this.value, 'Seguimento', '<?php echo $this->url(array('controller' => 'segmentocultural', 'action' => 'combo')); ?>', ' - Selecione uma Área Cultural - ')" class="input_simples" style="width: 200px;">
+			
+								<?php if (!isset($this->areaCultural) || empty($this->areaCultural)) { ?>
+								<option value="0"> - Selecione - </option>
+								<?php } ?>
+				
+								<?php foreach ($this->comboareasculturais as $comboareacultural): ?>
+								<option value="<?php echo $comboareacultural->id; ?>" <?php if ($this->areaCultural == $comboareacultural->id) echo "selected=\"selected\""; ?>>
+									<?php echo $comboareacultural->descricao; ?>
+								</option>
+								<?php endforeach; ?>
+				
+							</select>
+                           
+                        </td>
+                        <td>Segmento</td>
+                        <td>
+                            <select name="Seguimento" id="Seguimento"  class="input_simples" style="width: 200px;">
+		
+								<?php if (!isset($this->areaCultural) || empty($this->areaCultural)) { ?>
+								<option value="0"> - Selecione uma Área Cultural - </option>
+								<?php } else { ?>
+				
+									<?php if (!isset($this->segmentoCultural) || empty($this->segmentoCultural)) { ?>
+									<option value=""> - Selecione - </option>
+									<?php } ?>
+				
+									<?php foreach ($this->combosegmentosculturais as $combosegmentocultural): ?>
+									<option value="<?php echo $combosegmentocultural->id; ?>" <?php if ($this->segmentoCultural == $combosegmentocultural->id) echo "selected=\"selected\""; ?>>
+										<?php echo $combosegmentocultural->descricao; ?>
+									</option>
+									<?php endforeach; ?>
+				
+								<?php } ?>
+				
+							</select>
+                            
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Status da análise</td>
+                        <td colspan="3">
+                            <select name="stAnalise" style="width: 250px;">
+                                <option value="">Selecione</option>
+                                <option value="0">A diligenciar</option>
+                                <option value="1">Diligenciado</option>
+                                <option value="2">Dilig&ecirc;ncia respondida</option>
+                                <option value="3">Dilig&ecirc;ncia não respondida</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+
+                <table class="tabela">
+                    <tr>
+                        <td align="center">
+                            <input type="submit" value="" class="btn_localizar"/>
+                            <input type="reset" value="" class="btn_limpar" />
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <!-- ========== FIM CONTEÚDO ========== -->
+        <!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+        <div id="rodapeConteudo"><span></span></div>
+        <!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+        <br clear="all" />
+    </div>
+</div>
+<script>
+$(function(){
+    var form = '#formConsolidacaoParecerista';
+    mascaras(form);
+    $(form).submit(function(){
+       return validarFormulario(this,'Preencha o(s) campo(s) obrigat&oacute;rio(s)!');
+    });
+    $(form).find('select').each(function(){
+        if($(this).attr('label')!=undefined){
+            var label = $(this).attr('label');
+            $(this).change(function(){
+                switch($(this).val()){
+                    case '1':
+                        $('#l_dt_'+label).addClass('sumir');
+                        $('#dt_f_'+label).addClass('sumir').val('');
+                        break;
+                    case '2':
+                        $('#l_dt_'+label).removeClass('sumir');
+                        $('#dt_f_'+label).removeClass('sumir').val('');
+                        break;
+                }
+
+            });
+        }
+    });
+    $('#orgao').change(function(){
+        carregarPgHtml('<?php echo $pareceristaHref;?>','#parecerista',{idOrgao:$(this).val()},'Selecione');
+    });
+});
+</script>

@@ -1,0 +1,257 @@
+<?php header('Content-Type: text/plain; charset=ISO-8859-1'); ?>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        //ATUALIZA TITULO DA PAGINA
+        window.parent.$("#titulo").html("<div>Análise do Projeto</div>");
+        window.parent.$("#caminhoLocalAtual").html("Análise do Projeto");
+
+       //CARREGA DADOS DA CAPTACAO DO PROJETO
+       //$("#resultCaptacao").html('<br><center>Aguarde, carregando dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br>');
+       //jqAjaxLinkSemLoading('<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'captacao')); ?><?php echo "?idPronac=".$this->idPronac;?>', '', 'resultCaptacao');
+
+        // Tabs
+        $('#tabs').tabs();
+    });
+    function mostraOcultaElemento(elemento)
+    {
+            $('.' + elemento).toggle();
+
+            if ($('#' + elemento).hasClass('btn_adicionar'))
+            {
+                    $('#' + elemento).addClass('btn_remover');
+                    $('#' + elemento).removeClass('btn_adicionar');
+            }
+            else
+            {
+                    $('#' + elemento).addClass('btn_adicionar');
+                    $('#' + elemento).removeClass('btn_remover');
+            }
+
+            //ABRE TELA DE MOVIMENTACAO BANCARIA
+            if(elemento == 'extratomovimentacao' && $("#resultExtrato").html() == ''){
+               $("#resultExtrato").html('<center>Aguarde...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center>');
+                setTimeout(function(){
+                    $("#resultExtrato").html('');
+                    $('.' + elemento).toggle();
+                    $('#' + elemento).addClass('btn_adicionar');
+                    $('#' + elemento).removeClass('btn_remover');
+                }, 3000);
+            }
+    }
+
+    function dadosDaAnalise(url,tipoAnalise,elemento,div_retorno)
+    {
+
+
+        $('.' + elemento).toggle();
+
+        if ($('#' + elemento).hasClass('btn_adicionar'))
+        {
+                $('#' + elemento).addClass('btn_remover');
+                $('#' + elemento).removeClass('btn_adicionar');
+        }
+        else
+        {
+                $('#' + elemento).addClass('btn_adicionar');
+                $('#' + elemento).removeClass('btn_remover');
+        }
+
+        //$('#'+elemento).toggle();
+
+        var divRetorno = $('#'+div_retorno);
+
+        if(divRetorno.html() != ""){
+            return false;
+        }
+
+        //$('#'+elemento).hide();
+
+        divRetorno.html('<center>Aguarde, carregando dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center>').css('color','').fadeIn(1000);
+
+        var idPronac 	= <?php echo $this->idPronac;?>
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data:{
+                idPronac: idPronac,
+                tipoAnalise: tipoAnalise
+            },
+            success: function(data)
+            {
+                //divRetorno.hide();
+                //$('#'+elemento).show();
+                divRetorno.html(data);
+
+            },
+            error: function (data)
+            {
+                alert(data);
+                divRetorno.html("Falha na recuperação dos dados.\nNão foi possível carregar agente!");
+            }
+        });
+    }
+</script>
+<style>
+    body {
+	margin:0;
+	background:#f8f8f8;
+	font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+	color:#666;
+	line-height:14pt;
+    }
+    #tabs {
+	margin:0;
+	background:#f8f8f8;
+	font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+	color:#666;
+	/*line-height:14pt;*/
+    }
+    #tabs ul li {
+        /*display: inline;
+        white-space: nowrap;*/
+        padding: 0em 0em .5em 0em;
+        float: left;
+        display:block;
+        margin: 0 1px 1px -1px; /* top=1em, right=2em, bottom=3em, left=2em */
+        color: white;
+    }
+
+</style>
+
+<table class="tabela">
+    <tr class="destacar">
+        <td align="center"><b>PRONAC</b></td>
+        <td align="center"><b>Nome do Projeto</b></td>
+    </tr>
+    <tr>
+        <td align="center"><?php echo $this->projeto->AnoProjeto.$this->projeto->Sequencial; ?></td>
+        <td align="center"><?php echo $this->projeto->NomeProjeto; ?></td>
+    </tr>
+</table>
+
+<center>
+<div id="tabs" style="background: #FFF; width: 98%; margin-top: 10px; margin-bottom: 10px; padding: 0px">
+    <ul>
+        <li style="width: 33%;"><a href="#inicial">Inicial</a></li>
+        <li style="width: 33%;"><a href="#cnic">CNIC</a></li>
+        <li style="width: 33%;"><a href="#pelnaria">Plen&aacute;ria</a></li>
+    </ul>
+
+        <!-- ANALISE INICIAL -->
+        <div id="inicial" align="left">
+            <table class="tabela">
+                <tr>
+                    <td>
+                        <input type="button" id="parecerTecnicoInicial" class="btn_adicionar" value=" " onclick="dadosDaAnalise('<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'analise-parecer-tecnico-consolidado')); ?>','inicial','parecerTecnicoInicial','retornoParecerInicial');"/>
+                        Parecer Técnico Consolidado
+                    </td>
+                </tr>
+                <tr class="parecerTecnicoInicial sumir">
+                    <td><div id="retornoParecerInicial"></div></td>
+                </tr>
+            </table>
+            <table class="tabela">
+                <tr>
+                    <td>
+                        <input type="button" id="analiseConteudoInicial" class="btn_adicionar" value=" " onclick="dadosDaAnalise('<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'analise-de-conteudo')); ?>','inicial','analiseConteudoInicial','retornoAnaliseConteudoInicial');"/>
+                        Análise de Conteúdo
+                    </td>
+                </tr>
+                <tr class="analiseConteudoInicial sumir">
+                    <td><div id="retornoAnaliseConteudoInicial"></div></td>
+                </tr>
+            </table>
+            <table class="tabela">
+                <tr>
+                    <td>
+                        <input type="button" id="analiseCustoInicial" class="btn_adicionar" value=" " onclick="dadosDaAnalise('<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'analise-de-custo')); ?>','inicial','analiseCustoInicial','retornoAnaliseCustoInicial');"/>
+                        Análise de Custo
+                    </td>
+                </tr>
+                <tr class="analiseCustoInicial sumir">
+                    <td><div id="retornoAnaliseCustoInicial"></div></td>
+                </tr>
+            </table>
+        </div>
+        <!-- FIM - ANALISE INICIAL -->
+
+        <!-- ANALISE CNIC -->
+        <div id="cnic" align="left">
+            <table class="tabela">
+                <tr>
+                    <td>
+                        <input type="button" id="parecerTecnicoCnic" class="btn_adicionar" value=" " onclick="dadosDaAnalise('<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'analise-parecer-tecnico-consolidado')); ?>','cnic','parecerTecnicoCnic','retornoParecerCnic');"/>
+                        Parecer Técnico Consolidado
+                    </td>
+                </tr>
+                <tr class="parecerTecnicoCnic sumir">
+                    <td><div id="retornoParecerCnic"></div></td>
+                </tr>
+            </table>
+            <table class="tabela">
+                <tr>
+                    <td>
+                        <input type="button" id="analiseConteudoCnic" class="btn_adicionar" value=" " onclick="dadosDaAnalise('<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'analise-de-conteudo')); ?>','cnic','analiseConteudoCnic','retornoAnaliseConteudoCnic');"/>
+                        Análise de Conteúdo
+                    </td>
+                </tr>
+                <tr class="analiseConteudoCnic sumir">
+                    <td><div id="retornoAnaliseConteudoCnic"></div></td>
+                </tr>
+            </table>
+            <table class="tabela">
+                <tr>
+                    <td>
+                        <input type="button" id="analiseCustoCnic" class="btn_adicionar" value=" " onclick="dadosDaAnalise('<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'analise-de-custo')); ?>','cnic','analiseCustoCnic','retornoAnaliseCustoCnic');"/>
+                        Análise de Custo
+                    </td>
+                </tr>
+                <tr class="analiseCustoCnic sumir">
+                    <td><div id="retornoAnaliseCustoCnic"></div></td>
+                </tr>
+            </table>
+        </div>
+        <!-- FIM -ANALISE CNIC -->
+
+        <!-- ANALISE PLENARIA -->
+        <div id="pelnaria" align="left">
+            <table class="tabela">
+                <tr>
+                    <td>
+                        <input type="button" id="parecerTecnicoPlenaria" class="btn_adicionar" value=" " onclick="dadosDaAnalise('<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'analise-parecer-tecnico-consolidado')); ?>','plenaria','parecerTecnicoPlenaria','retornoParecerPlenaria');"/>
+                        Parecer Técnico Consolidado
+                    </td>
+                </tr>
+                <tr class="parecerTecnicoPlenaria sumir">
+                    <td><div id="retornoParecerPlenaria"></div></td>
+                </tr>
+            </table>
+            <table class="tabela">
+                <tr>
+                    <td>
+                        <input type="button" id="analiseConteudoPlenaria" class="btn_adicionar" value=" " onclick="dadosDaAnalise('<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'analise-de-conteudo')); ?>','plenaria','analiseConteudoPlenaria','retornoAnaliseConteudoPlenaria');"/>
+                        Análise de Conteúdo
+                    </td>
+                </tr>
+                <tr class="analiseConteudoPlenaria sumir">
+                    <td><div id="retornoAnaliseConteudoPlenaria"></div></td>
+                </tr>
+            </table>
+            <table class="tabela">
+                <tr>
+                    <td>
+                        <input type="button" id="analiseCustoPlenaria" class="btn_adicionar" value=" " onclick="dadosDaAnalise('<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'analise-de-custo')); ?>','plenaria','analiseCustoPlenaria','retornoAnaliseCustoPlenaria');"/>
+                        Análise de Custo
+                    </td>
+                </tr>
+                <tr class="analiseCustoPlenaria sumir">
+                    <td><div id="retornoAnaliseCustoPlenaria"></div></td>
+                </tr>
+            </table>
+        </div>
+        <!-- FIM - ANALISE PLENARIA -->
+
+</div>
+</center>

@@ -1,0 +1,20 @@
+<?php
+if (!isset($this->msg[0]->IdPRONAC)) {}
+else
+{
+    $i = 0;
+?>
+<div class="msgALERT msgALERTGeral" id="verificarMensagem">
+    <div>
+        <div class="float_right"><input type="button" class="btn_close" title="Fechar mensagem" id="verificarMensagem" onclick="$('.msgALERTGeral').hide();" onkeypress="$('.msgALERTGeral').hide();"/></div>
+        Voc&ecirc; possui <?php echo count($this->msg); ?> mensage<?php echo (count($this->msg) > 1) ? 'ns' : 'm'; ?>. Clique no PRONAC abaixo para visualiz&aacute;-la(s):<br />
+        <?php foreach ($this->msg as $m) : ?>
+            <a href="<?php echo $this->baseUrl().'/mantermensagens/consultarmensagem/idpronac/'.$m->IdPRONAC; ?>" title="Abrir mensagem"><?php echo $m->pronac; ?></a>
+            <?php
+            echo (count($this->msg) > 1 && $i != count($this->msg)-1) ? ' - ' : '';
+            $i++;
+            ?>
+        <?php endforeach; ?>
+    </div>
+</div>
+<?php } ?>

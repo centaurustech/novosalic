@@ -1,0 +1,52 @@
+<div id="titulo">
+    <div>Comprovação Enviada<span class="voltar"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'), '', true); ?>?idPronac=<?php echo Seguranca::encrypt($this->idpronac); ?>" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+
+<div id="conteudo" align="center">
+    <div>
+        <table class="tabela">
+            <tr>
+                <th>PRONAC</th>
+                <th>NOME DO PROJETO</th>
+            </tr>
+            <tr>
+                <td><?php echo $this->pronac;?></td>
+                <td><?php echo $this->nomeProjeto;?></td>
+            </tr>
+        </table>
+        <br />
+        <table class="tabela">
+            <caption class="fundo_linha3">Comprovantes Recusados</caption>
+            <thead>
+                <th>Produto</th>
+                <th>Etapa</th>
+                <th>Item</th>
+            </thead>
+            <tbody>
+                <?php foreach ($this->comprovantesDePagamento as $comprovante) : //xd($this->comprovantesDePagamento);?>
+                    <tr>
+                        <td><?php echo $comprovante['produto']; ?></td>
+                        <td><?php echo $comprovante['etapa']; ?></td>
+                        <td>
+                        	<a href="<?php echo $this->url(array('controller' => 'comprovarexecucaofinanceira',
+                        		'action' => 'comprovacaopagamento-recusado',
+                        		'idpronac' => $this->idpronac, 
+                        		'idPlanilhaAprovacao' => $comprovante['idPlanilhaAprovacao'],
+                        		'idComprovantePagamento' => $comprovante['idComprovantePagamento'],
+                    			'idusuario' => $this->idusuario),
+                        		'', true); ?>"><?php echo $comprovante['item']; ?></a>
+
+                        </td>
+                    </tr>
+                <?php endforeach;?>
+            </tbody>
+        </table>
+    </div>
+    <br clear="left" />
+</div>
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />
+
+<div id="popupComprovarPagamentoRecusado" class="sumir"></div>

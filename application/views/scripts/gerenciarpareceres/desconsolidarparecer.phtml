@@ -1,0 +1,65 @@
+<?php
+//require_once "inc/menu.inc.php"; // menu
+?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''),'',true); ?>" title="Ir para Início">Início</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'index'),'',true); ?>" title="Gerenciar Pareceres">Gerenciar Pareceres T&eacute;cnicos</a></li>
+        <li class="last">Pareceres a Consolidar</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Pareceres a Consolidar <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+    <form action="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'devolveranalise')); ?>" method="post">
+
+        <input type="hidden" class="input_simples" name="idpronac"  value="<?php echo $this->idpronac; ?>" />
+        <input type="hidden" class="input_simples" name="idproduto" value="<?php echo $this->idproduto; ?>" />
+        <input type="hidden" class="input_simples" name="tipoanalise"  value="<?php echo $this->tipoanalise; ?>" />
+
+        <?php foreach($this->dados as $d):?>
+        <table class="tabela">
+            <tr>
+                <td width="250">PRONAC <b><br /> <?php echo $d->PRONAC; ?></b></td>
+                <td width="450">Nome do Projeto <b><br /> <?php echo $d->NomeProjeto; ?></b></td>
+                <td>Produto <b><br /> <?php echo $d->Produto; ?></b></td>
+            </tr>
+            <tr>
+                <td>Área Cultural <b><br /> <?php echo $d->AreaD; ?></b></td>
+                <td>Segmento Cultural <b><br /> <?php echo $d->SegmentoD; ?></b></td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="3">Justificativa * <br /><textarea class="input_simples" name="observacao" rows="5" cols="150"></textarea></td>
+            </tr>
+            <tr>
+                <td colspan="3" align="center">
+                    <input type="submit" class="btn_salvar" name="btn_salvar" value=" " style="cursor:pointer;" />
+                    <input type="button" class="btn_voltar" name="btn_voltar" value=" " style="cursor:pointer;" onclick="voltar();" />
+                </td>
+            </tr>
+        </table>
+        <?php endforeach; ?>
+    </form>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

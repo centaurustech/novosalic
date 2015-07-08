@@ -1,0 +1,102 @@
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''), '', true); ?>" title="Ir para p&aacute;gina inicial">Início</a></li>
+        <li class="last">Analisar presta&ccedil;&atilde;o de contas</li>
+    </ul>
+</div>
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Analisar presta&ccedil;&atilde;o de contas <span class="voltar" style="float:right;"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <?php
+
+//xd($_GET);
+
+    ?>
+    <script>
+        $(function (){
+            $("#btn_enviar").click(function(){
+
+                if($("#dsresposta").val() == "")
+                {
+                    $("#obrigatorio").html("Dados obrigat&oacute;rios n&atilde;o informados!");
+                    $("#obrigatorio").dialog("destroy");
+                    $("#obrigatorio").dialog
+                    ({
+                        width: 350,
+                        height: 150,
+                        EscClose:false,
+                        modal:true
+                        ,buttons:
+                            {
+                            'OK' : function(){
+                                $(this).dialog('close');
+                            }
+                        }
+                    });
+                    return false;
+                }else{
+
+                    $("#formEncaminhar").submit();
+                }
+
+                return false;
+
+            });
+        });
+    </script>
+    <div id="obrigatorio" class="sumir"></div>
+    <table class="tabela">
+        <tr>
+            <th width="1%">PRONAC</th>
+            <th>Nome do Projeto</th>
+        </tr>
+        <tr>
+            <td id="HPronac"><?php echo $this->PRONAC; ?></td>
+            <td id="HnomeProjeto"><?php echo utf8_decode(htmlentities($this->NomeProjeto)); ?></td>
+        </tr>
+    </table>
+    <table class="tabela">
+        <tr>
+            <td colspan="2">
+                Nota T&eacute;cnica Consultiva:<br>
+                <textarea name="dsjustificativa" id="dsjustificativa" rows="6" style="width: 98%;" class="input_simples" readonly><?php echo $this->solicitacao;?></textarea>
+            </td>
+        </tr>
+
+    </table>
+    <form name="formEncaminhar" id="formEncaminhar" action="<?php echo $this->url ( array ('controller' => 'realizarprestacaodecontas', 'action' => 'gravarrespostaconsultoria' ) ); ?>" method="post">
+        <table class="tabela">
+            <tr>
+                <td colspan="2">
+                    <?php
+                    if($this->idOrgao == 177) {?>
+                    Consultoria da AECI:
+                        <?php }else { ?>
+                    Consultoria da CONJUR:
+                        <?php } ?>
+                    <br>
+                    <textarea name="dsresposta" id="dsresposta" rows="6" style="width: 98%;" class="input_simples"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center">
+                    <input type="hidden" name="idEncPrestContas" id="idEncPrestContas" value="<?php echo $this->idEncPrestContas;?>" />
+                    <input type="button" value=" " class="btn_enviar" id="btn_enviar" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type="reset" value=" " class="btn_limpar" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<!-- início: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+<br clear="all" />

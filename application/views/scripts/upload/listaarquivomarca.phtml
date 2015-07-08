@@ -1,0 +1,89 @@
+<?php
+    $cod = "0";
+    if(isset($this->idPreProjeto)){
+        $cod = "&idPreProjeto=".$this->idPreProjeto;
+    }elseif(isset($_GET['idPreProjeto'])){
+        $cod = "&idPreProjeto=".$this->idPreProjeto;
+    }
+
+    if(isset($this->idPronac)){
+        $cod = "&idPronac=".$this->idPronac;
+    }elseif(isset($_GET['idPronac'])){
+        $cod = "&idPronac=".$_GET['idPronac'];
+    }
+?>
+<script type="text/javascript">
+    
+    function aprovar(idArquivo)
+    {
+        var url = '<?php echo $this->url(array('controller' => 'upload', 'action' => 'aprovar-arquivo')); ?>';
+        url = url + '?idArquivo=' + idArquivo + '<?php echo $cod;?>';
+
+        jqAjaxLink(url, '', 'divMensagem');
+
+        $("#tabelaArquivos").html('<br><center><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center>');
+        $("#novas_mensagens").html('<br><center><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center>');
+        window.location = "#";
+    }
+
+    function excluir(idArquivo,idDocumento)
+    {
+        var url = '<?php echo $this->url(array('controller' => 'upload', 'action' => 'excluir-arquivo')); ?>';
+        url = url + '?idArquivo=' + idArquivo + '&idDocumento=' + idDocumento + '<?php echo $cod;?>';
+
+        jqAjaxLink(url, '', 'divMensagem');
+        
+        $("#tabelaArquivos").html('<br><center><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center>');
+        $("#novas_mensagens").html('<br><center><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center>');
+        window.location = "#";
+    }
+    
+</script>
+<form name="frmAcao" id="frmAcao" method="post" action="">
+    <input type="hidden" value="" name="idArquivo" id="idArquivo">
+</form>
+<table class="tabela" id="tabelaArquivos">
+    <tr class="titulo_tabela">
+        <th width="10%">PRONAC</th>
+        <!--<th width="10%">IdProposta</th>-->
+        <th width="35%">Observa&ccedil;&otilde;es</th>
+        <th width="5%">Extens&atilde;o</th>
+        <th width="15%">Envio</th>
+        <th width="5%">Tipo</th>
+        <th width="15%">Arquivo</th>
+        <th width="5%">Estado</th>
+        <?php if($this->orgao == $this->orgaoAutorizado):?>
+        <th width="5%" colspan="2">A&ccedil;&otilde;es</th>
+        <?php endif; ?>
+    </tr>
+    <?php if(!empty ($this->arquivos)): foreach ($this->arquivos as $arquivo) { ?>
+    <tr class="fundo">
+        <td class="centro"><?php echo $arquivo->AnoProjeto.$arquivo->Sequencial; ?></td>
+        <!--<td class="centro"><?php echo $arquivo->idProposta; ?></td>-->
+        <td class="centro"><?php echo utf8_encode($arquivo->dsDocumento); ?></td>
+        <td class="centro"><?php echo $arquivo->sgExtensao; ?></td>
+        <td class="centro"><?php echo $arquivo->dtEnvioForm; ?></td>
+        <td class="centro">Marca</td>
+        <td class="centro"><a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id=<?php echo $arquivo->idArquivo; ?>"><?php echo utf8_decode(htmlentities($arquivo->nmArquivo)); ?></a></td>
+        <td class="centro">
+            <?php if($arquivo->stAtivoDocumentoProjeto=="E") echo"Enviado"; ?>
+            <?php if($arquivo->stAtivoDocumentoProjeto=="D") echo"<font color='green'>Deferido</font>"; ?>
+            <?php if($arquivo->stAtivoDocumentoProjeto=="I") echo"<font color='red'>Indeferido</font>"; ?>
+        </td>
+        <?php if($this->orgao == $this->orgaoAutorizado):?>
+            <?php if($arquivo->stAtivo=="I"):?>
+                <td class="centro"><input type="button" name="aprovar" value="" id="btn_aprovar<?php echo $arquivo->idArquivo;?>" class="btn_aprovar" onclick="aprovar('<?php echo $arquivo->idArquivo;?>'); $('#divMensagem').html('');"></td>
+                <td class="centro"><input type="button" name="excluir" value="" class="btn_exclusao" style="width: 88px" onclick="excluir('<?php echo $arquivo->idArquivo;?>','<?php echo $arquivo->idDocumento;?>'); $('#divMensagem').html('');"></td>
+            <?php else:?>
+                <td class="centro"><input type="button" name="aprovar" value="" class="btn_aprovar-off" style="width: 88px; height: 21px;"></td>
+                <td class="centro"><input type="button" name="excluir" value="" class="btn_exclusao" style="width: 88px" onclick="excluir('<?php echo $arquivo->idArquivo;?>','<?php echo $arquivo->idDocumento;?>'); $('#divMensagem').html('');"></td>
+            <?php endif; ?>
+        <?php endif; ?>
+    </tr>
+    <?php } else: ?>
+    <tr class="fundo">
+        <td class="centro" colspan="10"><br><font color="red">Nenhum arquivo encontrado</font><br><br></td>
+    </tr>
+    <?php endif; ?>
+</table>
+<div id="msgRetorno"></div>

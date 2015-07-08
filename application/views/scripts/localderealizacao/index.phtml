@@ -1,0 +1,153 @@
+<?php
+$edital = "";
+if(isset($_GET['edital'])) {
+    require_once 'scripts/manterpropostaedital/inc/menu.inc.php'; // menu de manter proposta por edital
+    $edital = "&edital=s";
+}else {
+    require_once "scripts/manterpropostaincentivofiscal/inc/menu.inc.php"; // menu de manter proposta por incentivo fiscal
+}
+?>
+<script type="text/javascript">
+    $(document).ready(function(){
+        <?php if(isset($this->movimentacaoAtual) && $this->movimentacaoAtual != '95'): ?>
+             //DESABILITA ALTERACOES NOS DADOS DO FORMULARIO (INCLUIR/ALTERAR/EXCLUIR)
+             JSBloquearAlteracaoFormulario();
+        <?php endif; ?>
+
+        $('#btn_novo').click(function(){
+            redirecionar('<?php echo $this->url(array('controller'=>'localderealizacao', 'action'=>'form-inserir')); ?>?idPreProjeto=<?php if($_GET['idPreProjeto'])echo $_GET['idPreProjeto'];?><?php echo $edital;?>');
+        });
+
+    });
+
+    function excluir(cod)
+    {
+        /*if(confirm("Tem certeza que deseja excluir o registro?"))
+        {
+           window.location.href="<?php echo $this->url(array('controller'=>'localderealizacao', 'action'=>'excluir')); ?>?cod="+cod+"&idPreProjeto=<?php if($_GET['idPreProjeto'])echo $_GET['idPreProjeto'];?><?php echo $edital;?>";
+        }*/
+
+        $("#modalConfirmaExclusao").html("Tem certeza que deseja excluir o registro?");
+        // modal com os ddos do dirigente
+        $("#modalConfirmaExclusao").dialog("destroy");
+        $("#modalConfirmaExclusao").dialog
+        ({
+            width:400,
+            height:150,
+            EscClose:false,
+            modal:true
+            ,buttons:
+                {
+                'Cancelar':function()
+                {
+                    $(this).dialog('close'); // fecha a modal
+                },
+                'Confirmar':function()
+                {
+                    window.location.href="<?php echo $this->url(array('controller'=>'localderealizacao', 'action'=>'excluir')); ?>?cod="+cod+"&idPreProjeto=<?php if($_GET['idPreProjeto'])echo $_GET['idPreProjeto'];?><?php echo $edital;?>";
+                    $(this).dialog('close'); // fecha a modal
+                }
+            }
+        });
+        return false;
+
+
+    }
+
+    function trocatela (obj){
+        if(obj==1){
+            $('#deslocamento').hide();
+            $('#localderealizacao').show();
+
+        }else {
+            $('#deslocamento').html('&ensp;&ensp;&ensp;Carregando...');
+            jqAjaxLinkSemLoading("<?php echo $this->url(array('controller' => 'deslocamento', 'action' => 'index')).$codProjeto; ?>", "", "deslocamento");
+            $('#deslocamento').show();
+            $('#localderealizacao').hide();
+
+        }
+
+    }
+</script>
+<?php
+        $controller = "localderealizacao";
+        $links = array(
+            array('Lista de Propostas' => array('controller' => 'manterpropostaincentivofiscal','action' => 'listar-propostas')),
+            array('Local de Realiza&ccedil;&atilde;o' => array())
+        );
+montaGuiaLinks($controller, $links);
+?>
+<!-- ========== INULO ========== -->
+<div id="titulo">
+    <div>Local de Realiza&ccedil;&atilde;o <?php if(!isset($_GET['edital'])): ?>/ Deslocamento<?php endif; ?>
+    <?php echo montaBotaoVoltar($controller, $links); ?></div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+<!-- ========== IDO ========== -->
+<div id="conteudo">
+    <?php  if(!isset($_GET['edital'])): ?>
+        <p style="margin-top: 30px;">
+            &nbsp;&nbsp;&nbsp;&nbsp<input type="radio" checked name="selecionar" id="selecionar1" value="realizacao" onclick="trocatela('1')" style="margin-right: 15px;" />Local de Realiza&ccedil;&atilde;o &nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp<input type="radio" name="selecionar" id="selecionar2" value="deslocamento" onclick="trocatela('2')" style="margin-right: 15px;" />Deslocamento
+        </p>
+    <?php  endif; ?>
+
+    <div id="localderealizacao">
+        <table class="tabela">
+
+            <tr class="titulo_tabela">
+                <th colspan="4">Instru&ccedil;&otilde;es</th>
+            </tr>
+            <tr>
+                <td colspan="4" style="padding-left: 30px;">
+                    <ul>
+                        <li>Esta tela dever&aacute; ser preenchida com um ou mais locais realiza&ccedil;&atilde;o da proposta cultural.</li>
+                        <li>Se o local de realiza&ccedil;&atilde;o for no exterior, selecione o pa&iacute;s.</li>
+                        <li>Se o local de realiza&ccedil;&atilde;o for no Brasil, selecione a UF e a Cidade.</li>
+                    </ul>
+
+                </td>
+            </tr>
+
+            <tr class="titulo_tabela">
+                <th width="25%">Pa&iacute;s</th>
+                <th width="25%">UF</th>
+                <th width="30%">Cidade</th>
+                <th width="20%" nowrap>A&ccedil;&otilde;es</th>
+            </tr>
+            <?php foreach ($this->localizacoes as $localizacao) { ?>
+            <tr class="fundo">
+                <td class="centro"><?php echo $localizacao->pais; ?></td>
+                <td class="centro"><?php echo $localizacao->uf; ?></td>
+                <td class="centro"><?php echo $localizacao->cidade; ?></td>
+                <td class="centro" nowrap>
+                <input type="button" id="btn_editar" name="sair" style="width: 88px" class="btn_editar" onclick="window.location.href='<?php echo $this->url(array('controller'=>'localderealizacao', 'action'=>'form-local-de-realizacao')); ?>?cod=<?php echo $localizacao->idAbrangencia;?>&idPreProjeto=<?php if($_GET['idPreProjeto'])echo $_GET['idPreProjeto'];?><?php echo $edital;?>&edit=1'">
+                <input type="button" id="btn_excluir" name="sair" style="width: 88px" class="btn_exclusao" onclick="excluir(<?php echo $localizacao->idAbrangencia;?>);"></td>
+            </tr>
+                <?php } ?>
+
+        </table>
+        <table class="tabela">
+            <tr>
+                <td align="center">
+                    <input type="button" id="btn_novo" name="sair" style="width: 88px" class="btn_novo">
+<!--                    <input type="button" id="btn_sair" name="sair" style="width: 88px" class="btn_voltar" onclick="voltar()">-->
+                </td>
+            </tr>
+        </table>
+
+    </div>
+
+    <div id="deslocamento" class="sumir">
+    </div>
+    <div title="Confirma&ccedil;&atilde;o" id="modalConfirmaExclusao">
+
+    </div>
+</div><!-- ========== FIM CONTEUDO ========== -->
+
+<br clear="all">
+<!-- ========== I ========== -->
+<div id="rodapeConteudo"><span></span></div>
+
+<!-- ========== FIM RO ========== -->
+

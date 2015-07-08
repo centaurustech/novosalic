@@ -1,0 +1,11 @@
+<?php
+if(strlen($this->error) > 2){
+    echo '<div class="msgERROR"><div>'.utf8_encode($this->error).'</div></div>';
+}elseif(strlen($this->confirme) > 2){
+        echo '<div class="msgCONFIRM"><div>'.utf8_encode($this->confirme).'</div></div>';
+
+}elseif(strlen($this->alerta) > 2){
+        echo '<div class="msgALERT"><div>'.utf8_encode($this->alerta).'</div></div>';
+}
+
+?>

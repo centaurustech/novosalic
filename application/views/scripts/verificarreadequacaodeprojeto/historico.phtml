@@ -1,0 +1,40 @@
+<?php
+//xd($this->ListaRegistros);
+/* echo '<pre>';
+
+  print_r($this->ListaRegistros);
+  echo '</pre>'
+ */
+?>
+
+<table class="tabela">
+    <tr>
+        <th align="center">Data Encaminhamento</th>
+        <th align="center" width="260px;">Remetente</th>
+        <th align="center" width="260px;">Destinat&aacute;rio</th>
+        <th align="center">&Oacute;rg&atilde;o acionado</th>
+        <th align="center">Observa&ccedil&atilde;o</th>
+    </tr>
+    <?php $a=0; foreach ($this->ListaRegistros as $lista) { ?>
+    <tr>
+        <td align="center"><?php echo Data::tratarDataZend($lista->dtEncaminhamento, 'brasileiro'); ?></td>
+        <td align="center">(<?php echo (utf8_encode($lista->perfilRemetente)); ?>)<br/><?php echo (utf8_encode($lista->Remetente)); ?></td>
+
+        <?php if(empty($lista->Destinatario)){ ?>
+
+            <?php if($lista->idTipoAgente == 3) { ?>
+            <td align="center">(<?php echo (utf8_encode(trim($lista->perfilDestinatario))); ?>)<br/><?php echo (utf8_encode($this->ListaRegistros[0]->Remetente)); ?></td>
+            <?php } else { ?>
+            <td align="center">(<?php echo (utf8_encode(trim($lista->perfilDestinatario))); ?>)<br/><?php echo (utf8_encode($this->ListaRegistros[$a-1]->Remetente)); ?></td>
+            <?php } ?>
+
+        <?php } else { ?>
+            <td align="center">(<?php echo (utf8_encode(trim($lista->perfilDestinatario))); ?>)<br/><?php echo (utf8_encode($lista->Destinatario)); ?></td>
+        <?php } ?>
+        
+        <td align="center"><?php echo (utf8_encode($lista->Sigla)); ?></td>
+        <td align="center"><?php echo (utf8_encode($lista->dsObservacao)); ?></td>
+    </tr>
+<?php $a++; } ?>
+
+</table>

@@ -1,0 +1,187 @@
+<?php
+/**
+ * Busca todos os Comprovantes do PRONAC 'Em Avaliação' (Acesso: TÉCNICOS)
+ * @author Equipe RUP - Politec
+ * @since 28/04/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.views.scripts.execucaofisicadoprojeto
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="last">Comprovação de Execução Física do Projeto</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Comprovação de Execução Física do Projeto <span class="voltar"><a href="#" onclick="redirecionar('<?php echo $this->url(array('controller' => 'execucaofisicadoprojeto', 'action' => 'aguardandoavaliacao')); ?>');">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+
+
+	<!-- ========== INÍCIO INFORMAÇÕES DO PRONAC ========== -->
+	<table class="tabela">
+		<tr class="titulo_tabela">
+			<th>COMPROVANTES DE EXECUÇÃO FÍSICA DO PROJETO</th>
+		<tr>
+
+		<?php foreach ($this->buscarPronac as $p): ?>
+		<tr>
+			<td class="centro">
+				<strong>Pronac Nº <?php echo $p->pronac; ?> - <?php echo $p->NomeProjeto; ?></strong>
+			</td>
+		</tr>
+		<?php endforeach; ?>
+
+	</table>
+	<!-- ========== FIM INFORMAÇÕES DO PRONAC ========== -->
+
+
+
+	<!-- ========== INÍCIO COMPROVANTES DO PRONAC ========== -->
+	<?php if (count($this->paginacao) > 0) : // caso tenha comprovantes ?>
+	
+	<table class="tabela">
+		<tr class="titulo_tabela">
+			<th>Tipo Documento</th>
+			<th>Nome</th>
+			<th>Arquivo</th>
+			<th>Tamanho</th>
+			<th>Data de Recebimento</th>
+			<th>Data de Resposta</th>
+			<th>Status</th>
+			<th>Ação</th>
+		</tr>
+
+
+
+		<?php
+		$cont = 1; // conta as linhas (servirá para abrir e fechar o histórico)
+		foreach ($this->paginacao as $comprovantes): // últimos documentos
+			$d = $comprovantes['comprovantes']; // comprovantes
+			$h = @$comprovantes[0]['historicos']; // histórico dos comprovantes
+		?>
+	
+		<!-- ========== INÍCIO COMPROVANTES ========== -->
+		<tr class="fundo_linha2" onmouseover="over_tr(this);" onfocus="over_tr(this);" onmouseout="out_tr(this);" onblur="out_tr(this);" onclick="click_tr(this);" onkeypress="click_tr(this);">
+			<td>
+				<?php if ($h) { // verifica se tem histórico ?>
+					<div id="exibir<?php echo $cont;?>"><a href="#" title="Expandir" onclick="aparecer('<?php echo $cont;?>', 'exibir<?php echo $cont;?>', 'ocultar<?php echo $cont;?>'); return false;"><div class="icn_mais"><span><?php echo $d->dsTipoDocumento; ?></span></div></a></div>
+					<div id="ocultar<?php echo $cont;?>" class="sumir" style="display:none;"><a href="#" title="Recolher" onclick="esconder('<?php echo $cont;?>', 'exibir<?php echo $cont;?>', 'ocultar<?php echo $cont;?>'); return false;"><div class="icn_menos"><span><?php echo $d->dsTipoDocumento; ?></span></div></a></div>
+				<?php } else { // sem histórico ?>
+				<?php echo $d->dsTipoDocumento; ?>
+				<?php } ?>
+			</td>
+			<td class="centro"><?php echo $d->nmComprovante; ?></td>
+			<td class="centro"><a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id=<?php echo $d->idArquivo; ?>"><?php echo $d->nmArquivo; ?></a></td>
+			<td class="centro"><?php echo $this->converterBytes($d->nrTamanhoArquivo); ?></td>
+			<td class="centro"><?php echo $d->dtEnvioComprovante; ?></td>
+			<td class="centro"><?php echo (isset($d->dtJustificativaCoordenador)) ? $d->dtJustificativaCoordenador : ''; ?></td>
+			<td class="centro <?php echo $d->stParecerComprovante; ?>"><?php echo $this->statusCompFisicaProjeto($d->stParecerComprovante); ?></td>
+			<td class="centro">
+				<?php if ($d->stParecerComprovante == "AG") { // 'Aguardando Avaliação' ?>
+				<input type="button" class="btn_avaliar" title=" Avaliar " value=" " onkeypress=" " onclick="redirecionar('<?php echo $this->url(array('controller' => 'execucaofisicadoprojeto', 'action' => 'avaliarcomprovante')); ?>?pronac=<?php echo $p->pronac; ?>&doc=<?php echo $d->idComprovante; ?>');" />
+				<?php } else { // outros status ?>
+				<input type="button" class="btn_ver" title=" Ver " value=" " onkeypress=" " onclick="redirecionar('<?php echo $this->url(array('controller' => 'execucaofisicadoprojeto', 'action' => 'visualizardocumentos')); ?>?pronac=<?php echo $p->pronac; ?>&doc=<?php echo $d->idComprovante; ?>');" />
+				<?php } ?>
+			</td>
+		</tr>
+		<!-- ========== FIM COMPROVANTES ========== -->
+
+
+
+		<!-- ========== INÍCIO HISTÓRICO ========== -->
+		<tbody id="<?php echo $cont;?>" class="sumir">
+		<?php
+		// busca o histórico
+		for ($i = 0; $i < sizeof(@$comprovantes[0]['historicos']); $i++) :
+			$h = $comprovantes[0]['historicos'][$i];
+	
+			if (!empty($h)): // caso tenha histórico
+		?>
+
+		<tr class="fundo_linha1" onmouseover="over_tr(this);" onfocus="over_tr(this);" onmouseout="out_tr(this);" onblur="out_tr(this);" onclick="click_tr(this);" onkeypress="click_tr(this);">
+			<td><div class="icn_vazio"><span><?php echo $h->dsTipoDocumento; ?></span></div></td>
+			<td class="centro"><?php echo $h->nmComprovante; ?></td>
+			<td class="centro"><a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id=<?php echo $h->idArquivo; ?>"><?php echo $h->nmArquivo; ?></a></td>
+			<td class="centro"><?php echo $this->converterBytes($h->nrTamanhoArquivo); ?></td>
+			<td class="centro"><?php echo $h->dtEnvioComprovante; ?></td>
+			<td class="centro"><?php echo $h->dtJustificativaCoordenador; ?></td>
+			<td class="centro <?php echo $h->stParecerComprovante; ?>"><?php echo $this->statusCompFisicaProjeto($h->stParecerComprovante); ?></td>
+			<td class="centro">
+				<?php if ($h->stParecerComprovante == "AG") { // 'Aguardando Avaliação' ?>
+				<input type="button" class="btn_avaliar" title=" Avaliar " value=" " onkeypress=" " onclick="redirecionar('<?php echo $this->url(array('controller' => 'execucaofisicadoprojeto', 'action' => 'avaliarcomprovante')); ?>?pronac=<?php echo $p->pronac; ?>&doc=<?php echo $h->idComprovante; ?>');" />
+				<?php } else { // outros status ?>
+				<input type="button" class="btn_ver" title=" Ver " value=" " onkeypress=" " onclick="redirecionar('<?php echo $this->url(array('controller' => 'execucaofisicadoprojeto', 'action' => 'visualizardocumentos')); ?>?pronac=<?php echo $p->pronac; ?>&doc=<?php echo $h->idComprovante; ?>');" />
+				<?php } ?>
+			</td>
+		</tr>
+
+			<?php endif; ?>
+
+		<?php endfor; // histórico ?>
+		</tbody>
+		<!-- ========== FIM HISTÓRICO ========== -->
+	
+		<?php $cont++; ?>
+		<?php endforeach; // últimos documentos ?>
+	
+	
+	
+	</table>
+	
+	<?php endif; ?>
+	<!-- ========== FIM COMPROVANTES DO PRONAC ========== -->
+	
+	
+	
+	<!-- ========== PAGINAÇÃO ========== -->
+	<?php if ($this->qtdComprovantes > 20) { echo $this->paginacao; } ?>
+	
+	
+	
+	<!-- ========== BOTÕES VOLTAR E ETC ========== -->
+	<table class="tabela">
+		<tr>
+			<td>
+				<div class="float_left">
+					<input type="button" class="btn_voltar" title=" Página Anterior "
+						onkeypress=" " 
+						onclick="redirecionar('<?php echo $this->url(array('controller' => 'execucaofisicadoprojeto', 'action' => 'aguardandoavaliacao')); ?>');" />
+				</div>
+				<?php if ($this->qtdComprovantes > 0) : ?>
+				<div class="float_right total_itens">
+					Total de Comprovantes do PRONAC Nº <?php echo $p->pronac; ?>: <strong><?php echo $this->qtdComprovantes; ?></strong>
+				</div>
+				<?php endif; ?>
+			</td>
+		</tr>
+	</table>
+
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

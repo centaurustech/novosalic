@@ -1,0 +1,64 @@
+<?php
+$pareceristaHref = $this->url(array('controller' => 'gerenciarparecer', 'action' => 'parecerista'));
+$resconsolidacaopareceristaHref = $this->url(array('controller' => 'gerenciarparecer', 'action' => 'visaoparecerista'));
+?>
+<div id="menu">
+    <!-- início: conteúdo principal #container -->
+    <div id="container">
+        <!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+        <div id="breadcrumb">
+            <ul>
+                <li class="first"><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'index'), '', true); ?>" title="Ir para Início">Início</a></li>
+                <li><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'index'), '', true); ?>" title="An&aacute;lise Técnica">An&aacute;lise Técnica</a></li>
+                <li class="last">Parecerista</li>
+            </ul>
+        </div>
+        <!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+        <!-- ========== BUTTON VOLTAR ========== -->
+        <div id="titulo">
+            <div>Análise por Parecerista <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+        </div>
+        <!-- ========== FIM TÍTULO ========== -->
+        <!-- ========== GRID NOME DA PROPOSTA ========== -->
+
+		<div id="conteudo">
+			<table class="tabela tablesorter">
+            	<caption>Parecerista: <?php echo $this->parecerista['nmParecerista']; ?></caption>
+                <thead>
+                	<tr>
+                    	<th width="20">PRONAC</th>
+                        <th width="150">Nome do Projeto</th>
+                        <th width="150">Produto</th>
+					</tr>
+				</thead>
+				<?php
+                	foreach ($this->parecerista['projetos'] as $projeto) {
+                    	$cProduto = 1;
+                        foreach ($projeto['produtos'] as $produto) {
+                        	if ($cProduto == 1) {
+                            	$cdistribuicao = 1;
+                                foreach ($produto['distribuicao'] as $distribuicao) {
+                                	if ($cdistribuicao == 1) {
+                                    	echo '<tr>';
+                                        	echo "<td><a target='_blank' href='{$this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'))}?idPronac={$projeto['IdPRONAC']}'>{$projeto['pronac']}</a></td>";
+                                            echo "<td>{$projeto['nmProjeto']}</td>";
+                                            echo "<td>{$produto['nmProduto']}</td>";
+                                        echo '</tr>';
+                                    }
+                                    $cdistribuicao++;
+                                }
+                            }
+                        }
+                    }
+				?>
+            </table>
+	        <div id="qm0" class="qmmc">
+	            <?php if(count($this->buscaPlanilhaCusto) > 0 ){ ?>
+	        	    <a href='<?php echo $this->url(array('controller' => 'solicitarreadequacaocusto','action' => 'index')); ?>?idpronac=<?php echo $idPronac;?>' title="Custo">Custo</a>
+	            <?php } ?>
+	        </div>
+        </div>
+        <div id="rodapeConteudo"><span></span></div>
+        <br clear="all" />
+    </div>
+</div>

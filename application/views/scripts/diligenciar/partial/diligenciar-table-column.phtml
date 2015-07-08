@@ -1,0 +1,21 @@
+<?php 
+    $diligencia = $this->prazoRespostaDiligencia($this->idPronac, $this->tpDiligencia);
+    $urlDiligencia = $this->url(
+            array(
+                'controller' => 'diligenciar',
+                'action' => 'listardiligenciaanalista',
+                'tipoAnalise' => 'inicial',
+                'idPronac' => $this->idPronac,
+                'situacao' => $this->situacao,
+                'tpDiligencia' => $this->tpDiligencia,
+                )
+            );
+    $imagePath = "{$this->baseUrl()}/public/img";
+    $title = $diligencia['iconeDiligencia']['title'];
+    $icone = $diligencia['iconeDiligencia']['icone'];
+    $imageCompletePath = "{$imagePath}/{$icone}";
+    ?>
+
+<a href="<?php echo $urlDiligencia; ?>" target="_blank">
+    <img width="30px" title="<?php echo $title; ?>" src="<?php echo $imageCompletePath; ?>">
+</a>

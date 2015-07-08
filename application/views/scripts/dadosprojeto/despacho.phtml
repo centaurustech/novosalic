@@ -1,0 +1,65 @@
+<?php include_once('inc/menu.inc.php')?>
+
+<script>
+    $(document).ready(function (){
+        $('#abrir_fechar24').click(function(){
+            $('#tramitacao').toggle('slow');
+        });
+    });
+</script>
+
+<!----------------------------------Bloco de Informações: Despacho-------------------------------------------------------- -->
+
+<div id="titulo"><div>Despacho</div>
+</div>
+
+<div id="conteudo">
+
+    <div id="miolo">
+
+        <table class="tabela">
+            <tr>
+                <td>
+                    <input id="abrir_fechar24" class="btn_adicionar" type="button" />Despacho
+            </tr>
+        </table>
+        <div id="tramitacao" style="display:none">
+
+
+            <table class="tabela">
+                <tr>
+                    <th>Despacho</th>
+                </tr>
+                <?php if (empty($this->dadosprojeto)) {
+                    ?>
+                <tr>
+                    <td colspan="8" align= "center">Informação não cadastrada no projeto!</td>
+                </tr>
+                    <?php }
+                else {?>
+                    <?php foreach ($this->dadosprojeto as $tbdadosprojeto): ?>
+                <tr>
+                    <td align="center"><?php if ($tbdadosprojeto->meDespacho != null) {
+                                    echo $this->escape($tbdadosprojeto->meDespacho);
+                                } else {
+                                    echo "Informação não cadastrada no projeto!";
+        }
+        ?></td>
+
+                </tr>
+    <?php endforeach;?>
+    <?php }?>
+            </table>
+            <br>
+
+        </div>
+    </div>
+    </div>
+    <br>
+
+
+    <div id="rodapeConteudo"><span></span></div>
+    <!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+
+    <br clear="all" />

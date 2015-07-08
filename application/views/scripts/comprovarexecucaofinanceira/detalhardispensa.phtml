@@ -1,0 +1,100 @@
+<?php
+    $SalvarHref                 = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'cadastrardispensa')).'?idusuario='.$this->idusuario;
+    $ExcluirItensCustoHref      = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'excluiritenscusto')).'?idusuario='.$this->idusuario;
+    $AnexarHref                 = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'anexar')).'?idusuario='.$this->idusuario;
+    $VoltarHref               = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'dispensa')).'?idusuario='.$this->idusuario;
+    $ExcluirDocumentoHref       = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'excluirdocumento')).'?idusuario='.$this->idusuario;
+    $carregarSelectHref         = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'carregaselectajax')).'?idusuario='.$this->idusuario;
+
+    $alterar = false;
+    if($this->iddispensa == '')
+        $alterar = true;
+
+    $idNome = 'iddispensa';
+    $corpo  = 'incluirdispensaAjax';
+    $inputID = '<input type="hidden" name="'.$idNome.'" id="'.$idNome.'" value="'.$this->iddispensa.'"/><input type="hidden" name="idpronac" id="idpronac" value="'.$this->idpronac.'"/>';
+    $idformulario = 'formularioDispensa';
+    include_once 'scripts/comprovarexecucaofinanceira/inc/menu.inc.php';
+?>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principalproponente', 'action' => ''), null, true); ?>" title="Ir para p&aacute;gina inicial" onclick="carregandoModal();">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')) . '?idPronac=' . Seguranca::encrypt($this->idpronac); ?>" title="Ir para In&iacute;cio">Consultar dados do Projeto</a></li>
+        <li>Comprovar Execu&ccedil;&atilde;o Financeira</li>
+        <li><a href="<?php echo $this->link_menu_lateral; ?>" title="Pagamento" onclick="carregandoModal();">Dispensa</a></li>
+        <li class="last">Detalhar Dispensa</li>
+    </ul>
+</div> <!-- final: #breadcrumb -->
+
+<div id="titulo">
+    <div>Detalhar Dispensa<span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+
+<div id="conteudo" align="center">
+    <div id="<?php echo $corpo;?>">
+
+        <table class="tabela">
+            <tr>
+                <th>Dados da Dispensa</th>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <td class="destacar w200 bold" align="right">N&uacute;mero da Dispensa</td>
+                <td colspan="2"><?php echo $this->nrDispensaLicitacao;?></td>
+            </tr>
+            <tr>
+                <td class="bold" align="center" colspan="3">Identifica&ccedil;&atilde;o do Contratado</td>
+            </tr>
+            <tr>
+                <td class="destacar w200 bold">CNPJ/CPF</td>
+                <td class="destacar w200 bold">Nome/Raz&atilde;o Social</td>
+                <td class="destacar w200 bold">Motivo de Dispensa</td>
+            </tr>
+            <tr>
+                <td><?php echo $this->CNPJCPF;?></td>
+                <td><?php echo $this->Descricao;?></td>
+                <td><?php echo $this->motivoDispensa;?></td>
+            </tr>
+            <tr>
+                <td class="destacar w200 bold">Valor</td>
+                <td class="destacar w200 bold" colspan="2">Data</td>
+            </tr>
+            <tr>
+                <td><?php echo $this->valorContratado;?></td>
+                <td colspan="2"><?php echo $this->dataContrato;?></td>
+            </tr>
+        </table>
+
+        <br clear="left"/>
+
+        <table class="tabela">
+            <tr>
+                <th colspan="3">Itens de Custo Vinculados</th>
+            </tr>
+        </table>
+        
+        <table id="tableItensCusto" class="tabela linhaMaior1">
+            <tr>
+                <td class="destacar bold" align="center">Produto</td>
+                <td class="destacar bold" align="center">Etapa</td>
+                <td class="destacar bold" align="center">Item</td>
+            </tr>
+            <?php foreach ($this->itensVinculados as $itensVinculados) { ?>
+            <tr>
+                <td><?php echo $itensVinculados->dsProduto ? $itensVinculados->dsProduto : 'Administração do Projeto'; ?></td>
+                <td><?php echo $itensVinculados->dsEtapa; ?></td>
+                <td><?php echo $itensVinculados->dsItem; ?></td>
+            </tr>
+            <?php } ?>
+        </table>
+    </div>
+    <br clear="left"/>
+</div>
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

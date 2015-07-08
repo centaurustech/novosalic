@@ -1,0 +1,325 @@
+<?php 
+$operacoescustomizavelhref  =   $this->url(array('controller' => 'cadastraredital', 'action' => 'operacoescustomizavel'));
+$questoesAdicionadasHref    =   $this->url(array('controller' => 'cadastraredital', 'action' => 'questoesadicionadas'));
+$opcaoAdicionadasHref       =   $this->url(array('controller' => 'cadastraredital', 'action' => 'opcaoadicionadas'));
+?>
+<style>
+    .ui-autocomplete {
+        max-height: 200px;
+        overflow-y: auto;
+        width: 200px;
+    }
+    /* IE 6 doesn't support max-height
+     * we use height instead, but this forces the menu to always be this tall
+     */
+    * html .ui-autocomplete {
+            height: 100px;
+            width: 200px;
+    }
+    #sortable { list-style-type: none; margin: 0; padding: 0; width: 98%; }
+    #sortable li { margin: 0 2px 2px 2px; padding: 5px; font-size: 1.2em; height: 1.5em;  }
+    html>body #sortable li { height: 1.5em; line-height: 1.2em; }
+    .ui-state-highlight { height: 1.5em; line-height: 1.2em; }
+    #informativo { width:98%;border: 1px solid #36963f; font-family: Arial, Helvetica, sans-serif;font-size: 11px;margin-left: 1%;}
+    .ui-state-default-branco{border: 1px solid #327e04; height: 14px; width: 100%; background: #ffffff url(images/ui-bg_highlight-hard_15_abda5d_1x100.png) 50% 50% repeat-x; font-weight: bold; color: #0a449b;}
+</style>
+<div id="FormularioParteFixa">
+    <form name="formInclusaoPergunta" id="formInclusaoPergunta" method="POST" action="<?php echo $operacoescustomizavelhref;?>">
+        <input type="hidden" apagar="false" name="nrFormDocumento" id="nrFormDocumento" value="<?php echo $this->nrFormDocumento;  ?>" />
+        <input type="hidden" apagar="false" name="nrVersaoDocumento" id="nrVersaoDocumento" value="<?php echo $this->nrVersaoDocumento;?>" />
+        <input type="hidden" apagar="false" name="idEdital" id="idEdital" value="<?php echo $this->idEdital;?>" />
+        <input type="hidden" apagar="false" name="idUsuario" id="idUsuario" value="<?php echo $this->idusuario;?>" />
+        <input type="hidden" apagar="false" name="operacao" id="operacao" value="cadastroPergunta" />
+        <input type="hidden" name="nrPergunta" id="nrPergunta" value="" />
+        <table class="tabela">
+            <tr>
+                <th>Formul&aacute;rio para o documento <i>"<?php echo htmlentities($this->nmFormDocumento); ?>"</i></th>
+            </tr>
+            <!--<tr>
+                <td>
+                    <a id="atualizarJanela" style="float: left;" href="cadastrarQuestionario.php" nrFormDocumento="<?php echo $this->nrFormDocumento;  ?>" nrVersaoDocumento="<?php echo $this->nrVersaoDocumento;?>" >Adicionar outra quest&atilde;o</a>
+                </td>
+            </tr>-->
+            <tr>
+                <td id="recebeinf">
+
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Texto da pergunta: <br />
+                    <span style="font-size: 10px;">Rest&atilde;o <span id="contadorDsPergunta">500</span> caracteres.</span><br />
+                    <textarea name="dsPergunta" max="500" aux="contadorDsPergunta" id="dsPergunta" null="false" title="Texto da pergunta" style="width: 95%;height: 50px" class="campoTexto pergunta textarea_simples" cols="50" rows="5"></textarea>
+                    <div id="mensagemPergunta"></div>
+
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <i>Texto de ajuda da pergunta: (opcional)</i><br />
+                    <textarea name="dsLabelPergunta" id="dsLabelPergunta" style="width: 95%;height: 50px" class="campoTexto textarea_simples" cols="50" rows="5"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>Tipo da resposta:
+                    <select id="stTipoObjetoPgr" null="false" title="Tipo da resposta" name="stTipoObjetoPgr" class="tpResposta select_simples">
+                        <option value="" selected="selected">Selecione</option>
+                        <option value="IT">Texto (Uma linha)</option>
+                        <option value="TA">Texto (M&uacute;ltiplas Linhas)</option>
+                        <option value="RB">Escolha &uacute;nica</option>
+                        <option value="CK">Escolha m&uacute;ltipla</option>
+                        <option value="CB">Lista</option>
+                        <option value="DT">Data</option>
+                        <option value="NR">Num&eacute;rico</option>
+                    </select>
+                    <div id="mensagemtpResposta"></div>
+                </td>
+            </tr>
+            <tr>
+                <td id="auxTipoObjeto" style="display: none;">
+                    <div>
+                        Configura&ccedil;&otilde;es da resposta
+                    </div>
+                    <div>
+                        <input type="text" maxlength="200" name="dsOpcao" id="dsOpcao" style="width: 81%;" class="input" />
+                        <input type="button" value="Adicionar op&ccedil;&atilde;o" id="addOpcao" class="input"/>
+
+                    </div>
+                    <div id="requisicaoAjaxOpcao">
+                        <!-- Requisicao AJAX para opcoes adicionadas a uma questao -->
+                    </div>
+                    <div id="mensagemOpcao"></div>
+                </td>
+            </tr>
+
+            <tr>
+                <td align="center">
+                <input type="submit" id="btSubmit" value="" class="btn_salvar" />
+                <input type="button" id="cancelarAlteracao" value="" style="display: none;" class="btn_cancelar" /></td>
+            </tr>
+	</table>
+        <div id="requisicaoAjaxQuestoes">
+            <!-- Requisicao AJAX para questoes adicionadas a um form documento -->
+        </div>
+    </form>
+</div>
+<script>
+
+$(document).ready( function() {
+	$('#btSubmit').click(function(){
+
+		   var valida = true;
+
+		   var tipoQuestao = $('#stTipoObjetoPgr').val();
+		   if((tipoQuestao == 'RB' || tipoQuestao == 'CK' || tipoQuestao == 'CB')){
+			   var cont = 0;
+				$('.ckbRespostaLista').each(function(){
+					cont++;				
+				});
+			   if(cont==0){
+				   $("#mensagemOpcao").html('<font color="red"><b>Informe pelo menos uma op&ccedil;&atilde;o resposta!</b></font>');
+		     	   valida = false;
+			   }
+			   else{
+				   $("#mensagemOpcao").html('');
+			   }
+		   }
+		   	if($(".pergunta").val()==''){
+		   	 	$("#mensagemPergunta").html('<font color="red"><b>Informe o Texto da Pergunta!</b></font>');
+		     		valida = false;
+		     	}else{
+		     	   	$("#mensagemPergunta").html('');
+		     	}
+	     	
+		   		if($(".tpResposta").val()=='' || $(".tpResposta").val()=='Selecione'){
+		   	 	$("#mensagemtpResposta").html('<font color="red"><b>Informe o Tipo da Resposta!</b></font>');
+		     		valida = false;
+		     	}else{
+		     	   	$("#mensagemtpResposta").html('');
+		     	}
+	  	 if ( valida ){
+		  	 $("#mensagemPergunta").html('');
+	  		 $("#mensagemtpResposta").html('');
+	  		formulario.iniciar(this,'recebeinf',function(data){
+	            listaQuestoes();
+	            $('#auxTipoObjeto').hide();
+	            $('#requisicaoAjaxOpcao').html('');
+	            $('#contadorDsPergunta').html(500);
+	            $('#formInclusaoPergunta').find('#btSubmit').addClass('btn_incluir');
+	            $('#formInclusaoPergunta').find('#btSubmit').removeClass('btn_alterar');
+	            $('#formInclusaoPergunta').find('#operacao').val('cadastroPergunta');
+	            $('#cancelarAlteracao').css('display','none');
+	            $('#formInclusaoPergunta').submit();
+	        });
+	   	}
+		return valida;
+	});
+});
+function calculoQInputKD(input,k){
+    var m = $(input).attr('max');
+    if(k != undefined && k.keyCode == 8){
+       if($('#'+$(input).attr('aux')).html()>=m)
+        $('#contadorDsPergunta').html(m);
+       else
+        $('#contadorDsPergunta').html(m-$(input).val().length+1);
+       return true;
+    }
+    if($(input).val().length < m){
+       return true;
+    }
+    else{
+       return false;
+    }
+}
+
+function calculoQInputKU(input){
+    var m = $(input).attr('max');
+    if($(input).val().length>m){
+        $(input).val($(input).val().slice(0,m));
+    }
+    if($('#contadorDsPergunta').html()<=0)
+        $('#contadorDsPergunta').html(0);
+    else
+        $('#contadorDsPergunta').html(m-$(input).val().length);
+}
+
+var contador = 0;
+$(function(){
+    $('.input').addClass('input_simples');
+    $('textarea').addClass('textarea_simples');
+    $('select[id!=perfilXgrupo]').addClass('select_simples');
+    listaQuestoes();
+    $('#cancelarAlteracao').click(function(){
+        $('#formInclusaoPergunta').find('#btSubmit').addClass('btn_incluir');
+        $('#formInclusaoPergunta').find('#btSubmit').removeClass('btn_alterar');
+        $('#formInclusaoPergunta').find('#operacao').val('cadastroPergunta');
+        $('#auxTipoObjeto').css('display','none');
+        $(this).css('display','none');
+        formulario.idFormulario = '#formInclusaoPergunta';
+        formulario.resetForm();
+    });
+   $('#dsPergunta').keydown(function(k){
+       return calculoQInputKD(this,k);
+   }).keyup(function(){
+       calculoQInputKU(this);
+   });
+    $("#excluir").dialog({
+        resizable: false,
+        width:400,
+        height:200,
+        modal: true,
+        autoOpen:false
+    });
+
+
+    $('#addOpcao').click(function(){
+        var dsOpcao = $('#dsOpcao').val();
+        if(dsOpcao != ''){
+            var linha = $('<div></div>').addClass('ckbRespostaLista').appendTo('#requisicaoAjaxOpcao').addClass('ui-state-default-branco').attr('style','height: 24px;line-height: 24px;width: 95%;');
+            $('<div></div>').appendTo(linha).html(dsOpcao+'<input type="hidden"  name="dsOpcaoR['+contador+']" value="'+dsOpcao+'" />').attr('style','float: left; width: 70%;overflow: hidden; height: 18px;text-align: left; margin-left: 5px;');
+            var conteiner = $('<div></div>').appendTo(linha).attr('style','float: right;');
+            $('<img />').attr('src','<?php echo $this->baseUrl(); ?>/public/img/botaoExcluir.png').attr('alt','Excluir opcao').appendTo(conteiner).click(function(){
+                alerta('Tem certeza que deseja excluir o registro?','Alerta!',{
+                    'N\u00e3o': function() {
+                        $(this).dialog('close');
+                    },
+                    'Sim': function() {
+                        linha.remove();
+                        $(this).dialog('close');
+                    }
+                });
+            });
+            if($('#stTipoObjetoPgr').val() == 'RB' || $('#stTipoObjetoPgr').val() == 'CK'){
+                $('<div></div>').appendTo(linha).attr('style','float: right;margin-right: 5px;').html('<input type="checkbox" name="justificativa['+contador+']" value="1" /> Justificativa');
+            }
+            $('#dsOpcao').val('');
+            contador++;
+        }
+        else{
+            alerta('A op&ccedil;&atilde;o deve ter pelo menos 1 caractere?','Alerta!',{
+                'OK': function() {
+                    $(this).dialog('close');
+                }
+            });
+        }
+    });
+    $('#atualizarJanela').click(function(){
+        var dados={nrFormDocumento:$(this).attr('nrFormDocumento'),nrVersaoDocumento:$(this).attr('nrVersaoDocumento'),idUsuario:$(this).attr('idUsuario')};
+        $.post($(this).attr('href'),dados, function(data){
+            $("#dialogQuestionario").html(data);
+        });
+        return false;
+    });
+    $('#stTipoObjetoPgr').change(function(){
+       if($(this).val()=='RB' || $(this).val()=='CB' || $(this).val()=='CK'){
+            $('#auxTipoObjeto').show();
+            listaOpcao();
+       }
+       else{
+           $('#auxTipoObjeto').hide();
+       }
+       $('#requisicaoAjaxOpcao').html('');
+    });
+    
+    var cache = {},lastXhr;
+    /*$( "#dsPergunta" ).autocomplete({
+        source: function( request, response ) {
+            var term = request.term;
+            if ( term in cache ) {
+                    response( cache[ term ] );
+                    return;
+            }
+            lastXhr = $.getJSON( "<?php echo $operacoescustomizavelhref;?>?operacao=perguntas", request, function( data, status, xhr ) {
+                    cache[ term ] = data;
+                    if ( xhr === lastXhr ) {
+                        alert(data);
+                        response( data );
+                    }
+            });
+        },
+        minLength: 2
+    });*/
+});
+function listaQuestoes(){
+    $.post('<?php echo $questoesAdicionadasHref;?>',{nrFormDocumento:<?php echo $this->nrFormDocumento; ?>,nrVersaoDocumento:<?php echo $this->nrVersaoDocumento; ?>},function(data){
+        $('#requisicaoAjaxQuestoes').html(data);
+    });
+}
+function listaOpcao(){
+    $.post('<?php echo $opcaoAdicionadasHref;?>',{nrFormDocumento:<?php echo $this->nrFormDocumento; ?>,nrVersaoDocumento:<?php echo $this->nrVersaoDocumento; ?>,nrPergunta:$('#formInclusaoPergunta #nrPergunta').val()},function(data){
+        $('#requisicaoAjaxOpcao').html(data);
+    });
+}
+function recadastrarPosicao(idsortable,data,caminhoAlerta,idordenacao,iditem){
+    var contador = 1;
+    $(idsortable+" li").each(function(){
+        data[idordenacao] =   contador;
+        data[iditem]      =   $(this).attr(iditem);
+        $.ajax({
+              type: 'post',
+              url:  '<?php echo $operacoescustomizavelhref;?>',
+              data: data,
+              success: function(data){
+                  if(!data.result){
+                      $(caminhoAlerta).html('<div id="divMensagensSistema" style="display:none;border: 1px solid rgb(30, 144, 255); color: rgb(0, 154, 205); font-family: Arial; font-size: 12px;">'+data.mensagem+'</div>');
+                      $(caminhoAlerta+' #divMensagensSistema').show('fast');
+                      setTimeout(function(){
+                        $(caminhoAlerta+' #divMensagensSistema').hide('fast');
+                      },2000);
+                  }
+              },
+              dataType:'json'
+            });
+        contador++;
+    });
+}
+function alerta(aviso,titulo,button){
+    var div = $('<div></div>').html(aviso).attr('title',titulo).appendTo('body').dialog({
+        resizable: false,
+        width:400,
+        modal: true,
+        autoOpen:true,
+        buttons: button
+    });
+}
+</script>

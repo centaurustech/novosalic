@@ -1,0 +1,188 @@
+<style type="text/css">
+    label.error{ color:red; font-weight: normal; }
+</style>
+
+<div id="msgAlerta" class="sumir"></div>
+<script type="text/javascript">
+    $(document).ready(function(){
+
+        $('.btn_salvar').click(function(){
+            if($('#justificativa').val().length > 250){
+                $("#msgAlerta").dialog("destroy");
+                $("#msgAlerta").html("O campo Justificativa não pode ultrapassar a quantidade de 250 caracteres!");
+                $("#msgAlerta").dialog({
+                    resizable: false,
+                    title: 'Alerta!',
+                    width:320,
+                    height:180,
+                    modal: true,
+                    buttons : {
+                        'OK' : function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+                $('.ui-dialog-titlebar-close').remove();
+                return false;
+            } else {
+                $('#form').submit();
+            }
+        });
+
+        <?php if(isset($this->movimentacaoAtual) && $this->movimentacaoAtual != '95'): ?>
+             //DESABILITA ALTERACOES NOS DADOS DO FORMULARIO (INCLUIR/ALTERAR/EXCLUIR)
+             JSBloquearAlteracaoFormulario();
+        <?php endif; ?>
+
+        $("#form").validate({
+            rules: {
+                produto: { required: true },
+                etapa: { required: true },
+                justificativa: { required: true }
+            },
+            messages: {
+                produto: { required: "<br>Dados obrigat&oacute;rios n&atilde;o informados" },
+                etapa: { required: "<br>Dados obrigat&oacute;rios n&atilde;o informados" },
+                justificativa: { required: "Dados obrigat&oacute;rios n&atilde;o informados" }
+            },
+            submitHandler: function(form) {
+                //if(validarJustificativa()){
+                    form.submit();
+                //}
+            }
+        });
+
+        $("#produtoetapa").change(function(){
+            $("#tdprodutoitem").css('display','');
+            $("#tdnovoitem").css('display','none');
+
+            $("#idPlanilhaItens").rules("add", {
+                     required: true,
+                     messages: {
+                       required: "Dados obrigat&oacute;rios n&atilde;o informados"
+                     }
+            });
+            $("#Descricao").rules("remove");
+        })
+
+        $("#novoitem").change(function(){
+            $("#tdprodutoitem").css('display','none');
+            $("#tdnovoitem").css('display','');
+
+            $("#Descricao").rules("add", {
+                    required: true,
+                    messages: {
+                        required: "Dados obrigat&oacute;rios n&atilde;o informados"
+                    }
+            });
+            $("#idPlanilhaItens").rules("remove");
+        })
+
+        $("#idPlanilhaItens").rules("add", {
+            required: true,
+            messages: {
+                required: "Dados obrigat&oacute;rios n&atilde;o informados"
+            }
+        });
+            
+        jQuery.validator.addMethod("validarJustificativa", function(value, element) {
+            var texto = $('#justificativa').val();
+            if (texto.length > 0) {
+                // verifica se o usuário clicou no botão 'Reintegração'
+                $('#justificativa').val();
+                return true;
+            } else {
+                return false;
+            }
+        });
+    })
+</script>
+<!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== 
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'propostas')); ?>" title="Ir para Propostas">Propostas</a></li>
+        <li class="last">Produtos / Etapas / Itens  </li>
+    </ul>
+</div>-->
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<?php require_once "scripts/manterpropostaincentivofiscal/inc/menu.inc.php"; // menu de manter proposta por incentivo fiscal ?>
+
+<!-- ========== INICIO TITULO ========== -->
+
+<div id="titulo">
+    <div>Inclus&atilde;o de Novo Item/Etapa/Produto<span class="voltar"><a href="javascript:history.go(-1)">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+
+<div id="conteudo">
+    <form name="form" id="form" action="<?php echo $this->url(array('controller' => 'mantertabelaitens', 'action' => 'solicitaritens')); ?>?idPreProjeto=<?php if(isset($_GET['idPreProjeto']))echo $_GET['idPreProjeto'];?>" method="post">
+        <table class="tabela">
+            <tr class="titulo_tabela">
+                <th colspan="4">Novo Produto / Etapa / Item </th>
+            </tr>
+            <tr class="centro">
+                <td colspan="4">
+                    <label style="font-weight: normal;"><input name="solicitacao" type="radio" value="produtoetapa" id='produtoetapa' checked/> Associar Item a Produto/Etapa</label>&nbsp; &nbsp;
+                    <label style="font-weight: normal;"><input name="solicitacao" type="radio" value="novoitem" id='novoitem' /> Incluir novo Item</label>
+                </td>
+            </tr>
+        </table>
+        
+        <table class="tabela">
+            <tr class="destacar bold">
+                <td width="33%">Produto <span class="red">*</span></td>
+                <td width="33%">Etapa <span class="red">*</span></td>
+                <td width="33%">Item <span class="red">*</span></td>
+            </tr>
+            <tr>
+                <td>
+                    <select class="select_simples" name="produto" id="produto">
+                        <option value="">- Selecione - </option>
+                        <?php foreach($this->produto as $tbproduto) { ?>
+                        <option value="<?php echo $tbproduto->codproduto; ?>"> <?php echo $tbproduto->Produto; ?></option>
+                        <?php } ?>
+                    </select>
+                </td>
+                <td>
+                    <select class="select_simples" name="etapa" id="etapa">
+                        <option value="">- Selecione - </option>
+                        <?php foreach($this->etapa as $tbetapa) { ?>
+                        <option value="<?php echo $tbetapa->codetapa; ?>"> <?php echo $tbetapa->Etapa; ?></option>
+                        <?php } ?>
+                    </select>
+                </td>
+                <td id='tdprodutoitem'>
+                    <select class="input_simples" name="idPlanilhaItens" id="idPlanilhaItens" style="width: 100%;">
+                        <option value="">- Selecione - </option>
+                        <?php foreach($this->item as $tbitem) { ?>
+                        <option value="<?php echo $tbitem->coditens; ?>"> <?php echo $tbitem->Item; ?></option>
+                        <?php } ?>
+                    </select>
+                </td>
+                <td style='display:none;' id='tdnovoitem'>
+                    <input type="text" name="Descricao" id="Descricao" maxlength="100" class="input_simples"><?php echo isset($this->Descricao) ? $this->Descricao : ''; ?>
+                </td>
+            </tr>
+            <tr class="destacar bold">
+                <td colspan="3">Justificativa <span class="red">*</span></td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <textarea cols="50" id="justificativa" name="justificativa" rows="6" style="width: 99%;" class="textarea_simples"><?php echo isset($this->Descricao) ? $this->Descricao : ''; ?></textarea>
+                </td>
+            </tr>
+        </table>
+        
+        <table class="tabela">
+            <tr class="centro">
+                <td colspan="4">
+                    <div id="divMsg" style="display: none;"><font color="red">A justificativa deve ser preenchida!</font></div>
+                    <input type="button" class="btn_salvar" name="salvar" value="" />
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<br clear="all" />

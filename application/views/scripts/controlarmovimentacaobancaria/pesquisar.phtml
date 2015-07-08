@@ -1,0 +1,483 @@
+<script type="text/javascript">
+    
+
+    function paginar(pag){
+        $("#pag").val(pag);
+        $("#cabecalho").val(1);
+        jqAjaxForm(document.getElementById("frmPaginacao"), "conteudo");
+        $("#resultadoConsulta").html("");
+        //$("#resultadoConsulta").html("Aguarde, carregando dados ...");
+    }
+
+</script>
+
+<?php
+/**
+ * Fluxo inicial
+ * @author Equipe RUP - Politec
+ * @since 20/01/2011
+ * @version 1.0
+ * @package application
+ * @subpackage application.views.scripts.controlarmovimentacaobancaria
+ * @copyright © 2011 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+
+if (empty($this->grupoAtivo)) // link para proponente
+{
+	$urlVoltar = $this->url(array('controller' => 'controlarmovimentacaobancaria', 'action' => 'form'));
+	$urlInicio = $this->url(array('controller' => 'principalproponente', 'action' => ''), null, true);
+}
+else
+{
+	$urlVoltar = $this->url(array('controller' => 'controlarmovimentacaobancaria', 'action' => ''), null, true);
+	$urlInicio = $this->url(array('controller' => 'principal', 'action' => ''));
+}
+
+if($this->cabecalho == 0){
+?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $urlInicio; ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+		<li>Movimenta&ccedil;&atilde;o banc&aacute;ria</li>
+		<li><a href="<?php echo $urlVoltar; ?>" title="Ir para Relat&oacute;rio da conta movimenta&ccedil;&atilde;o">Relat&oacute;rio da conta movimenta&ccedil;&atilde;o</a></li>
+		<li class="last">Resultado da consulta</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Relat&oacute;rio da conta movimenta&ccedil;&atilde;o <span class="voltar"><a href="<?php echo $urlVoltar ?>" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+<div id="conteudo">
+<?php } ?>
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+
+
+	<script type="text/javascript">
+	<!--
+	/**
+	 * Função para gerar o pdf da planilha
+	 */
+	function pdf()
+	{
+		$('#htmlpdf').val($('#imprimir').html());
+		$('#formpdf').submit();
+	}
+	//-->
+	</script>
+
+
+
+	<!-- INÍCIO GERAÇÃO .PDF -->
+	<form id="formpdf" name="formpdf" method="post" 
+		action="<?php echo $this->url(array('controller' => 'controlarmovimentacaobancaria', 'action' => 'gerarpdf'),'',true); ?>" 
+		enctype="multipart/form-data">
+		<input type="hidden" name="html" value="" id="htmlpdf" />
+	</form>
+	<!-- FIM GERAÇÃO .PDF -->
+        
+        
+        <!-- INÍCIO GERAÇÃO .PDF -->
+	<form id="frmPaginacao" name="formfrmPaginacaopdf" method="post" 
+		action="<?php echo $this->url(array('controller' => 'controlarmovimentacaobancaria', 'action' => 'pesquisar'),'',true); ?>" 
+		enctype="multipart/form-data">
+            <input type="hidden" name="relPaginacao" value="1" />
+            <input type="hidden" id="cabecalho" name="cabecalho" value="<?php echo $this->cabecalho ?>" />
+            <?php foreach($this->parametrosBusca as $name=>$value):?>
+                <?php if(!is_array($value)): ?>
+                    <input type="hidden" name="<?php echo $name?>" id="<?php echo $name?>" value="<?php echo $value?>"/>
+                <?php else: ?>
+                    <?php foreach($value as $valor):?>
+                        <input type="hidden" name="<?php echo $name?>[]" id="<?php echo $name?>" value="<?php echo $valor?>"/>
+                <?php endforeach; ?>
+                <?php endif; ?>
+            <?php endforeach; ?>
+            <?php if(empty($this->parametrosBusca["pag"])):?>
+                <input type="hidden" name="pag" id="pag" value="<?php echo $this->pag; ?>"/>
+            <?php endif; ?>
+            <?php if(empty($this->parametrosBusca["ordenacao"])):?>
+                <input type="hidden" name="ordenacao" id="ordenacao" value="<?php echo (!empty($this->parametrosBusca["ordenacao"]))?$this->parametrosBusca["ordenacao"]:""; ?>"/>
+            <?php endif; ?>
+            <?php if(empty($this->parametrosBusca["tipoOrdenacao"])):?>
+                <input type="hidden" name="tipoOrdenacao" id="tipoOrdenacao" value="<?php echo (!empty($this->parametrosBusca["tipoOrdenacao"]))?$this->parametrosBusca["tipoOrdenacao"]:""; ?>"/>
+            <?php endif; ?>
+	</form>
+	<!-- FIM GERAÇÃO .PDF -->
+
+
+
+	<!-- ========== INÍCIO ÁREA DE IMPRESSÃO ========== -->
+	<div id="imprimir">
+
+
+
+	<!-- ========== INÍCIO TABELA COM O EXTRATO ========== -->
+	<?php if (count($this->dados) <= 0) { ?>
+	<div class="msgALERT">
+		<div>
+			Consulta efetuada com sucesso, por&eacute;m, n&atilde;o existem movimenta&ccedil;&otilde;es banc&aacute;rias para o extrato solicitado!<br /><br />
+			Por favor, redefina o filtro de pesquisa!	
+		</div>
+	</div>
+	<?php } else { ?>
+
+	<table class="tabela" id="resultadoConsulta">
+
+		<?php
+		$p = $this->periodo;
+		if ($p[0] == 'A')      $per = 'Hoje';
+		else if ($p[0] == 'B') $per = 'Ontem';
+		else if ($p[0] == 'C') $per = 'Últimos 7 dias';
+		else if ($p[0] == 'D') $per = 'Semana passada (seg-dom)';
+		else if ($p[0] == 'E') $per = 'Última semana (seg-sex)';
+		else if ($p[0] == 'F') $per = 'Este mês';
+		else if ($p[0] == 'G') $per = 'Ano passado';
+		else if ($p[0] == 'H') $per = 'Últimos 12 meses';
+		else if ($p[0] == 'I') $per = 'Últimos 6 meses';
+		else if ($p[0] == 'J') $per = 'Últimos 3 meses';
+		else if ($p[0] == 'K') 
+		{
+			if (!empty($p[1]) && !empty($p[2]))
+			{
+				$per = 'De ' . $p[1] . ' à ' . $p[2];
+			}
+			else
+			{
+				if (!empty($p[1]))
+				{
+					$per = 'A partir de ' . $p[1];
+				}
+				if (!empty($p[2]))
+				{
+					$per = 'Até ' . $p[2];
+				}
+			}
+		}
+		else
+		{
+			$per = 'Buscar todas as informações';
+		}
+		?>
+
+		<tr>
+			<th colspan="11">
+				Tipo de Busca: <?php echo $per; ?>
+			</th>
+		</tr>
+
+
+
+
+
+		<?php
+		/* ========== INÍCIO CONSTANTE 2 ========== */
+		$array_pronacs_2 = array(); // array com os pronacs, e, que servirá como 'cache' para evitar a impressão de nomes de projetos repetidos
+		$array_movimen_2 = array(); // array com os id da movimentacao dos itens, e, que servirá como 'cache' para evitar a impressão itens
+		$item_2          = 1; // contador para os itens
+		$saldo_final_2   = (float) 0; // saldo final do extrato
+		foreach ($this->dados as $d) :
+			if ($d->tpRegistro == 2) : // constante 2
+		?>
+
+				<?php
+				/* ========== INÍCIO IMPRESSÃO DO CABEÇALHO COM O PRONAC ========== */
+				if (!in_array($d->pronac, $array_pronacs_2)) : 
+				$i_2 = 0; // contador para cor de linhas (por pronac)
+				?>
+
+				<tr>
+					<td colspan="11" class="linha_pronac">&nbsp;</td>
+				</tr>
+				<tr>
+					<th colspan="11">
+						<strong>
+							<?php if (!empty($d->pronac)) { ?>
+							PRONAC N&ordm; <?php echo $d->pronac; ?> - <?php echo $d->NomeProjeto; ?>
+							<?php } else { ?>
+							Conta(s) sem PRONAC
+							<?php } ?>
+						</strong>
+					</th>
+				</tr>
+				<tr>
+					<td colspan="11">&nbsp;</td>
+				</tr>
+				<tr>
+					<th>Data da Movimenta&ccedil;&atilde;o</th>
+					<th>Banco</th>
+					<th>Ag&ecirc;ncia</th>
+					<th>Conta</th>
+					<th>T&iacute;tulo Raz&atilde;o</th>
+					<th>Nome Abreviado</th>
+					<th>Data da Abertura</th>
+					<th>Proponente</th>
+					<th>Saldo Inicial</th>
+					<th>Saldo Final</th>
+					<th class="inconsistencias">Inconsist&ecirc;ncias</th>
+				</tr>
+				<?php
+				endif;
+				/* ========== FIM IMPRESSÃO DO CABEÇALHO COM O PRONAC ========== */
+				?>
+
+				<?php if (!in_array($d->idMovimentacaoBancariaItem, $array_movimen_2)) :  ?>
+				<tr <?php echo ($i_2 % 2 != 0) ? 'class="fundo_linha2"' : '' ; ?>  onmouseover="over_tr(this);" onfocus="over_tr(this);" onmouseout="out_tr(this);" onblur="out_tr(this);" onclick="click_tr(this);" onkeypress="click_tr(this);">
+					<td align="center"><?php echo $d->dtInicioMovimento; ?> &agrave; <?php echo $d->dtFimMovimento; ?></td>
+					<td align="center"><?php echo $d->nrBanco; ?> - <?php echo $d->nmBanco; ?></td>
+					<td align="center"><?php echo $d->nrAgencia; ?></td>
+					<td align="center"><?php echo $d->nrDigitoConta; ?></td>
+					<td><?php echo $d->nmTituloRazao; ?></td>
+					<td><?php echo $d->nmAbreviado; ?></td>
+					<td align="center"><?php echo $d->dtAberturaConta; ?></td>
+					<td><?php echo $d->Proponente . ' - [' . Validacao::mascaraCPFCNPJ($d->nrCNPJCPF) . ']'; ?></td>
+					<td align="right" class="<?php echo ($d->tpSaldoInicial == 'D') ? 'red' : 'blue' ; ?>"><?php echo $this->formatarReal($d->vlSaldoInicial); ?> <?php echo $d->tpSaldoInicial; ?></td>
+					<td align="right" class="<?php echo ($d->tpSaldoFinal == 'D') ? 'red' : 'blue' ; ?>"><?php echo $this->formatarReal($d->vlSaldoFinal); ?> <?php echo $d->tpSaldoFinal; ?></td>
+					<td align="center" class="inconsistencias">
+						<?php
+						if ($this->conta_rejeitada == true)
+						{
+							echo $this->inconsistenciaBancaria($d->idTipoInconsistencia);
+	
+							if ($d->idTipoInconsistencia == 3)
+							{
+								//$url = $this->url(array('controller' => 'agentes', 'action' => 'agentes'));
+                                                                $url = $this->url(array('controller' => 'agentes', 'action' => 'incluiragente', 'cpf' => $d->nrCNPJCPF )) . '?movimentacaobancaria=true';
+							}
+							else if ($d->idTipoInconsistencia == 7)
+							{
+								$url = $this->url(array('controller' => 'mantercontabancaria', 'action' => 'consultar'));
+							}
+							if ($d->idTipoInconsistencia == 3 || $d->idTipoInconsistencia == 7)
+							{
+								echo ' &nbsp; <a href="' . $url . '" title="Corrigir inconsist&ecirc;ncia">Corrigir Inconsist&ecirc;ncia</a>';
+							}
+						}
+						else
+						{
+							echo '-';
+						}
+						?>
+					</td>
+				</tr>
+				<?php endif; ?>
+
+			<?php
+				$i_2++; // contador
+				$array_pronacs_2[] = $d->pronac; // adiciona no cache com os pronacs
+				$array_movimen_2[] = $d->idMovimentacaoBancariaItem; // adiciona no cache com os itens com problemas
+
+				// retira ou adiciona no saldo total conforme o tipo de operacao
+				if ($d->tpSaldoInicial == 'D') // subtração
+				{
+					$saldo_final_2 -= $d->vlSaldoInicial;
+				}
+				else // adição
+				{
+					$saldo_final_2 += $d->vlSaldoInicial;
+				}
+				$item_2++;
+
+			endif; // fecha if constante 2
+                        flush();
+		endforeach;
+		/* ========== FIM CONSTANTE 2 ========== */
+		?>
+
+
+
+
+
+		<?php
+		/* ========== INÍCIO CONSTANTE 3 ========== */
+		$array_pronacs_3 = array(); // array com os pronacs, e, que servirá como 'cache' para evitar a impressão de nomes de projetos repetidos
+		$array_movimen_3 = array(); // array com os id da movimentacao dos itens, e, que servirá como 'cache' para evitar a impressão itens
+		$item_3          = 1; // contador para os itens
+		$saldo_final_3   = (float) 0; // saldo final do extrato
+		foreach ($this->dados as $d) :
+			if ($d->tpRegistro == 3) : // constante 3
+		?>
+
+				<?php
+				/* ========== INÍCIO IMPRESSÃO DO CABEÇALHO COM O PRONAC ========== */
+				if (!in_array($d->pronac, $array_pronacs_3)) : 
+				$i_3 = 0; // contador para cor de linhas (por pronac)
+				?>
+
+				<tr>
+					<td colspan="11" class="linha_pronac">&nbsp;</td>
+				</tr>
+				<tr>
+					<th colspan="11">
+						<strong>
+							<?php if (!empty($d->pronac)) { ?>
+							PRONAC N&ordm; <?php echo $d->pronac; ?> - <?php echo $d->NomeProjeto; ?>
+							<?php } else { ?>
+							Contas sem PRONAC
+							<?php } ?>
+						</strong>
+					</th>
+				</tr>
+				<tr>
+					<td colspan="11">&nbsp;</td>
+				</tr>
+				<tr>
+					<th>Data da Movimenta&ccedil;&atilde;o</th>
+					<th>Banco</th>
+					<th>Ag&ecirc;ncia</th>
+					<th>Conta</th>
+					<th>Data do Movimento</th>
+					<th>C&oacute;digo do Hist&oacute;rico</th>
+					<th>Hist&oacute;rico do Banco</th>
+					<th>N&ord; Documento</th>
+					<th colspan="2">Valor do Movimento</th>
+					<th class="inconsistencias">Inconsist&ecirc;ncias</th>
+				</tr>
+				<?php
+				endif;
+				/* ========== FIM IMPRESSÃO DO CABEÇALHO COM O PRONAC ========== */
+				?>
+
+				<?php if (!in_array($d->idMovimentacaoBancariaItem, $array_movimen_3)) :  ?>
+				<tr <?php echo ($i_3 % 2 != 0) ? 'class="fundo_linha2"' : '' ; ?>  onmouseover="over_tr(this);" onfocus="over_tr(this);" onmouseout="out_tr(this);" onblur="out_tr(this);" onclick="click_tr(this);" onkeypress="click_tr(this);">
+					<td align="center"><?php echo $d->dtInicioMovimento; ?> à <?php echo $d->dtFimMovimento; ?></td>
+					<td align="center"><?php echo $d->nrBanco; ?> - <?php echo $d->nmBanco; ?></td>
+					<td align="center"><?php echo $d->nrAgencia; ?></td>
+					<td align="center"><?php echo $d->nrDigitoConta; ?></td>
+					<td align="center"><?php echo $d->dtMovimento; ?></td>
+					<td><?php echo $d->cdHistorico; ?></td>
+					<td><?php echo $d->dsHistorico; ?></td>
+					<td><?php echo $d->nrDocumento; ?></td>
+					<td colspan="2" align="right" class="<?php echo ($d->cdMovimento == 'D') ? 'red' : 'blue' ; ?>"><?php echo $this->formatarReal($d->vlMovimento); ?> <?php echo $d->cdMovimento; ?></td>
+					<td align="center" class="inconsistencias">
+						<?php
+						if ($this->conta_rejeitada == true)
+						{
+							echo $this->inconsistenciaBancaria($d->idTipoInconsistencia);
+	
+							if ($d->idTipoInconsistencia == 3)
+							{
+								$url = $this->url(array('controller' => 'agentes', 'action' => 'agentes'));
+							}
+							else if ($d->idTipoInconsistencia == 7)
+							{
+								$url = $this->url(array('controller' => 'mantercontabancaria', 'action' => 'consultar'));
+							}
+							if ($d->idTipoInconsistencia == 3 || $d->idTipoInconsistencia == 7)
+							{
+								echo ' &nbsp; <a href="' . $url . '" title="Corrigir inconsist&ecirc;ncia">Corrigir Inconsist&ecirc;ncia</a>';
+							}
+						}
+						else
+						{
+							echo '-';
+						}
+						?>
+					</td>
+				</tr>
+				<?php endif; ?>
+
+			<?php
+				$i_3++; // contador
+				$array_pronacs_3[] = $d->pronac; // adiciona no cache com os pronacs
+				$array_movimen_3[] = $d->idMovimentacaoBancariaItem; // adiciona no cache com os itens com problemas
+
+				// retira ou adiciona no saldo total conforme o tipo de operacao
+				if ($d->cdMovimento == 'D') // subtração
+				{
+					$saldo_final_3 -= $d->vlMovimento;
+				}
+				else // adição
+				{
+					$saldo_final_3 += $d->vlMovimento;
+				}
+				$item_3++;
+
+			endif; // fecha if constante 3
+		endforeach;
+		/* ========== FIM CONSTANTE 3 ========== */
+		?>
+
+
+
+
+
+		<tr>
+			<td colspan="11" class="linha_pronac">&nbsp;</td>
+		</tr>
+
+		<!-- ========== INÍCIO SALDO TOTAL DISPONÍVEL ========== -->
+		<?php $saldo_final = $saldo_final_2 + $saldo_final_3; ?>
+		<tr>
+			<th align="left">Saldo Total Dispon&iacute;vel</th>
+			<td align="right" colspan="10" class="<?php echo ($saldo_final < 0) ? 'red' : 'blue' ; ?>">
+				<?php echo $this->formatarReal($saldo_final); ?> <?php echo ($saldo_final < 0) ? 'D' : 'C' ; ?>
+			</td>
+		</tr>
+		<!-- ========== FIM SALDO TOTAL DISPONÍVEL ========== -->
+<tr>
+    <td align="center" colspan="11">
+            <input type="button" style="width: 88px" class="btn_inicio" id="btn_inicio" onclick="paginar('1')"/>
+            <input type="button" style="width: 88px" class="btn_p_anterior" id="btn_p_anterior" onclick="paginar('<?php echo ($this->pag > 1)?$this->pag-1:1; ?>')"/>
+            <select name="pagina" id="pagina" class="input_simples" onchange="paginar(this.value)">
+                <?php for($i=1; $i<$this->totalPag+1; $i++): ?>
+                <option value="<?php echo $i; ?>" <?php if($i == $this->pag){ echo " selected='selected' "; } ?>><?php echo $i; ?></option>
+                <?php endfor; ?>
+            </select>
+            <input type="button" style="width: 88px" class="btn_p_proximo" id="btn_p_proximo" onclick="paginar('<?php echo ($this->pag < $this->totalPag)?$this->pag+1:$this->totalPag; ?>')"/>
+            <input type="button" style="width: 88px" class="btn_ultimo" id="btn_ultimo" onclick="paginar('<?php echo $this->totalPag; ?>')"/>
+            <!--<input type="button" style="width: 44px" class="btn_xls" id="btn_xls" onclick='$("#conteudoXLS").val($(".conteudoImprimivel").html()); $("#formGerarXls").submit();'/>
+            <input type="button" style="width: 88px" class="btn_imprimir" id="btn_imprimir" onclick='$("#conteudoImprimir").val($(".conteudoImprimivel").html()); $("#formGerarPdf").submit();'/> -->
+            Exibindo de <b><?php echo $this->inicio; ?></b> a <b><?php echo $this->fim; ?></b> de um total de <b><?php echo $this->total; ?></b> 
+        </td>
+    </tr>
+
+    <?php if (count($this->dados) > 0) : ?>
+	
+		<tr>
+                    <td align="center" colspan="11">
+				<form name="form" id="form" method="post" action="<?php echo $this->url(array('controller' => 'controlarmovimentacaobancaria', 'action' => 'finalizar')); ?>">
+					<input type="submit" class="btn_finalizar" title="Finalizar" value=" " /> 
+					<input type="button" title="Imprimir P&aacute;gina" class="btn_imprimir" value=" " onclick="pdf();" onkeypress="pdf(); imprimir();" />
+				</form>			
+			</td>
+		</tr>
+	
+	<?php endif; ?>
+
+	</table>
+	<?php } // fecha else ?>
+	<!-- ========== FIM TABELA COM O EXTRATO ========== -->
+
+
+
+	</div>
+	<!-- ========== FIM ÁREA DE IMPRESSÃO ========== -->
+<table class="tabela">
+    
+</table>
+
+
+	<!-- ========== INÍCIO BOTÕES ========== -->
+	
+	<!-- ========== FIM BOTÕES ========== -->
+
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

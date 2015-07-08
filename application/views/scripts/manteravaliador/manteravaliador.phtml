@@ -1,0 +1,246 @@
+<script>
+
+function incluir(){
+
+    document.getElementById("modalEditais").title = "Confirmação";
+
+	// modal com os ddos do dirigente
+	$("#modalEditais").dialog("destroy");
+	$("#modalEditais").dialog
+	({
+		width:750,
+		height:500,
+		EscClose:false,
+		modal:true
+		,buttons:
+		{
+			'Fechar':function()
+			{
+				$(this).dialog('close'); // fecha a modal
+			},
+			'Vincular':function()
+			{
+				$("#formIncluir").submit(); // fecha a modal
+			}
+		}
+	});
+	return false;
+	$('.ui-dialog-titlebar-close').remove();
+}
+
+
+function excluir(idEdital, idAgente, cpf){
+
+	$("#idEdit").val(idEdital);
+	$("#idAgen").val(idAgente);
+	$("#cpf2").val(cpf);
+    document.getElementById("excluir").title = "Confirmação";
+
+    $("#excluir").dialog("destroy");
+    $("#excluir").dialog
+    ({
+        width:350,
+        height:150,
+        EscClose:false,
+        modal:true
+        ,
+        buttons:
+        {
+            'Cancelar':function()
+            {
+                $(this).dialog('close');
+                //return false;
+            },
+            'Confirmar':function()
+            {
+            	document.forms["frm2"].submit();
+            }
+        }
+    });
+	return false;
+    $("#excluir").dialog('open');
+    $('.ui-dialog-titlebar-close').remove();
+}
+
+function teste(x){
+	if($(x).attr('checked') == true){
+		$("#formIncluir").append('<p class="item'+x.value+'"><input type="hidden" name="idEdital2[]" value="'+x.value+'"></p>');
+	}
+	else{
+		$(".item"+x.value).html('');
+	}	
+}
+
+$(document).ready(function(){
+	msgnome = $('#errornome');
+	msgemail = $('#erroremail');
+
+	$('.btn_editar').click(function(){
+		$('#nome').removeAttr("disabled");
+		$('#email').removeAttr("disabled");
+	});
+	$('.btn_salvar').click(function(){
+			var nome = true;
+			var email = true;
+			$('.nome').each(function(){
+				if($(this).val() == ''){
+					nome = false;
+				}
+			});
+			$('.email').each(function(){
+				if($(this).val() == ''){
+					email = false;
+				}
+			});
+			if(nome == false){
+				msgnome.html('Campo nome é obrigatório!');
+				msgnome.css("color", "red");
+			}
+			if(email == false){
+				msgemail.html('Campo email é obrigatório!');
+				msgemail.css("color", "red");
+			}
+			if(nome && email){
+				$('.cpf').removeAttr("disabled");
+				$('#frm').submit();
+			}
+	});
+
+});
+
+</script>
+<div id="breadcrumb">
+
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'cadastraredital', 'action' => 'consultaralterareditais')); ?>">Consultar/Alterar Edital</a></li>
+        <li class="last">Vincular Editais</li>
+    </ul>
+
+</div>
+<div id="titulo">
+    <div>Vincular editais para "<?php echo $this->nomeAvaliador; ?>"<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<div id="excluir" title="Confirma&ccedil;&atilde;o" style="display: none">Tem certeza que deseja desvincular o Edital?</div>
+<div style="display:none;" id="modalEditais" title="modalEditais" >
+	<form name="formIncluir" id="formIncluir" method="post">
+		<input type="hidden" name="idAgente" id="idAgente" value="<?php echo $this->idAgente; ?>"></input>
+		<input type="hidden" name="cpf" id="cpf" value="<?php echo $this->cpf; ?>"></input>
+		<table class="tabela">
+			<tr align="center">
+				<th>Selecione</th>
+				<th>Nº Edital</th>
+				<th>Nome Edital</th>
+			</tr>
+			<?php if($this->dadosEditalAvaliador){?>
+				<?php $x = 0; foreach ($this->dadosEditalAvaliador as $dadosEditalAvaliador){
+					$idEdital = $dadosEditalAvaliador->idEdital;
+					$paramEdital = ManterAvaliadorDAO::buscaDadosEdital($idEdital);
+					//x($paramEdital);
+					foreach ($paramEdital as $pEdital){
+						$idEdital = $pEdital->idEdital;
+						$idOrgao = $pEdital->idOrgao;
+						$nrEdital = $pEdital->NrEdital;
+						$logon = $pEdital->Logon;
+						
+						$nameEdital = ListareditaisDAO::buscaNomeEdital($idEdital, $idOrgao, $nrEdital, $logon);
+						//x($nameEdital);
+						$testes[$x] = Array('idEdital'=> $nameEdital[0]->idEdital, 'NrEdital'=> $nameEdital[0]->NrEdital, 'nomeEdital'=> $nameEdital[0]->nomeEdital);
+						//xd($testes);
+		        		$x++;
+					}
+				}
+			}	
+			?>
+			<?php 
+			$p = array();
+        	foreach ($testes as $blas){
+        		$p[] = $blas['NrEdital'];
+        	}        
+	        array_multisort($p, $testes); //Metodo de Ordenação
+	        //x($testes);
+        	if($testes){
+        		foreach ($testes as $ble){?>
+					<tr>
+						<td><input type="checkbox" style="margin-left: 40px;" name="idEdital" id="idEdital" value="<?php echo $ble['idEdital']; ?>" onclick="teste(this);"></input></td>
+						<td align="center"><?php echo $ble['NrEdital']; ?></td>
+						<td align="center"><?php echo $ble['nomeEdital']; ?></td>
+					</tr>
+				<?php }?>
+			<?php }?>
+		</table>
+   	</form>
+</div>
+
+<div id="conteudo">
+    <table class="" width="70%">
+    <?php if($this->dadosAvaliador){?>
+        <tr>
+            <th align="left" colspan="2"><input type="button" class="btn_incluir" onclick="incluir();" style="width: 88px"> &nbsp;&nbsp;&nbsp; Editais Vinculados</th>
+        </tr>
+    </table>
+        <?php }?>
+        <?php $i = 0;?>
+        <?php if($this->editais){?>
+	        <?php foreach($this->editais as $editais){?>
+		        <?php $dadosEdital = ManterAvaliadorDAO::buscaDadosEdital($editais->idEdital);
+//		        x($dadosEdital);
+		        
+		        	foreach ($dadosEdital as $nomeEdital){
+		        		$idEdital = $nomeEdital->idEdital;
+		        		$nrEdital = $nomeEdital->NrEdital;
+		        		$idOrgao = $nomeEdital->idOrgao;
+		        		$usuario = $nomeEdital->Logon;
+		        		
+		        		$nomeEdital = ListareditaisDAO::buscaNomeEdital($idEdital, $idOrgao, $nrEdital, $usuario);
+		        		if($nomeEdital){ 
+		        		$teste[$i] = Array('idEdital'=> $nomeEdital[0]->idEdital, 'NrEdital'=> $nomeEdital[0]->NrEdital, 'nomeEdital'=> $nomeEdital[0]->nomeEdital); 
+		        		$i++;
+		        		}
+		        	}
+	        }?>
+	    <form id="frm2" name="frm2" action="" method="post">
+	    <table class="" width="70%">
+        <?php 
+        $t = array();
+        if($teste){
+	        foreach ($teste as $bla){
+	        	$t[] = $bla['NrEdital'];
+	        	
+	        }        
+	        array_multisort($t, $teste); //Metodo de Ordenação
+	        //xd($teste);
+	        if($teste){
+		       	foreach ($teste as $bla){?>
+			        <tr>
+			            <td align="left" width="90%">
+			                <p><?php echo $bla['NrEdital']." - ".$bla['nomeEdital']; ?></p>
+			            </td>
+			            <td align="center">
+			                &nbsp;&nbsp;&nbsp;
+			                <input type="button" class="btn_exclusao" onclick="excluir(<?php echo $bla['idEdital']; ?>, <?php echo $this->dadosAvaliador[0]->idAgente; ?>, <?php echo "'".$this->cpf."'"; ?>)">
+			            </td>
+			        </tr>
+		        <?php }?>
+	       <?php }?>
+	 	<?php }?>
+	 <?php }else{?>
+	 <tr>
+			<br />
+				<div class="center" align="center">Não há Editais vinculados para "<?php echo $this->nomeAvaliador; ?>"</div>
+			<br />	
+			<br />
+	</tr>
+	 <?php }?>
+    </table>
+    <input type="hidden" value="" name="idEdit" id="idEdit"/>
+    <input type="hidden" value="" name="idAgen" id="idAgen"/>
+    <input type="hidden" value="" name="cpf2" id="cpf2"/>
+    </form>
+    <br><br>
+</div>
+<!-- ========== FIM CONTEï¿½DO ========== -->
+<!-- ========== INï¿½CIO RODAPï¿½ DO CONTEï¿½DO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPï¿½ DO CONTEï¿½DO ========== -->
+<br clear="all" />

@@ -1,0 +1,73 @@
+<?php require_once "inc/menu.inc.php"; // menu ?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->baseUrl(); ?>" title="Início">Início</a></li>
+        <li class="last">Histórico do Projeto - Gerenciar Projeto Cultural</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Histórico do Projeto - Gerenciar Projeto Cultural<span>ID #23A</span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+<table class="tabela">
+  <tr class="titulo_tabela">
+    <th><div align="center">PRONAC</div></th>
+    <th><div align="center">Projeto</div></th>
+
+  </tr>
+<?php foreach($this->projeto as $tbprojeto): ?>
+   <tr>
+    <td><?php echo $this->escape($tbprojeto->IdPRONAC);?></td>
+    <td><?php echo $this->escape($tbprojeto->NomeProjeto);?></td>
+
+  </tr>
+  <?php endforeach;?>
+</table>
+<br><br>
+
+<table class="tabela">
+  <tr class="titulo_tabela">
+    <th><div align="center">Data</div></th>
+    <th><div align="center">De Usuário</div></th>
+    <th><div align="center">Para Usuário</div></th>
+        <th><div align="center">Mensagem</div></th>
+  </tr>
+ <?php foreach($this->historico as $tbhistorico): ?>
+   <tr>
+    <td><?php echo $this->escape($tbhistorico->dtEncaminhamento);?></td>
+    <td><?php echo $this->escape($tbhistorico->nmRemetente);?></td>
+    <td><?php echo $this->escape($tbhistorico->nmDestinatario);?></td>
+      <td><textarea  type="text" name="descricao" id="descricao" cols="40" rows="6" disabled="disabled"><?php echo $this->escape($tbhistorico->dsMensagem);?></textarea></td>
+  </tr>
+  <?php endforeach;?>
+</table>
+
+<table class="tabela">
+	<td class="center"> 	<a href="javascript:window.print()"><img src="<?php echo $this->baseUrl(); ?>/public/img/imprimir.gif" /> </a></td>	
+</table>
+
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

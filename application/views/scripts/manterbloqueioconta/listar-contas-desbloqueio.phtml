@@ -1,0 +1,228 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#frmPesquisaConta").validate({
+            rules: {
+                pronac: { required: true }
+            },
+            messages: {
+                pronac: { required: " <br><br>Campo obrigat&oacute;rio n&atilde;o informado." }
+            },
+            submitHandler: function(form) {
+
+                form.submit();
+            }
+        });
+    });
+    
+    function JSMostraOcultaElemento(idInconsistencia)
+    {
+        $('.' + idInconsistencia).toggle();
+
+        if ($('#' + idInconsistencia).hasClass('btn_adicionar'))
+        {
+                $('#' + idInconsistencia).addClass('btn_remover');
+                $('#' + idInconsistencia).removeClass('btn_adicionar');
+        }
+        else
+        {
+                $('#' + idInconsistencia).addClass('btn_adicionar');
+                $('#' + idInconsistencia).removeClass('btn_remover');
+        }            
+    }
+        
+    function JSDesbloquearConta(idPronac,tipo){
+          
+        $('html').css('overflow', 'hidden');
+        $("body").append("<div id='divDinamicaDesbloqueio'></div>");
+        $("#divDinamicaDesbloqueio").html("");
+        $('#divDinamicaDesbloqueio').html("<br><br><center>Carregando dados...</center>");
+        $.ajax({
+            url:'<?php echo $this->url(array('controller' => 'manterbloqueioconta', 'action' => 'form-desbloquear-conta')); ?>',
+            data :
+            {
+                idPronac : idPronac,
+                tipoDesbloqueio : tipo
+            },
+            success: function(data){
+                $('#divDinamicaDesbloqueio').html(data);
+            },
+            type : 'post'
+
+        });
+        
+        var title = (tipo == 1) ? "Desbloqueio da conta do Projeto" : "Desbloqueio judicial da conta do Projeto";
+        
+        //jqAjaxLink("/operacional/resultado-projetos-por-situacao?situacao=" + situacao, null, "divDinamicaDesbloqueio");
+        $("#divDinamicaDesbloqueio").dialog({
+            resizable: true,
+            width:800,
+            height:550,
+            modal: true,
+            autoOpen:true,
+            draggable:false,
+            title: title,
+            buttons: {
+                'Cancelar': function() {
+                    $("#divDinamicaDesbloqueio").remove();
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');
+                },
+                'Salvar': function() {
+                    $("#frmDesbloquearConta").submit();
+                    /*$("#divDinamicaDesbloqueio").remove();
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');*/
+                }
+            },
+            close: function() {
+                $("#divDinamicaDesbloqueio").remove();
+                $(this).dialog('close');
+                $('html').css('overflow', 'auto');
+            }
+        });
+    }
+</script>
+<?php 
+    require_once 'scripts/controlarmovimentacaobancaria/inc/menu.inc.php';
+?>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li>Contas bloqueadas</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Contas bloqueadas</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="conteudo" style="width: 98%; ">
+    <!-- =================================================-->
+    <!-- ================ GRID 01 ========================-->
+    <!-- =================================================-->
+    <table class="tabela">
+        <tbody><tr>
+            <td><input type="button" id="1" class="btn_adicionar" title="Expandir" onclick="JSMostraOcultaElemento(1);">Contas a desbloquear</td>
+        </tr>
+    </tbody></table>
+
+    <!-- RESULTADO DO AJAX -->
+    <div class="1 sumir" style="display: none; ">
+        <div id="1_resultado">
+            <table class="tabela">
+                <?php if (count($this->bloqueioSisitemico) <= 0) : ?>
+                    <tr>
+                        <td align="center" colspan="6"><em>Nenhum projeto com conta para desbloquear</em></td>
+                    </tr>
+                <?php else: ?>
+                    <thead>
+                        <tr class="">
+                            <th width="10%">Pronac</th>
+                            <th width="20%">Nome do Projeto</th>
+                            <!--<th width="10%" nowrap="">Agência</th>
+                            <th width="10%" nowrap="">Conta</th>-->
+                            <th width="15%" nowrap="">Período de execução</th>
+                            <th width="15%" nowrap="">Período de captação</th>
+                            <th width="10%" nowrap="">Status regularidade</th>
+                            <th width="10%" nowrap="">Desbloquear</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($this->bloqueioSisitemico as $projeto) : ?>
+                        <tr class="">
+                            <td align="center"><a target="_blank" href="<?php echo $this->url ( array ('controller' => 'consultardadosprojeto', 'action' => '' ),'',true ) . '?idPronac=' . $projeto->IdPRONAC; ?>" ><?php echo $projeto->PRONAC;?> </a></td>
+                            <td><?php echo $projeto->NomeProjeto;?></td>
+                            <!--<td align="center">18015</td>
+                            <td align="center">000000225169</td>-->
+                            <td align="center">
+                                <?php echo $this->escape(Data::tratarDataZend($projeto->DtInicioExecucao, 'brasileiro')); ?> a 
+                                <?php echo $this->escape(Data::tratarDataZend($projeto->DtFimExecucao, 'brasileiro')); ?>
+                            </td>
+                            <td align="center">
+                                <?php echo $this->escape(Data::tratarDataZend($projeto->DtInicioCaptacao, 'brasileiro')); ?> a 
+                                <?php echo $this->escape(Data::tratarDataZend($projeto->DtFimCaptacao, 'brasileiro')); ?>
+                            </td>
+                            <td align="center" class="<?php echo (empty($projeto->Habilitado) || $projeto->Habilitado == "S") ? "green" : "red";?>">
+                                <?php echo (empty($projeto->Habilitado) || $projeto->Habilitado == "S") ? "Proponente regular" : "Proponente irregular";?>
+                            </td>
+                            <td class="centro" id="coluna_3_7">
+                                <img src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png" class="corrigir" style="cursor: pointer" onclick="JSDesbloquearConta('<?php echo $projeto->IdPRONAC;?>', 1)">
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                <?php endif; ?>
+            </table>
+        </div>
+    </div>
+    
+    <!-- =================================================-->
+    <!-- ================ GRID 02 ========================-->
+    <!-- =================================================-->
+    <table class="tabela">
+        <tbody><tr>
+            <td><input type="button" id="2" class="btn_adicionar" title="Expandir" onclick="JSMostraOcultaElemento(2);">Desbloqueio judicial</td>
+        </tr>
+    </tbody></table>
+
+    <!-- RESULTADO DO AJAX -->
+    <div class="2 sumir" style="display: none; ">
+        <div id="2_resultado">
+            <table class="tabela">
+                <?php if (count($this->bloqueioJudicial) <= 0) : ?>
+                    <tr>
+                        <td align="center" colspan="6"><em>Nenhum projeto com conta para desbloqueio judicial</em></td>
+                    </tr>
+                <?php else: ?>
+                <thead>
+                    <tr class="">
+                            <th width="10%">Pronac</th>
+                            <th width="20%">Nome do Projeto</th>
+                            <!--<th width="10%" nowrap="">Agência</th>
+                            <th width="10%" nowrap="">Conta</th>-->
+                            <th width="15%" nowrap="">Período de execução</th>
+                            <th width="15%" nowrap="">Período de captDesbloquear</th>
+                            <th width="10%" nowrap="">Status regularidade</th>
+                            <th width="10%" nowrap="">Desbloquear</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($this->bloqueioJudicial as $projeto) : ?>
+                        <tr class="">
+                            <td align="center"><a target="_blank" href="<?php echo $this->url ( array ('controller' => 'consultardadosprojeto', 'action' => '' ),'',true ) . '?idPronac=' . $projeto->IdPRONAC; ?>" ><?php echo $projeto->PRONAC;?> </a></td>
+                            <td><?php echo $projeto->NomeProjeto;?></td>
+                            <!--<td align="center">18015</td>
+                            <td align="center">000000225169</td>-->
+                            <td align="center">
+                                <?php echo $this->escape(Data::tratarDataZend($projeto->DtInicioExecucao, 'brasileiro')); ?> a 
+                                <?php echo $this->escape(Data::tratarDataZend($projeto->DtFimExecucao, 'brasileiro')); ?>
+                            </td>
+                            <td align="center">
+                                <?php echo $this->escape(Data::tratarDataZend($projeto->DtInicioCaptacao, 'brasileiro')); ?> a 
+                                <?php echo $this->escape(Data::tratarDataZend($projeto->DtFimCaptacao, 'brasileiro')); ?>
+                            </td>
+                            <td align="center" class="<?php echo (empty($projeto->Habilitado) || $projeto->Habilitado == "S") ? "green" : "red";?>">
+                                <?php echo (empty($projeto->Habilitado) || $projeto->Habilitado == "S") ? "Proponente regular" : "Proponente irregular";?>
+                            </td>
+                            <td class="centro" id="coluna_3_7">
+                                <img src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png" class="corrigir" style="cursor: pointer" onclick="JSDesbloquearConta('<?php echo $projeto->IdPRONAC;?>', 2)">
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                <?php endif; ?>
+            </table>
+        </div>
+    </div>
+    <!-- ========== FIM FORMULÁRIO DE BUSCA ========== -->
+</div>
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

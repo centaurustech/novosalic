@@ -1,0 +1,462 @@
+<?php
+    $SalvarHref                 = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'cadastrarcotacao')).'?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $ExcluirItensCustoHref      = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'excluiritenscusto')).'?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $AnexarHref                 = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'anexar')).'?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $CancelarHref               = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'cotacao')).'?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $ExcluirDocumentoHref       = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'excluirdocumento')).'?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $carregarSelectHref         = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'carregaselectajax')).'?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+
+    $alterar = false;
+    if($this->idcotacao == '')
+        $alterar = true;
+
+    $idNome = 'idcotacao';
+    $corpo  = 'incluircotacaoAjax';
+    $inputID = '<input type="hidden" name="'.$idNome.'" id="'.$idNome.'" value="'.$this->idcotacao.'"/><input type="hidden" name="idpronac" id="idpronac" value="'.$this->idpronac.'"/>';
+    $idformulario = 'formularioCotacao';
+    include_once 'scripts/comprovarexecucaofinanceira/inc/menu.inc.php';
+?>
+<style>
+<!--
+    table caption {
+        background: none repeat scroll 0 0 #ABDA5D;
+        color: #3A7300;
+        font-size: 11px;
+        padding: 8px;
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+-->
+</style>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principalproponente', 'action' => ''), null, true); ?>" title="Ir para p&aacute;gina inicial" onclick="carregandoModal();">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')) . '?idPronac=' . Seguranca::encrypt($this->idpronac); ?>" title="Ir para In&iacute;cio">Consultar dados do Projeto</a></li>
+        <li>Comprovar Execu&ccedil;&atilde;o Financeira</li>
+        <li><a href="<?php echo $this->link_menu_lateral; ?>" title="Pagamento" onclick="carregandoModal();">Cota&ccedil;&atilde;o</a></li>
+        <li class="last"><?php echo isset($this->nrCotacao) ? 'Alterar' : 'Nova'?> Cota&ccedil;&atilde;o</li>
+    </ul>
+</div> <!-- final: #breadcrumb -->
+
+<div id="titulo">
+    <div><?php echo isset($this->nrCotacao) ? 'Alterar' : 'Nova'?> Cota&ccedil;&atilde;o<span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+
+<div id="conteudo" align="center">
+    <div id="<?php echo $corpo;?>">
+
+        <form id="<?php echo $idformulario;?>" method="post" action="<?php echo $SalvarHref ?>" >
+            <?php echo $inputID; ?>
+
+            <table class="tabela">
+                <tr>
+                    <th>Dados da Cota&ccedil;&atilde;o</th>
+                </tr>
+            </table>
+            
+            <table class="tabela">
+                <tr>
+                    <td class="destacar w200 bold" align="right">N&uacute;mero da Cota&ccedil;&atilde;o<span style='color:red'>*</span></td>
+                    <td><input class="obrigatorio" type="text" size="20" maxlength="9" name="nrCotacao" sonumero="true" value="<?php echo $this->nrCotacao;?>" /></td>
+                    <td class="destacar w200 bold" align="right">Data da Cota&ccedil;&atilde;o<span style='color:red'>*</span></td>
+                    <td><input class="obrigatorio" type="text" name="dtCotacao" data="true" value="<?php echo $this->dtCotacao;?>"/></td>
+                </tr>
+                <tr>
+                    <td class="destacar w200 bold" align="right">Descri&ccedil;&atilde;o<span style='color:red'>*</span></td>
+                    <td colspan="3"><textarea class="obrigatorio" cols="100" rows="10" name="dsCotacao"><?php echo $this->dsCotacao;?></textarea></td>
+                </tr>
+            </table>
+
+            <table class="tabela">
+                <caption>Inclus&atilde;o de Fornecedores</caption>
+                <?php for ($index = 1; $index < 4; $index++) : ?>
+                <tr align="center" class="fundo_linha3">
+                    <td colspan="4" class="bold">Dados Fornecedor <?php echo $index; ?></td>
+                </tr>
+                <tr>
+                    <td class="destacar w200 bold">Tipo do Fornecedor<span style='color:red'>*</span></td>
+                    <td class="destacar w200 bold">CNPJ/CPF<span style='color:red'>*</span></td>
+                    <td class="destacar w200 bold">Nome/Raz&atilde;o Social<span style='color:red'>*</span></td>
+                    <td class="destacar w200 bold">Valor da Cota&ccedil;&atilde;o (R$)<span style='color:red'>*</span></td>
+                </tr>
+                <tr>
+                    <td>
+                        <input class="obrigatorio" type="hidden" name="idAgente<?php echo $index; ?>" id="idAgente<?php echo $index; ?>" value="<?php echo $this->{"idAgente{$index}"};?>"/>
+                        <?php
+                            $input = "TipoPessoa{$index}";
+                            $checked = ($this->$input == 0) ? 'checked="checked"' : null;
+                        ?>
+                        <input type="radio" name="tpFornecedor<?php echo $index; ?>" class="tpFornecedor<?php echo $index; ?>" value="cpf" <?php echo $checked; ?> /> CPF
+                        <?php
+                            $input = "TipoPessoa{$index}";
+                            $checked = ($this->$input == 1) ? 'checked="checked"' : null;
+                        ?>
+                        <input type="radio" class="tpFornecedor<?php echo $index; ?>" name="tpFornecedor<?php echo $index; ?>" value="cnpj" <?php echo $checked; ?> /> CNPJ
+                    </td>
+                    <td>
+                        <?php $input = "CNPJCPF{$index}"; ?>
+                        <input class="obrigatorio" type="text" autocomplete="off" name="CNPJCPF<?php echo $index; ?>" id="CNPJCPF<?php echo $index; ?>" cnpjcpf="true" idAgente="idAgente<?php echo $index; ?>" idDescricao="Descricao<?php echo $index; ?>" classaux="tpFornecedor<?php echo $index; ?>" value="<?php echo $this->$input;?>"/>
+                    </td>
+                    <td>
+                        <?php
+                            $readonly = ($this->$input == 1) ? 'readonly="readonly"' : null;
+                            $input = "Descricao{$index}";
+                        ?>
+                        <input class="obrigatorio" type="text" size="20" name="Descricao<?php echo $index; ?>" id="Descricao<?php echo $index; ?>" value="<?php echo $this->$input;?>" <?php echo $readonly; ?> />
+                    </td>
+                    <td>
+                        <?php $input = "vlCotacao{$index}"; ?>
+                        <input class="obrigatorio" type="text" size="10" dinheiro="true" maxlength="9" name="vlCotacao<?php echo $index; ?>" id="vlCotacao<?php echo $index; ?>" value="<?php echo $this->$input;?>"/>
+                    </td>
+                </tr>
+                <?php endfor; ?>
+            </table>
+
+            <table class="tabela">
+                <caption>Vincular Itens de Custo</caption>
+                <tr>
+                    <td class="destacar bold">Produto<span style='color:red'>*</span></td>
+                    <td class="destacar bold">Etapa<span style='color:red'>*</span></td>
+                    <td class="destacar bold">Itens<span style='color:red'>*</span></td>
+                    <td class="destacar bold">Fornecedor<span style='color:red'>*</span></td>
+                    <td class="destacar bold w50">A&ccedil;&atilde;o</td>
+                </tr>
+                <tr>
+                    <td>
+                        <select name="produtoSelect" id="produto">
+                            <option value="">Selecione</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="etapaSelect" id="etapa">
+                            <option value="">Selecione</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="itensSelect" id="itens">
+                            <option value="">Selecione</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="fornecedorSelect" id="fornecedor">
+                            <option value="">Selecione</option>
+                                <?php if($this->idAgente1) {
+                                        echo '<option value="'.$this->idAgente1.'">'.$this->Descricao1.'</option>';
+                                    }
+                                    if($this->idAgente2) {
+                                        echo '<option value="'.$this->idAgente2.'">'.$this->Descricao2.'</option>';
+                                    }
+                                    if($this->idAgente3) {
+                                        echo '<option value="'.$this->idAgente3.'">'.$this->Descricao3.'</option>';
+                                    }
+                                ?>
+                        </select>
+                    </td>
+                    <td class="w50 centro">
+                        <a href="#" id="additemcusto" padrao="false">
+                            <img border="0" title="Incluir" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/incluir.gif">
+                        </a>
+                    </td>
+                </tr>
+            </table>
+
+            <table id="tableItensCusto" class="tabela linhaMaior1 <?php if($alterar) echo 'displayNone';?>">
+                <tr>
+                    <td class="destacar bold" align="center">Produto</td>
+                    <td class="destacar bold" align="center">Etapa</td>
+                    <td class="destacar bold" align="center">Item</td>
+                    <td class="destacar bold" align="center">Fornecedor</td>
+                    <td class="destacar bold" align="center">Desvincular</td>
+                </tr>
+                <?php foreach ($this->itensVinculados as $itensVinculados) { ?>
+                <tr>
+                    <td>
+                        <?php echo $itensVinculados->dsProduto ? $itensVinculados->dsProduto : 'Administração do Projeto'; ?>
+                        <input type="hidden" name="produto[]" value="<?php echo $itensVinculados->idProduto; ?>">
+                    </td>
+                    <td>
+                        <?php echo $itensVinculados->dsEtapa; ?>
+                        <input type="hidden" name="etapa[]" value="<?php echo $itensVinculados->idEtapa; ?>">
+                    </td>
+                    <td>
+                        <?php echo $itensVinculados->dsItem; ?>
+                        <input type="hidden" name="item[]" value="<?php echo $itensVinculados->idPlanilhaAprovacao; ?>">
+                    </td>
+                    <td>
+                        <?php echo $itensVinculados->nmAgente; ?>
+                        <input type="hidden" name="fornecedor[]" value="<?php echo $itensVinculados->idAgente; ?>">
+                    </td>
+                    <td>
+                        <span class="btnExcluirItem" idCotacao="<?php echo $itensVinculados->idCotacao; ?>" idetapa="<?php echo $itensVinculados->idEtapa; ?>" idItem="<?php echo $itensVinculados->idPlanilhaAprovacao; ?>" idpronac="<?php echo $this->idpronac; ?>">
+                            <center><img border="0" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/excluir.gif" title="Excluir" style="cursor: pointer;"></center>
+                        </span>
+                    </td>
+                </tr>
+                <?php } ?>
+            </table>
+
+            <br />
+
+            <div style="text-align: center;">
+                <input type="button" class="btn_salvar" id="salvar" />
+                <input type="button" class="btn_cancelar" />
+            </div>
+        </form>
+    </div>
+    <br clear="left" />
+    
+</div>
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />
+
+<div id="msgAlerta" class="sumir"></div>
+<div id="msgConfirm" class="sumir"></div>
+<div id="camposObrigatorios" class="sumir"></div>
+
+<script type="text/javascript">
+    var corpo  = '#<?php echo $corpo;?>';
+    
+    $(document).ready(function(){
+
+        $('.btnExcluirItem').click(function(){
+            var idcotacao = $(this).attr('idCotacao'),
+                idItem = $(this).attr('idItem'),
+                obj = $(this);
+
+            $("#msgConfirm").dialog("destroy");
+            $("#msgConfirm").html("Deseja realmente excluir dados?");
+            $("#msgConfirm").dialog({
+                resizable: false,
+                title: 'Alerta!',
+                width:340,
+                height:160,
+                modal: true,
+                buttons : {
+                    'Não' : function(){
+                        $("#msgConfirm").dialog('close');
+                    },
+                    'Sim' : function(){
+                        $("#msgConfirm").dialog('close');
+                        $.ajax({
+                            type: 'POST',
+                            url: '<?php echo $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'excluiritenscusto')); ?>',
+                            data: {
+                                idcotacao: idcotacao,
+                                idItem: idItem
+                            },
+                            success: function(dados) {
+                                obj.parent().parent().remove();
+                                $("#msgAlerta").dialog("destroy");
+                                $("#msgAlerta").html("Excluído com sucesso!");
+                                $("#msgAlerta").dialog({
+                                    resizable: false,
+                                    title: 'Alerta!',
+                                    width:300,
+                                    height:160,
+                                    modal: true,
+                                    buttons : {
+                                        'OK' : function(){
+                                            $("#msgAlerta").dialog('close');
+                                        }
+                                    }
+                                });
+                                $('.ui-dialog-titlebar-close').remove();
+                                return false;
+                            }
+                        });
+                    }
+                }
+            });
+            $('.ui-dialog-titlebar-close').remove();
+            return false;
+        });
+        
+        mascaras(corpo);
+
+        $(corpo+' a').click(function(){
+            if($(this).attr('retorna')==undefined){
+                var info = {
+                    este        :   this,
+                    corpo       :   '<?php echo $corpo;?>',
+                    parametros  :   {<?php echo $idNome;?>:$('#<?php echo $corpo;?> #<?php echo $idNome;?>').val(),idpronac:'<?php echo $this->idpronac;?>'},
+                    formularioModal : 'upForm'
+                };
+                acoesLink(info);
+                return false;
+            }
+        });
+
+        var idProduto = carregarSelect('<?php echo $carregarSelectHref;?>','#produto',{tpSelect:'produto',idpronac:'<?php echo $this->idpronac?>'},'Selecione');
+        if(idProduto != undefined){
+            var idEtapa = carregarSelect('<?php echo $carregarSelectHref;?>','#etapa',{tpSelect:'etapa',idpronac:'<?php echo $this->idpronac?>',idProduto:idProduto},'Selecione');
+            if(idEtapa != undefined){
+                carregarSelect('<?php echo $carregarSelectHref;?>','#itens',{tpSelect:'itens',idpronac:'<?php echo $this->idpronac?>',idProduto:idProduto,idEtapa:idEtapa},'Selecione');
+                buscarDadosItens();
+            }
+        }
+
+        $('#produto').change(function (){
+            if($(this).val() == ''){
+                $('#etapa.select_simples').html('<option value="">Selecione</option>');
+                $('#itens.select_simples').html('<option value="">Selecione</option>');
+            } else {
+                carregarSelect('<?php echo $carregarSelectHref;?>','#etapa',{tpSelect:'etapa',idpronac:'<?php echo $this->idpronac?>',idProduto:$('#produto').val()},'Todos');
+                carregarSelect('<?php echo $carregarSelectHref;?>','#itens',{tpSelect:'itens',idpronac:'<?php echo $this->idpronac?>',idProduto:$('#produto').val(),idEtapa:$('#etapa').val()},'Todos');
+            }
+        });
+        $('#etapa').change(function (){
+            if($(this).val() == ''){
+                $('#itens.select_simples').html('<option value="">Todos</option>');
+            } else {
+                carregarSelect('<?php echo $carregarSelectHref;?>','#itens',{tpSelect:'itens',idpronac:'<?php echo $this->idpronac?>',idProduto:$('#produto').val(),idEtapa:$('#etapa').val()},'Todos');
+            }
+        });
+
+        $('#<?php echo $corpo;?> #additemcusto').click(function(){
+            var corpo = '<?php echo $corpo;?>';
+            var info = {
+                <?php echo $idNome;?>   :   $('#<?php echo $idNome;?>').val(),
+                corpo                   :   '#'+corpo,
+                tabela                  :   '#'+corpo+' #tableItensCusto',
+                produto                 :   buscarHtmlSelect('#'+corpo+' #produto'),
+                idProduto               :   $('#'+corpo+' #produto').val(),
+                etapa                   :   buscarHtmlSelect('#'+corpo+' #etapa'),
+                idEtapa                 :   $('#'+corpo+' #etapa').val(),
+                itens                   :   buscarHtmlSelect('#'+corpo+' #itens'),
+                idItem                  :   $('#'+corpo+' #itens').val(),
+                idpronac                :   '<?php echo $this->idpronac?>',
+                cadastro                :   true,
+                cotacao                 :   true,
+                idFornecedor            :   $('#fornecedor option:selected').val(),
+                fornecedor              :   $('#fornecedor option:selected').text()
+            }
+            //verifica se foi setado os valores necessarios para inserir no banco
+            if(info.idProduto != ''){
+                $('#tableItensCusto').show();
+                listaPEI(info);
+            }
+        });
+
+        $(corpo+' #salvar').click(function(){
+            var preenchimento = false;
+            var message = "Favor preencher os dados obrig&aacute;torios!";
+
+            $('.obrigatorio').each(function(){
+                if($.trim($(this).val()) == '')
+                    preenchimento = true;
+            });
+
+            // validar item vinculado
+            if (!$('input[name=item\\[\\]]').length) {
+                preenchimento = true;
+                message = 'Selecione o item para vincular a cotação.';
+            }
+
+            if(preenchimento) {
+                $("#camposObrigatorios").dialog("destroy");
+                $("#camposObrigatorios").html(message);
+                $("#camposObrigatorios").dialog({
+                    resizable: false,
+                    title: 'Alerta!',
+                    width:320,
+                    height:160,
+                    modal: true,
+                    buttons : {
+                        'OK' : function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+                $('.ui-dialog-titlebar-close').remove();
+
+            } else {
+                $('#formularioCotacao').submit();
+            }
+        });
+        
+        $('#<?php echo $corpo;?> .btn_cancelar').click(function(){
+            voltar();
+        });
+
+        $(corpo+' #Descricao1').keyup(function(){
+            fornecedores();
+        });
+        $(corpo+' #Descricao2').keyup(function(){
+            fornecedores();
+        });
+        $(corpo+' #Descricao3').keyup(function(){
+            fornecedores();
+        });
+        $('.linkArquivos').click(function(){
+            var este = this;
+            var nomeJanelaAlerta =   janelaObj({
+                parametros : {
+                    width:      400,
+                    autoOpen:   false,
+                    resizable:  false,
+                    modal:      true,
+                    buttons: {
+                        'N\u00e3o':function(){
+                            $(this).dialog('close');
+                        },
+                        Sim: function() {
+                            var dados = {
+                                idcotacao : $('#<?php echo $corpo;?> #<?php echo $idNome;?>').val(),
+                                id          : $(este).attr('id')
+                            }
+                            var resposta = buscarJson($(este).attr('href'),dados);
+                            if(resposta.retorno){
+                                $('#'+$(este).attr('complemento')+$(este).attr('id')).remove();
+                            }
+                            janelaAlerta(resposta.mensagem);
+
+                            $(this).dialog('close');
+                        }
+                    }
+                },
+                removerBtFechar:true,
+                title : 'Alerta'
+            });
+            nomeJanelaAlerta.divConteudo.html(ag4);
+            nomeJanelaAlerta.abrirJanela();
+            return false;
+        });
+
+        // armazena os ids de foco para cadastrar agente callback event handler
+        $('#CNPJCPF1, #CNPJCPF2, #CNPJCPF3').focus(function(){
+            inputAgenteId = $('#idAgente' + $(this).attr('id').replace(/[A-Za-z$-]/g, ''));
+            inputAgenteNome = $('#Descricao' + $(this).attr('id').replace(/[A-Za-z$-]/g, ''));
+        });
+        // cadastrar agente callback event handler
+        $(document).bind('agenteCadastrar_POST', function(event){
+            var agente = event.detail;
+            inputAgenteId.val(agente.id);
+            inputAgenteNome.val(agente.nome).attr('disabled', 'true');
+            $("#divDinamicaAgentes").dialog('destroy').remove();
+            $('html').css('overflow', 'auto');
+        });
+    });
+
+function carregarSelect(pagina,idSelect,dados,textoIni){
+    var idRetorno = undefined;
+    if(textoIni == undefined)
+        textoIni = 'Todos';
+
+    var resposta    = buscarJson(pagina,dados);
+    var cont = 0;
+    for(var j in resposta){
+        select += '<option value="'+resposta[j].id+'">'+resposta[j].nome+'</option>';
+        cont++;
+        if(cont>1)
+            idRetorno = undefined;
+        else
+            idRetorno = resposta[j].id;
+    }
+//    if(cont>1 || cont==0)
+        var select      = '<option value="">'+textoIni+'</option>'+select;
+    $(idSelect).html(select);
+    return idRetorno;
+}
+</script>

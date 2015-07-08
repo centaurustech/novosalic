@@ -1,0 +1,392 @@
+<?php
+/**
+ * Formulário para Cadastro de Conselheiro
+ * @author Equipe RUP - Politec
+ * @since 29/03/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.views.scripts.conselheiro.inc
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+
+<div id="modalAgentes" class="modal" style="display: none;">
+	<div id="title">Cadastro de Dirigentes</div>
+	
+	
+
+
+<!-- ========== FORMULÁRIO DADOS ========== -->
+<table class="tabela" id="tabDadosD">
+
+	<tr>
+		<td colspan="2">
+			<label for="cpf">CPF *</label> 
+			<input type="text" name="cpfD" id="cpfD" maxlength="14" 
+				onkeyup="mascara(this, format_cpf);" onblur="return salvaragente();" 
+				value="<?php echo $this->cpf; ?>"  />
+		</td>
+		<td colspan="2">
+			<label for="nome">Nome *</label> 
+			<input type="text" name="nomeD" id="nomeD" maxlength="70" 
+				value="<?php echo $this->nome; ?>" />
+		</td>
+	</tr>
+
+	<tr>
+		<td>
+			<label for="cep">CEP *</label> 
+			<input type="text" name="cepD" id="cepD" maxlength="10" 
+				onkeyup="mascara(this, format_cep);" 
+				onblur="buscar_cep(this.value);" 
+				value="<?php echo $this->cep; ?>" />
+		</td>
+		<td>
+			<label for="uf">UF *</label> 
+			<select name="ufD" id="ufD" 
+				onchange="carregar_combo(this.value, 
+					'cidade', 
+					'../cidade/combo', 
+					' - Selecione primeiro o UF - ');" disabled="disabled">
+
+				<?php if (!isset($this->uf) || empty($this->uf)) { ?>
+				<option value=""> -- </option>
+				<?php } ?>
+
+				<?php foreach ($this->comboestados as $comboestado): ?>
+				<option value="<?php echo $comboestado->id; ?>"
+					<?php if ($this->uf == $comboestado->id) echo "selected=\"selected\""; ?>>
+					<?php echo $comboestado->descricao; ?>
+				</option>
+				<?php endforeach; ?>
+
+			</select>
+		</td>
+		<td colspan="2">
+			<label for="cidade">Cidade *</label> 
+			<select name="cidadeD" id="cidadeD" disabled="disabled">
+
+				<?php if (!isset($this->cidade) || empty($this->cidade)) { ?>
+				<option value=""> - Selecione - </option>
+				<?php } ?>
+
+				<?php foreach ($this->combocidades as $combocidade): ?>
+				<option value="<?php echo $combocidade->id; ?>" 
+					id="<?php echo $combocidade->idUF; ?>" 
+					<?php if ($this->cidade == $combocidade->id) echo "selected=\"selected\""; ?>>
+					<?php echo $combocidade->descricao; ?>
+				</option>
+				<?php endforeach; ?>
+
+			</select>
+		</td>
+	</tr>
+
+	<tr>
+		<td colspan="2">
+			<label for="tipoEndereco">Tipo de Endereço *</label> 
+			<select name="tipoEnderecoD" id="tipoEnderecoD">
+
+				<?php if (!isset($this->tipoEndereco) || empty($this->tipoEndereco)) { ?>
+				<option value=""> - Selecione - </option>
+				<?php } ?>
+
+				<?php foreach ($this->combotiposenderecos as $combotipoendereco): ?>
+				<option value="<?php echo $combotipoendereco->id; ?>"
+					<?php if ($this->tipoEndereco == $combotipoendereco->id) echo "selected=\"selected\""; ?>>
+					<?php echo $combotipoendereco->descricao; ?>
+				</option>
+				<?php endforeach; ?>
+
+			</select>
+		</td>
+		<td colspan="2">
+			<label for="tipoLogradouro">Tipo de Logradouro *</label> 
+			<select name="tipoLogradouroD" id="tipoLogradouroD" disabled="disabled">
+
+				<?php if (!isset($this->tipoLogradouro) || empty($this->tipoLogradouro)) { ?>
+				<option value=""> - Selecione - </option>
+				<?php } ?>
+
+				<?php foreach ($this->combotiposlogradouros as $combotipologradouro): ?>
+				<option value="<?php echo $combotipologradouro->id; ?>"
+					<?php if ($this->tipoLogradouro == $combotipologradouro->id) echo "selected=\"selected\""; ?>>
+					<?php echo $combotipologradouro->descricao; ?>
+				</option>
+				<?php endforeach; ?>
+
+			</select>
+		</td>
+	</tr>
+
+	<tr>
+		<td colspan="2">
+			<label for="logradouro">Logradouro *</label> 
+			<input type="text" name="logradouroD" id="logradouroD" maxlength="50"
+				value="<?php echo $this->logradouro; ?>" disabled="disabled" />
+		</td>
+		<td colspan="2">
+			<label for="numero">Número *</label> 
+			<input type="text" name="numeroD" id="numeroD" maxlength="10" 
+				onkeyup="mascara(this, format_num);" 
+				value="<?php echo $this->numero; ?>" />
+		</td>
+	</tr>
+
+	<tr>
+		<td colspan="2">
+			<label for="complemento">Complemento *</label> 
+			<input type="text" name="complementoD" id="complementoD" maxlength="50" 
+				value="<?php echo $this->complemento; ?>" />
+		</td>
+		<td colspan="2">
+			<label for="bairro">Bairro *</label> 
+			<input type="text" name="bairroD" id="bairroD" maxlength="50" disabled="disabled"
+				value="<?php echo $this->bairro; ?>" />
+		</td>
+	</tr>
+
+	<tr>
+		<td colspan="2">
+			<label>Autorizo divulgar o endereço</label> 
+			<input type="radio" name="divulgarEnderecoD" id="divulgarEnderecoSD" value="1" class="checkradio" 
+				<?php if ($this->divulgarEndereco == '1') echo "checked=\"checked\""; ?> /> 
+			<label for="divulgarEnderecoS">Sim</label> 
+			<input type="radio" name="divulgarEnderecoD" id="divulgarEnderecoND" value="0" class="checkradio" 
+				<?php if ($this->divulgarEndereco == '0' || !isset($this->divulgarEndereco)) echo "checked=\"checked\""; ?> /> 
+			<label for="divulgarEnderecoN">Não</label>
+		</td>
+		<td colspan="2">
+			<label>Endereço para correspondências?</label> 
+			<input type="radio" name="enderecoCorrespondenciaD" id="enderecoCorrespondenciaSD" value="1" class="checkradio" 
+				<?php if ($this->enderecoCorrespondencia == '1' || !isset($this->enderecoCorrespondencia)) echo "checked=\"checked\""; ?> />  
+			<label for="enderecoCorrespondenciaS">Sim</label> 
+			<input type="radio" name="enderecoCorrespondenciaD" id="enderecoCorrespondenciaND" value="0" class="checkradio" 
+				<?php if ($this->enderecoCorrespondencia == '0') echo "checked=\"checked\""; ?> /> 
+			<label for="enderecoCorrespondenciaN">Não</label>
+		</td>
+	</tr>
+</table>
+
+
+
+<!-- ========== FORMULÁRIO FONE ========== -->
+<table class="tabela sumir" id="tabFoneD">
+
+	<tr class="titulo_tabela">
+		<th colspan="6">ADICIONE TELEFONES ATRAVÉS DO FORMULÁRIO ABAIXO!</th>
+	</tr>
+
+	<tr>
+		<td>
+			<label for="tipoFone">Tipo *</label> 
+			<br />
+			<select name="tipoFoneD" id="tipoFoneD">
+				<option value=""> - Selecione - </option>
+
+				<?php foreach ($this->combotipostelefones as $combotipotelefone){ ?>
+				<option value="<?php echo $combotipotelefone->id; ?>"><?php echo $combotipotelefone->descricao; ?></option>
+				<?php } ?>
+
+			</select>
+		</td>
+		<td>
+			<label for="ufFone">UF *</label> 
+			<br />
+			<select name="ufFoneD" id="ufFoneD" 
+				onchange="carregar_combo(this.value, 
+					'dddFone', 
+					'../ddd/combo');">
+				<option value=""> -- </option>
+
+				<?php foreach ($this->comboestados as $combouffone){ ?>
+				<option value="<?php echo $combouffone->id; ?>"><?php echo $combouffone->descricao; ?></option>
+				<?php } ?>
+
+			</select>
+		</td>
+		<td>
+			<label for="dddFone">DDD *</label> 
+			<br />
+			<select name="dddFoneD" id="dddFoneD">
+				<option value=""> -- </option>
+			</select>
+		</td>
+		<td>
+			<label for="fone">Telefone *</label> 
+			<br />
+			<input type="text" name="foneD" id="foneD" maxlength="9" 
+				onkeyup="mascara(this, format_tel);" />
+		</td>
+		<td>
+			<label>Divulgar? *</label> 
+			<br /> 
+			<input type="radio" name="divulgarFoneD" id="divulgarFoneSD" value="1" class="checkradio" /> 
+			<label for="divulgarFoneS">Sim</label> 
+			<input type="radio" name="divulgarFoneD" id="divulgarFoneND" value="0" class="checkradio" checked="checked" /> 
+			<label for="divulgarFoneN">Não</label>
+		</td>
+		<td class="center" width="30">
+			<input type="button" title="Adicionar Telefone" class="btn_add" 
+				value=" " onclick="adicionar_fone();" />
+		</td>
+	</tr>
+
+</table>
+
+
+
+<!-- ========== FORMULÁRIO E-MAIL ========== -->
+<table class="tabela sumir" id="tabEmailD">
+
+	<tr class="titulo_tabela">
+		<th colspan="6">ADICIONE E-MAILS ATRAVÉS DO FORMULÁRIO ABAIXO</th>
+	</tr>
+
+	<tr>
+		<td>
+			<label for="tipoEmail">Tipo *</label> 
+			<br />
+			<select name="tipoEmailD" id="tipoEmailD">
+				<option value=""> - Selecione - </option>
+
+				<?php foreach ($this->combotiposemails as $combotipoemail){ ?>
+				<option value="<?php echo $combotipoemail->id; ?>"><?php echo $combotipoemail->descricao; ?></option>
+				<?php } ?>
+
+			</select>
+		</td>
+		<td>
+			<label for="email">E-mail *</label> 
+			<br />
+			<input type="text" name="emailD" id="emailD" maxlength="70" />
+		</td>
+		<td>
+			<label>Posso Divulgar? *</label> 
+			<br />
+			<input type="radio" name="divulgarEmailD" id="divulgarEmailSD" value="1" class="checkradio" /> 
+			<label for="divulgarEmailS">Sim</label> 
+			<input type="radio" name="divulgarEmailD" id="divulgarEmailND" value="0" class="checkradio" checked="checked" /> 
+			<label for="divulgarEmailN">Não</label>
+		</td>
+		<td>
+			<label>Para correpondência? *</label> 
+			<br />
+			<input type="radio" name="enviarEmailD" id="enviarEmailSD" value="1" class="checkradio" checked="checked" /> 
+			<label for="enviarEmailS">Sim</label> 
+			<input type="radio" name="enviarEmailD" id="enviarEmailND" value="0" class="checkradio" /> 
+			<label for="enviarEmailN">Não</label>
+		</td>
+		<td class="center" width="30">
+			<input type="button" title="Adicionar E-mail" class="btn_add" 
+				value=" " onclick="adicionar_email();" />
+		</td>
+	</tr>
+
+</table>
+
+
+
+
+
+<!--
+==================================================
+TELEFONE E E-MAILS ADICIONADOS
+==================================================
+-->
+
+
+
+<!-- ========== BUSCA FONES ADICIONADOS ========== -->
+<table class="tabela sumir" id="tabBuscarFone">
+
+	<tr class="titulo_tabela">
+		<th>TIPO</th>
+		<th>UF</th>
+		<th>DDD</th>
+		<th>TELEFONE</th>
+		<th>DIVULGAR?</th>
+		<th width="60">AÇÃO</th>
+	</tr>
+
+	<?php if (isset($this->Fones)): ?>
+		<?php for ($i = 0; $i < count($this->Fones); $i++): ?>
+		<tr id="fone<?php echo $i; ?>">
+			<td>
+				<?php foreach ($this->combotipostelefones as $combotipotelefone){ ?>
+				<?php echo $this->tipoFones[$i] == $combotipotelefone->id ? $combotipotelefone->descricao : ''; ?>
+				<?php } ?>
+				<input type="hidden" name="tipoFonesD[]" id="tipoFonesD[]" value="<?php echo $this->tipoFones[$i]?>" />
+			</td>
+			<td class="center">
+				<?php foreach ($this->comboestados as $combouffone){ ?>
+				<?php echo $this->ufFones[$i] == $combouffone->id ?  $combouffone->descricao: ''; ?>
+				<?php } ?>
+				<input type="hidden" name="ufFonesD[]" id="ufFonesD[]" value="<?php echo $this->ufFones[$i]?>" />
+			</td>
+			<td class="center">
+				<?php echo $this->dddFones[$i] ?>
+				<input type="hidden" name="dddFonesD[]" id="dddFonesD[]" value="<?php echo $this->dddFones[$i]?>" />
+			</td>
+			<td class="center">
+				<?php echo $this->Fones[$i] ?>
+				<input type="hidden" name="FonesD[]" id="FonesD[]" value="<?php echo $this->Fones[$i] ?>" />
+			</td>
+			<td class="center">
+				<?php echo $this->divulgarFones[$i] == 1 ? 'Sim' : 'Não'; ?>
+				<input type="hidden" name="divulgarFonesD[]" id="divulgarFonesD[]" value="<?php echo $this->divulgarFones[$i]?>" />
+			</td>
+			<td class="center">
+				<input type="button" title=" Excluir Fone " class="btn_excluir" onclick="$('#fone<?php echo $i; ?>').remove();" />
+			</td>
+		</tr>
+		<?php endfor; ?>
+	<?php endif; ?>
+
+</table>
+
+
+
+<!-- ========== BUSCA E-MAILS ADICIONADOS ========== -->
+<table class="tabela sumir" id="tabBuscarEmail">
+
+	<tr class="titulo_tabela">
+		<th>TIPO</th>
+		<th>E-MAIL</th>
+		<th>DIVULGAR?</th>
+		<th>PARA CORRESPONDÊNCIA?</th>
+		<th width="60">AÇÃO</th>
+	</tr>
+
+	<?php if (isset($this->Emails)): ?>
+		<?php for ($i = 0; $i < count($this->Emails); $i++): ?>
+		<tr id="email<?php echo $i; ?>">
+			<td>
+				<?php foreach ($this->combotiposemails as $combotipoemail){ ?>
+				<?php echo $this->tipoEmails[$i] == $combotipoemail->id ? $combotipoemail->descricao : ''; ?>
+				<?php } ?>
+				<input type="hidden" name="tipoEmailsD[]" id="tipoEmailsD[]" value="<?php echo $this->tipoEmails[$i]?>" />
+			</td>
+			<td>
+				<?php echo $this->Emails[$i] ?>
+				<input type="hidden" name="EmailsD[]" id="EmailsD[]" value="<?php echo $this->Emails[$i]?>" />
+			</td>
+			<td class="center">
+				<?php echo $this->divulgarEmails[$i] == 1 ? 'Sim' : 'Não'; ?>
+				<input type="hidden" name="divulgarEmailsD[]" id="divulgarEmailsD[]" value="<?php echo $this->divulgarEmails[$i]?>" />
+			</td>
+			<td class="center">
+				<?php echo $this->enviarEmails[$i] == 1 ? 'Sim' : 'Não'; ?>
+				<input type="hidden" name="enviarEmailsD[]" id="enviarEmailsD[]" value="<?php echo $this->enviarEmails[$i]?>" />
+			</td>
+			<td class="center">
+				<input type="button" title=" Excluir E-mail " class="btn_excluir" onclick="$('#email<?php echo $i; ?>').remove();" />
+			</td>
+		</tr>
+		<?php endfor; ?>
+	<?php endif; ?>
+
+</table>
+
+</div>

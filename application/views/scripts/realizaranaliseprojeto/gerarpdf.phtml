@@ -1,0 +1,85 @@
+<?php
+
+$nmArquivo = 'Analise de Custos';
+
+$output = '
+<style>
+table {
+	border: 1px solid #fff;
+}
+th{
+	border:1px solid #999;
+	background: #ABDA5D;
+	color: #000;
+	text-transform: uppercase;
+	font-size: 11px;
+	font-weight: bold;
+	font-family: sans-serif;
+	height: 16px;
+	line-height: 16px;
+	padding:2px;
+}
+td{
+	border:1px solid #999;
+	color: #000;
+	font-size: 12px;
+	font-family: sans-serif;
+	height: 14px;
+	line-height: 14px;
+	padding:2px;
+}
+.blue{
+	color: blue;
+}
+.red{
+	color: red;
+}
+.orange{
+	color: orange;
+}
+.green{
+	color: green;
+}
+.direita{
+	text-align: right;
+}
+.centro{
+	text-align: center;
+}
+.sumir {
+	display: none;
+}
+.paginaa4{
+    width:auto;
+    margin: 1.111cm 1cm 1cm 1.005cm;
+}
+</style>';
+
+$output.= $_POST['html'];
+
+$patterns = array();
+$patterns[] = '/<table.*?>/is';
+$patterns[] = '/<thead>/is';
+$patterns[] = '/<\/thead>/is';
+$patterns[] = '/<tbody>/is';
+$patterns[] = '/<\/tbody>/is';
+$patterns[] = '/<col.*?>/is';
+$patterns[] = '/<a.*?>/is';
+
+$replaces = array();
+$replaces[] = '<table cellpadding="0" cellspacing="0" width="90%" align="center">';
+$replaces[] = '';
+$replaces[] = '';
+$replaces[] = '';
+$replaces[] = '';
+$replaces[] = '';
+$replaces[] = '';
+
+$output = preg_replace($patterns, $replaces, $output);
+
+echo "<div class='paginaa4'>".$output."</div>";
+?>
+<SCRIPT LANGUAGE="JavaScript">
+    window.print()
+    window.close();
+</SCRIPT>

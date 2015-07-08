@@ -1,0 +1,1010 @@
+<?php include_once 'inc/menu-modulo.php'; ?>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first">Início</li>
+        <li class=""><a href="index">Criar Edital - Passo 1</a></li>
+        <li class=""><a href="informacaogeral">Criar Edital - Passo 2</a></li>
+        <li class="last">Criar Edital - Passo 3</li>
+    </ul>
+</div>
+<div id="titulo">
+    <div>Criar Edital</div>
+</div>
+<div id="conteudo">
+    <fieldset>
+        <legend> Passo 3 - Definição dos módulos do Edital</legend>
+
+        <table class="tabela">
+            <tbody>
+                <tr onclick="abrirDinamico('#trCadGuia', $(this))" style="cursor:pointer">
+                    <th style="font-size: 14px; text-transform: none">
+                        <img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png" id="imgDinamica" align="left">
+                        CADASTRAR GUIA (Questionário)
+                    </th>
+                </tr>
+                <tr id="trCadGuia" class="sumir">
+                    <td align="center">
+                        <div id="resultGuiaAdicionada"></div>
+                        <form id="formularioGuia" name="frmCadGuia" action="<?php echo $this->url(array('controller' => 'guia', 'action' => 'cadastrar')); ?>" method="post">
+                            <input type="hidden" name="guia" id="guia" />
+                            <input type="hidden" name="categoria" id="categoria" />
+                            <table class="tabela" id="tbGuia" style="margin-bottom: 0px !important; padding-bottom: 0px !important;">
+                                <tbody>
+                                    <tr>
+                                        <td class="destacar bold w150 esquerdo">Nome da Guia <span style="color: red;">*</span></td>
+                                        <td>
+                                            <input maxlength="200" type="text" name="nomeGuia" id="nomeGuia" class="input_simples w400"><br>
+                                            <label id="msgErrorNomeGuia" class="error"></label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="destacar bold w150 esquerdo">Texto de ajuda da Guia (opcional)</td>
+                                        <td><textarea style="width: 99%; height: 80px" name="txtGuia" id="txtGuia" class="input_simples w400"></textarea></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div style="width: 100%; margin: 0 auto; padding: 8px">
+                                <div id="divBtnIncluirGuia">
+                                    <input type="button" class="btn_incluir" onclick="GuiaCadastrar()" style="vertical-align: bottom">
+                                    <input type="button" class="btn_editar sumir" onclick="GuiaAtualizar()" style="vertical-align: bottom">
+                                    <input type="reset" value="" class="btn_limpar" onclick="GuiaFormResetar()" style="vertical-align: bottom">
+                                </div>
+                                <div id="divBtnAlterarGuia" class="sumir">
+                                    <input id='salvarFormularioGuia' type="button" class="btn_alterar" onclick="JSAlteraGuia()" style="vertical-align: bottom">
+                                    <input type="button" class="btn_cancelar" onclick="JSCancelaAlteracaoGuia()" style="vertical-align: bottom">
+                                </div>
+                            </div>
+                        </form>
+
+                        <form id="frmListaGuia" name="frmListaGuia" action="&lt;?php echo $this-&gt;url(array('controller' =&gt; 'edital', 'action' =&gt; 'lista-guia')); ?&gt;" method="post">
+                            <table class="tabela" id="tblGuiaAdicionada" style="margin-top: 0px !important; padding-top: 0px !important; border-top: 1px #fff solid !important; ">
+                                <thead><tr>
+                                        <td colspan="3" class="destacar centro bold">GUIAS ADICIONADAS</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="destacar bold" style="width: 35%">Nome da Guia</td>
+                                        <td class="destacar bold " style="width: 55%">Texto de ajuda da Guia</td>
+                                        <td class="destacar bold centro" style="width: 10%">Ações</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    if (empty($this->guias)) :
+                                        echo '<tr id="trGuia_zero"><td colspan="3" class="centro"><em>Nenhuma guia adicionada</em></td></tr>';
+                                    else :
+                                        foreach ($this->guias as $guia) :
+                                            echo "<tr id='guia_{$guia['idGuia']}'>";
+                                            echo "<td>{$guia['nmGuia']}</td><td>{$guia['txAuxilio']}</td>";
+                                            echo '<td nowrap="true">';
+                                            echo "<input type='button' class='btn_editar' data-guia='{$guia['idGuia']}' />";
+                                            echo "<input type='button' class='btn_exclusao' data-guia='{$guia['idGuia']}' />";
+                                            echo '</td>';
+                                            echo '</tr>';
+                                        endforeach;
+                                    endif;
+                                    ?>
+                                </tbody>
+                            </table>
+                        </form>
+                    </td>
+                </tr>
+            </tbody></table>
+
+        <br>
+        
+        <table class="tabela">
+            <tbody>
+                <tr onclick="abrirDinamico('#trCadQuestao', $(this))" style="cursor:pointer">
+                    <th style="font-size: 14px; text-transform: none">
+                        <img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png" id="imgDinamica" align="left">
+                        CADASTRAR QUESTÕES (Questionário)
+                    </th>
+                </tr>
+                <tr id="trCadQuestao" class="sumir">
+                    <td align="center">
+
+                        <form id="frmCadQuestao" action="<?php echo $this->url(array('controller' => 'questao', 'action' => 'cadastrar')); ?>" method="POST">
+                            <input type="hidden" name="questao" id="questao" />
+                            <table class="tabela" id="tbCriterioAvaliacao" style="margin-bottom: 0px !important; padding-bottom: 0px !important;">
+                                <tbody><tr>
+                                        <td class="destacar bold w150 esquerdo">Guia <span style="color: red;">*</span></td>
+                                        <td>
+                                            <select name="guia" id="guiaQuestao" class="input_simples">
+                                                <option value="0">- Selecione -</option>
+                                                <?php
+                                                foreach ($this->guias as $guia) :
+                                                    echo "<option value='{$guia['idGuia']}'>{$guia['nmGuia']}</option>";
+                                                endforeach;
+                                                ?>
+                                            </select>
+                                            <label id="msgErrorGuiaQuestao" class="error"></label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="destacar bold w150 esquerdo">Texto da Questão <span style="color: red;">*</span></td>
+                                        <td>
+                                            <input maxlength="200" type="text" name="textoQuestao" id="textoQuestao" class="input_simples w400"><br>
+                                            <label id="msgErrorTextoQuestao" class="error"></label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="destacar bold w150 esquerdo">Texto de ajuda da questão (opcional)</td>
+                                        <td>
+                                            <textarea style="width: 99%; height: 80px" name="textoAjudaQuestao" id="textoAjudaQuestao" class="input_simples w400"></textarea>
+                                            <label id="msgErrorTextoAjudaQuestao" class="error"></label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="destacar bold w150 esquerdo">Tipo da resposta <span style="color: red;">*</span></td>
+                                        <td>
+                                            <select name="tipoResposta" id="slcTipoRespostaQuestionario" class="input_simples" onchange="JSTipoRespostaQuestionario(this.value)">
+                                                <option value="0">- Selecione -</option>
+                                                <?php
+                                                foreach ($this->tiposRespostas as $tipoResposta) :
+                                                    echo "<option value='{$tipoResposta['idTpResposta']}'>{$tipoResposta['dsTpResposta']}</option>";
+                                                endforeach;
+                                                ?>
+                                            </select>
+                                            <label id="msgErrorNomeCriterio" class="error"></label>
+                                        </td>
+                                    </tr>
+                                    <tr id="trRespostasQuestionario" style="display: none;">
+                                        <td class="destacar bold w150 esquerdo">Opções de resposta <span style="color: red;">*</span></td>
+                                        <td style="margin: 0px !important; padding: 0px !important;">
+                                            <table id="tblOpcaoRespostaQuestionario" class="tabela" style="margin: 2px !important;">
+                                                <thead>
+                                                    <tr>
+                                                        <td colspan="3" class="direita">Adicionar opção de resposta: <input type="button" class="btn_adicionar" onclick="JSAdicionaOpcaoRespostaQuestionario()"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="destacar bold centro">&nbsp;</td>
+                                                        <td class="destacar bold centro">Texto da resposta</td>
+                                                        <td class="destacar bold centro">Excluir</td>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </tbody></table>
+
+                            <div style="width: 100%; margin: 0 auto; padding: 8px">
+                                <div id="divBtnIncluirCriterio">
+                                    <input type="button" class="btn_incluir" onclick="QuestaoCadastrar()" style="vertical-align: bottom">
+                                    <input type="button" class="btn_editar sumir" onclick="QuestaoAtualizar()" style="vertical-align: bottom">
+                                    <input type="reset" value="" class="btn_limpar" onclick="QuestaoFormResetar()" style="vertical-align: bottom">
+                                </div>
+                                <div id="divBtnAlterarCriterio" class="sumir">
+                                    <input type="button" class="btn_alterar" onclick="JSAlteraCriterioAvaliacao()" style="vertical-align: bottom">
+                                    <input type="button" class="btn_cancelar" onclick="JSCancelaAlteracaoCriterioAvaliacao()" style="vertical-align: bottom">
+                                </div>
+                            </div>
+
+
+                            
+
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <?php // if(count($this->guias) > 0):?>
+        <div id="tabs" style="background: #FFF; margin:10px auto; width:96%;" class="ui-tabs ui-widget ui-widget-content ui-corner-all">
+            <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+                <?php
+                $selected = 'ui-tabs-selected ui-state-active';
+                foreach ($this->guias as $guia) :
+                    echo "<li style='width: 15%;' class='ui-state-default ui-corner-top {$selected}'><a href='#Guia_{$guia['idGuia']}'>{$guia['nmGuia']}</a></li>";
+                    $selected = null;
+                endforeach;
+                ?>
+            </ul>
+            <!-- ANALISE INICIAL -->
+            <?php
+                $hideTab = null;
+                $selected = 'ui-tabs-selected ui-state-active';
+                foreach ($this->guias as $guia) :
+            ?>
+            <div id="Guia_<?php echo $guia['idGuia']; ?>" align="left" class="ui-tabs-panel ui-widget-content ui-corner-bottom <?php echo $hideTab; ?>">
+                <table class="tabela" id="tblQuestaoAdicionada" style="margin-top: 0px !important; padding-top: 0px !important; border-top: 1px #fff solid !important; ">
+                    <thead>
+                        <tr nodrag="true">
+                            <td colspan="4" class="destacar centro bold">QUESTÕES ADICIONADAS - <?php echo $guia['nmGuia']; ?></td>
+                        </tr>
+                        <tr nodrag="true">
+                            <td class="destacar bold" style="width: 35%">Texto da Questão</td>
+                            <td class="destacar bold " style="width: 35%">Texto de ajuda da Questão</td>
+                            <td class="destacar bold " style="width: 15%">Tipo Resposta</td>
+                            <td class="destacar bold centro" style="width: 15%">Ações</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                       <?php foreach($guia['questoes'] as $questao): ?>
+                        <tr id="questao_<?php echo $questao['idQuestao']; ?>">
+                            <td><?php echo $questao['dsQuestao']; ?></td>
+                            <td><?php echo $questao['dsAjuda']; ?></td>
+                            <td><?php echo $questao['dsTpResposta']; ?></td>
+                            <td nowrap="true">
+                                <input type='button' class='btn_editar' data-questao="<?php echo $questao['idQuestao']; ?>" />
+                                <input type='button' class='btn_exclusao' data-questao="<?php echo $questao['idQuestao']; ?>" />
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+            <?php
+                $hideTab = 'ui-tabs-hide';
+                endforeach;
+            ?>
+        </div>
+        <?php // endif; ?>
+        <br clear="all">
+        <!--div style="width: 100%; text-align: center;">
+            <input class="btn_salvar" type="button" value="" name="salvar" id="salvar">
+            <input class="btn_limpar" type="reset" value="" name="limpar" id="limpar">
+        </div-->
+        <!-- FIM FOMULARIO PARA CADASTRO DO QUESTIONARIO -->
+
+    </fieldset>
+
+</div>
+
+
+
+<!-- inicio: navegacao local  -->
+<script type="text/javascript">
+
+    function num(dom) {
+        dom.value = dom.value.replace(/\D/g, '');
+    }
+
+    $('#selectRegra').change(function() {
+        if ($(this).val() == 'nascimento') {
+
+            $('#trSexo').remove();
+            $('#addSexo').remove();
+            $('#spanSexo').remove();
+            $('#tdSexo').remove();
+
+            $('#addEstado').remove();
+            $('#selectEstado').remove();
+            $('#spanEstado').remove();
+            $('#tdEstado').remove();
+
+            $('#trCidade').remove();
+            $('#tdCidade').remove();
+            $('#addCidade').remove();
+            $('#spanCidade').remove();
+            $('#selectCidade').remove();
+
+            $(this).closest('table').append(
+                    $('<td id="addNascimento" class=destacar bold w150 esquerdo>Regra da Data <span id="spanNascimento" style=color: red;>*</span></td>\n\
+                                <td id="tdNascimento"> <select name="selectNascimento" id="selectNascimento">\n\
+                                                             <option value=0> - Selecione - </option>\n\
+                                                             <option value=menor18> Menor de 18 anos </option>\n\
+                                                             <option value=maior18> Maior de 18 anos </option>\n\
+                                                         </select> </td>'));
+        } else if ($(this).val() == 'cidade') {
+
+            $('#selectNascimento').remove();
+            $('#spanNascimento').remove();
+            $('#addNascimento').remove();
+            $('#tdNascimento').remove();
+
+            $('#trSexo').remove();
+            $('#addSexo').remove();
+            $('#spanSexo').remove();
+            $('#tdSexo').remove();
+
+            $(this).closest('table').append(
+                    $('<tr id="trEstado"><td id="addEstado" class=destacar bold w150 esquerdo>Regra da Estado <span id="spanEstado" style=color: red;>*</span></td>\n\
+                                    <td id="tdEstado">\n\
+                                             <select name="selectEstado" id="selectEstado">\n\
+                                                     <option value = 0> - Selecione - </option>\n\
+                                             </select id="selectCidade"></td></tr>')
+                    );
+
+            $(this).closest('table').append(
+                    $('<tr id="trCidade"><td id="addCidade" class=destacar bold w150 esquerdo>Regra da Cidade <span id="spanCidade" style=color: red;>*</span></td>\n\
+                                         <td id="tdCidade">\n\
+                                             <select name="selectCidade"><option value = 0> - Selecione - </option>\n\
+                                         </select></td></tr>')
+                    );
+
+        } else if ($(this).val() == 'sexo') {
+            $('#addEstado').remove();
+            $('#selectEstado').remove();
+            $('#spanEstado').remove();
+            $('#tdEstado').remove();
+
+            $('#trCidade').remove();
+            $('#tdCidade').remove();
+            $('#addCidade').remove();
+            $('#spanCidade').remove();
+            $('#selectCidade').remove();
+
+            $('#selectNascimento').remove();
+            $('#spanNascimento').remove();
+            $('#addNascimento').remove();
+            $('#tdNascimento').remove();
+
+            $(this).closest('table').append(
+                    $('<tr id="trSexo"><td id="addSexo" class=destacar bold w150 esquerdo>Regra do Sexo: <span id="spanSexo" style=color: red;>*</span></td>\n\
+                        <td id="tdSexo">\n\
+                            <select name="regraSexo"><option> - Selecione - </option>\n\
+                                    <option value="masculino">Masculino</option>\n\
+                                    <option value="feminino">Feminino</option>\n\
+                                    <option value="ambos">Masculino e Feminino</option></select></td></tr>')
+                    );
+        }
+    });
+
+    $('#selectItemOrcamentario').change(function() {
+        if ($(this).val() == 999) {
+            $(this).closest('table tr td').append($('<br /><br />Outro:&nbsp;&nbsp;<input maxlength="3" size="85" type="text" name="dsOutro" id="dsOutro" class="input_simples">'));
+        } else {
+            $(this).closest('table').remove($('#dsOutro'));
+        }
+    });
+
+    $('#tabs').tabs();
+
+    /* ================== FUNCOES - QUESTIONARIO ============================ */
+    function abrirDinamico(elemento, obj) {
+        if ($(elemento).css('display') == 'none') {
+            $(elemento).fadeIn('fast', function() {
+                $('img', $(obj)).attr('src', '<?php echo $this->baseUrl(); ?>/public/img/navigation-baixo.PNG');
+            });
+        } else {
+            $(elemento).fadeOut('fast', function() {
+                $('img', $(obj)).attr('src', '<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png');
+            });
+        }
+    }
+
+    /* =========================== MENU ABAS ================================ */
+    function JSMostaConteudo(idConteudoAba, idModulo, idCategoria) {
+
+        $("#ctModulo").html(idModulo);
+        $("#ctCategoria").html(idCategoria);
+
+        $("._conteudoAba").hide();
+        $("#" + idConteudoAba).show();
+    }
+
+    $('#tipoParticipacao_1').click(function() {
+        if ($('#tipoParticipacao_1').is(':checked')) {
+            $('#qtdTipoParticipacaoEdital_1').show();
+        } else {
+            $('#qtdTipoParticipacaoEdital_1').hide();
+        }
+    });
+
+    $('#tipoParticipacao_2').click(function() {
+        if ($('#tipoParticipacao_2').is(':checked')) {
+            $('#qtdTipoParticipacaoEdital_2').show();
+        } else {
+            $('#qtdTipoParticipacaoEdital_2').hide();
+        }
+    });
+
+    $('#tipoParticipacao_3').click(function() {
+        if ($('#tipoParticipacao_3').is(':checked')) {
+            $('#qtdTipoParticipacaoEdital_3').show();
+        } else {
+            $('#qtdTipoParticipacaoEdital_3').hide();
+        }
+    });
+
+    $('#tipoParticipacao_4').click(function() {
+        if ($('#tipoParticipacao_4').is(':checked')) {
+            $('#qtdTipoParticipacaoEdital_4').show();
+        } else {
+            $('#qtdTipoParticipacaoEdital_4').hide();
+        }
+    });
+
+
+    $("#salvarInformacaoGeralCategoria").click(function() {
+        $("#formularioInformacaoGeralCategoria").submit();
+    });
+
+    $("#salvarInformacaoGeralModulo").click(function() {
+        $("#formularioInformacaoGeralModulo").submit();
+    });
+
+    $("#salvarCriteriosParticipacao").click(function() {
+        $("#formularioCriteriosParticipacao").submit();
+    });
+
+    $("#salvarFormaPagamento").click(function() {
+        $("#formularioFormaPagamento").submit();
+    });
+
+    $("#salvarGuia").click(function() {
+        $("#formularioGuia").submit();
+    });
+
+    $("#salvarPlanilhaOrcamentaria").click(function() {
+        $("#formularioPlanilhaOrcamentaria").submit();
+    });
+
+
+    //Exibe e esconde divs
+    function mostrarBoxInformacaoGeralModulo(idModulo) {
+
+        var conteudo = document.getElementById('formularioInformacaoGeralModulo');
+
+        var hiddenIdModulo = document.createElement('input');
+        hiddenIdModulo.setAttribute('type', 'hidden');
+        hiddenIdModulo.setAttribute('name', 'idModulo');
+        hiddenIdModulo.setAttribute('value', idModulo);
+
+        conteudo.appendChild(hiddenIdModulo);
+
+        $('#boxInformacoesGeraisModulo').show();
+        $('#boxInformacoesGeraisCategoria').hide();
+        $('#boxCriteriosParticipacao').hide();
+        $('#boxFormaPagamento').hide();
+        $('#boxQuestionario').hide();
+        $('#boxPlanilhaOrcamentaria').hide();
+    }
+
+
+    function mostrarBoxInformacoesGeraisCategoria(idModulo, idCategoria) {
+
+        var conteudo = document.getElementById('formularioInformacaoGeralCategoria');
+
+        var hiddenIdModulo = document.createElement('input');
+        hiddenIdModulo.setAttribute('type', 'hidden');
+        hiddenIdModulo.setAttribute('name', 'idModulo');
+        hiddenIdModulo.setAttribute('value', idModulo);
+
+        var hiddenIdCategoria = document.createElement('input');
+        hiddenIdCategoria.setAttribute('type', 'hidden');
+        hiddenIdCategoria.setAttribute('name', 'idCategoria');
+        hiddenIdCategoria.setAttribute('value', idCategoria);
+
+        conteudo.appendChild(hiddenIdModulo);
+        conteudo.appendChild(hiddenIdCategoria);
+
+        $('#boxInformacoesGeraisModulo').hide();
+        $('#boxInformacoesGeraisCategoria').show();
+        $('#boxCriteriosParticipacao').hide();
+        $('#boxFormaPagamento').hide();
+        $('#boxQuestionario').hide();
+        $('#boxPlanilhaOrcamentaria').hide();
+    }
+
+    function mostraBoxCriteriosParticipacao(idModulo, idCategoria) {
+
+        var conteudo = document.getElementById('formularioCriteriosParticipacao');
+
+        var hiddenIdModulo = document.createElement('input');
+        hiddenIdModulo.setAttribute('type', 'hidden');
+        hiddenIdModulo.setAttribute('name', 'idModulo');
+        hiddenIdModulo.setAttribute('value', idModulo);
+
+        var hiddenIdCategoria = document.createElement('input');
+        hiddenIdCategoria.setAttribute('type', 'hidden');
+        hiddenIdCategoria.setAttribute('name', 'idCategoria');
+        hiddenIdCategoria.setAttribute('value', idCategoria);
+
+        conteudo.appendChild(hiddenIdModulo);
+        conteudo.appendChild(hiddenIdCategoria);
+
+        $('#boxInformacoesGeraisModulo').hide();
+        $('#boxInformacoesGeraisCategoria').hide();
+        $('#boxCriteriosParticipacao').show();
+        $('#boxFormaPagamento').hide();
+        $('#boxQuestionario').hide();
+        $('#boxPlanilhaOrcamentaria').hide();
+    }
+
+    function mostrarBoxFormaPagamento(idModulo, idCategoria) {
+
+        var conteudo = document.getElementById('formularioFormaPagamento');
+
+        var hiddenIdModulo = document.createElement('input');
+        hiddenIdModulo.setAttribute('type', 'hidden');
+        hiddenIdModulo.setAttribute('name', 'idModulo');
+        hiddenIdModulo.setAttribute('value', idModulo);
+
+        var hiddenIdCategoria = document.createElement('input');
+        hiddenIdCategoria.setAttribute('type', 'hidden');
+        hiddenIdCategoria.setAttribute('name', 'idCategoria');
+        hiddenIdCategoria.setAttribute('value', idCategoria);
+
+        conteudo.appendChild(hiddenIdModulo);
+        conteudo.appendChild(hiddenIdCategoria);
+
+        $('#boxInformacoesGeraisModulo').hide();
+        $('#boxInformacoesGeraisCategoria').hide();
+        $('#boxCriteriosParticipacao').hide();
+        $('#boxFormaPagamento').show();
+        $('#boxQuestionario').hide();
+        $('#boxPlanilhaOrcamentaria').hide();
+    }
+
+    function mostrarBoxQuestionario(idModulo, idCategoria) {
+
+        var conteudo = document.getElementById('formularioGuia');
+        var hiddenIdModulo = document.createElement('input');
+        hiddenIdModulo.setAttribute('type', 'hidden');
+        hiddenIdModulo.setAttribute('name', 'idModulo');
+        hiddenIdModulo.setAttribute('value', idModulo);
+        var hiddenIdCategoria = document.createElement('input');
+        hiddenIdCategoria.setAttribute('type', 'hidden');
+        hiddenIdCategoria.setAttribute('name', 'idCategoria');
+        hiddenIdCategoria.setAttribute('value', idCategoria);
+        conteudo.appendChild(hiddenIdModulo);
+        conteudo.appendChild(hiddenIdCategoria);
+
+        $('#boxInformacoesGeraisModulo').hide();
+        $('#boxInformacoesGeraisCategoria').hide();
+        $('#boxCriteriosParticipacao').hide();
+        $('#boxFormaPagamento').hide();
+        $('#boxPlanilhaOrcamentaria').hide();
+        $('#boxQuestionario').show();
+        $('#boxQuestionario').find('#categoria').val(idCategoria);
+    }
+
+    function mostrarBoxPlanilhaOrcamentaria(idModulo, idCategoria) {
+
+        var conteudo = document.getElementById('formularioPlanilhaOrcamentaria');
+
+        var hiddenIdModulo = document.createElement('input');
+        hiddenIdModulo.setAttribute('type', 'hidden');
+        hiddenIdModulo.setAttribute('name', 'idModulo');
+        hiddenIdModulo.setAttribute('value', idModulo);
+
+        var hiddenIdCategoria = document.createElement('input');
+        hiddenIdCategoria.setAttribute('type', 'hidden');
+        hiddenIdCategoria.setAttribute('name', 'idCategoria');
+        hiddenIdCategoria.setAttribute('value', idCategoria);
+
+        conteudo.appendChild(hiddenIdModulo);
+        conteudo.appendChild(hiddenIdCategoria);
+
+        $('#boxInformacoesGeraisModulo').hide();
+        $('#boxInformacoesGeraisCategoria').hide();
+        $('#boxCriteriosParticipacao').hide();
+        $('#boxFormaPagamento').hide();
+        $('#boxQuestionario').hide();
+        $('#boxPlanilhaOrcamentaria').show();
+    }
+
+    function excluirCriterioParticipacao(id) {
+        var idEdital = $('#idEdital').val();
+        window.location = '<?php echo $this->url(array('controller' => 'edital', 'action' => 'deletar-criterio-participacao'), '', true); ?>/idCriterioParticipacao/' + id + '/idEdital/' + idEdital;
+    }
+
+    function excluirFormaPagamento(id) {
+        var idEdital = $('#idEdital').val();
+        window.location = '<?php echo $this->url(array('controller' => 'edital', 'action' => 'deletar-forma-pagamento'), '', true); ?>/idFormaPagamento/' + id + '/idEdital/' + idEdital;
+    }
+
+    function excluirItemOrcamentario(id) {
+        var idEdital = $('#idEdital').val();
+        window.location = '<?php echo $this->url(array('controller' => 'edital', 'action' => 'deletar-item-orcamentario'), '', true); ?>/idFormaPagamento/' + id + '/idEdital/' + idEdital;
+    }
+
+    function editarFormaPagamento(id) {
+
+        $('#msgAjax').html('Aguarde, carregando os dados...');
+        $.ajax({
+            type: "POST",
+            url: '<?php echo $this->url(array('controller' => 'edital', 'action' => 'busca-forma-pagamento-ajax'), '', true); ?>',
+            data: {idFormaPagamento: id},
+            dataType: 'json',
+            success: function(data) {
+                if (data.error != '') {
+                    $('#msgAjax').html(data.error);
+                } else {
+                    $('#divBtnIncluirCriterio').hide();
+                    $('#divBtnAlterarCriterio').show();
+                    // Preenche os dados
+                    $('#idFormaPagamento').val(data.dados.idFormaPagamento);
+                    $('#dsFormaPagamento').val(data.dados.dsFormaPagamento);
+                    $('#vlrApoio').val(data.dados.vlrApoio);
+                    $('#qtParcelas').val(data.dados.qtParcelas);
+                    $('#qtPremiados').val(data.dados.qtPremiados);
+                    $('#msgAjax').html('');
+                }
+            }, error: function(data) {
+                $('#msgAjax').html(data.error);
+            }
+        });
+    }
+
+    function excluirItemOrcamentario(idPlanilhaItem, idPlanilhaEtapa) {
+        var idEdital = $('#idEdital').val();
+        window.location = '<?php echo $this->url(array('controller' => 'edital', 'action' => 'deletar-forma-pagamento'), '', true); ?>/idPlanilhaItem/' + idPlanilhaItem + '/idPlanilhaEtapa/' + idPlanilhaEtapa + '/idEdital/' + idEdital;
+    }
+
+    function editarItemOrcamentario(id) {
+
+        $('#msgAjax').html('Aguarde, carregando os dados...');
+        $.ajax({
+            type: "POST",
+            url: '<?php echo $this->url(array('controller' => 'edital', 'action' => 'busca-forma-pagamento-ajax'), '', true); ?>',
+            data: {idPlanilhaItem: idPlanilhaItem, idPlanilhaEtapa: idPlanilhaEtapa},
+            dataType: 'json',
+            success: function(data) {
+                if (data.error != '') {
+                    $('#msgAjax').html(data.error);
+                } else {
+                    $('#divBtnIncluirCriterio').hide();
+                    $('#divBtnAlterarCriterio').show();
+                    // Preenche os dados
+                    $('#idFormaPagamento').val(data.dados.idFormaPagamento);
+                    $('#dsFormaPagamento').val(data.dados.dsFormaPagamento);
+                    $('#vlrApoio').val(data.dados.vlrApoio);
+                    $('#qtParcelas').val(data.dados.qtParcelas);
+                    $('#qtPremiados').val(data.dados.qtPremiados);
+                    $('#msgAjax').html('');
+                }
+            }, error: function(data) {
+                $('#msgAjax').html(data.error);
+            }
+        });
+    }
+
+    GuiaPesquisar = function(guia) {
+        var url = $('#formularioGuia').attr('action') + '?format=json';
+        url = url.replace('cadastrar', 'pesquisar/' + guia);
+        $.ajax({
+            type: "GET",
+            url: url,
+            data: 'guia=' + guia,
+            dataType: 'json',
+            success: function(response) {
+                $('#formularioGuia input:reset').click();
+                $('#formularioGuia .btn_incluir').hide();
+                $('#formularioGuia .btn_editar').show();
+                $('#formularioGuia #guia').val(response.guia[0].idGuia);
+                $('#formularioGuia #categoria').val(response.guia[0].idCategoria);
+                $('#formularioGuia #nomeGuia').val(response.guia[0].nmGuia);
+                $('#formularioGuia #txtGuia').val(response.guia[0].txAuxilio);
+            }
+        });
+    };
+
+    GuiaFormResetar = function() {
+        $('#formularioGuia #guia').val('');
+        $('#formularioGuia #categoria').val('');
+        $('#formularioGuia .btn_incluir').show();
+        $('#formularioGuia .btn_editar').hide();
+        $('#formularioGuia input:reset').click();
+    };
+
+    GuiaCadastrar = function() {
+        $.ajax({
+            type: "POST",
+            url: $('#formularioGuia').attr('action') + '?format=json',
+            data: $('#formularioGuia').serialize(),
+            dataType: 'json',
+            success: function(response) {
+                $('#formularioGuia input:reset').click();
+                GuiaListaAdicionar(response.guia);
+                GuiaComboOptionAdicionar(response.guia);
+                GuiaTabAdicionar(response.guia);
+            }
+        });
+    };
+
+    GuiaAtualizar = function() {
+        var url = $('#formularioGuia').attr('action') + '?format=json';
+        url = url.replace('cadastrar', 'atualizar/' + $('#formularioGuia .btn_editar').closest('form').children('#guia').val());
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: $('#formularioGuia').serialize(),
+            dataType: 'json',
+            success: function(response) {
+                GuiaListaAtualizar(response.guia);
+                GuiaComboOptionAtualizar(response.guia);
+                GuiaTabAtualizar(response.guia);
+                GuiaFormResetar();
+            }
+        });
+    };
+
+    GuiaDeletar = function(guia) {
+        var url = $('#formularioGuia').attr('action') + '?format=json';
+        url = url.replace('cadastrar', 'deletar/guia/' + guia);
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: $('#formularioGuia').serialize(),
+            dataType: 'json',
+            success: function() {
+                GuiaListaDeletar(guia);
+                GuiaComboOptionDeletar(guia);
+                GuiaTabDeletar(guia);
+            }
+        });
+    };
+
+    GuiaListaAdicionar = function(guia) {
+        $('#tblGuiaAdicionada tbody #trGuia_zero').remove();
+        $('#tblGuiaAdicionada tbody').append(
+                '<tr id="guia_' + guia.guia + '"><td>' + guia.nome + '</td><td>' + guia.descricao + '</td>' +
+                '<td>' +
+                '<input type="button" class="btn_editar" data-guia="' + guia.guia + '" />' +
+                '<input type="button" class="btn_exclusao" data-guia="' + guia.guia + '" />' +
+                '</td>' +
+                '</tr>'
+                );
+        addGuiaEvents();
+    };
+
+    GuiaListaAtualizar = function(guia) {
+        $('#tblGuiaAdicionada tbody #guia_' + guia.guia + ' td:first').html(guia.nome);
+        $('#tblGuiaAdicionada tbody #guia_' + guia.guia + ' td:first').next().html(guia.descricao);
+    };
+
+    GuiaListaDeletar = function(guia) {
+        $('#tblGuiaAdicionada tbody #guia_' + guia).remove();
+    };
+
+    GuiaComboOptionAdicionar = function(guia) {
+        $('#guiaQuestao').append('<option value=' + guia.guia + '>' + guia.nome + '</option>');
+    };
+
+    GuiaComboOptionAtualizar = function(guia) {
+        $('#guiaQuestao option[value="' + guia.guia + '"]').html(guia.nome);
+    };
+
+    GuiaComboOptionDeletar = function(guia) {
+        $('#guiaQuestao option[value="' + guia + '"]').remove();
+    };
+
+    GuiaTabAdicionar = function(guia) {
+        $('#tabs ul').append('<li style="width: 15%;" class="ui-state-default ui-corner-top"><a href="#Guia_' + guia.guia + '">' + guia.nome + '</a></li>');
+        $('#tabs').append(
+                '<div id="Guia_' + guia.guia + '" align="left" class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide">' +
+                '<table class="tabela" id="tblQuestaoAdicionada" style="margin-top: 0px !important; padding-top: 0px !important; border-top: 1px #fff solid !important; ">' +
+                '<thead>' +
+                '<tr nodrag="true">' +
+                '<td colspan="4" class="destacar centro bold">QUESTÕS ADICIONADAS - ' + guia.nome + '</td>' +
+                '</tr>' +
+                '<tr nodrag="true">' +
+                '<td class="destacar bold" style="width: 35%">Texto da Questão</td>' +
+                '<td class="destacar bold " style="width: 35%">Texto de ajuda da Questão</td>' +
+                '<td class="destacar bold " style="width: 15%">Tipo Resposta</td>' +
+                '<td class="destacar bold centro" style="width: 15%">Ações</td>' +
+                '</tr>' +
+                '</thead>' +
+                '<tbody>' +
+                '<tr id="trQuestao_zero" style="cursor: move;">' +
+                '<td colspan="4" class="centro"><em>Nenhuma questão adicionada</em></td>' +
+                '</tr>' +
+                '</tbody>' +
+                '</table>' +
+                '</div>'
+                );
+    };
+
+    GuiaTabAtualizar = function(guia) {
+        $('#tabs ul li a[href=#Guia_' + guia.guia + ']').text(guia.nome);
+    };
+
+    GuiaTabDeletar = function(guia) {
+        $('#tabs ul li a[href=#Guia_' + guia + ']').parent().remove();
+    };
+
+    QuestaoPesquisar = function(questao) {
+        var url = $('#frmCadQuestao').attr('action') + '?format=json';
+        url = url.replace('cadastrar', 'pesquisar/' + questao);
+        $.ajax({
+            type: "GET",
+            url: url,
+            data: 'questao=' + questao,
+            dataType: 'json',
+            success: function(response) {
+                $('#frmCadQuestao input:reset').click();
+                $('#frmCadQuestao .btn_incluir').hide();
+                $('#frmCadQuestao .btn_editar').show();
+                $('#frmCadQuestao #questao').val(response.questao[0].idQuestao);
+                $('#frmCadQuestao #guiaQuestao option[value=' + response.questao[0].idGuia + ']').attr("selected", "selected");
+                $('#frmCadQuestao #textoQuestao').val(response.questao[0].dsQuestao);
+                $('#frmCadQuestao #textoAjudaQuestao').val(response.questao[0].dsAjuda);
+                $('#frmCadQuestao #slcTipoRespostaQuestionario option[value=' + response.questao[0].idTpResposta + ']').attr("selected", "selected");
+                
+//                // exibe as respostas
+                if (ARRAY_TIPO_RESPOSTA_LISTA.indexOf(parseInt(response.questao[0].respostas[0].idTpResposta)) != -1) {
+                    $('#frmCadQuestao #trRespostasQuestionario').show();
+                    JSTipoRespostaQuestionario(response.questao[0].respostas[0].idTpResposta);
+                    $(response.questao[0].respostas).each(function() {
+                        JSAdicionaOpcaoRespostaQuestionario($(this).get(0));
+                    });
+                }
+            }
+        });
+    };
+
+    QuestaoFormResetar = function() {
+        $('#frmCadQuestao #questao').val('');
+        $('#frmCadQuestao #trRespostasQuestionario tbody tr').each(function() {
+            $(this).remove();
+        });
+        $('#frmCadQuestao #trRespostasQuestionario').hide();
+        $('#frmCadQuestao #divBtnIncluirCriterio .btn_incluir').show();
+        $('#frmCadQuestao #divBtnIncluirCriterio .btn_editar').hide();
+        $('#frmCadQuestao input:reset').click();
+    };
+
+    QuestaoCadastrar = function() {
+        $.ajax({
+            type: "POST",
+            url: $('#frmCadQuestao').attr('action') + '?format=json',
+            data: $('#frmCadQuestao').serialize(),
+            dataType: 'json',
+            success: function(response) {
+                QuestaoListaAdicionar(response.questao);
+                $('#trRespostasQuestionario').hide();
+                $('#frmCadQuestao input:reset').click();
+            }
+        });
+    };
+
+    QuestaoAtualizar = function() {
+        var url = $('#frmCadQuestao').attr('action') + '?format=json';
+        url = url.replace('cadastrar', 'atualizar/' + $('#frmCadQuestao .btn_editar').closest('form').children('#questao').val());
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: $('#frmCadQuestao').serialize(),
+            dataType: 'json',
+            success: function(response) {
+                QuestaoListaAtualizar(response.questao);
+                QuestaoFormResetar();
+            }
+        });
+    };
+
+    QuestaoDeletar = function(questao) {
+        var url = $('#frmCadQuestao').attr('action') + '?format=json';
+        url = url.replace('cadastrar', 'deletar/questao/' + questao);
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: $('#frmCadQuestao').serialize(),
+            dataType: 'json',
+            success: function() {
+                QuestaoListaDeletar(questao);
+            }
+        });
+    };
+
+    QuestaoListaAdicionar = function(questao) {
+        $('#tblQuestaoAdicionada tbody #trQuestao_zero').remove();
+        $('#Guia_' + questao.guia + ' #tblQuestaoAdicionada tbody').append(
+                '<tr id="questao_' + questao.questao + '">' +
+                '<td>' + questao.pergunta + '</td>' +
+                '<td>' + questao.texto + '</td>' +
+                '<td>&nbsp;</td>' +
+                '<td>' +
+                "<input type='button' class='btn_editar' data-questao='" + questao.questao + "' />" +
+                "<input type='button' class='btn_exclusao' data-questao='" + questao.questao + "' />" +
+                '</td>' +
+                '</tr>'
+                );
+        addQuestaoEvents();
+    };
+
+    QuestaoListaAtualizar = function(questao) {
+        $('#tblQuestaoAdicionada tbody #questao_' + questao.questao + ' td:first').html(questao.pergunta);
+        /*$('#tblQuestaoAdicionada tbody #questao_'+questao.questao+' td:first').next().html(questao.descricao);*/
+    };
+
+    QuestaoListaDeletar = function(guia) {
+        $('#tblQuestaoAdicionada tbody #questao_' + guia).remove();
+    };
+
+    JSTipoRespostaQuestionario = function(tipoResposta) {
+        var tipoResposta = parseInt(tipoResposta);
+        if (ARRAY_TIPO_RESPOSTA_LISTA.indexOf(tipoResposta) == -1) {
+            $('#trRespostasQuestionario').hide();
+        } else {
+            $('#trRespostasQuestionario').show();
+            if (RADIO == $('#slcTipoRespostaQuestionario').val()) {
+                $('#tblOpcaoRespostaQuestionario input:checkbox').each(function() {
+                    $(this).get(0).type = 'radio';
+                });
+            } else if (CHECKBOX == $('#slcTipoRespostaQuestionario').val()) {
+                $('#tblOpcaoRespostaQuestionario input:radio').each(function() {
+                    $(this).get(0).type = 'checkbox';
+                });
+            }
+        }
+    };
+
+    JSAdicionaOpcaoRespostaQuestionario = function(resposta) {
+        if (undefined == resposta) {
+            var resposta = {idResposta: '', dsResposta: ''};
+        }
+        $('#tblOpcaoRespostaQuestionario tbody').append(
+                '<tr>' +
+                '<td></td>' +
+                '<td><input type="text" name="respostaNome[]" class="input_simples" size="45" value="' + resposta.dsResposta + '"></td>' +
+                '<td class="centro"><input type="text" class="btn_excluir" data-resposta="' + resposta.idResposta + '" onclick="JSRemoverOpcaoRespostaQuestionario(this);"></td>' +
+                '</tr>'
+                );
+        JSTipoRespostaQuestionario($('#slcTipoRespostaQuestionario').val());
+    };
+
+    JSRemoverOpcaoRespostaQuestionario = function(resposta) {
+        RespostaDeletar($(resposta).attr('data-resposta'));
+        $(resposta).closest('tr').remove();
+    };
+
+    RespostaDeletar = function(resposta) {
+        var url = $('#frmCadQuestao').attr('action') + '?format=json';
+        url = url.replace('questao', 'resposta');
+        url = url.replace('cadastrar', 'deletar/resposta/' + resposta);
+        $.ajax({
+            type: "POST",
+            url: url,
+            dataType: 'json',
+        });
+    };
+
+    if ('questionario' == window.location.hash.substring(1)) {
+        mostrarBoxQuestionario(<?php echo $this->categoria; ?>);
+    }
+
+
+    // Constantes
+    var RADIO = 6;
+    var CHECKBOX = 7;
+    var ARRAY_TIPO_RESPOSTA_LISTA = [RADIO, CHECKBOX];
+    // Adiciona eventos
+    addGuiaEvents = function() {
+        $('#tblGuiaAdicionada tbody tr input').each(function() {
+            if ('btn_editar' == $(this).attr('class')) {
+                $(this).unbind('click').click(function() {
+                    GuiaPesquisar($(this).attr('data-guia'));
+                });
+            }
+            ;
+            if ('btn_exclusao' == $(this).attr('class')) {
+                $(this).unbind('click').click(function() {
+                    GuiaDeletar($(this).attr('data-guia'));
+                });
+            }
+            ;
+        });
+    };
+
+    addQuestaoEvents = function() {
+        $('#tblQuestaoAdicionada tbody tr input').each(function() {
+            if ('btn_editar' == $(this).attr('class')) {
+                $(this).unbind('click').click(function() {
+                    QuestaoPesquisar($(this).attr('data-questao'));
+                });
+            }
+            ;
+            if ('btn_exclusao' == $(this).attr('class')) {
+                $(this).unbind('click').click(function() {
+                    QuestaoDeletar($(this).attr('data-questao'));
+                });
+            }
+            ;
+        });
+    };
+
+    addGuiaEvents();
+    addQuestaoEvents();
+
+</script>
+
+
+<br clear="all" />
+
+

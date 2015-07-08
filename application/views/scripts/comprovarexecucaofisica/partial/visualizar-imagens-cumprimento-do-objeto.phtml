@@ -1,0 +1,21 @@
+<?php if ($this->imagens->count()) :
+    foreach ($this->imagens as $imagem) : ?>
+    <p>
+        <a
+            href="
+                <?php echo $this->url(
+                        array(
+                            'controller' => 'upload',
+                            'action' => 'abrir',
+                            'id' => $imagem->getArquivo()->idArquivo,
+                        ),
+                        null,
+                        true
+                    );
+                ?>
+            ">
+                <?php echo $imagem->getArquivo()->nmArquivo; ?>
+        </a>
+    </p>
+    <?php endforeach;
+    endif;

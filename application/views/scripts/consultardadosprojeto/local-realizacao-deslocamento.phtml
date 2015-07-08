@@ -1,0 +1,96 @@
+<?php
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+<script>
+    $(document).ready(function(){
+        //ATUALIZA TITULO DA PAGINA
+        window.parent.$("#titulo").html("<div>Local de Realiza&ccedil;&atilde;o / Deslocamento </div>");
+        window.parent.$("#caminhoLocalAtual").html("Local de Realiza&ccedil;&atilde;o / Deslocamento");
+    });
+</script>
+
+<table class="tabela">
+    <tr class="destacar">
+        <td align="center"><b>PRONAC</b></td>
+        <td align="center"><b>Nome do Projeto</b></td>
+    </tr>
+    <tr>
+        <td align="center"><?php echo $this->projeto->AnoProjeto.$this->projeto->Sequencial; ?></td>
+        <td align="center"><?php echo $this->projeto->NomeProjeto; ?></td>
+    </tr>
+</table>
+
+<fieldset>
+    <legend>Local de realiza&ccedil;&atilde;o</legend>
+    <table class="tabela">
+        <?php if(is_array($this->dadosLocalizacao) && count($this->dadosLocalizacao)>0): ?>
+                <tr class="destacar">
+                    <td align="center"><b>Pa&iacute;s</b></td>
+                    <td align="center"><b>UF</b></td>
+                    <td align="center"><b>Cidade</b></td>
+                </tr>
+          <?php foreach($this->dadosLocalizacao as $localizacao) : $dtInicRealizacao = $localizacao->DtInicioDeExecucao; $dtFimRealizacao = $localizacao->DtFinalDeExecucao; ?>
+                <tr>
+                    <td align="center"><?php echo $localizacao->Descricao;?></td>
+                    <td align="center"><?php echo $localizacao->UF;?></td>
+                    <td align="center"><?php echo $localizacao->Cidade;?></td>
+                </tr>
+        <?php   endforeach;
+             else: ?>
+                <tr>
+                    <td align="center"><em>Dados n&atilde;o informados!</em></td>
+                </tr>
+        <?php endif; ?>
+    </table>
+</fieldset>
+<!--<fieldset>
+    <legend>Per&iacute;odo de realiza&ccedil;&atilde;o</legend>
+    <table class="tabela">
+        <tr class="destacar">
+            <td align="center"><b>Data de In&iacute;cio</b></td>
+            <td align="center"><b>Data de T&eacute;rmino</b></td>
+        </tr>
+         <?php if(!empty ($dtInicRealizacao) && !empty ($dtFimRealizacao)): ?>
+        <tr>
+            <td align="center"><?php echo $dtInicRealizacao;?></td>
+            <td align="center"><?php echo $dtFimRealizacao;?></td>
+        </tr>
+        <?php else: ?>
+            <tr>
+                <td align="center"><em>Dados n&atilde;o informados!</em></td>
+                <td align="center"><em>Dados n&atilde;o informados!</em></td>
+            </tr>
+        <?php endif; ?>
+    </table>
+</fieldset>-->
+<fieldset>
+    <legend>Deslocamento</legend>
+    <table class="tabela">
+        <?php if(is_array($this->dadosDeslocamento) && count($this->dadosDeslocamento)>0): ?>
+                <tr class="destacar">
+                    <td align="center"><b>Pa&iacute;s de Origem</b></td>
+                    <td align="center"><b>UF de Origem</b></td>
+                    <td align="center"><b>Cidade de Origem</b></td>
+                    <td align="center"><b>Pa&iacute;s de Destino</b></td>
+                    <td align="center"><b>UF de Destino</b></td>
+                    <td align="center"><b>Cidade de Destino</b></td>
+                    <td align="center"><b>Quantidade</b></td>
+                </tr>
+          <?php foreach($this->dadosDeslocamento as $localizacao) :?>
+                <tr>
+                    <td align="center"><?php echo $localizacao->PaisOrigem;?></td>
+                    <td align="center"><?php echo $localizacao->UFOrigem;?></td>
+                    <td align="center"><?php echo $localizacao->MunicipioOrigem;?></td>
+                    <td align="center"><?php echo $localizacao->PaisDestino;?></td>
+                    <td align="center"><?php echo $localizacao->UFDestino;?></td>
+                    <td align="center"><?php echo $localizacao->MunicipioDestino;?></td>
+                    <td align="center"><?php echo $localizacao->Qtde;?></td>
+                </tr>
+        <?php   endforeach;
+             else: ?>
+                <tr>
+                    <td align="center"><em>Dados n&atilde;o informados!</em></td>
+                </tr>
+        <?php endif; ?>
+    </table>
+</fieldset>

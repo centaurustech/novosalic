@@ -1,0 +1,74 @@
+<?php require_once "inc/menu.inc.php"; ?>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'),'',true);?>" title="Ir para Início">Início</a></li>
+        <li class="last">Pareceristas</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Pareceristas</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <form id="form" action="<?php echo $this->url(array('controller' => 'agentes', 'action' => 'painelcredenciamento'));?>" method="post">
+        <table class="tabela">
+            <tr>
+                <th colspan="3">Busca</th>
+            </tr>
+            <tr>
+                <td width="300"><label for="nome">Nome:</label> <br /> <input type="text" name="nome" id="nome" class="input_simples" size="40" /></td>
+                <td><label for="cpf">CPF: </label> <br />
+                    <input class="input_simples" type="text" name="cpf" id="cpf" maxlength="14"
+                           onkeyup="mascara(this, format_cpf);"
+                           onclick="limpar_campo(this, ' ');"
+                           onkeypress="limpar_campo(this, ' ');"
+                           onmouseout="restaurar_campo(this, ' ');"
+                           value=""  />
+                </td>
+                <td width="120" align="center"><input type="submit" class="btn_localizar" value=" " /></td>
+            </tr>
+        </table>
+    </form>
+
+    <table class="tabela">
+        <tr>
+            <th colspan="3"><?php echo $this->qtdpareceristas; ?> PARECERISTAS ATIVOS</th>
+        </tr>
+        <tr>
+            <td class="destacar bold" width="300">Nome</td>
+            <td class="destacar bold">CPF</td>
+            <td class="destacar bold" width="150" align="center">Ação</td>
+        </tr>
+        <?php foreach($this->pareceristas as $p){ ?>
+        <tr onmouseover="over_tr(this);" onfocus="over_tr(this);" onmouseout="out_tr(this);" onblur="out_tr(this);" onclick="click_tr(this);" onkeypress="click_tr(this);">
+            <td><?php echo $p->Nome; ?></td>
+            <td><?php echo Mascara::addMaskCPF($p->CNPJCPF); ?></td>
+            <?php if(($this->grupoativo == "93")){ ?>
+            <td align="center"><input type="button" value=" " class="btn_ver" style="width: 88px;" onclick="redirecionar('<?php echo $this->url(array('controller' => 'agentes', 'action' => 'agentes','id' =>$p->idParecerista),'',true);?>')" /></td>
+            <?php } else { ?>
+            <td align="center"><input type="button" value=" " class="btn_editar" onclick="redirecionar('<?php echo $this->url(array('controller' => 'agentes', 'action' => 'agentes','id' =>$p->idParecerista),'',true);?>')" /></td>
+            <?php } ?>
+        </tr>
+        <?php } ?>
+    </table>
+
+    <!-- ========== PAGINAÇÃO ========== -->
+    <?php echo ($this->qtdpareceristas > 15) ? "<br /><p>" . $this->pareceristas . "</p><br />" : ''; ?>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

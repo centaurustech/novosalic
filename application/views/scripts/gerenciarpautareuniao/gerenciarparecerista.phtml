@@ -1,0 +1,209 @@
+<?php
+$tipousuario = "parecerista";
+include_once 'inc/menu.inc.php';
+?>
+<script>
+    function envia(idPronac,idReuniao)
+    {
+        $(function(){
+            $("#tela").dialog({
+                resizable: false,
+                width:1024,
+                height:600,
+                modal: true,
+                autoOpen:false
+            });
+            $("#tela").dialog('open');
+            $.get('../gerenciarpautareuniao/analisedeconta',{idPronac:idPronac,idReuniao:idReuniao,somenteLeitura:'N'},function(data){
+                $("#tela").html(data);
+            });
+            return false;
+        });
+    }
+    function areadetrabalho()
+    {
+        $('#abrir_fechar').click(function(){
+            $('#pautaplenaria').toggle('slow');
+        });
+        $('#abrir_fechar1').click(function(){
+            $('#naoanalisados').toggle('slow');
+        });
+    }
+    window.onload = function() {areadetrabalho();};
+</script>
+<div id="tela"></div>
+<div id="votacao"></div>
+
+<?php
+echo "<form action='" . $this->url(array('controller' => 'gerenciarpautareuniao', 'action' => 'gerenciarpresidenteemreuniao')) . "' method='post'>";
+if ($this->consultaProjetosPautaReuniaoEnvioPlenaria[0]->stEstado == 0 and $this->consultaProjetosPautaReuniaoEnvioPlenaria[0]->stPlenaria == 'N')
+{
+    echo "<div id=\"titulo\"><div>Gerenciar Pauta da Reunião Nº: " . $this->consultaProjetosPautaReuniaoEnvioPlenaria[0]->NrReuniao . " - Representante da Vinculada -  ";
+    echo "Status: Plenária Não Iniciada";
+    echo "<span>ID #23A</span> <span class=\"voltar\"><a href=\"#\">Voltar</a></span></div></div>";
+    echo "<td></td>";
+}
+else if ($this->consultaProjetosPautaReuniaoEnvioPlenaria[0]->stEstado == 0 and $this->consultaProjetosPautaReuniaoEnvioPlenaria[0]->stPlenaria == 'A')
+{
+    echo "<div id=\"titulo\"><div>Gerenciar Pauta da Reunião Nº: " . $this->consultaProjetosPautaReuniaoEnvioPlenaria[0]->NrReuniao . " - Representante da Vinculada -  ";
+    echo "Status: Plenária Iniciada";
+    echo "</div></div>";
+    echo "<td></td>";
+}
+echo "</form>";
+?>
+<div id="conteudo">
+    <div id="miolo">
+        <table class="tabela">
+            <tr>
+                <td>
+                    <input type="button" id="abrir_fechar" class="btn_adicionar" />Projetos em pauta da Plenária da Reunião Nº.
+                    <?php echo $this->consultaProjetosPautaReuniaoEnvioPlenaria[0]->NrReuniao; ?>
+                    <?php if (count($this->consultaProjetosPautaReuniaoEnvioPlenaria) > 0)
+                    {
+                        echo " - <strong>Qtd. Projetos: " . count($this->consultaProjetosPautaReuniaoEnvioPlenaria) . "</strong>";
+                    }
+                    else
+                    {
+                        echo " - <strong>Qtd. Projetos: 0";
+                    } ?>
+                </td>
+            </tr>
+        </table>
+        <div id="pautaplenaria">
+            <table class="tabela">
+                <tr class="titulo_tabela">
+                    <th>Número</th>
+                    <th>Pronac</th>
+                    <th>Nome do Projeto</th>
+                    <th>Área do Projeto</th>
+                    <th>Segmento Cultural</th>
+                    <th>Parecer Favorável</th>
+                    <th>Data do Recebimento</th>
+                    <th>Componente da Comissão</th>
+                </tr>
+
+                <?php
+                    $i = 0;
+                    foreach ($this->consultaProjetosPautaReuniaoEnvioPlenaria as $consultaProjetosPautaReuniao)
+                    {
+                        if ($i % 2 == 0)
+                            $fundo = "linha1";
+                        else
+                            $fundo="linha2";
+                ?>
+
+                        <tr class="fundo_<?php echo $fundo; ?>">
+                            <td><?php echo $i + 1; ?></td>
+                            <td class="centro">
+                        <?php if ($this->consultaProjetosPautaReuniaoEnvioPlenaria[0]->stPlenaria == "N")
+                        { ?>
+                            <a style="text-decoration:underline;cursor:pointer;" onclick='envia(<?php echo $consultaProjetosPautaReuniao->idPronac ?> , <?php echo $consultaProjetosPautaReuniao->NumeroReuniao ?>)'>
+                            <?php } echo $this->escape($consultaProjetosPautaReuniao->pronac); ?>
+                        </a>
+                    </td>
+                    <td class="centro"><?php echo $this->escape($consultaProjetosPautaReuniao->NomeProjeto); ?></td>
+                    <td class="centro"><?php echo $this->escape($consultaProjetosPautaReuniao->DescricaoArea); ?></td>
+                    <td class="centro"><?php echo $this->escape($consultaProjetosPautaReuniao->DescricaoSegmento); ?></td>
+                    <?php
+                        if ($consultaProjetosPautaReuniao->StatusAtendimento == "S")
+                        {
+                            echo "<td class=\"centro\">Sim</td>";
+                        }
+                        else
+                        {
+                            echo "<td class=\"centro\">Não</td>";
+                        }
+                    ?>
+                        <td class="centro"><?php echo $this->escape($consultaProjetosPautaReuniao->DataEnvioPauta); ?></td>
+                        <td class="centro"><?php echo GerenciarPautaReuniaoController::ComponentesDaComissao($consultaProjetosPautaReuniao->idPronac); ?></td>
+                    </tr>
+
+                <?php
+                        $i++;
+                    };
+                ?>
+
+                </table>
+            </div>
+            <table class="tabela">
+                <tr>
+                    <td>
+                        <input type="button" id="abrir_fechar1" class="btn_adicionar" />Projetos não Submetidos a pauta da Reunião Nº.
+                    <?php echo $this->consultaProjetosPautaReuniaoEnvioPlenaria[0]->NrReuniao; ?>
+                    <?php if (count($this->consultaProjetosPautaReuniaoNaoAnalisado) > 0)
+                    {
+                        echo " - <strong>Qtd. Projetos: " . count($this->consultaProjetosPautaReuniaoNaoAnalisado) . "</strong>";
+                    }
+                    else
+                    {
+                        echo " - <strong>Qtd. Projetos: 0";
+                    } ?>
+
+                </td>
+            </tr>
+        </table>
+        <div id="naoanalisados">
+            <table class="tabela">
+                <tr class="titulo_tabela">
+                    <th>Número</th>
+                    <th>Pronac</th>
+                    <th>Nome do Projeto</th>
+                    <th>Área do Projeto</th>
+                    <th>Segmento Cultural</th>
+                    <th>Parecer Favorável</th>
+                    <th>Data do Recebimento</th>
+                    <th>Componente da Comissão</th>
+                </tr>
+
+                <?php
+                    $i = 0;
+                    foreach ($this->consultaProjetosPautaReuniaoNaoAnalisado as $consultaProjetosPautaReuniaoNaoAnalisado)
+                    {
+                        if ($i % 2 == 0)
+                            $fundo = "linha1";
+                        else
+                            $fundo="linha2";
+                ?>
+
+                <tr class="fundo_<?php echo $fundo; ?>">
+                    <td><?php echo $i + 1; ?></td>
+                    <td class="centro">
+                        <a href="<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'parecerconsolidado')); ?>?idPronac=<?php echo $this->escape($consultaProjetosPautaReuniao->idPRONAC); ?>">
+                    <?php echo $this->escape($consultaProjetosPautaReuniaoNaoAnalisado->pronac); ?>
+                            </a>
+                        </td>
+                        <td class="centro"><?php echo $this->escape($consultaProjetosPautaReuniaoNaoAnalisado->NomeProjeto); ?></td>
+                        <td class="centro"><?php echo $this->escape($consultaProjetosPautaReuniaoNaoAnalisado->DescricaoArea); ?></td>
+                        <td class="centro"><?php echo $this->escape($consultaProjetosPautaReuniaoNaoAnalisado->DescricaoSegmento); ?></td>
+                    <?php
+                        if ($consultaProjetosPautaReuniaoNaoAnalisado->StatusAtendimento == "S")
+                        {
+                            echo "<td class=\"centro\">Sim</td>";
+                        }
+                        else
+                        {
+                            echo "<td class=\"centro\">Não</td>";
+                        }
+                    ?>
+                            <td class="centro"><?php echo $this->escape($consultaProjetosPautaReuniaoNaoAnalisado->DataEnvioPauta); ?></td>
+                            <td class="centro"><?php echo GerenciarPautaReuniaoController::ComponentesDaComissao($consultaProjetosPautaReuniaoNaoAnalisado->idPronac); ?></td>
+                        </tr>
+
+<?php
+                        $i++;
+                    };
+?>
+
+            </table>
+        </div>
+    </div>
+
+</div><!-- final: conteÃºdo principal #conteudo -->
+
+<!-- inÃ­cio: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+
+<br clear="all" />

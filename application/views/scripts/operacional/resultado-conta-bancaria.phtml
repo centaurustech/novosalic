@@ -1,0 +1,310 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.btn_imprimir').click(function(){
+            $('#formImpressao').submit();
+        });
+    });
+</script>
+
+<?php //include("scripts/operacional/inc/menu.inc.php"); ?>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>">In&iacute;cio</a></li>
+        <li class="second">Conta Banc&aacute;ria</li>
+        <li class="last">Resultado</li>
+    </ul>
+</div>
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Conta Banc&aacute;ria - Resultado<span class="voltar"><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'conta-bancaria')); ?>">Voltar</a></span></div>
+</div>
+
+<div id="conteudo" align="center">
+
+    <?php if(count($this->dados)>0){ ?>
+    <!-- ============ PAGINAÇÃO ============ -->
+    <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+        <tbody>
+            <tr>
+                <td align="center">
+                <form name="form1" id="form1" action="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria'));?>" method="get">
+                    <?php if($this->paginacao['pag']>1) { ?>
+                    <input class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')).'?pag=1'."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronac='.$this->pronac.'&tpPessoa='.$this->tpPessoa.'&ocorrencia='.$this->ocorrencia.'&estadoConta='.$this->estadoConta.'&tpDtLtCap='.$this->tpDtLtCap.'&dtInicioLtCap='.$this->dtInicioLtCap.'&dtFimLtCap='.$this->dtFimLtCap; ?>'">
+                    <?php } ?>
+                    <input id="btn_p_anterior" type="button"
+                    <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                    <?php }else { ?>
+                           class="btn_p_anterior" onclick="location.href='<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronac='.$this->pronac.'&tpPessoa='.$this->tpPessoa.'&ocorrencia='.$this->ocorrencia.'&estadoConta='.$this->estadoConta.'&tpDtLtCap='.$this->tpDtLtCap.'&dtInicioLtCap='.$this->dtInicioLtCap.'&dtFimLtCap='.$this->dtFimLtCap; ?>'"
+                    <?php } ?>>
+                    <input id="btn_p_proximo" type="button"
+                           <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                           class="btn_p_proximo-off"
+                    <?php }else { ?>
+                           class="btn_p_proximo" onclick="location.href='<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronac='.$this->pronac.'&tpPessoa='.$this->tpPessoa.'&ocorrencia='.$this->ocorrencia.'&estadoConta='.$this->estadoConta.'&tpDtLtCap='.$this->tpDtLtCap.'&dtInicioLtCap='.$this->dtInicioLtCap.'&dtFimLtCap='.$this->dtFimLtCap; ?>'"
+                    <?php } ?>>
+                    <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                    <input class="btn_ultimo" id="btn_ultimo" type="button"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronac='.$this->pronac.'&tpPessoa='.$this->tpPessoa.'&ocorrencia='.$this->ocorrencia.'&estadoConta='.$this->estadoConta.'&tpDtLtCap='.$this->tpDtLtCap.'&dtInicioLtCap='.$this->dtInicioLtCap.'&dtFimLtCap='.$this->dtFimLtCap; ?>'">
+                    <?php } ?>
+                    Pág.:<select name="pag" id="pag" onchange="$('#form1').submit()" class="input_simples">
+                        <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                        <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                        <?php endfor; ?>
+                    </select>
+                    &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>"><input type="submit" class="btn_recarregar" value="">
+                    <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                    <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                    <input type="hidden" name="pronac" value="<?php echo $this->pronac;?>">
+                    <input type="hidden" name="tpPessoa" value="<?php echo $this->tpPessoa;?>">
+                    <input type="hidden" name="ocorrencia" value="<?php echo $this->ocorrencia;?>">
+                    <input type="hidden" name="estadoConta" value="<?php echo $this->estadoConta;?>">
+                    <input type="hidden" name="tpDtLtCap" value="<?php echo $this->tpDtLtCap;?>">
+                    <input type="hidden" name="dtInicioLtCap" value="<?php echo $this->dtInicioLtCap;?>">
+                    <input type="hidden" name="dtFimLtCap" value="<?php echo $this->dtFimLtCap;?>">
+                    <input type="button" class="btn_imprimir">
+                 </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <center>
+        <?php
+            echo $this->paginacao['inicio']." a ";
+            echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+            echo " de ". $this->paginacao['total']. " Projetos listados";
+        ?>
+    </center>
+    <!-- ========== FIM PAGINAÇÃO ========== -->
+    <?php } ?>
+
+
+    <?php if($this->qtdRegistros > 0){ ?>
+    <table class="tabela tablesorter">
+        <thead>
+            <tr class="titulo_tabela">
+                <th><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')).'?pag=1&qtde='.$this->paginacao['qtde'].'&pronac='.$this->pronac.'&tpPessoa='.$this->tpPessoa.'&ocorrencia='.$this->ocorrencia.'&estadoConta='.$this->estadoConta.'&tpDtLtCap='.$this->tpDtLtCap.'&dtInicioLtCap='.$this->dtInicioLtCap.'&dtFimLtCap='.$this->dtFimLtCap.'&campo=2&ordem='.$this->paginacao['novaOrdem'];?>">PRONAC</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')).'?pag=1&qtde='.$this->paginacao['qtde'].'&pronac='.$this->pronac.'&tpPessoa='.$this->tpPessoa.'&ocorrencia='.$this->ocorrencia.'&estadoConta='.$this->estadoConta.'&tpDtLtCap='.$this->tpDtLtCap.'&dtInicioLtCap='.$this->dtInicioLtCap.'&dtFimLtCap='.$this->dtFimLtCap.'&campo=3&ordem='.$this->paginacao['novaOrdem'];?>">Nome do Projeto</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')).'?pag=1&qtde='.$this->paginacao['qtde'].'&pronac='.$this->pronac.'&tpPessoa='.$this->tpPessoa.'&ocorrencia='.$this->ocorrencia.'&estadoConta='.$this->estadoConta.'&tpDtLtCap='.$this->tpDtLtCap.'&dtInicioLtCap='.$this->dtInicioLtCap.'&dtFimLtCap='.$this->dtFimLtCap.'&campo=4&ordem='.$this->paginacao['novaOrdem'];?>">Área</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')).'?pag=1&qtde='.$this->paginacao['qtde'].'&pronac='.$this->pronac.'&tpPessoa='.$this->tpPessoa.'&ocorrencia='.$this->ocorrencia.'&estadoConta='.$this->estadoConta.'&tpDtLtCap='.$this->tpDtLtCap.'&dtInicioLtCap='.$this->dtInicioLtCap.'&dtFimLtCap='.$this->dtFimLtCap.'&campo=5&ordem='.$this->paginacao['novaOrdem'];?>">Situação</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')).'?pag=1&qtde='.$this->paginacao['qtde'].'&pronac='.$this->pronac.'&tpPessoa='.$this->tpPessoa.'&ocorrencia='.$this->ocorrencia.'&estadoConta='.$this->estadoConta.'&tpDtLtCap='.$this->tpDtLtCap.'&dtInicioLtCap='.$this->dtInicioLtCap.'&dtFimLtCap='.$this->dtFimLtCap.'&campo=6&ordem='.$this->paginacao['novaOrdem'];?>">CNPJ/CPF</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')).'?pag=1&qtde='.$this->paginacao['qtde'].'&pronac='.$this->pronac.'&tpPessoa='.$this->tpPessoa.'&ocorrencia='.$this->ocorrencia.'&estadoConta='.$this->estadoConta.'&tpDtLtCap='.$this->tpDtLtCap.'&dtInicioLtCap='.$this->dtInicioLtCap.'&dtFimLtCap='.$this->dtFimLtCap.'&campo=7&ordem='.$this->paginacao['novaOrdem'];?>">Proponente</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')).'?pag=1&qtde='.$this->paginacao['qtde'].'&pronac='.$this->pronac.'&tpPessoa='.$this->tpPessoa.'&ocorrencia='.$this->ocorrencia.'&estadoConta='.$this->estadoConta.'&tpDtLtCap='.$this->tpDtLtCap.'&dtInicioLtCap='.$this->dtInicioLtCap.'&dtFimLtCap='.$this->dtFimLtCap.'&campo=8&ordem='.$this->paginacao['novaOrdem'];?>">Tipo de Pessoa</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')).'?pag=1&qtde='.$this->paginacao['qtde'].'&pronac='.$this->pronac.'&tpPessoa='.$this->tpPessoa.'&ocorrencia='.$this->ocorrencia.'&estadoConta='.$this->estadoConta.'&tpDtLtCap='.$this->tpDtLtCap.'&dtInicioLtCap='.$this->dtInicioLtCap.'&dtFimLtCap='.$this->dtFimLtCap.'&campo=9&ordem='.$this->paginacao['novaOrdem'];?>">N&ordm; Portaria</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')).'?pag=1&qtde='.$this->paginacao['qtde'].'&pronac='.$this->pronac.'&tpPessoa='.$this->tpPessoa.'&ocorrencia='.$this->ocorrencia.'&estadoConta='.$this->estadoConta.'&tpDtLtCap='.$this->tpDtLtCap.'&dtInicioLtCap='.$this->dtInicioLtCap.'&dtFimLtCap='.$this->dtFimLtCap.'&campo=10&ordem='.$this->paginacao['novaOrdem'];?>">Dt. Publicação Portaria</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')).'?pag=1&qtde='.$this->paginacao['qtde'].'&pronac='.$this->pronac.'&tpPessoa='.$this->tpPessoa.'&ocorrencia='.$this->ocorrencia.'&estadoConta='.$this->estadoConta.'&tpDtLtCap='.$this->tpDtLtCap.'&dtInicioLtCap='.$this->dtInicioLtCap.'&dtFimLtCap='.$this->dtFimLtCap.'&campo=11&ordem='.$this->paginacao['novaOrdem'];?>">Dt. Início Captação</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')).'?pag=1&qtde='.$this->paginacao['qtde'].'&pronac='.$this->pronac.'&tpPessoa='.$this->tpPessoa.'&ocorrencia='.$this->ocorrencia.'&estadoConta='.$this->estadoConta.'&tpDtLtCap='.$this->tpDtLtCap.'&dtInicioLtCap='.$this->dtInicioLtCap.'&dtFimLtCap='.$this->dtFimLtCap.'&campo=12&ordem='.$this->paginacao['novaOrdem'];?>">Dt. Fim Captação</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')).'?pag=1&qtde='.$this->paginacao['qtde'].'&pronac='.$this->pronac.'&tpPessoa='.$this->tpPessoa.'&ocorrencia='.$this->ocorrencia.'&estadoConta='.$this->estadoConta.'&tpDtLtCap='.$this->tpDtLtCap.'&dtInicioLtCap='.$this->dtInicioLtCap.'&dtFimLtCap='.$this->dtFimLtCap.'&campo=13&ordem='.$this->paginacao['novaOrdem'];?>">Dt. Nascimento</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')).'?pag=1&qtde='.$this->paginacao['qtde'].'&pronac='.$this->pronac.'&tpPessoa='.$this->tpPessoa.'&ocorrencia='.$this->ocorrencia.'&estadoConta='.$this->estadoConta.'&tpDtLtCap='.$this->tpDtLtCap.'&dtInicioLtCap='.$this->dtInicioLtCap.'&dtFimLtCap='.$this->dtFimLtCap.'&campo=14&ordem='.$this->paginacao['novaOrdem'];?>">Agência</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')).'?pag=1&qtde='.$this->paginacao['qtde'].'&pronac='.$this->pronac.'&tpPessoa='.$this->tpPessoa.'&ocorrencia='.$this->ocorrencia.'&estadoConta='.$this->estadoConta.'&tpDtLtCap='.$this->tpDtLtCap.'&dtInicioLtCap='.$this->dtInicioLtCap.'&dtFimLtCap='.$this->dtFimLtCap.'&campo=15&ordem='.$this->paginacao['novaOrdem'];?>">Conta Captação</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')).'?pag=1&qtde='.$this->paginacao['qtde'].'&pronac='.$this->pronac.'&tpPessoa='.$this->tpPessoa.'&ocorrencia='.$this->ocorrencia.'&estadoConta='.$this->estadoConta.'&tpDtLtCap='.$this->tpDtLtCap.'&dtInicioLtCap='.$this->dtInicioLtCap.'&dtFimLtCap='.$this->dtFimLtCap.'&campo=16&ordem='.$this->paginacao['novaOrdem'];?>">Conta Movimento</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')).'?pag=1&qtde='.$this->paginacao['qtde'].'&pronac='.$this->pronac.'&tpPessoa='.$this->tpPessoa.'&ocorrencia='.$this->ocorrencia.'&estadoConta='.$this->estadoConta.'&tpDtLtCap='.$this->tpDtLtCap.'&dtInicioLtCap='.$this->dtInicioLtCap.'&dtFimLtCap='.$this->dtFimLtCap.'&campo=17&ordem='.$this->paginacao['novaOrdem'];?>">Dt. Lote Remessa</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')).'?pag=1&qtde='.$this->paginacao['qtde'].'&pronac='.$this->pronac.'&tpPessoa='.$this->tpPessoa.'&ocorrencia='.$this->ocorrencia.'&estadoConta='.$this->estadoConta.'&tpDtLtCap='.$this->tpDtLtCap.'&dtInicioLtCap='.$this->dtInicioLtCap.'&dtFimLtCap='.$this->dtFimLtCap.'&campo=18&ordem='.$this->paginacao['novaOrdem'];?>">Ocorrência</a></th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach($this->dados as $d){ ?>
+            <tr>
+                <td align="center" class="w100">
+                    <a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'));?>?idPronac=<?php echo ($d->idPronac); ?>" target="_blank">
+                        <?php echo $d->Pronac; ?>
+                    </a>
+                </td>
+                <td><?php echo $d->NomeProjeto; ?></td>
+                <td><?php echo $d->Area; ?></td>
+                <td align="center"><?php echo $d->Situacao; ?></td>
+                <td align="center"><?php echo (strlen($d->CgcCpf) > 11) ? Mascara::addMaskCNPJ($d->CgcCpf) : Mascara::addMaskCPF($d->CgcCpf); ?></td>
+                <td><?php echo $d->Proponente; ?></td>
+                <td><?php echo ($d->TipoPessoa == 1) ? 'Pessoa Jurídica' : 'Pessoa Física'; ?></td>
+                <td><?php echo $d->NrPortaria; ?></td>
+                <td align="center"><?php echo !empty($d->DtPublicacaoPortaria) ? Data::tratarDataZend($d->DtPublicacaoPortaria, 'Brasileira') : ''; ?></td>
+                <td align="center"><?php echo !empty($d->DtInicioCaptacao) ? Data::tratarDataZend($d->DtInicioCaptacao, 'Brasileira') : ''; ?></td>
+                <td align="center"><?php echo !empty($d->DtFimCaptacao) ? Data::tratarDataZend($d->DtFimCaptacao, 'Brasileira') : ''; ?></td>
+                <td align="center"><?php echo !empty($d->DtNascimento) ? Data::tratarDataZend($d->DtNascimento, 'Brasileira') : ''; ?></td>
+                <td><?php echo $d->Agencia; ?></td>
+                <td>
+                    <?php
+                        if($d->TemCaptacao){
+                            $string = $d->ContaCaptacao;
+                            $size = strlen($string);
+                            $numero = substr($string, 0, -1);
+                            $digito = substr($string, $size - 1);
+                            $numero = number_format($numero,0,'','.');
+                            $numeroAgencia = $numero.'-'.$digito;
+                            echo $numeroAgencia;
+                        } else {
+                            echo '';
+                        }
+                    ?>
+                </td>
+                <td>
+                    <?php
+                        if($d->ContaMovimento != '000000000000'){
+                            $string = $d->ContaMovimento;
+                            $size = strlen($string);
+                            $numero = substr($string, 0, -1);
+                            $digito = substr($string, $size - 1);
+                            $numero = number_format($numero,0,'','.');
+                            $numeroFormatado = $numero.'-'.$digito;
+                            echo $numeroFormatado;
+                        } else {
+                            echo '';
+                        }
+                    ?>
+                </td>
+                <td align="center"><?php echo !empty($d->DtLoteRemessaCB) ? Data::tratarDataZend($d->DtLoteRemessaCB, 'Brasileira') : ''; ?></td>
+                <td>
+                    <?php 
+                        if($d->OcorrenciaCB != '000'){
+                            switch ($d->OcorrenciaCB) {
+                                case '001':
+                                    echo 'Tipo de pessoa inválido';
+                                    break;
+                                case '002':
+                                    echo 'Tipo de CPF/CNPJ inválido';
+                                    break;
+                                case '003':
+                                    echo 'CPF/CNPJ inválido';
+                                    break;
+                                case '004':
+                                    echo 'Data de nascimento inválida';
+                                    break;
+                                case '005':
+                                    echo 'Nome cliente inválido';
+                                    break;
+                                case '006':
+                                    echo 'Agência inválida';
+                                    break;
+                                case '007':
+                                    echo 'Mais de 5 clientes cadastrado p/o CPF informado';
+                                    break;
+                                case '008':
+                                    echo 'Cliente BB-Campus fora da faixa etária (16 a 28 anos)';
+                                    break;
+                                case '009':
+                                    echo 'Cliente BB-Campus não titular do CPF';
+                                    break;
+                                case '010':
+                                    echo 'Dados pessoa física divergentes';
+                                    break;
+                                case '011':
+                                    echo 'Dados pessoa jurídica divergentes';
+                                    break;
+                                case '013':
+                                    echo 'Cliente BB-Campus não  titular do CPF';
+                                    break;
+                                case '014':
+                                    echo 'Perfil agência incompatível com tipo de pessoa';
+                                    break;
+                                case '015':
+                                    echo 'Tipo de pessoa incompatível  com natureza jurídica';
+                                    break;
+                                case '016':
+                                    echo 'Tipo de repasse inválido';
+                                    break;
+                                case '017':
+                                    echo 'Tipo de pessoa não permitido para esse processo/tipo de repasse';
+                                    break;
+                                default:
+                                    echo '';
+                                    break;
+                            }
+                        } else { 
+                            echo '';
+                        }
+                    ?>
+                </td>
+            </tr>
+            <?php } ?>
+        </tbody>
+    </table>
+
+    <?php if(count($this->dados)>0){ ?>
+
+        <!-- ============ PAGINAÇÃO ============ -->
+        <?php if($this->qtdRegistros > 10) { //echo $this->dados; ?>
+        <center>
+            <?php
+                echo $this->paginacao['inicio']." a ";
+                echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+                echo " de ". $this->paginacao['total'];
+            ?>
+        </center>
+        <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+            <tbody>
+                <tr>
+                    <td align="center">
+                    <form name="form2" id="form2" action="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria'));?>" method="get">
+                        <?php if($this->paginacao['pag']>1) { ?>
+                        <input class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')).'?pag=1'."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronac='.$this->pronac.'&tpPessoa='.$this->tpPessoa.'&ocorrencia='.$this->ocorrencia.'&estadoConta='.$this->estadoConta.'&tpDtLtCap='.$this->tpDtLtCap.'&dtInicioLtCap='.$this->dtInicioLtCap.'&dtFimLtCap='.$this->dtFimLtCap; ?>'">
+                        <?php } ?>
+                        <input id="btn_p_anterior" type="button"
+                        <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                        <?php }else { ?>
+                               class="btn_p_anterior" onclick="location.href='<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronac='.$this->pronac.'&tpPessoa='.$this->tpPessoa.'&ocorrencia='.$this->ocorrencia.'&estadoConta='.$this->estadoConta.'&tpDtLtCap='.$this->tpDtLtCap.'&dtInicioLtCap='.$this->dtInicioLtCap.'&dtFimLtCap='.$this->dtFimLtCap; ?>'"
+                        <?php } ?>>
+                        <input id="btn_p_proximo" type="button"
+                               <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                               class="btn_p_proximo-off"
+                        <?php }else { ?>
+                               class="btn_p_proximo" onclick="location.href='<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronac='.$this->pronac.'&tpPessoa='.$this->tpPessoa.'&ocorrencia='.$this->ocorrencia.'&estadoConta='.$this->estadoConta.'&tpDtLtCap='.$this->tpDtLtCap.'&dtInicioLtCap='.$this->dtInicioLtCap.'&dtFimLtCap='.$this->dtFimLtCap; ?>'"
+                        <?php } ?>>
+                        <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                        <input class="btn_ultimo" id="btn_ultimo" type="button"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-conta-bancaria')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronac='.$this->pronac.'&tpPessoa='.$this->tpPessoa.'&ocorrencia='.$this->ocorrencia.'&estadoConta='.$this->estadoConta.'&tpDtLtCap='.$this->tpDtLtCap.'&dtInicioLtCap='.$this->dtInicioLtCap.'&dtFimLtCap='.$this->dtFimLtCap; ?>'">
+                        <?php } ?>
+                        Pág.:<select name="pag" id="pag" onchange="$('#form2').submit()" class="input_simples">
+                            <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                            <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                            <?php endfor; ?>
+                        </select>
+                        &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>"><input type="submit" class="btn_recarregar" value="">
+                        <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                        <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                        <input type="hidden" name="pronac" value="<?php echo $this->pronac;?>">
+                        <input type="hidden" name="tpPessoa" value="<?php echo $this->tpPessoa;?>">
+                        <input type="hidden" name="ocorrencia" value="<?php echo $this->ocorrencia;?>">
+                        <input type="hidden" name="estadoConta" value="<?php echo $this->estadoConta;?>">
+                        <input type="hidden" name="tpDtLtCap" value="<?php echo $this->tpDtLtCap;?>">
+                        <input type="hidden" name="dtInicioLtCap" value="<?php echo $this->dtInicioLtCap;?>">
+                        <input type="hidden" name="dtFimLtCap" value="<?php echo $this->dtFimLtCap;?>">
+                        <input type="button" class="btn_imprimir">
+                     </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- ========== FIM PAGINAÇÃO ========== -->
+
+    <?php } } ?>
+
+    <form target="_blank" class="form" name="formImpressao" id="formImpressao" method="post" action='<?php echo $this->url(array('controller' => 'operacional', 'action' => 'imprimir-resultado-conta-bancaria')); ?>'>
+        <input type="hidden" name="pag" value="<?php echo $this->pag;?>">
+        <input type="hidden" name="qtde" value="<?php echo $this->intTamPag;?>">
+        <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+        <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+        <input type="hidden" name="pronac" value="<?php echo $this->pronac;?>">
+        <input type="hidden" name="tpPessoa" value="<?php echo $this->tpPessoa;?>">
+        <input type="hidden" name="ocorrencia" value="<?php echo $this->ocorrencia;?>">
+        <input type="hidden" name="estadoConta" value="<?php echo $this->estadoConta;?>">
+        <input type="hidden" name="tpDtLtCap" value="<?php echo $this->tpDtLtCap;?>">
+        <input type="hidden" name="dtInicioLtCap" value="<?php echo $this->dtInicioLtCap;?>">
+        <input type="hidden" name="dtFimLtCap" value="<?php echo $this->dtFimLtCap;?>">
+    </form>
+        
+    <?php } else { ?>
+    <table class="tabela">
+        <tr>
+            <td align="center">Nenhum registro encontrado.</td>
+        </tr>
+    </table>
+    <?php } ?>
+    <br clear="all" />
+</div>
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

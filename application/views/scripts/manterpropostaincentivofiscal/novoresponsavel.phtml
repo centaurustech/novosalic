@@ -1,0 +1,151 @@
+<script type="text/javascript">
+        
+        $('document').ready(function(){
+            $('#cnpjcpf').mask('999.999.999-99');
+        });
+
+	function confirmarovinculo(idResponsavel)
+	{
+		$("#confirma").html('Deseja vincular o responsável?');
+		$("#confirma").dialog({
+        	resizable: true,
+            width:450,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            closeOnEscape : false,
+            title : 'Alerta',
+            buttons: {
+                'NÃO': function()
+                {
+                    $(this).dialog('close');
+                },
+                'SIM': function()
+                {
+                	window.location = "<?php echo $this->url(array('controller' => 'vincularresponsavel', 'action' => 'vinculoresponsavel')); ?>?idResponsavel="+idResponsavel;
+                }
+            }
+        });
+        $("#confirma").dialog('open');
+	}
+
+	function respnovoresponsavel() 
+	{
+
+		$('#mostraproponente').html();
+    	
+		var cnpjcpf   = document.getElementById('cnpjcpf').value;
+		var nome      = document.getElementById('nome').value;
+
+		if(nome == '' && cnpjcpf == '')
+		{
+			$("#error").removeClass('sumir');
+			$("#error").html('Você deve preencher pelo menos um campo!');
+		}
+
+		else if( (cnpjcpf != '') && (cnpjcpf.length < 14) )
+		{
+			$("#error").removeClass('sumir');
+			$("#error").html('O CPF deve conter, no mínimo, 11 caracteres');
+		}
+		/*else if((cnpjcpf.length == 18) && (!valida_cnpj(cnpjcpf)))
+		{
+			$("#error").removeClass('sumir');
+			$("#error").html('O CNPJ é inválido!');
+		}*/
+		else if((cnpjcpf.length == 14) && (!validaCPF(cnpjcpf)))
+		{
+			$("#error").removeClass('sumir');
+			$("#error").html('O CPF é inválido!');
+		}
+		else
+		{
+                        $("#error").html('');
+			$("#respnovoresponsavel").html("Carregando...");
+			
+			$.ajax({
+                            type: 'post',
+                            data: $("#formBuscar").serialize(),
+                            url:  "<?php echo $this->url(array('controller' => 'manterpropostaincentivofiscal', 'action' => 'respnovoresponsavel')); ?>",
+                            success: function (data)
+                            {
+                                $("#respnovoresponsavel").html(data);
+                            }
+                        });
+	        
+		}
+	}
+
+        
+</script>
+
+<?php
+    require_once "inc/menu_responsavel.inc.php"; // menu
+?>
+
+
+<!-- ========== INï¿½CIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para Início">Início</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'manterpropostaincentivofiscal', 'action' => 'listar-propostas')); ?>" title="Ir para  Lista propostas">Lista propostas</a></li>
+        <li class="last">Solicitar v&iacute;nculo</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INï¿½CIO Tï¿½TULO ========== -->
+<div id="titulo">
+    <div>Novo Responsável <span class="voltar"><a href="#" onclick="voltar();"></a></span></div>
+</div>
+<!-- ========== FIM Tï¿½TULO ========== -->
+
+<div id="conteudo">
+
+<div id="confirma"></div>
+
+   <fieldset>
+        <form id="formBuscar" name="formBuscar" method="post" action="#">
+            <table class="tabela" style="margin:1% auto; width:40%;" summary="Esta tabela contém o campo para pesquisa de Agentes Vinculados a Instituição. Para que a pesquisa tenha efeito é necessário que seja feita através do CNPJ ou o nome da Instituição que consta nos campos abaixo">
+                <td colspan="2" class="titulo_tabela" tabindex="1">PESQUISAR RESPONSÁVEL</td>
+                <tr>
+
+                    <th class="center" width="50%" tabindex="2"><label for="cnpj" >CPF</label></th>
+                    <td>
+                        <!--<input class="input_simples" type="text" name="cnpjcpf" id="cnpjcpf" maxlength="18"  tabindex="3" onkeyup="mascara(this, format_cpf);"class="input w500" />-->
+                        <input class="input_simples" type="text" name="cnpjcpf" id="cnpjcpf" maxlength="18"  tabindex="3" class="input w500" />
+                    </td>
+                </tr>
+
+                <tr>
+
+                    <th class="center" width="50%" tabindex="4"><label for="nome">NOME:</label></th>
+                    <td>
+                        <input class="input_simples" type="text" name="nome" id="nome" tabindex="5" maxlength="70" value="" onkeypress="" class="input w500"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="centro">
+                        <div id="error" class="sumir" style="color: red; text-align: center; font-weight: 600;">Dados obrigat&oacute;rios n&atilde;o informados!</div>
+                        <input type="button" title=" Pesquisar " tabindex="6" class="btn_pesquisar" id="btn_pesquisar" value=" " onclick="respnovoresponsavel();" />
+                        &nbsp;&nbsp;&nbsp;
+                        <input type="reset" title=" Cancelar " tabindex="7" class="btn_limpar" value=" " onclick="$('#error').html('');" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+        
+		<br />
+		
+		<div id="respnovoresponsavel"></div>
+		
+    </fieldset>
+   
+</div>
+<!-- ========== INï¿½CIO RODAPï¿½ DO CONTEï¿½DO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPï¿½ DO CONTEï¿½DO ========== -->
+
+<br clear="all" />

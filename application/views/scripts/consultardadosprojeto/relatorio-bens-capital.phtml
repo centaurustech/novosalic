@@ -1,0 +1,66 @@
+<?php header('Content-Type: text/plain; charset=ISO-8859-1'); ?>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        //ATUALIZA TITULO DA PAGINA
+        window.parent.$("#titulo").html("<div>Relat&oacute;rio de bens de capital</div>");
+        window.parent.$("#caminhoLocalAtual").html("Relat&oacute;rio de bens de capital");
+    });
+</script>
+
+<table class="tabela">
+    <tr class="destacar">
+        <td align="center"><b>PRONAC</b></td>
+        <td align="center"><b>Nome do Projeto</b></td>
+    </tr>
+    <tr class="linha">
+        <td align="center"><?php echo $this->DadosProjeto->pronac; ?></td>
+        <td align="center"><?php echo $this->DadosProjeto->nomeProjeto; ?></td>
+    </tr>
+</table>
+
+<table class="tabela">
+    <?php $x=1; $vlTotal=0; if(count($this->relatorioBensDeCapital) > 0) { ?>
+    <tr class="centro">
+        <td width="1" class="destacar bold">Seq.</td>
+        <td width="1" class="destacar bold">T&iacute;tulo</td>
+        <td width="1" class="destacar bold">N&ordm; Comprovante</td>
+        <td width="1" class="destacar bold">Item</td>
+        <td width="1" class="destacar bold">Dt. Pagamento</td>
+        <td width="1" class="destacar bold">Especifica&ccedil;&atilde;o</td>
+        <td width="1" class="destacar bold">Marca</td>
+        <td width="1" class="destacar bold">Fabricante</td>
+        <td width="1" class="destacar bold">Qtde</td>
+        <td width="1" class="destacar bold">Vl. Unit&aacute;rio</td>
+        <td width="1" class="destacar bold">Vl. Total</td>
+    </tr>
+    <?php foreach ($this->relatorioBensDeCapital as $r) { ?>
+    <tr>
+        <td align="center"><?php echo $x; ?></td>
+        <td><?php echo $r->Titulo; ?></td>
+        <td><?php echo $r->nrComprovante; ?></td>
+        <td><?php echo $r->Item; ?></td>
+        <td align="center"><?php echo Data::tratarDataZend($r->dtPagamento, 'Brasileira'); ?></td>
+        <td><?php echo $r->Especificacao; ?></td>
+        <td><?php echo $r->Marca; ?></td>
+        <td><?php echo $r->Fabricante; ?></td>
+        <td align="right"><?php echo $r->Qtde; ?></td>
+        <td align="right"><?php echo number_format($r->vlUnitario, 2, ",", "."); ?></td>
+        <td align="right"><?php echo number_format($r->vlTotal, 2, ",", "."); ?></td>
+    </tr>
+    <?php $x++; $vlTotal=$vlTotal+$r->vlTotal; } ?>
+    <?php } else { ?>
+    <tr>
+        <td align="center">Nenhum registro encontrado.</td>
+    </tr>
+    <?php } ?>
+</table>
+
+<br clear="all" />
+
+<table class="tabela">
+    <tr>
+        <td align="right" style="font-size: 16px; color: #333; font-weight: bold;">Total</td>
+        <td align="right" width="140px" style="font-size: 14px; color: #333; font-weight: bold;" nowrap id="vlTotal"><?php echo number_format($vlTotal, 2, ",", "."); ?></td>
+    </tr>
+</table>

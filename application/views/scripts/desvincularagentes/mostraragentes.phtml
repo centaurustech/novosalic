@@ -1,0 +1,109 @@
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+			<div id="breadcrumb">
+				<ul>
+					<li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para Início">Início</a></li>
+					<li class="last">Agentes Vinculados</li>
+				</ul>
+			</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+				<div id="titulo">
+					<div>Agentes Vinculados<span>ID #23A</span> <span class="voltar"><a href="#" onclick="redirecionar('<?php echo $this->url(array('controller'=>'desvincularagentes', 'action'=>'index')); ?>');">Voltar</a></span></div>
+				</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+	<div id="conteudo">
+
+
+<!-- ========== INÍCIO DO SCRIPT PARA CONFIRMAÇÃO DE EXCLUSÃO ========== -->
+
+				<script language="javascript">
+				function confirmaExclusao(idAgente, idVunculoPrincipal, cnpjcpf)
+				{
+					if(confirm('Deseja realmente desvincular o agente?'))
+					{
+						location.href = "<?php echo $this->url(array('controller' => 'desvincularagentes','action' => 'excluir')); ?>?idVinculoPrincipal=" + idVunculoPrincipal + "&idAgente=" + idAgente + "&cnpjcpf=" + cnpjcpf;
+					}
+				}
+				</script>
+
+
+<!-- ========== FIM DO SCRIPT PARA CONFIRMAÇÃO DE EXCLUSÃO ========== -->
+
+
+<?php foreach($this->entidade as $tbentidade): ?>
+<!-- ========== INICIO DA TABELA DOS DADOS CONTENDO AS INFORMAÇÕES DA INSTITUIÇÃO ========== -->	
+		<table class="tabela" summary="Esta tabela contém os dados da Instituição que contém os agentes que podem ser desvinculados">
+					
+			  
+			
+				  		<tr>
+				    				<td class="titulo_tabela" tabindex="1"><strong>CNPJ/CPF:<?php echo $this->escape($tbentidade->CNPJCPF);?></strong> </td>
+                                                                <?php $cpfCnpj =  trim(strlen($this->escape($tbentidade->CNPJCPF)))?>
+                                                                <?php if ( $cpfCnpj == 11 ) { ?>
+				   					<td class="titulo_tabela" tabindex="2"><strong><?php echo $this->escape($tbentidade->nomeentidade);?></strong></td>
+                                                                <?php } else {?>
+                                                                        <td class="titulo_tabela" tabindex="2"><strong>Nome da Instituição: <?php echo $this->escape($tbentidade->nomeentidade);?></strong></td>
+                                                                <?php }?>
+				 		</tr>
+					
+		</table>
+
+<!-- ========== FIM DA TABELA DOS DADOS CONTENDO AS INFORMAÇÕES DA INSTITUIÇÃO ========== -->	
+
+
+
+<!-- ========== INICIO DA TABELA DOS DADOS CONTENDO AS INFORMAÇÕES DOS AGENTES QUE PODEM SER DESVINCULADOS DA INSTITUIÇÃO ========== -->	
+<form id="formCadastrar" name="formCadastrar" method="post" action="<?php echo $this->url(array('controller' => 'desvincularagentes','action' => 'desvincularagentes')); ?>?cpf=<?php echo $this->escape($tbvinculoagente->CNPJCPF);?>">
+   		
+   
+	<table class="tabela" summary="Esta tabela contém os dados dos Agentes pertencentes á Instituiçãoe e que podem ser desvinculados">
+		<tr>
+				<td colspan="5" class="titulo_tabela" tabindex="3">AGENTES VINCULADOS</td>
+		</tr>
+		<?php $VinculadoPrincipal = $this->escape($tbentidade->idVinculoPrincipal); ?>
+		<?php $pro = DesvincularagentesDAO::agentesvinculados($VinculadoPrincipal); ?>
+		
+
+                <?php if ( !empty ( $pro ) ){ ?>
+
+                <tr>
+                    <th tabindex="4">CPF</th>
+                    <th tabindex="5">Nome</th>
+                    <th tabindex="6">Visão</th>
+                    <th tabindex="7">Desvincular</th>
+		</tr>
+
+                <?php }?>
+		<?php foreach($pro as $tbvinculoagente): ?>
+
+		<tr onmouseover="over_tr(this);" onfocus="over_tr(this);" onmouseout="out_tr(this);" onblur="out_tr(this);" onclick="click_tr(this);" onkeypress="click_tr(this);">
+					<td tabindex="8"><?php echo $this->escape($tbvinculoagente->CNPJCPF);?></td>
+					<td tabindex="9"><?php echo $this->escape($tbvinculoagente->NomeAgente);?></td>			
+					<td tabindex="10"><?php echo $this->escape($tbvinculoagente->vinculo);?></td>	
+					<td tabindex="11" class="centro"><a href="javascript:confirmaExclusao('<?php echo $tbvinculoagente->idAgente; ?>', '<?php echo $tbentidade->idVinculoPrincipal;?>','<?php echo $this->escape($tbentidade->CNPJCPF);?>');">Excluir</a></td>			
+		</tr>
+	
+		<?php endforeach;?>
+	</table>
+	<br />
+<?php endforeach;?>
+<!-- ========== FIM DA TABELA DOS DADOS CONTENDO AS INFORMAÇÕES DOS AGENTES QUE PODEM SER DESVINCULADOS DA INSTITUIÇÃO ========== -->	
+			<!-- ========== PAGINAÇÃO ========== -->
+	<?php if ($this->qtdEntidade > 1) { echo $this->entidade; } ?>
+	
+	</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+	<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+			<br clear="all" />

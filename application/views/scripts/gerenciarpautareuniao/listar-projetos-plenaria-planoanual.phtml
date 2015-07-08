@@ -1,0 +1,111 @@
+<?php
+/**
+ * Parecer Consolidado
+ * @author Equipe RUP - Politec
+ * @since 12/05/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.realizaranaliseprojeto
+ * @copyright ï¿½ 2010 - Ministï¿½rio da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+<script>
+    $(document).ready(function(){
+
+        <?php if ($this->stPlenaria != 'A') { ?>
+            $(".acaocoordenador").removeClass('sumir');
+        <?php } ?>
+        <?php if ($this->stPlenaria == 'A') { ?>
+            $(".acao").removeClass('sumir');
+        <?php } ?>
+            
+    });//$(document).ready
+    
+</script>
+
+<table class="tabela">
+    <tr>
+        <td><input type="button" id="projetosSubmetidosPlanoAnual" class="btn_remover" onclick="JSMostraOcultaElemento('projetosSubmetidosPlanoAnual');" /><b>Projetos submetidos &agrave; plen&aacute;ria - Plano Anual (<?php echo ($this->readequacao=='true') ? 'readequação' : 'análise inicial';?>)<div style="float: right">Quantidade: (<span id="qtdeProjPlenariaPlanoAnual"><?php echo $this->qtdplenario; ?></span>)</div></b></td>
+    </tr>
+</table>
+<table class="tabela projetosSubmetidosPlanoAnual">
+    <tr class="titulo_tabela">
+        <th width="5%">N&uacute;mero</th>
+        <th width="10%">Análise do Projeto</th>
+        <th width="5%">PRONAC</th>
+        <th width="35%">Nome do Projeto</th>
+        <?php if ($this->grupoativo == '119') { //presidente CNIC ?>
+            <th width="10%">Área do Projeto</th>
+            <th width="10%">Segmento</th>
+        <?php } ?>
+        <th width="5%">Parecer Favor&aacute;vel</th>
+        <th width="15%">Componente da Comiss&atilde;o</th>
+        <?php if ($this->grupoativo == '118' || $this->grupoativo == '133') { //118 = componente da comissao  133 = membros natos ?>
+            <th width="15%" >Realizar Voto</th>
+        <?php } ?>
+        <?php if ($this->grupoativo == '119') { ?>
+            <th width="5%" class="acao sumir">A&ccedil;&atilde;o</th>
+        <?php } ?>
+        <?php if ($this->grupoativo == '120') { ?>
+            <th width="5%" class="acaocoordenador sumir">Retornar</th>
+        <?php } ?>
+    </tr>
+    <?php
+    $a = 1;
+    if(count($this->projetosplenaria)){
+        foreach ($this->projetosplenaria as $plenario) {
+            $tipoagente = '';
+            if($this->grupoativo == '120'){
+                $tipoagente = 'cc';
+            }elseif($this->grupoativo == '118' || $this->grupoativo == '133'){
+                $tipoagente = 'coc';
+            }
+            ?>
+            <tr class="tradd" id="<?php echo $a."_".$plenario['IdPRONAC']; ?>" aberto="false">
+                <td class="centro"><?php echo $a ?></td>
+                <td class="centro"><a style="text-decoration:underline;cursor:pointer;" onClick="abrirdados('<?php echo $a."_".$plenario['IdPRONAC']; ?>', <?php echo $plenario['IdPRONAC']; ?>, '<?php echo $tipoagente; ?>','s')" title="An&aacute;lise do Projeto"><img src="<?php echo $this->baseUrl();?>/public/img/ico/kdict.png" title="Dados da Análise do Projeto" alt="Dados da Análise do Projeto" width="20px"/></a></td>
+                <!--<td class="centro"><a id="consultarprojetos" href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'), '', true); ?>?idPronac=<?php echo $plenario['IdPRONAC'];?>" target="_new" title="Ir para Consultar Projetos"><?php echo $plenario['pronac'] ?></a></td>-->
+                <td class="centro"><a id="consultarprojetos" href="<?php echo $this->url(array('controller' => 'dadosprojeto', 'action' => 'index', 'idpronac'=>$plenario['IdPRONAC']),'',true); ?>" target="_new" title="Ir para Consultar Projetos"><?php echo $plenario['pronac'] ?></a></td>
+                <td><?php echo $plenario['NomeProjeto'] ?></td>
+                <?php if ($this->grupoativo == '119') { //presidente CNIC ?>
+                    <td><?php echo $plenario['area'] ?></td>
+                    <td><?php echo $plenario['segmento'] ?></td>
+                <?php } ?>
+                <td class="centro"><?php echo $plenario['stAnalise'] == 'IC' ? 'N&atilde;o' : 'Sim' ?></td>
+                <td><?php echo $plenario['nomeComponente'] ?></td>
+                <?php if ($this->grupoativo == '118' || $this->grupoativo == '133') { //118 = componente da comissao  133 = membros natos ?>
+                <td class="centro" id="botoesvoto_<?php echo $plenario['IdPRONAC']; ?>" nowrap>
+                        <?php //if($plenario['pronac'] == '097022'){?> <!--<a href="#" style="text-decoration: none; font-weight: bold"><span style="color: blue;">[Aprovar]</span></a> | <a href="#" style="text-decoration: none; font-weight: bold"><span style="color: blue;">[Indeferir]</span></a> | <a href="#" style="text-decoration: none; font-weight: bold"><span style="color: blue;">[Abster]</span></a> <?php //}else{ ?> <span style="color: #ccc;">[Aprovar]</span> | <span style="color: #ccc;">[Indeferir]</span> | <span style="color: #ccc;">[Abster]</span>--> <?php //} ?>
+                        <span style="color: #ccc;">[Aprovar]</span> | <span style="color: #ccc;">[Indeferir]</span> | <span style="color: #ccc;">[Abster]</span>
+                </td>
+                <?php } ?>
+                <?php if ($this->grupoativo == '119') { //presidente CNIC ?>
+                    <td class="acao sumir centro">
+                        <!--<img class="statusvotacao" style="cursor:pointer;" idpronac ="<?php //echo $plenario['IdPRONAC']; ?>" pronac ="<?php //echo $plenario['pronac']; ?>" src='<?php //echo $this->pronacvotacaoatual == $plenario['IdPRONAC'] ? $this->baseUrl() . "/public/img/stop.gif' acao='parar'" : $this->baseUrl() . "/public/img/play.png' acao='iniciar'"; ?>'/>-->
+                        <!--<img class="statusvotacao" id="btn<?php //echo $plenario['IdPRONAC']; ?>" style="cursor:pointer;" idpronac ="<?php echo $plenario['IdPRONAC']; ?>" pronac ="<?php //echo $plenario['pronac']; ?>" src='<?php //echo (in_array($plenario['IdPRONAC'],$this->arrPronacVotacaoAtual)) ? $this->baseUrl() . "/public/img/stop.gif' acao='parar'" : $this->baseUrl() . "/public/img/play.png' acao='iniciar'"; ?>' onclick="JSIniciarVotacao(this);"/>-->
+                        <img class="statusvotacao" id="btn<?php echo $plenario['IdPRONAC']; ?>" style="cursor:pointer;" idpronac ="<?php echo $plenario['IdPRONAC']; ?>" pronac ="<?php echo $plenario['pronac']; ?>" tipo="inicial" src='<?php echo ($this->pronacvotacaoatual == $plenario['IdPRONAC']) ? $this->baseUrl() . "/public/img/stop.gif' acao='parar'" : $this->baseUrl() . "/public/img/play.png' acao='iniciar'"; ?>' onclick="JSIniciarVotacao(this);"/>
+                        <span id="loadingbtnvotacao_<?php echo $plenario['IdPRONAC']; ?>"></span>
+                    </td>
+                <?php } ?>
+                <?php if ($this->grupoativo == '120') { //coordenador CNIC ?>
+                    <td class="acaocoordenador centro sumir"><img onclick="JSRetornarProjeto('<?php echo $plenario['pronac'] ?>');" class="retornar" pronac="<?php echo $plenario['pronac'] ?>" src="<?php echo $this->baseUrl() ?>/public/img/btn_npublicar.gif" title="Retornar para componente" style="cursor: pointer;"/></td>
+                <?php } ?>
+            </tr>
+            <tr class="sumir" id="projetoemvotacao_<?php echo $plenario['IdPRONAC']; ?>">
+                <td id="votacao_<?php echo $plenario['IdPRONAC']; ?>" colspan="7" class="destacar">
+
+                </td>
+            </tr>
+            <?php $a++;
+        } 
+        
+    }else{ ?>
+    <tr>
+        <td colspan="9" class="centro">
+            <em><b>Não há projetos submetidos &agrave; plen&aacute;ria de plano anual</b></em>
+        </td>
+    </tr>
+<?php } ?>
+</table>

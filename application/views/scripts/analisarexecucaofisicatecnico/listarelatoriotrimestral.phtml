@@ -1,0 +1,87 @@
+<?php
+/**
+ * Alterar Projeto
+ * @author Equipe RUP - Politec
+ * @since 15/01/2011
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.alterarprojeto
+ * @copyright ? 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->baseUrl(); ?>/principal" title="Ir para Início">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->baseurl(); ?>/analisarexecucaofisicatecnico">Analisar Relat&oacute;rios Trimestrais</a></li>
+        <li class="last">Listagem Relat&oacute;rios Trimestrais</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<div id="titulo">
+    <div>Analisar Relat&oacute;rios Trimestrais
+        <span class="voltar"><a href="<?php echo $this->baseurl(); ?>/analisarexecucaofisicatecnico">Voltar</a></span>
+    </div>
+</div>
+<div id="conteudo">
+    <table class="tabela">
+        <tr>
+            <td><input type="button" id="abrir_fechar_analisados" class="btn_adicionar" />Relat&oacute;rios Trimestrais</td>
+        </tr>
+    </table>
+    <table class="tabela">
+        <tr>
+            <th>Relat&oacute;rios</th>
+            <th>Analisar Relat&oacute;rios</th>
+            <th>Status</th>
+            <th>Respons&aacute;vel pela An&aacute;lise</th>
+        </tr>
+
+            <?php foreach($this->dadosRelatorios as $dados){ ?>
+            <tr>
+                <td><?php echo $dados->nrRelatorioTrimestral ?>&ordm; Relat&oacute;rio</td>
+                <td style="text-align: center;">
+                    <a href="<?php echo $this->url(array('controller' => 'analisarexecucaofisicatecnico', 'action' => 'relatoriotrimestral', 'idPronac' => $dados->idPRONAC, 'idRelatorio' => $dados->idRelatorioTrimestral)); ?>">
+                        <img src="<?php echo $this->baseurl(); ?>/public/img/table_multiple.png" alt="">
+                    </a>
+                </td>
+                <td>
+                    <?php
+                    switch($dados->stRelatorioTrimestral){
+                        case 2:
+                            echo "Aguardando análise";
+                            break;
+                        case 3:
+                            echo "Aguardando análise";
+                            break;
+                        case 4:
+                            echo "Em análise";
+                            break;
+                        case 5:
+                            echo "Analisado";
+                            break;
+                        case 6:
+                            echo "Em análise";
+                            break;
+                        case 7:
+                            echo "Analisado";
+                            break;
+                    } ?>
+                </td>
+                <td><?php echo $this->nomeAgente($dados->idAgenteAvaliador); ?></td>
+            </tr>
+            <?php } ?>
+    </table>
+</div>
+<!-- final: conteudo principal #conteudo -->
+
+<!-- início: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+
+<br clear="all" />

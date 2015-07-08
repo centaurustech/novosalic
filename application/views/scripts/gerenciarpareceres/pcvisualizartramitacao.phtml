@@ -1,0 +1,109 @@
+<script type="text/javascript">
+
+function pdf()
+{
+	$('#formhtml').submit();
+}
+
+function xls()
+{
+	$('#formxls').submit();
+}	
+
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''),'',true); ?>" title="Ir para Início">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'index'),'',true); ?>" title="Gerenciar Pareceres">Gerenciar Pareceres T&eacute;cnicos</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'pareceresaconsolidar'),'',true); ?>" title="Gerenciar Pareceres">Pareceres a Consolidar</a></li>
+		<li class="last">Visualizar Tramitação</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Visualizar Tramitação<span>ID #23A</span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+<form id="formhtml" action="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'gerarpdf')); ?>" method="post">
+	<input name="htmlpdf" type="hidden" value="<?php echo $this->html; ?>" />
+	<input name="papel" type="hidden" value="horizontal" />
+</form>
+
+<form id="formxls" action="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'gerarxls')); ?>" method="post">
+	<input name="htmlxls" type="hidden" value="<?php echo $this->html; ?>" />
+</form>
+
+
+
+<?php if($this->dados): ?>
+	<table class="tabela">
+		<tr>
+			<td width="200" align="center">
+				<input type="button" class="btn_localizar" name="name" value=" " onclick="redirecionar('<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'buscarproduto'),'',true); ?>');" />
+			</td>
+			<td align="center">
+				<input type="button" class="btn_pdf" name="btn_pdf" style="width:44px;" value=" " onclick="pdf();"/>
+				<input type="button" class="btn_xls" name="btn_xls" style="width:44px;" value=" " onclick="xls();"/>
+			</td>
+			<td width="200" align="center">
+				<input type="button" class="btn_voltar" name="btn_voltar" value=" " onclick="voltar();"/>
+			</td>
+		</tr>
+	</table>
+
+	<table class="tabela">
+		<tr>
+			<th width="250" align="left">Produto</th>
+			<th width="200" align="left">TipoAnalise</th>
+			<th width="150" align="left">Unidade</th>
+			<th width="100" align="center">Data de Envio</th>
+			<th width="200" align="left">Observação</th>
+			<th width="150" align="left">Usuario</th>
+		</tr>
+		<?php foreach($this->dados as $d): ?>
+		<tr>
+			<td><?php echo $d->Produto; ?></td>
+			<td><?php echo $d->TipoAnalise; ?></td>
+			<td><?php echo $d->Unidade; ?></td>
+			<td align="center"><?php echo $d->DtEnvio; ?></td>
+			<td><?php echo $d->Observacao; ?></td>
+			<td><?php echo $d->Usuario; ?></td>
+		</tr>
+		<?php endforeach; ?>
+	</table>
+	
+	<!-- ============ PAGINAÇÃO ============ -->		   
+<?php if ($this->qtdDocumentos > 10) { echo $this->dados; } ?>
+<!-- ========== FIM PAGINAÇÃO ========== -->
+<?php else:?>
+	<center>
+	<br />	
+	<div style="text-align:center; color:#000; font-size:15px;">Não há registros a exibir</div>
+	<br />
+	<input type="button" class="btn_voltar" name="btn_voltar" value=" " onclick="history.back();"/>
+	</center><br />
+	
+<?php endif;?>	
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

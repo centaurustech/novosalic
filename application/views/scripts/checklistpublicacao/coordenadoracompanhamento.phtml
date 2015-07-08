@@ -1,0 +1,980 @@
+<?php
+//xd($this->BuscarDiligenciadosReadequados);
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+?>
+<script>
+    
+    
+    
+    function adicionarDias(data1, periodo){
+        data1 = data1.split("/");
+        data1 = new Date(data1[1]+"/"+data1[0]+"/"+data1[2]);
+        var datacalculada = new Date(data1.getTime() + (periodo * 24 * 60 * 60 * 1000));
+        //dataatual = data1.getFullYear() + '-' + (data1.getMonth()+1) + '-' + data1.getDate();
+        
+        var dia = datacalculada.getDate();
+        var mes = (datacalculada.getMonth()+1)
+        var ano = datacalculada.getFullYear();
+        
+        if (  dia < 10 )
+        {
+            dia = "0" + dia;
+        }
+
+        if (  mes < 10 )
+        {
+            mes = "0" + mes;
+        }
+        
+        datacalculada = dia + '/' + mes + '/' + ano;
+        return datacalculada;
+      
+     //return new Date(data.getTime() + (dias * 24 * 60 * 60 * 1000));
+     
+  }
+    $(document).ready(function(){
+      
+        
+                        $('#regular').tablesorter({
+                            headers: {
+                                2: {
+                                    sorter: false
+                                },
+                                3: {
+                                    sorter: false
+                                },
+                                4: {
+                                    sorter: false
+                                }
+                                ,
+                                5: {
+                                    sorter: false
+                                }
+                                ,
+                                6: {
+                                    sorter: false
+                                },
+                                7: {
+                                    sorter: false
+                                },
+                                8: {
+                                    sorter: false
+                                },
+                                10: {
+                                    sorter: false
+                                },
+                                11: {
+                                    sorter: false
+                                },
+                                12: {
+                                    sorter: false
+                                },
+                                13: {
+                                    sorter: false
+                                },
+                                14: {
+                                    sorter: false
+                                },
+                                15: {
+                                    sorter: false
+                                },
+                                16: {
+                                    sorter: false
+                                }
+                            }
+            
+        });
+        $('#diligencia').tablesorter({
+                            headers: {
+                                2: {
+                                    sorter: false
+                                },
+                                3: {
+                                    sorter: false
+                                },
+                                4: {
+                                    sorter: false
+                                }
+                                ,
+                                5: {
+                                    sorter: false
+                                }
+                                ,
+                                6: {
+                                    sorter: false
+                                },
+                                7: {
+                                    sorter: false
+                                },
+                                8: {
+                                    sorter: false
+                                },
+                                10: {
+                                    sorter: false
+                                },
+                                11: {
+                                    sorter: false
+                                },
+                                12: {
+                                    sorter: false
+                                },
+                                13: {
+                                    sorter: false
+                                },
+                                14: {
+                                    sorter: false
+                                },
+                                15: {
+                                    sorter: false
+                                },
+                                16: {
+                                    sorter: false
+                                }
+                            }
+            
+        });
+        $('#irregular').tablesorter({
+                            headers: {
+                                2: {
+                                    sorter: false
+                                },
+                                3: {
+                                    sorter: false
+                                },
+                                4: {
+                                    sorter: false
+                                }
+                                ,
+                                5: {
+                                    sorter: false
+                                }
+                                ,
+                                6: {
+                                    sorter: false
+                                },
+                                7: {
+                                    sorter: false
+                                },
+                                8: {
+                                    sorter: false
+                                },
+                                10: {
+                                    sorter: false
+                                },
+                                11: {
+                                    sorter: false
+                                },
+                                12: {
+                                    sorter: false
+                                },
+                                13: {
+                                    sorter: false
+                                },
+                                14: {
+                                    sorter: false
+                                },
+                                15: {
+                                    sorter: false
+                                },
+                                16: {
+                                    sorter: false
+                                }
+                            }
+            
+        });
+        
+        $(".btn_adicionar").click(function(){
+            var tipo = $(this).attr('tipo');
+            var aberto = $(this).attr('aberto');
+            if(aberto == 'true'){
+                $(this).attr('aberto','false')
+                $(".tabela[tipo="+tipo+"]").addClass('sumir');
+            }
+            else{
+                $(this).attr('aberto','true')
+                $(".tabela[tipo="+tipo+"]").removeClass('sumir');
+            }
+        });
+        
+        $(".btn_adicionar").click(function(){
+            var tipo = $(this).attr('tipo');
+            var aberto = $(this).attr('abertoAp');
+            if(aberto == 'true'){
+                $(this).attr('abertoAp','false')
+                $(".tabela[tipo="+tipo+"]").addClass('sumir');
+            }
+            else{
+                $(this).attr('abertoAp','true')
+                $(".tabela[tipo="+tipo+"]").removeClass('sumir');
+            }
+        });
+        
+        $(".btn_adicionar").click(function(){
+            var tipo = $(this).attr('tipo');
+            var aberto = $(this).attr('diligenciaAP');
+            if(aberto == 'true'){
+                $(this).attr('diligenciaAP','false')
+                $(".tabela[tipo="+tipo+"]").addClass('sumir');
+            }
+            else{
+                $(this).attr('diligenciaAP','true')
+                $(".tabela[tipo="+tipo+"]").removeClass('sumir');
+            }
+        });
+        
+        $(".btn_adicionar").click(function(){
+            var tipo = $(this).attr('tipo');
+            var aberto = $(this).attr('irregularAP');
+            if(aberto == 'true'){
+                $(this).attr('irregularAP','false')
+                $(".tabela[tipo="+tipo+"]").addClass('sumir');
+            }
+            else{
+                $(this).attr('irregularAP','true')
+                $(".tabela[tipo="+tipo+"]").removeClass('sumir');
+            }
+        });
+        
+
+        $('#dtinicioexecucao').mask('99/99/9999');
+        $('#dtfimexecucao').mask('99/99/9999');
+
+        $("#load").dialog({
+            resizable: false,
+            width:300,
+            height:160,
+            modal: true,
+            autoOpen:false
+        });
+
+        $("#error").dialog({
+            title:"Erro",
+            resizable: true,
+            width:300,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'OK': function() {
+                    $(this).dialog('close')
+                }
+            }
+        });
+
+        $("#MsgAlertas").dialog({
+            title:"Confimação",
+            resizable: true,
+            width:300,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'NÃO': function() {
+                    $(this).dialog('close')
+                },
+                'SIM': function() {
+                    $("form[name='formularioeditar']").submit();
+                    $("#divDinamica").remove();
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');
+                }
+            }
+        });
+
+
+    }); //fecha document.read
+
+    function JSEncaminharPortaria(idpronac){
+        var idpronac = idpronac;
+        $('html').css('overflow', 'hidden');
+        $("body").append("<div id='divDinamica'></div>");
+        $("#divDinamica").html("");
+        $('#divDinamica').html("<br>Deseja realmente encaminhar o projeto para a publica&ccedil;&atilde;o no DOU?");
+        var title = 'Confimação';
+        $("#divDinamica").dialog({
+            //resizable: true,
+            width:300,
+            height:200,
+            modal: true,
+            autoOpen:true,
+            title: title,
+            buttons: {
+                'NÃO': function() {
+                    $("#divDinamica").remove();
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');
+                },
+                'SIM': function() {
+                    window.location = "<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'gravar-encaminhamento-portaria')); ?>?idpronac="+idpronac;
+                    $("#divDinamica").remove();
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');
+                }
+            },
+            close: function() {
+                $("#divDinamica").remove();
+                $(this).dialog('close');
+                $('html').css('overflow', 'auto');
+            }
+        });
+    }
+
+
+    function JSRegularidadeProponente(cfpCnpj){
+
+        $('html').css('overflow', 'hidden');
+        $("body").append("<div id='divDinamica'></div>");
+        $("#divDinamica").html("");
+        $('#divDinamica').html("<br><br><center>Carregando dados...</center>");
+        $.ajax({
+            url:'<?php echo $this->url(array('controller' => 'checarregularidade', 'action' => 'index')); ?>?CgcCpf='+cfpCnpj,
+            data :
+            {
+                CgcCpf : cfpCnpj
+            },
+            success: function(data){
+                $('#divDinamica').html(data);
+            },
+            type : 'post'
+
+        });
+        var title = 'Documentos Pendentes';
+        $("#divDinamica").dialog({
+            //resizable: true,
+            width:225,
+            height:380,
+            modal: true,
+            autoOpen:true,
+            title: title,
+            buttons: {
+                'OK': function() {
+                    //$(this).dialog('close');
+                    $("#divDinamica").remove();
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');
+                }
+            },
+            close: function() {
+                $("#divDinamica").remove();
+                $(this).dialog('close');
+                $('html').css('overflow', 'auto');
+            }
+        });
+
+    }
+
+
+    function JSAlterarProjeto(idPronac){
+        $('html').css('overflow', 'hidden');
+        $("body").append("<div id='divDinamica'></div>");
+        $("#divDinamica").html("");
+        $('#divDinamica').html("<br><br><center>Carregando dados...</center>");
+        $.ajax({
+            url:'<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'alterar-projeto')); ?>',
+            data :
+            {
+                idpronac : idPronac//,
+                //editar : 'ok'
+            },
+            success: function(data){
+                $('#divDinamica').html(data);
+            },
+            type : 'post'
+
+        });
+
+        var title = 'Alterar Projeto';
+        $("#divDinamica").dialog({
+            //resizable: true,
+            width:800,
+            height:600,
+            modal: true,
+            autoOpen:true,
+            draggable:false,
+            title: title,
+            buttons: {
+                'Cancelar': function() {
+                    //$(this).dialog('close');
+                    $("#divDinamica").remove();
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');
+                },
+                'Salvar': function() {
+                    if(($('#enq').val() == 'Selecione...') || ($('#areacultural').val() == '') || ($('#segmento').val() == '') || ($('#enq').val() == '') || ($('#dtinicioexecucao').val() == '') || ($('#dtfimexecucao').val() == ''))
+                    {
+                        $('#error').dialog('open');
+                    }
+                    else{
+                        if(($('#enqAtual').val() != $('#enq').val()) &&  $.trim($('#dsjustificativa').val()) == ''){
+                            $('#error').dialog('open');
+                        }
+                        else{
+                            $("#MsgAlertas").html('Deseja salvar as Altera&ccedil;&otilde;es?');
+                            $("#MsgAlertas").dialog('open');
+                        }
+                    }
+                }
+                ,
+                'Finalizar': function() {
+                    var idpronac = $('#idpronac').val(idpronac);
+                    $("form[name='formulariofinalizar']").submit();
+                    /*$.ajax({
+                        async : true,
+                        data:{
+                            idpronac : idpronac,
+                            finalizarCheckList : "finalizarCheckList"
+                        },
+                        url:'<?php echo $this->url(array('controller' => 'checklistpublicacao', 'action' => 'gravar-finalizacao-analise')); ?>',
+                        type:'POST'
+                        , success : function()
+                        {
+                                $("#divDinamica").remove();
+                                $(this).dialog('close');
+                                //document.location.reload();
+                        }
+                    });*/
+                    $("#divDinamica").remove();
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');
+                }
+            },
+            close: function() {
+                    $("#divDinamica").remove();
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');
+                }
+        });
+    }
+
+</script>
+<div id="MsgAlertas" style="display:none;">
+</div>
+<div id="error" style="display:none;">Dados Obrigatórios não preenchidos!</div>
+<div id="load" class="carregando sumir" style="width:100%; height:100%;" title="Carregando..."><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" alt="carregando"><br/><br/>Carregando...<br>Por Favor, aguarde!!</div>
+
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->baseUrl(); ?>" title="Ir para Início">Início</a></li>
+        <li class="last">Checklist de publicação</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Checklist de publicação <span></span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+        <table id="geralTable">
+            <table class="tabela">
+                <tr>
+                    <td><input type="button" name="grid1" id="g1_1" class="btn_remover" title="Recolher" /> PROJETO APROVADO - AGUARDANDO ANÁLISE DOCUMENTAL - PROPONENTE REGULAR</td>
+                </tr>
+            </table>
+            <div id="div_g1_1" class="miolo_grid_01">
+            <table class="tabela tablesorter" id="regular" tipo="regular">
+                <thead>
+                    <tr>
+                        <th>pronac</th>
+                        <th>Nome do Projeto</th>
+                        <th>Área Cultural/Segmento</th>
+                        <th>Resumo</th>
+                        <th>UF</th>
+                        <th>Art.</th>
+                        <th>Período de Capta&ccedil;&atilde;o</th>
+                        <th>Período de Execução</th>
+                        <th>Valor Acumulado</th>
+                        <th>Plenária</th>
+                        <?php if (!empty ($this->coordenador ) ){?>
+                            <th>Técnico</th>
+                        <?php }?>
+                        <th>Status</th>
+                        <th>Documentos Pendentes</th>
+                        <th>Dilig&ecirc;ncia</th>
+                        <th>Alterar</th>
+                        <?php if (!empty ($this->coordenador ) ){?>
+                            <th>Encaminhar Para Portaria</th>
+                        <?php }?>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php
+                
+                $stDiligenciaD = sizeof($this->stDiligenciaD);
+                $stDiligenciaSalic = sizeof($this->stSalic);
+                
+                if ( !empty ( $this->BuscarAprovadosRegularesReadequados ) ){
+                    foreach ($this->BuscarAprovadosRegularesReadequados as  $aprovadosRegulares) {
+                    $vd = false;
+                        ?>
+                        <tr class="maismenos" tipo="regular">
+                            <td>
+                                <a target="_blank" href="<?php echo $this->url ( array ('controller' => 'consultardadosprojeto', 'action' => '' ) ) . '?idPronac=' . $aprovadosRegulares['idpronac']; ?>" class="itenspronac" style="text-decoration: underline; cursor: pointer;">
+                                    <?php echo $this->escape($aprovadosRegulares['pronac']); ?>
+                                </a>
+                            </td>
+                            <td><?php echo $this->escape($aprovadosRegulares['NomeProjeto']); ?></td>
+                            <td><?php echo $this->escape($aprovadosRegulares['area']); ?><br/>/<?php echo $this->escape($aprovadosRegulares['segmento']); ?></td>
+                            <td><?php echo $this->escape(substr($aprovadosRegulares['ResumoProjeto'], 0, 100)); ?>...</td>
+                            <td><?php echo $this->escape($aprovadosRegulares['UfProjeto']); ?></td>
+                            <td><?php echo $this->escape($aprovadosRegulares['enquadramento']); ?></td>
+                            <td>
+                                <?php echo $this->escape(Data::tratarDataZend($aprovadosRegulares['DtInicioCaptacao'], 'brasileiro')); ?>
+                                <?php echo $this->escape(Data::tratarDataZend($aprovadosRegulares['DtFimCaptacao'], 'brasileiro')); ?>
+                            </td>
+                            <td>
+                                <?php echo $this->escape(Data::tratarDataZend($aprovadosRegulares['DtInicioExecucao'], 'brasileiro')); ?>
+                                <?php echo $this->escape(Data::tratarDataZend($aprovadosRegulares['DtFimExecucao'], 'brasileiro')); ?>
+                            </td>
+                            <td><?php echo $this->escape($this->formatarReal($aprovadosRegulares['AprovadoReal'])); ?></td>
+                            <td><?php echo $this->escape($aprovadosRegulares['NrReuniao']); ?></td>
+                            <?php if (!empty ($this->coordenador ) ){?>
+                                <td align="center">
+                                    <?php echo $this->escape($aprovadosRegulares['NomeTecnico']); ?>
+                                </td>
+                            <?php }?>
+                            <td align="center">
+                                <?php if($aprovadosRegulares['stAnaliseProjeto'] == '1' || empty($aprovadosRegulares['stAnaliseProjeto'])) $bg = '#FF7B00';?>
+                                <?php if($aprovadosRegulares['stAnaliseProjeto'] == '2') $bg = '#16C0C9';?>
+                                <?php if($aprovadosRegulares['stAnaliseProjeto'] == '3') $bg = '#66B20A';?>
+                                <span style="font-weight: bold; color: <?php echo $bg;?>"><?php echo $this->escape($aprovadosRegulares['status']); ?></span>
+                            </td>
+                            <td align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/ico/archive.png" onclick="JSRegularidadeProponente('<?php echo ($aprovadosRegulares['CgcCpf']); ?>')" style="cursor: pointer"/></td>
+                            <td align="center">
+                           <?php
+                              
+                                $tempoFimDiligencia = NULL;
+                                $diligenciado = null;
+
+                                if($aprovadosRegulares['stEnviado'] == 'N'){
+                                    $tempoFimDiligencia = '20';
+                                }else{
+                                    $tempoFimDiligencia = '40';
+                                }
+
+                                /* Diligencia */
+                                if ($aprovadosRegulares['DtSolicitacao'] && $aprovadosRegulares['DtResposta'] == NULL)
+                                {
+                                    $diligencia = 1;
+
+                                    $diligenciado = "notice.png";
+                                    $Titlediligenciado = "Diligenciado";
+                                }
+                                else if ($aprovadosRegulares['DtSolicitacao'] && $aprovadosRegulares['DtResposta'] != NULL)
+                                {
+                                    $diligencia = 2;
+
+                                    $diligenciado = "notice3.png";
+                                    $Titlediligenciado = "Diligencia respondida";
+                                }
+                                //else if ($aprovadosRegulares['DtSolicitacao && round(data::CompararDatas($aprovadosRegulares['DtDistribuicao)) > $tempoFimDiligencia)
+                                else if ($aprovadosRegulares['DtSolicitacao'] && round(data::CompararDatas($aprovadosRegulares['DtSolicitacao'])) > $tempoFimDiligencia)
+                                {
+                                    $diligencia = 3;
+
+                                    $diligenciado = "notice2.png";
+                                    $Titlediligenciado = "Diligência não respondida";
+                                }
+                                else
+                                {
+                                    $diligencia = 0;
+
+                                    $diligenciado = "notice1.png";
+                                    $Titlediligenciado = "A Diligenciar";
+                                }
+                                ?>
+
+                                <a target="_blank" href="<?php echo $this->url(array('controller' => 'diligenciar', 'action' =>'listardiligenciaanalista')).'?idPronac=' . $aprovadosRegulares['IdPRONAC'] . '&situacao=D33&tpDiligencia=182';?>" ><img src="<?php echo $this->baseUrl(); ?>/public/img/<?php echo $diligenciado; ?>" title="<?php echo $Titlediligenciado; ?>" width="30px"/></a>
+
+                            </td>            
+                            <td>
+                                <input type="hidden" value="<?php echo $this->escape($aprovadosRegulares['idpronac']); ?>"/>
+                                <!--<img class="alterar" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/alterar.gif" onclick="JSAlterarProjeto('<?php echo $this->escape($aprovadosRegulares['idpronac']); ?>')"/>-->
+                                <img src="<?php echo $this->baseUrl(); ?>/public/img/buttons/alterar.gif" onclick="JSAlterarProjeto('<?php echo ($aprovadosRegulares['idpronac']); ?>')" style="cursor: pointer"/>
+                            </td>
+                            <?php if (!empty ($this->coordenador ) ){?>
+                            <td align="center">
+                                <?php if ($aprovadosRegulares['stAnaliseProjeto'] == '3'){ //Analise finalizada?>
+                                    <img id="encaminhar" src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png" style="cursor: pointer" onclick="JSEncaminharPortaria(<?php echo $this->escape($aprovadosRegulares['idpronac']); ?>)"/>
+                                <?php }?>
+                            </td>
+                            <?php }?>
+                        </tr>
+                        <?php
+                    }   
+                }
+                ?>
+                <?php if (count($this->BuscarAprovadosRegularesReadequados) <= 0) : ?>
+                <tr>
+                        <td align="center" colspan="<?php if (!empty($this->coordenador)){ echo 16; } else { echo 14; }?>">Nenhum Projeto Aprovado - Aguardando An&aacute;lise Documental - Proponente Regular</td>
+                </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+        </div>
+
+            <table class="tabela">
+                    <tr>
+                            <td><input type="button" name="grid1" id="g1_2" class="btn_remover" title="Recolher" /> PROJETO APROVADO - PROPONENTE DILIGENCIADO</td>
+                    </tr>
+            </table>
+            <div id="div_g1_2" class="miolo_grid_01">
+            <table class="tabela tablesorter" id="diligencia" tipo="diligencia">
+                <thead>
+                    <tr>
+                        <th>pronac</th>
+                        <th>Nome do Projeto</th>
+                        <th>Área Cultural/Segmento</th>
+                        <th>Resumo</th>
+                        <th>UF</th>
+                        <th>Art.</th>
+                        <th>Período de Capta&ccedil;&atilde;o</th>
+                        <th>Período de Execução</th>
+                        <th>Valor Acumulado</th>
+                        <th>Plenária</th>
+                        <?php if (!empty ($this->coordenador ) ){?>
+                            <th>Técnico</th>
+                        <?php }?>
+                        <th>Status</th>
+                        <th>Documentos Pendentes</th>
+                        <th>Dilig&ecirc;ncia</th>
+                        <th>Alterar</th>
+                        <?php if (!empty ($this->coordenador ) ){?>
+                            <th>Encaminhar Para Portaria</th>
+                        <?php }?>
+
+                    </tr>
+                </thead>
+                <tbody>
+                <?php
+                if ( !empty ( $this->BuscarDiligenciadosReadequados ) ){
+                    foreach ($this->BuscarDiligenciadosReadequados as $diligenciados) {
+                    $vdr = false
+                        ?>
+                        <tr>
+                            <td>
+                                <a target="_blank" href="<?php echo $this->url ( array ('controller' => 'consultardadosprojeto', 'action' => '' ) ) . '?idPronac=' . $diligenciados['idpronac']; ?>" class="itenspronac" style="text-decoration: underline; cursor: pointer;">
+                                    <?php echo $this->escape($diligenciados['pronac']); ?>
+                                </a>
+                             </td>
+                            <td><?php echo $this->escape($diligenciados['NomeProjeto']); ?></td>
+                            <td><?php echo $this->escape($diligenciados['area']); ?><br/>/<?php echo $this->escape($diligenciados['segmento']); ?></td>
+                            <td><?php echo $this->escape(substr($diligenciados['ResumoProjeto'], 0, 100)); ?>...</td>
+                            <td><?php echo $this->escape($diligenciados['UfProjeto']); ?></td>
+                            <td><?php echo $this->escape($diligenciados['enquadramento']); ?></td>
+                            <td>
+                                <?php echo $this->escape(Data::tratarDataZend($diligenciados['DtInicioCaptacao'], 'brasileiro')); ?>
+                                <?php echo $this->escape(Data::tratarDataZend($diligenciados['DtFimCaptacao'], 'brasileiro')); ?>
+                            </td>
+                            <td>
+                                <?php echo $this->escape(Data::tratarDataZend($diligenciados['DtInicioExecucao'], 'brasileiro')); ?>
+                                <?php echo $this->escape(Data::tratarDataZend($diligenciados['DtFimExecucao'], 'brasileiro')); ?>
+                            </td>
+                            <td><?php echo $this->escape($this->formatarReal($diligenciados['AprovadoReal'])); ?></td>
+                            <td><?php echo $this->escape($diligenciados['NrReuniao']); ?></td>
+                            <?php if (!empty ($this->coordenador ) ){?>
+                                <td align="center">
+                                    <?php echo $this->escape($diligenciados['NomeTecnico']); ?>
+                                </td>
+                            <?php }?>
+                            <td align="center">
+                                <?php if($diligenciados['stAnaliseProjeto'] == '1' || empty($diligenciados['stAnaliseProjeto'])) $bg = '#FF7B00';?>
+                                <?php if($diligenciados['stAnaliseProjeto'] == '2') $bg = '#16C0C9';?>
+                                <?php if($diligenciados['stAnaliseProjeto'] == '3') $bg = '#66B20A';?>
+                                <span style="font-weight: bold; color: <?php echo $bg;?>"><?php echo $this->escape($diligenciados['status']); ?></span>
+                            </td>
+                            <td align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/ico/archive.png" onclick="JSRegularidadeProponente('<?php echo ($diligenciados['CgcCpf']); ?>')" style="cursor: pointer"/></td>
+                            <td align="center">
+                                 <?php
+                                  $verificaPronac = true;
+                               //echo '<a href="' . $this->baseUrl() . '/diligenciar/listardiligenciaanalista?idPronac=' . $diligenciados->IdPRONAC . '&situacao=E25&tpDiligencia=174" title="Com diligencia sem respostas"><img src="' . $this->baseUrl() . '/public/img/notice1.png" width="25px" height="25px"></a>';
+                               /*if ( !empty ( $this->stDiligenciaD  ) )
+                               {
+                                    $stDiligenciaD = sizeof($this->stDiligenciaD);
+
+                                    for ($i=0;$i<$stDiligenciaD;$i++) { 
+
+                                    if ( (isset( $this->stDiligenciaD[$i][1]) ) && ($this->stDiligenciaD[$i][1] == $diligenciados['IdPRONAC'])  && $verificaPronac) 
+                                        {
+                                         $verificaPronac = false;
+                                         $vdr = true;
+                                        if ($this->stDiligenciaD[$i][0] == 0) {
+                                            echo '<a href="' . $this->baseUrl() . '/diligenciar/listardiligenciaanalista?idPronac=' . $diligenciados['IdPRONAC'] . '&situacao=D03&tpDiligencia=124" title="Sem diligencia"><img src="' . $this->baseUrl() . '/public/img/notice.png" width="25px" height="25px"></a>';
+                                        } else if ($this->stDiligenciaD[$i][0] == 1) {
+                                            echo '<a href="' . $this->baseUrl() . '/diligenciar/listardiligenciaanalista?idPronac=' . $diligenciados['IdPRONAC'] . '&situacao=D03&tpDiligencia=124" title="Com diligencia sem respostas"><img src="' . $this->baseUrl() . '/public/img/notice1.png" width="25px" height="25px"><img src="' . $this->baseUrl() . '/public/img/notice2.png" width="25px" height="25px"></a>';
+                                        } else {
+                                            echo '<a href="' . $this->baseUrl() . '/diligenciar/listardiligenciaanalista?idPronac=' . $diligenciados['IdPRONAC'] . '&situacao=D03&tpDiligencia=124" title="Com diligencia respondida"><img src="' . $this->baseUrl() . '/public/img/notice2.png" width="25px" height="25px"></a>';
+                                        }
+
+                                       }
+
+                                    }
+                                    if ( $vdr == false )
+                                    {
+                                       echo '<a href="' . $this->baseUrl() . '/diligenciar/listardiligenciaanalista?idPronac=' . $diligenciados['IdPRONAC'] . '&situacao=D25&tpDiligencia=124" title="Sem diligencia"><img src="' . $this->baseUrl() . '/public/img/notice.png" width="25px" height="25px"></a>';
+                                    }
+                               }
+                               else
+                               {
+                                   echo '<a href="' . $this->baseUrl() . '/diligenciar/listardiligenciaanalista?idPronac=' . $diligenciados['IdPRONAC'] . '&situacao=D25&tpDiligencia=124" title="Sem diligencia"><img src="' . $this->baseUrl() . '/public/img/notice.png" width="25px" height="25px"></a>';
+                               }*/
+
+                                    $tempoFimDiligencia = NULL;
+                                    $diligenciado = null;
+
+                                    if($diligenciados['stEnviado'] == 'N'){
+                                        $tempoFimDiligencia = '20';
+                                    }else{
+                                        $tempoFimDiligencia = '40';
+                                    }
+
+                                    /* Diligencia */
+                                    if ($diligenciados['DtSolicitacao'] && $diligenciados['DtResposta'] == NULL)
+                                    {
+                                        $diligencia = 1;
+
+                                        $diligenciado = "notice.png";
+                                        $Titlediligenciado = "Diligenciado";
+                                    }
+                                    else if ($diligenciados['DtSolicitacao'] && $diligenciados['DtResposta'] != NULL)
+                                    {
+                                        $diligencia = 2;
+
+                                        $diligenciado = "notice3.png";
+                                        $Titlediligenciado = "Diligencia respondida";
+                                    }
+                                    //else if ($diligenciados['DtSolicitacao && round(data::CompararDatas($diligenciados['DtDistribuicao)) > $tempoFimDiligencia)
+                                    else if ($diligenciados['DtSolicitacao'] && round(data::CompararDatas($diligenciados['DtSolicitacao'])) > $tempoFimDiligencia)
+                                    {
+                                        $diligencia = 3;
+
+                                        $diligenciado = "notice2.png";
+                                        $Titlediligenciado = "Diligência não respondida";
+                                    }
+                                    else
+                                    {
+                                        $diligencia = 0;
+
+                                        $diligenciado = "notice1.png";
+                                        $Titlediligenciado = "A Diligenciar";
+                                    }
+                                    ?>
+
+                                    <a target="_blank" href="<?php echo $this->url(array('controller' => 'diligenciar', 'action' =>'listardiligenciaanalista')).'?idPronac=' . $diligenciados['IdPRONAC'] . '&situacao=D33&tpDiligencia=182';?>" ><img src="<?php echo $this->baseUrl(); ?>/public/img/<?php echo $diligenciado; ?>" title="<?php echo $Titlediligenciado; ?>" width="30px"/></a>
+
+                            </td>
+                            <td>
+                                <input type="hidden" value="<?php echo $this->escape($diligenciados['idpronac']); ?>"/>
+                                <!--<img class="alterar" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/alterar.gif"/>-->
+                                <img src="<?php echo $this->baseUrl(); ?>/public/img/buttons/alterar.gif" onclick="JSAlterarProjeto('<?php echo ($diligenciados['idpronac']); ?>')" style="cursor: pointer"/>
+                            </td>
+                            <?php if (!empty ($this->coordenador ) ){?>
+                                <td align="center">
+                                    <?php if ($diligenciados['stAnaliseProjeto'] == '3'){ //Analise finalizada?>
+                                    <img id="encaminhar" src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png" style="cursor: pointer" onclick="JSEncaminharPortaria(<?php echo $this->escape($diligenciados['idpronac']); ?>)"/>
+                                    <?php }?>
+                                </td>
+                            <?php }?>
+                        </tr>
+                        <?php
+                    }
+                }
+                ?>
+
+				<?php if (count($this->BuscarDiligenciadosReadequados) <= 0) : ?>
+				<tr>
+					<td align="center" colspan="<?php if (!empty($this->coordenador)){ echo 16; } else { echo 14; }?>">Nenhum Projeto Aprovado - Proponente Diligenciado</td>
+				</tr>
+				<?php endif; ?>
+            </tbody>
+            </table>
+            </div>
+
+			<table class="tabela">
+				<tr>
+					<td><input type="button" name="grid1" id="g1_3" class="btn_remover" title="Recolher" /> PROJETO APROVADO - PROPONENTE IRREGULAR</td>
+				</tr>
+			</table>
+			<div id="div_g1_3" class="miolo_grid_01">
+            <table class="tabela tablesorter" id="irregular" tipo="irregular">
+                <thead>
+                    <tr >
+                        <th>pronac</th>
+                        <th>Nome do Projeto</th>
+                        <th>Área Cultural/Segmento</th>
+                        <th>Resumo</th>
+                        <th>UF</th>
+                        <th>Artigo</th>
+                        <th>Período de Capta&ccedil;&atilde;o</th>
+                        <th>Período de Execução</th>
+                        <th>Valor Acumulado</th>
+                        <th>Plenária</th>
+                        <?php if (!empty ($this->coordenador ) ){?>
+                            <th>Técnico</th>
+                        <?php }?>
+                        <th>Status</th>
+                        <th>Documentos Pendentes</th>
+                        <th>Dilig&ecirc;ncia</th>
+                        <th>Alterar</th>
+                        <?php if (!empty($this->coordenador)) { ?>
+                            <th>Encaminhar Para Portaria</th>
+                        <?php } ?>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php
+                if ( !empty ( $this->BuscarIrregularSalicReadequados ) ){
+                    foreach ($this->BuscarIrregularSalicReadequados as $salic) {
+                    $vds = false;
+                        ?>
+                        <tr>
+                            <td>
+                                <a target="_blank" href="<?php echo $this->url ( array ('controller' => 'consultardadosprojeto', 'action' => '' ) ) . '?idPronac=' . $salic['idpronac']; ?>" class="itenspronac" style="text-decoration: underline; cursor: pointer;">
+                                    <?php echo $this->escape($salic['pronac']); ?>
+                                </a>
+                            </td>
+                            <td><?php echo $this->escape($salic['NomeProjeto']); ?></td>
+                            <td><?php echo $this->escape($salic['area']); ?><br/>/<?php echo $this->escape($salic['segmento']); ?></td>
+                            <td><?php echo $this->escape(substr($salic['ResumoProjeto'], 0, 100)); ?>...</td>
+                            <td><?php echo $this->escape($salic['UfProjeto']); ?></td>
+                            <td><?php echo $this->escape($salic['enquadramento']); ?></td>
+                            <td>
+                                <?php echo $this->escape(Data::tratarDataZend($salic['DtInicioCaptacao'], 'brasileiro')); ?>
+                                <?php echo $this->escape(Data::tratarDataZend($salic['DtFimCaptacao'], 'brasileiro')); ?>
+                            </td>
+                            <td>
+                                <?php echo $this->escape(Data::tratarDataZend($salic['DtInicioExecucao'], 'brasileiro')); ?>
+                                <?php echo $this->escape(Data::tratarDataZend($salic['DtFimExecucao'], 'brasileiro')); ?>
+                            </td>
+                            <td><?php echo $this->escape($this->formatarReal($salic['AprovadoReal'])); ?></td>
+                            <td><?php echo $this->escape($salic['NrReuniao']); ?></td>
+                            <?php if (!empty ($this->coordenador ) ){?>
+                                <td align="center">
+                                    <?php echo $this->escape($salic['NomeTecnico']); ?>
+                                </td>
+                            <?php }?>
+                            <td align="center">
+                                <?php if($salic['stAnaliseProjeto'] == '1' || empty($salic['stAnaliseProjeto'])) $bg = '#FF7B00';?>
+                                <?php if($salic['stAnaliseProjeto'] == '2') $bg = '#16C0C9';?>
+                                <?php if($salic['stAnaliseProjeto'] == '3') $bg = '#66B20A';?>
+                                <span style="font-weight: bold; color: <?php echo $bg;?>"><?php echo $this->escape($salic['status']); ?></span>
+                            </td>
+                            <td align="center"><img src="<?php echo $this->baseUrl(); ?>/public/img/ico/archive.png" onclick="JSRegularidadeProponente('<?php echo ($salic['CgcCpf']); ?>')" style="cursor: pointer"/></td>
+                            <td align="center">
+                               <?php
+                               /*$verificaPronac = true;
+                               if ( !empty ( $this->stSalic ) )
+                               {
+                                   $stDiligenciaSalic = sizeof($this->stSalic);
+                                   for ($i=0;$i<$stDiligenciaSalic;$i++) { 
+
+                                    if ( (isset( $this->stSalic[$i][1]) ) && ($this->stSalic[$i][1] == $salic['IdPRONAC']) && $verificaPronac ) 
+                                    {
+                                        $verificaPronac = false;
+                                        $vds = true;
+                                        if ($this->stSalic[$i][0] == 0) {
+                                            echo '<a href="' . $this->baseUrl() . '/diligenciar/listardiligenciaanalista?idPronac=' . $salic['IdPRONAC'] . '&situacao=D25&tpDiligencia=124" title="Sem diligencia"><img src="' . $this->baseUrl() . '/public/img/notice.png" width="25px" height="25px"></a>';
+                                        } else if ($this->stSalic[$i][0] == 1) {
+                                            echo '<a href="' . $this->baseUrl() . '/diligenciar/listardiligenciaanalista?idPronac=' . $salic['IdPRONAC'] . '&situacao=D25&tpDiligencia=124" title="Com diligencia sem respostas"><img src="' . $this->baseUrl() . '/public/img/notice1.png" width="25px" height="25px"></a>';
+                                        } else {
+                                            echo '<a href="' . $this->baseUrl() . '/diligenciar/listardiligenciaanalista?idPronac=' . $salic['IdPRONAC'] . '&situacao=D25&tpDiligencia=124" title="Com diligencia respondida"><img src="' . $this->baseUrl() . '/public/img/notice2.png" width="25px" height="25px"></a>';
+                                        }
+                                    }
+                                   }
+                                   if ( $vds == false )
+                                   {
+                                       echo '<a href="' . $this->baseUrl() . '/diligenciar/listardiligenciaanalista?idPronac=' . $salic['IdPRONAC'] . '&situacao=D25&tpDiligencia=124" title="Sem diligencia"><img src="' . $this->baseUrl() . '/public/img/notice.png" width="25px" height="25px"></a>';
+                                   }
+                               }
+                               else
+                               {
+                                   echo '<a href="' . $this->baseUrl() . '/diligenciar/listardiligenciaanalista?idPronac=' . $salic['IdPRONAC'] . '&situacao=D25&tpDiligencia=124" title="Sem diligencia"><img src="' . $this->baseUrl() . '/public/img/notice.png" width="25px" height="25px"></a>';
+                               }
+                               */
+                               
+                                $tempoFimDiligencia = NULL;
+                                $diligenciado = null;
+
+                                if($salic['stEnviado'] == 'N'){
+                                    $tempoFimDiligencia = '20';
+                                }else{
+                                    $tempoFimDiligencia = '40';
+                                }
+
+                                /* Diligencia */
+                                if ($salic['DtSolicitacao'] && $salic['DtResposta'] == NULL)
+                                {
+                                    $diligencia = 1;
+
+                                    $diligenciado = "notice.png";
+                                    $Titlediligenciado = "Diligenciado";
+                                }
+                                else if ($salic['DtSolicitacao'] && $salic['DtResposta'] != NULL)
+                                {
+                                    $diligencia = 2;
+
+                                    $diligenciado = "notice3.png";
+                                    $Titlediligenciado = "Diligencia respondida";
+                                }
+                                //else if ($salic['DtSolicitacao && round(data::CompararDatas($salic['DtDistribuicao)) > $tempoFimDiligencia)
+                                else if ($salic['DtSolicitacao'] && round(data::CompararDatas($salic['DtSolicitacao'])) > $tempoFimDiligencia)
+                                {
+                                    $diligencia = 3;
+
+                                    $diligenciado = "notice2.png";
+                                    $Titlediligenciado = "Diligência não respondida";
+                                }
+                                else
+                                {
+                                    $diligencia = 0;
+
+                                    $diligenciado = "notice1.png";
+                                    $Titlediligenciado = "A Diligenciar";
+                                }
+                                ?>
+
+                                <a target="_blank" href="<?php echo $this->url(array('controller' => 'diligenciar', 'action' =>'listardiligenciaanalista')).'?idPronac=' . $salic['IdPRONAC'] . '&situacao=D33&tpDiligencia=182';?>" ><img src="<?php echo $this->baseUrl(); ?>/public/img/<?php echo $diligenciado; ?>" title="<?php echo $Titlediligenciado; ?>" width="30px"/></a>
+
+                            </td>
+                            <td>
+                                <input type="hidden" value="<?php echo $this->escape($salic['idpronac']); ?>"/>
+                                <!--<img class="alterar" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/alterar.gif"/>-->
+                                <img src="<?php echo $this->baseUrl(); ?>/public/img/buttons/alterar.gif" onclick="JSAlterarProjeto('<?php echo ($salic['idpronac']); ?>')" style="cursor:pointer"/>
+                            </td>
+                            <?php if (!empty ($this->coordenador ) ){?>
+                                <td align="center">
+                                    <?php if ($salic['stAnaliseProjeto'] == '3'){ //Analise finalizada?>
+                                        <img id="encaminhar" src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png" style="cursor: pointer" onclick="JSEncaminharPortaria(<?php echo $this->escape($salic['idpronac']); ?>)"/>
+                                    <?php }?>
+                                </td>
+                            <?php }?>
+                        </tr>
+                        <?php
+                    }
+                }
+                ?>
+
+			<?php if (count($this->BuscarIrregularSalicReadequados) <= 0) : ?>
+			<tr>
+				<td align="center" colspan="<?php if (!empty($this->coordenador)){ echo 16; } else { echo 14; }?>">Nenhum Projeto Aprovado - Proponente Irregular</td>
+			</tr>
+			<?php endif; ?>
+        </tbody>
+        </table>
+        </div>
+</table>
+
+</div>
+
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

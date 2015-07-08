@@ -1,0 +1,80 @@
+<script>
+    $(document).ready(function(){
+        $(".btn_pesquisar").click(function(){
+            $("#resultadoConsulta").html("");
+            jqAjaxForm(document.getElementById("frmExtratoPauta"), "resultadoConsulta");
+        });
+
+    });
+</script>
+
+<?php include("scripts/relatorio/inc/menuGerencial.inc.php"); ?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''), '', true); ?>" title="Ir para Página Inicial">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'relatorio', 'action' => ''), '', true); ?>" title="Ir para Relatorio">Gerar Relatório Análise</a></li>
+		<li class="last">Gerencial</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Consulta visual por t&eacute;cnico<span class="voltar"><a href="javascript:voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="conteudo">
+    <fieldset>
+        <legend> Filtros de pesquisa </legend>
+        <form action="<?php echo $this->url(array('controller' => 'relatorio', 'action' => 'resultado-visual-tecnico')); ?>" method="post" name="frmExtratoPauta" id="frmExtratoPauta">
+        <table class="tabela" style="width:90%">
+            <tbody><tr>
+                    <th colspan="2">Selecionar campos para pesquisa</th>
+                </tr>
+                <tr>
+                    <td>Avalia&ccedil;&atilde;o</td>
+                    <td align="left">
+                        <select name="avaliacao" id="avaliacao" style="width: 200px;" class="input_simples">
+                            <option value="">- Selecione -</option>
+                            <option value="9">Inicial</option>
+                            <option value="0">Reavalia&ccedil;&atilde;o</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>T&eacute;cnico</td>
+                    <td align="left">
+                        <select name="tecnico" id="tecnico" style="width: 200px;" class="input_simples">
+                            <option value="">- Selecione -</option>
+                            <?php foreach ($this->tecnicos as $item): ?>
+                                <option value="<?php echo $item->Nome; ?>"><?php echo $item->Nome; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="tabela" style="width: 90%">
+            <tr>
+                <td align="center">
+                    <input type="button" style="width: 88px" class="btn_pesquisar" id="btn_pesquisar"/>
+                    <input type="reset" style="width: 88px" class="btn_limpar" id="btn_limpar" value=""/>
+                </td>
+            </tr>
+        </table>
+        </form>
+    </fieldset>
+    <div id="resultadoConsulta"></div>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

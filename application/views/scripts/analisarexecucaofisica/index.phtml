@@ -1,0 +1,71 @@
+<?php
+/**
+ * Alterar Projeto
+ * @author Equipe RUP - Politec
+ * @since 15/01/2011
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.alterarprojeto
+ * @copyright ? 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="index.html" title="Ir para Início">Início</a></li>
+        <li class="last">Analisar Relat&oacute;rios Trimestrais</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<div id="titulo">
+    <div>Analisar Relat&oacute;rios Trimestrais
+        <span class="voltar"><a href="#" onkeypress="voltar()" onclick="voltar();">Voltar</a></span>
+    </div>
+</div>
+<div id="conteudo">
+    <table class="tabela">
+        <tr>
+            <th>pronac</th>
+            <th>Nome Projeto</th>
+            <th>UF</th>
+            <th>Data Início Execu&ccedil;&atilde;o</th>
+            <th>Data Fim Execu&ccedil;&atilde;o</th>
+            <th>Dilig&ecirc;ncia</th>
+            <th>Analisar Relat&oacute;rio Trimestral</th>
+        </tr>
+        <?php
+                            if ($this->grid) {
+                                foreach ($this->relatorio as $relatorio) {
+        ?>
+                                    <tr>
+                                        <td class="pronac"><?php echo $relatorio->AnoProjeto . $relatorio->Sequencial ?></td>
+                                        <td class="nomeprojeto"><?php echo $relatorio->NomeProjeto; ?></td>
+                                        <td><?php echo $relatorio->UfProjeto; ?></td>
+                                        <td><?php echo $relatorio->dtInicioExecucao; ?></td>
+                                        <td><?php echo $relatorio->dtFimExecucao; ?></td>
+                                        <td style="text-align: center;"><a href="<?php echo $this->url(array('controller'=>'diligenciar', 'action'=>'cadastrardiligencia'))?>?idPronac=<?php echo $relatorio->IdPRONAC;?>&situacao=E61&tpDiligencia=174"><img src="<?php echo $this->baseurl(); ?>/public/img/btn_publicar.gif" alt=""></a></td>
+                                        <td style="text-align: center;"><a href="<?php echo $this->url(array('controller' => 'analisarexecucaofisicatecnico', 'action' => 'listarelatoriotrimestral', 'idpronac' => $relatorio->IdPRONAC, 'idrelatorio' =>$relatorio->idRelatorio)); ?>"><img src="<?php echo $this->baseurl(); ?>/public/img/table_multiple.png" alt=""></a></td>
+                                    </tr>
+        <?php
+                                }
+                            } else {
+        ?>
+                                <tr>
+                                    <td colspan="10" style="text-align: center; font-size: 14pt;">Nenhum projeto encontrado</td>
+                                </tr>
+        <?php
+                            }
+        ?>
+    </table>
+</div><!-- final: conteudo principal #conteudo -->
+
+<!-- início: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+
+<br clear="all" />

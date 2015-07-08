@@ -1,0 +1,392 @@
+<?php //require_once 'scripts/controlarmovimentacaobancaria/inc/menu.inc.php'; ?>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#btn_pesquisar").click(function(){
+            var pronac = $('#pronacPesquisa').val(),
+                filtro = $('.comboFiltro').val();
+            window.location = "<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-extrato-de-conta-captacao')); ?>?pag=1&tipoFiltro="+filtro+"&pronac="+pronac;
+        });
+
+        $('#pronacPesquisa').keydown(function(event){
+            if(event.keyCode == 13){
+                $("#btn_pesquisar").click();
+            }
+        });
+
+        $('.comboFiltro').change(function(){
+            window.location = "<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-extrato-de-conta-captacao')); ?>?tipoFiltro="+$(this).val();
+        });
+
+        $('.btn_imprimir').click(function(){
+            $('#addCampoXls').remove();
+            $('#formImpressao').submit();
+        });
+        
+        $('.btn_xls').click(function(){
+            $('#addCampoXls').remove();
+            $('#formImpressao').append('<input id="addCampoXls" type="hidden" name="xls" value="1">');
+            $('#formImpressao').submit();
+        });
+
+        $('.transacao_individual').click(function(){
+            var id = $(this).attr('idcap'),
+                valorEditado = $(this).attr('valorEditado'),
+                pronac = $(this).attr('pronac'),
+                liberado = $(this).attr('liberado');
+
+            $("#msgAlerta").dialog("destroy");
+            $("#msgAlerta").html('Deseja realmente transferir o valor de '+valorEditado+' para o Pronac '+pronac+'?');
+            $("#msgAlerta").dialog({
+                resizable:false,
+                title:'Alerta!',
+                width:320,
+                height:180,
+                modal:true,
+                buttons: {
+                    'Não': function(){
+                        $("#msgAlerta").dialog("destroy");
+                    },
+                    'Sim': function() {
+                        $("#msgAlerta").dialog("destroy");
+                        window.location = "<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'transferencia-conta-captacao')); ?>?id="+id+"&liberado="+liberado;
+                    }
+                }
+            });
+            //$('.ui-dialog-titlebar-close').remove();
+        });
+
+        $('.transacao_coletiva').click(function(){
+            var lista = new Array(),
+                vlTotal = $('#vlTotal').html(),
+                x = 0;
+            $('.ids_transacao_coletiva').each(function(){
+                lista[x] = $(this).val();
+                x++;
+            });
+
+            $("#msgAlerta").dialog("destroy");
+            $("#msgAlerta").html('Deseja realmente transferir o valor de '+vlTotal+' para o Pronac <?php echo $this->pronacProjeto;?>?');
+            $("#msgAlerta").dialog({
+                resizable:false,
+                title:'Alerta!',
+                width:320,
+                height:180,
+                modal:true,
+                buttons: {
+                    'Não': function(){
+                        $("#msgAlerta").dialog("destroy");
+                    },
+                    'Sim': function() {
+                        $("#msgAlerta").dialog("destroy");
+                        $.ajax({
+                            type: 'POST',
+                            url: '<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'transferencia-coletiva-conta-captacao')); ?>',
+                            data: {
+                                listaTransf: lista
+                            },
+                            success: function(data){
+                                if(data.resposta){
+                                    message('Transferência está sendo executada com sucesso. Por favor, aguarde!', 'CONFIRM');
+                                    $("#msgAlerta").dialog("destroy");
+                                    $("#msgAlerta").html('<center><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" alt="carregando"><br /><br />Transação concluída.<br />Por favor, aguarde!!</center>');
+                                    $("#msgAlerta").dialog({
+                                        resizable: false,
+                                        title: 'Alerta!',
+                                        width:300,
+                                        height:150,
+                                        modal: true
+                                    });
+                                    $('.ui-dialog-titlebar-close').remove();
+
+                                    //window.setInterval(function() {
+                                        document.location.reload();
+                                        //$("#msgAlerta").dialog("destroy");
+                                    //}, 2500);
+
+                                } else {
+                                    message('Erro ao executar a transferência.', 'ERROR');
+                                }
+
+                            },
+                            dataType : 'json'
+                        });
+                    }
+                }
+            });
+
+
+        });
+    });
+</script>
+
+
+<div id="msgAlerta"></div>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'), '', true); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'liberarcontabancaria', 'action' => 'index'), '', true); ?>" title="Ir para In&iacute;cio">Movimenta&ccedil;&atilde;o banc&aacute;ria</a></li>
+        <li class="last">Transfer&ecirc;ncia de Recurso</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Transfer&ecirc;ncia de Recurso <!--<span class="voltar"><a href="<?php //echo $this->url(array('controller'=>'movimentacaodeconta', 'action'=>'form-extrato-de-conta-captacao')); ?>" title="Ir para página anterior">Voltar</a></span>--></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+    <table class="tabela">
+	<tr>
+            <td class="destacar bold" width="1" align="center">PRONAC</td>
+            <td width="220" align="center">
+                <input type="text" class="input_simples" name="pronacPesquisa" id="pronacPesquisa" maxlength="7" style="width: 90px;" value="<?php echo $this->pronacProjeto;?>">
+                <input type="button" name="btn_pesquisar" id="btn_pesquisar" class="btn_pesquisar" value="">
+            </td>
+            <td align="center">
+                <select name="tipoFiltro" style="width: 140px;" class="input_simples comboFiltro">
+                    <option value="">Captou 20%</option>
+                    <option value="nc" <?php echo (isset($_GET['tipoFiltro']) && !empty($_GET['tipoFiltro']))=='nc'?'selected="selected"':''; ?>>N&atilde;o captou 20%</option>
+                </select>
+            </td>
+            <td width="550" align="center">
+                <div style="float: left;"><img src="<?php echo $this->baseUrl(); ?>/public/img/notice1.png" width="20px"/></div><div style="margin-top: 2px; margin-right: 15px; margin-left: 3px; float: left;"> A diligenciar</div>
+                <div style="float: left;"><img src="<?php echo $this->baseUrl(); ?>/public/img/notice.png" width="20px"/></div><div style="margin-top: 2px;  margin-right: 15px; margin-left: 3px; float: left"> Diligenciado</div>
+                <div style="float: left;"><img src="<?php echo $this->baseUrl(); ?>/public/img/notice3.png" width="20px"/></div><div style="margin-top: 2px; margin-right: 15px; margin-left: 3px; float: left"> Diligência respondida</div>
+                <div style="float: left;"><img src="<?php echo $this->baseUrl(); ?>/public/img/notice2.png" width="20px"/></div><div style="margin-top: 2px; margin-right: 15px; margin-left: 3px; float: left"> Diligência não respondida</div>
+            </td>
+        </tr>
+    </table>
+
+    <?php if(count($this->dados)>0){ ?>
+    <!-- ============ PAGINAÇÃO ============ -->
+    <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+        <tbody>
+            <tr>
+                <td align="center">
+                <form name="form1" id="form1" action="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-extrato-de-conta-captacao'));?>" method="get">
+                    <?php if($this->paginacao['pag']>1) { ?>
+                    <input class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-extrato-de-conta-captacao')).'?pag=1'."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro.'&pronac='.$this->pronacProjeto; ?>'">
+                    <?php } ?>
+                    <input id="btn_p_anterior" type="button"
+                    <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                    <?php }else { ?>
+                           class="btn_p_anterior" onclick="location.href='<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-extrato-de-conta-captacao')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro.'&pronac='.$this->pronacProjeto; ?>'"
+                    <?php } ?>>
+                    <input id="btn_p_proximo" type="button"
+                           <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                           class="btn_p_proximo-off"
+                    <?php }else { ?>
+                           class="btn_p_proximo" onclick="location.href='<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-extrato-de-conta-captacao')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro.'&pronac='.$this->pronacProjeto; ?>'"
+                    <?php } ?>>
+                    <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                    <input class="btn_ultimo" id="btn_ultimo" type="button"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-extrato-de-conta-captacao')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro.'&pronac='.$this->pronacProjeto; ?>'">
+                    <?php } ?>
+                    Pág.:<select name="pag" id="pag" onchange="$('#form1').submit()" class="input_simples">
+                        <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                        <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                        <?php endfor; ?>
+                    </select>
+                    &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>"><input type="submit" class="btn_recarregar" value="">
+                    <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                    <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                    <input type="hidden" name="tipoFiltro" value="<?php echo $this->filtro;?>">
+                    <input type="hidden" name="pronac" value="<?php echo $this->pronacProjeto;?>">
+                    <input type="button" class="btn_imprimir" title="Imprimir" />
+                    <input type="button" class="btn_xls" title="Gerar Excel" />
+                 </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <center>
+        <?php
+            echo $this->paginacao['inicio']." a ";
+            echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+            echo " de ". $this->paginacao['total']. " Projetos listados";
+        ?>
+    </center>
+    <!-- ========== FIM PAGINAÇÃO ========== -->
+    <?php } ?>
+    
+
+    <?php if($this->qtdRegistros > 0){ ?>
+    <table class="tabela tablesorter">
+        <thead>
+            <tr class="titulo_tabela">
+                <th width="1px">N&ordm;</th>
+                <th><a href="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-extrato-de-conta-captacao')).'?pag=1&qtde='.$this->paginacao['qtde'].'&tipoFiltro='.$this->filtro.'&campo=1&ordem='.$this->paginacao['novaOrdem'];?>">PRONAC</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-extrato-de-conta-captacao')).'?pag=1&qtde='.$this->paginacao['qtde'].'&tipoFiltro='.$this->filtro.'&campo=13&ordem='.$this->paginacao['novaOrdem'];?>">Situação</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-extrato-de-conta-captacao')).'?pag=1&qtde='.$this->paginacao['qtde'].'&tipoFiltro='.$this->filtro.'&campo=2&ordem='.$this->paginacao['novaOrdem'];?>">CPF/CNPJ</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-extrato-de-conta-captacao')).'?pag=1&qtde='.$this->paginacao['qtde'].'&tipoFiltro='.$this->filtro.'&campo=8&ordem='.$this->paginacao['novaOrdem'];?>">Incentivador</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-extrato-de-conta-captacao')).'?pag=1&qtde='.$this->paginacao['qtde'].'&tipoFiltro='.$this->filtro.'&campo=6&ordem='.$this->paginacao['novaOrdem'];?>">N&ordm; do Lote</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-extrato-de-conta-captacao')).'?pag=1&qtde='.$this->paginacao['qtde'].'&tipoFiltro='.$this->filtro.'&campo=3&ordem='.$this->paginacao['novaOrdem'];?>">Dt. do Lote</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-extrato-de-conta-captacao')).'?pag=1&qtde='.$this->paginacao['qtde'].'&tipoFiltro='.$this->filtro.'&campo=4&ordem='.$this->paginacao['novaOrdem'];?>">Dt. Capta&ccedil;&atilde;o</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-extrato-de-conta-captacao')).'?pag=1&qtde='.$this->paginacao['qtde'].'&tipoFiltro='.$this->filtro.'&campo=7&ordem='.$this->paginacao['novaOrdem'];?>">Tipo de Apoio</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-extrato-de-conta-captacao')).'?pag=1&qtde='.$this->paginacao['qtde'].'&tipoFiltro='.$this->filtro.'&campo=9&ordem='.$this->paginacao['novaOrdem'];?>">Conta Liberada</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-extrato-de-conta-captacao')).'?pag=1&qtde='.$this->paginacao['qtde'].'&tipoFiltro='.$this->filtro.'&campo=10&ordem='.$this->paginacao['novaOrdem'];?>">% Captado</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-extrato-de-conta-captacao')).'?pag=1&qtde='.$this->paginacao['qtde'].'&tipoFiltro='.$this->filtro.'&campo=5&ordem='.$this->paginacao['novaOrdem'];?>">Vl. Captado</a></th>
+                <?php if(!isset($_GET['tipoFiltro']) || $_GET['tipoFiltro'] != 'nc'){ ?>
+                <th>Dilig&ecirc;ncia</th>
+                <th>Transfer&ecirc;ncia</th>
+                <?php } ?>
+            </tr>
+        </thead>
+        <tbody>
+            <?php $vlTotal=0; $x=1; $pronacAnterior=0; foreach($this->dados as $projeto){ ?>
+            <tr>
+                <td class="centro"><?php echo $x; ?></td>
+                <td class="centro">
+
+                    <?php if( isset($this->pronacProjeto) && !empty($this->pronacProjeto) && $x == 1){ ?>
+                    <a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'));?>?idPronac=<?php echo ($projeto->IdPRONAC); ?>" target="_blank">
+                        <?php echo $projeto->PRONAC; ?>
+                    </a>
+                    <?php } else if( !isset($this->pronacProjeto) || empty($this->pronacProjeto) ){ ?>
+                    <a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'));?>?idPronac=<?php echo ($projeto->IdPRONAC); ?>" target="_blank">
+                        <?php echo $projeto->PRONAC; ?>
+                    </a>
+                    <?php } ?>
+                </td>
+                <td class="centro"><?php echo $projeto->Situacao; ?></td>
+                <td nowrap><?php echo Validacao::mascaraCPFCNPJ($projeto->CgcCpfMecena); ?></td>
+                <td><?php echo $projeto->Incentivador; ?></td>
+                <td class="centro"><?php echo $projeto->NumeroRecibo; ?></td>
+                <td class="centro"><?php echo date("d/m/Y",strtotime($projeto->DtChegadaRecibo)); ?></td>
+                <td class="centro"><?php echo date("d/m/Y",strtotime($projeto->DtRecibo)); ?></td>
+                <td><?php echo $projeto->TipoApoio; ?></td>
+                <td class="centro"><?php echo (isset($projeto->DtLiberacao) && !empty($projeto->DtLiberacao)) ? 'Sim' : '<span style="color:red; font-weight: bold;">Não</span>'; ?></td>
+                <td class="direita"><?php echo $projeto->Percentual; ?></td>
+                <td class="direita" nowrap><?php echo "R$ ".number_format($projeto->CaptacaoReal,'2',',','.'); ?></td>
+                <?php if(!isset($_GET['tipoFiltro']) || $_GET['tipoFiltro'] != 'nc'){ ?>
+                <td align="center" >
+                    <?php if( isset($this->pronacProjeto) && !empty($this->pronacProjeto) && $x == 1){ ?>
+                        <?php $arrPrazo = $this->prazoRespostaDiligencia($projeto->IdPRONAC, 183);
+                        $icone = $arrPrazo['iconeDiligencia']['icone'];
+                        $title = $arrPrazo['iconeDiligencia']['title']; ?>
+                        <a target="_blank" href="<?php echo $this->url(array('controller' => 'diligenciar', 'action' =>'listardiligenciaanalista')).'?idPronac=' . $projeto->IdPRONAC . '&situacao=E50&tpDiligencia=183';?>" ><img src="<?php echo $this->baseUrl(); ?>/public/img/<?php echo $icone; ?>" title="<?php echo $title; ?>" width="30px"/></a><br>
+                    <?php } else if( !isset($this->pronacProjeto) || empty($this->pronacProjeto) ){ ?>
+                        <?php $arrPrazo = $this->prazoRespostaDiligencia($projeto->IdPRONAC, 183);
+                        $icone = $arrPrazo['iconeDiligencia']['icone'];
+                        $title = $arrPrazo['iconeDiligencia']['title']; ?>
+                        <a target="_blank" href="<?php echo $this->url(array('controller' => 'diligenciar', 'action' =>'listardiligenciaanalista')).'?idPronac=' . $projeto->IdPRONAC . '&situacao=E50&tpDiligencia=183';?>" ><img src="<?php echo $this->baseUrl(); ?>/public/img/<?php echo $icone; ?>" title="<?php echo $title; ?>" width="30px"/></a><br>
+                    <?php } ?>
+                </td>
+                <td class="centro">
+                    <input type="hidden" class="ids_transacao_coletiva" value="<?php echo $projeto->idCaptacao; ?>" />
+                    <?php if( isset($this->pronacProjeto) && !empty($this->pronacProjeto) && $x == 1){ ?>
+                    <input type="button" class="btn_transferir transacao_coletiva" />
+                    <?php } else if( !isset($this->pronacProjeto) || empty($this->pronacProjeto) ){ ?>
+                    <input type="button" class="btn_transferir transacao_individual" idcap="<?php echo $projeto->idCaptacao; ?>" valorEditado="<?php echo "R$".number_format($projeto->CaptacaoReal,'2',',','.'); ?>" pronac="<?php echo $projeto->PRONAC; ?>" liberado="<?php echo (isset($projeto->DtLiberacao) && !empty($projeto->DtLiberacao)) ? 1 : 0; ?>" />
+                    <?php } ?>
+                </td>
+                <?php } ?>
+            </tr>
+            <?php $vlTotal = $vlTotal+$projeto->CaptacaoReal; $x++; } ?>
+
+        </tbody>
+    </table>
+
+    <br clear="all" />
+
+    <table class="tabela">
+        <tr>
+            <td align="right" style="font-size: 16px; color: #333; font-weight: bold;">Total Captado</td>
+            <td align="right" width="140px" style="font-size: 14px; color: #333; font-weight: bold;" nowrap id="vlTotal"><?php echo 'R$'.number_format($vlTotal, 2, ",", "."); ?></td>
+        </tr>
+    </table>
+
+    <?php if(count($this->dados)>0){ ?>
+
+        <!-- ============ PAGINAÇÃO ============ -->
+        <?php if($this->qtdRegistros > 10) { //echo $this->dados; ?>
+        <center>
+            <?php
+                echo $this->paginacao['inicio']." a ";
+                echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+                echo " de ". $this->paginacao['total'];
+            ?>
+        </center>
+        <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+            <tbody>
+                <tr>
+                    <td align="center">
+                    <form name="form2" id="form2" action="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-extrato-de-conta-captacao'));?>" method="get">
+                        <?php if($this->paginacao['pag']>1) { ?>
+                        <input class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-extrato-de-conta-captacao')).'?pag=1'."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro.'&pronac='.$this->pronacProjeto; ?>'">
+                        <?php } ?>
+                        <input id="btn_p_anterior" type="button"
+                        <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                        <?php }else { ?>
+                               class="btn_p_anterior" onclick="location.href='<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-extrato-de-conta-captacao')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro.'&pronac='.$this->pronacProjeto; ?>'"
+                        <?php } ?>>
+                        <input id="btn_p_proximo" type="button"
+                               <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                               class="btn_p_proximo-off"
+                        <?php }else { ?>
+                               class="btn_p_proximo" onclick="location.href='<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-extrato-de-conta-captacao')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro.'&pronac='.$this->pronacProjeto; ?>'"
+                        <?php } ?>>
+                        <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                        <input class="btn_ultimo" id="btn_ultimo" type="button"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-extrato-de-conta-captacao')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&tipoFiltro='.$this->filtro.'&pronac='.$this->pronacProjeto; ?>'">
+                        <?php } ?>
+                        Pág.:<select name="pag" id="pag" onchange="$('#form2').submit()" class="input_simples">
+                            <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                            <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                            <?php endfor; ?>
+                        </select>
+                        &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>"><input type="submit" class="btn_recarregar" value="">
+                        <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                        <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                        <input type="hidden" name="tipoFiltro" value="<?php echo $this->filtro;?>">
+                        <input type="hidden" name="pronac" value="<?php echo $this->pronacProjeto;?>">
+                        <input type="button" class="btn_imprimir" title="Imprimir" />
+                        <input type="button" class="btn_xls" title="Gerar Excel" />
+                     </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- ========== FIM PAGINAÇÃO ========== -->
+
+    <?php } } ?>
+
+
+    <?php } else { ?>
+    <table class="tabela">
+        <tr>
+            <td align="center">Nenhum registro encontrado.</td>
+        </tr>
+    </table>
+    <?php } ?>
+    <br clear="all" />
+
+    <form name="formImpressao" id="formImpressao" action="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'imprimir-extrato-de-conta-captacao'));?>" method="post" target="_blank">
+        <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+        <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+        <input type="hidden" name="pag" value="<?php echo $this->paginacao['pag'];?>">
+        <input type="hidden" name="qtde" value="<?php echo $this->intTamPag;?>">
+        <input type="hidden" name="tipoFiltro" value="<?php echo $this->filtro;?>">
+        <input type="hidden" name="pronac" value="<?php echo $this->pronacProjeto;?>">
+    </form>
+
+
+</div><!-- fecha div resultado ajax -->
+    
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

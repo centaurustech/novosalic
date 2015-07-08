@@ -1,0 +1,107 @@
+<?php
+include_once 'scripts/manterpropostaedital/inc/menu.inc.php';
+?>
+<!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'edital')); ?>" title="Ir para Propostas">Edital</a></li>
+        <li class="last">Dados do Proponente </li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INICIO TITULO ========== -->
+<div id="titulo">
+    <div>Alterar Data de Nascimento<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+<div id="conteudo">
+
+
+<div class="demo">
+
+
+
+<table class="tabela">
+<tr class="titulo_tabela">
+<th colspan="3">Alterar Data de Nascimento</th>
+<tr><td colspan="3"></td></tr>
+</tr>
+
+<tr>
+<td class="esquerda" ><b>Data de Nascimento * </b></td>
+<td class="esquerda"><input type="text" name=" " id=" " maxlength="10"  style="width:100px;" onkeyup="mascara(this, format_data);" /><img src="<?php echo $this->baseUrl(); ?>/public/img/calendar.jpg" />
+</td>
+</tr>
+
+
+
+
+<tr>
+<td class="esquerda" ><b>Sexo* </b>
+</td>
+<td class="esquerda">
+<select class="input_simples" name=" " id=" ">
+<option value=" " selected="selected">Masculino</option>
+<option value=" " >Feminino</option>
+</select>
+</td>
+</tr>
+
+<tr>
+<td class="esquerda" ><b>Necessidade Especial* </b> </td>
+<td class="esquerda">
+<select class="input_simples" name=" " id=" ">
+<option value=" " selected="selected">Sim</option>
+<option value=" " >N&atilde;o</option>
+</select>
+</td>
+</tr>
+
+
+<tr>
+<td class="esquerda" ><b>Estado Civil* </b> </td>
+<td class="esquerda">
+<select class="input_simples" name=" " id=" ">
+<option value=" " selected="selected">Solteiro</option>
+<option value=" " >Casado</option>
+<option value=" " >Separado(a) Judicialmente</option>
+<option value=" " >Divorciado</option>
+<option value=" " >Vi&uacute;vo</option>
+<option value=" " >Outros</option>
+</select>
+</td>
+</tr>
+
+
+<tr>
+<td class="esquerda" ><b>Nome da M&atilde;e * </b>
+</td>
+<td class="esquerda"><input type="text" name=" " id=" " maxlength="100"  style="width:600px;" />
+</td>
+</tr>
+
+
+
+<tr>
+<td class="esquerda" ><b>Nome do Pai * </b>
+</td>
+<td class="esquerda"> <input type="text" name=" " id=" " maxlength="100"  style="width:600px;" />
+</td>
+</tr>
+
+
+
+
+
+        <tr  class="centro"><td colspan="3">
+
+        <a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'listardeslocamento')); ?>"><img src="<?php echo $this->baseUrl(); ?>/public/img/buttons/salvar.gif" />
+
+  </td></tr>
+    </table>
+</div>
+<br clear="all" />

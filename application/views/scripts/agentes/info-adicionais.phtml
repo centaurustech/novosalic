@@ -1,0 +1,187 @@
+<?php require_once "inc/menu.inc.php"; ?>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        // máscaras dos campos
+        $("#dtNascimento").keyup(function(){
+            mascara(this, format_data); // data
+        });
+        
+        $('#processo').mask('99999.999999/9999-99');
+
+        // calendário
+        $.datepicker.regional['pt-BR'] = {
+            closeText: 'Fechar',
+            prevText: '&#x3c;Anterior',
+            nextText: 'Pr&oacute;ximo&#x3e;',
+            currentText: 'Hoje',
+            monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+            dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','S&aacute;bado'],
+            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            weekHeader: 'Sm',
+            dateFormat: 'dd/mm/yy',
+            firstDay: 0,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: ''
+        };
+        $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+
+        // id dos campos que utilizarão o calendário
+        $("#dtNascimento").datepicker($.datepicker.regional['pt-BR']);
+
+        $("#btnsalvar").click(function(){
+            var preenchimento = false;
+            $('.obrigatorio').each(function(){
+                if($.trim($(this).val()) == '')
+                    preenchimento = true;
+            });
+
+            if(preenchimento) {
+                $("#camposObrigatorios").dialog("destroy");
+                $("#camposObrigatorios").html("Favor preencher os dados obrig&aacute;torios!");
+                $("#camposObrigatorios").dialog({
+                    resizable: false,
+                    title: 'Alerta!',
+                    width:320,
+                    height:160,
+                    modal: true,
+                    buttons : {
+                        'OK' : function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+                $('.ui-dialog-titlebar-close').remove();
+
+            } else {
+                $('#formInfoAdicionais').submit();
+            }
+        });
+
+    });
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'),'',true);?>" title="Ir para Início">Início</a></li>
+        <li>Manter Agentes</li>
+        <li class="last">Informações Adicionais</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Informações Adicionais <span class="voltar"><a href="javascript:voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<div class="sumir" id="camposObrigatorios"></div>
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+    <?php //require_once "inc/cabecalho.php";?>
+    <div id="formNovo">
+        <form id="formInfoAdicionais" action="<?php echo $this->url(array('controller' => 'agentes', 'action' => 'salvar-info-adicionais'));?>" method="post">
+            <table class="tabela" style="width:40%;">
+                <input type="hidden" name="agente" id="agente" value="<?php echo $this->id; ?>" />
+                <th colspan="2">Dados do Proponente</th>
+                <tr>
+                    <td class="destacar bold" align="right" width="150px" nowrap>Data de Nascimento<span style="color: red;">*</span></td>
+                    <td>
+                        <input class="input_simples btn_calendario" type="text" name="dtNascimento" id="dtNascimento" maxlength="10" value="<?php echo isset($this->dadosAdicionais) ? Data::tratarDataZend($this->dadosAdicionais->dtNascimento, 'brasileira') : ''; ?>" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="destacar bold" align="right" width="150px" nowrap>Sexo<span style="color: red;">*</span></td>
+                    <td>
+                        <select name="sexo" id="sexo" class="select_simples obrigatorio">
+                            <option value="">- Selecione -</option>
+                            <option value="M" <?php echo isset($this->dadosAdicionais) && $this->dadosAdicionais->stSexo == 'M' ? 'selected="selected"' : ''; ?>>Masculino</option>
+                            <option value="F" <?php echo isset($this->dadosAdicionais) && $this->dadosAdicionais->stSexo == 'F' ? 'selected="selected"' : ''; ?>>Feminino</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="destacar bold" align="right" width="150px" nowrap>Estado Civil<span style="color: red;">*</span></td>
+                    <td>
+                        <select name="estadoCivil" id="estadoCivil" class="select_simples obrigatorio">
+                            <option value="">- Selecione -</option>
+                            <option value="SO" <?php echo isset($this->dadosAdicionais) && $this->dadosAdicionais->stEstadoCivil == 'SO' ? 'selected="selected"' : ''; ?>>Solteiro(a)</option>
+                            <option value="CA" <?php echo isset($this->dadosAdicionais) && $this->dadosAdicionais->stEstadoCivil == 'CA' ? 'selected="selected"' : ''; ?>>Casado(a)</option>
+                            <option value="DI" <?php echo isset($this->dadosAdicionais) && $this->dadosAdicionais->stEstadoCivil == 'DI' ? 'selected="selected"' : ''; ?>>Divorciado(a)</option>
+                            <option value="VI" <?php echo isset($this->dadosAdicionais) && $this->dadosAdicionais->stEstadoCivil == 'VI' ? 'selected="selected"' : ''; ?>>Viúvo(a)</option>
+                            <option value="SJ" <?php echo isset($this->dadosAdicionais) && $this->dadosAdicionais->stEstadoCivil == 'SJ' ? 'selected="selected"' : ''; ?>>Separado(a) Judicialmente</option>
+                            <option value="OU" <?php echo isset($this->dadosAdicionais) && $this->dadosAdicionais->stEstadoCivil == 'OU' ? 'selected="selected"' : ''; ?>>Outros</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="destacar bold" align="right" width="150px" nowrap>Necessidade Especial<span style="color: red;">*</span></td>
+                    <td>
+                        <select name="necEspecial" id="necEspecial" class="select_simples obrigatorio">
+                            <option value="">- Selecione -</option>
+                            <option value="N" <?php echo isset($this->dadosAdicionais) && $this->dadosAdicionais->stNecessidadeEspecial == 'N' ? 'selected="selected"' : ''; ?>>Não</option>
+                            <option value="S" <?php echo isset($this->dadosAdicionais) && $this->dadosAdicionais->stNecessidadeEspecial == 'S' ? 'selected="selected"' : ''; ?>>Sim</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="destacar bold" align="right" width="150px" nowrap>Nome da Mãe<span style="color: red;">*</span></td>
+                    <td>
+                        <input class="input_simples w300 obrigatorio" type="text" name="nomeMae" id="nomeMae" maxlength="100" value="<?php echo isset($this->dadosAdicionais) ? trim($this->dadosAdicionais->nmMae) : ''; ?>" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="destacar bold" align="right" width="150px" nowrap>Nome do Pai<span style="color: red;">*</span></td>
+                    <td>
+                        <input class="input_simples w300 obrigatorio" type="text" name="nomePai" id="nomePai" maxlength="100" value="<?php echo isset($this->dadosAdicionais) ? trim($this->dadosAdicionais->nmPai) : ''; ?>"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="destacar bold" align="right" width="150px" nowrap>Cor / Raça</td>
+                    <td>
+                        <select name="raca" id="raca" class="select_simples" style="width: 120px;">
+                            <option value=""> - Selecione - </option>
+                            <option value="1" <?php echo isset($this->dadosAdicionais) && $this->dadosAdicionais->stCorRaca == '1' ? 'selected="selected"' : ''; ?>>Branca</option>
+                            <option value="2" <?php echo isset($this->dadosAdicionais) && $this->dadosAdicionais->stCorRaca == '2' ? 'selected="selected"' : ''; ?>>Negra</option>
+                            <option value="3" <?php echo isset($this->dadosAdicionais) && $this->dadosAdicionais->stCorRaca == '3' ? 'selected="selected"' : ''; ?>>Parda</option>
+                            <option value="4" <?php echo isset($this->dadosAdicionais) && $this->dadosAdicionais->stCorRaca == '4' ? 'selected="selected"' : ''; ?>>Amarela</option>
+                            <option value="5" <?php echo isset($this->dadosAdicionais) && $this->dadosAdicionais->stCorRaca == '5' ? 'selected="selected"' : ''; ?>>Indígena</option>
+                        </select>
+                    </td>
+                </tr>
+                <?php if($this->idPerfil == 137){ ?>
+                <tr>
+                    <td class="destacar bold" align="right" width="150px" nowrap>Nº Identificador Processual</td>
+                    <td>
+                        <input class="input_simples w300" type="text" name="processo" id="processo" maxlength="20" value="<?php echo isset($this->dadosAdicionais) ? trim($this->dadosAdicionais->nrIdentificadorProcessual) : ''; ?>"/>
+                    </td>
+                </tr>
+                <?php } ?>
+            </table>
+
+            <div style="width: 100%; margin: 15px 0;" align="center">
+                <input type="button" class="btn_salvar" id="btnsalvar" /> <!--&nbsp;
+                <input type="button"class="btn_cancelar" id="btncancelar" />-->
+            </div>
+
+        </form>
+    </div>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

@@ -1,0 +1,359 @@
+<script type="text/javascript">
+    $('document').ready(function(){
+
+
+        //LEI 8.313 (NAO)
+        $('#lei9874_N').click(function(){
+            JSTrataLei8313();
+        });
+
+        //LEI 8.313 (SIM)
+        $('#lei9874_S').click(function(){
+            JSTrataLei8313();
+        });
+
+        //Artigo 3 (NAO)
+        $('#artigo3_N').click(function(){
+            JSTrataArt3();
+        });
+
+        //Artigo 3 (SIM)
+        $('#artigo3_S').click(function(){
+            JSTrataArt3();
+        });
+
+        //Artigo 18 (NAO)
+        $('#stArtigo18_N').click(function(){
+            JSTrataArt18();
+        });
+
+        //Artigo 18 (SIM)
+        $('#stArtigo18_S').click(function(){
+            JSTrataArt18();
+        });
+
+        //Artigo 26 (NAO)
+        $('#stArtigo26_N').click(function(){
+            JSTrataArt26();
+        });
+
+        //Artigo 26 (SIM)
+        $('#stArtigo26_S').click(function(){
+            JSTrataArt26();
+        });
+
+        //Artigo 27 (NAO)
+        $('#Art27_N').click(function(){
+            JSTrataArt27();
+        });
+
+        $('#Art27_S').click(function(){
+            JSTrataArt27();
+        });
+        
+        //CHAMA METODO QUE TRATA DO ARTIGO 3
+        JSTrataArt3();
+        
+        //CHAMA METODO QUE TRATA DO ARTIGO 18
+        JSTrataArt18();
+        
+        //CHAMA METODO QUE TRATA DO ARTIGO 27
+        JSTrataArt27();
+        
+        //CHAMA METODO QUE TRATA DA LEI 8313
+        JSTrataLei8313();
+        
+
+    });
+    
+    //LEI 8313
+    function JSTrataLei8313(){
+        
+        var valorLei8313 = $("input:radio[name='stLei8313']:checked").val();
+        
+        //se NAO
+        if(valorLei8313 == "0"){
+            $(".lei8313").each(function(){
+                if($(this).attr('type')=='text' || $(this).attr('type')=='textarea')
+                {
+                    if($(this).attr('type')=='textarea'){
+                         if("<?php echo $this->analise->stLei8313 ?>" != "0"){ 
+                            $(this).val('');
+                         }
+                    }else{
+                        $(this).val('');
+                    }
+                    if($(this).attr('type')!='textarea'){
+                        $(this).attr("disabled", true);
+                    }
+                }
+                if($(this).attr('type')=='select-one')
+                {
+                    $(this).val('0');
+                    $(this).attr("disabled", true);
+                }
+                if($(this).attr('type')=='radio' || $(this).attr('type')=='checkbox')
+                {
+                    $(this).attr('checked',false);
+                    $(this).attr("disabled", true);
+                }
+
+                $('#stAv0').attr("checked", true); //checked (Parecer favoravel)
+                $('#Lei5761_N').attr("checked", true); //checked
+                /*$('#artigo3_N').attr("checked", true); //checked
+                $('#stArtigo18_N').attr("checked", true); //checked
+                $('#stArtigo26_N').attr("checked", true); //checked
+                $('#Art27_N').attr("checked", true); //checked*/
+        
+            });
+            
+        //se SIM
+        }else{
+            $("#formAlterarConteudo").each(function(){
+                this.reset();
+            });
+            $(".lei8313").each(function(){
+                $(this).attr("disabled", false);
+            });
+            
+            $('#lei9874_S').attr("checked", true); //checked
+            
+            //CHAMA METODO QUE TRATA DO ARTIGO 3
+            JSTrataArt3();
+
+            //CHAMA METODO QUE TRATA DO ARTIGO 18
+            JSTrataArt18();
+
+            //CHAMA METODO QUE TRATA DO ARTIGO 27
+            JSTrataArt27();
+            
+            //DECRETO
+            $('#Lei5761_S').attr("checked", true); //checked
+            $('#Lei5761_N').attr("disabled", true);
+            $('#Lei5761_S').attr("disabled", true);
+        }
+    }
+    
+    //ART. 27
+    function JSTrataArt27(){
+        
+        var valorArt27 = $("input:radio[name='stArtigo27']:checked").val();
+        
+        //se NAO
+        if(valorArt27 == "0"){
+            $('.art27_N').each(function(){
+                $(this).attr('checked', false);
+                $(this).attr('disabled', true);
+            });
+            
+        //se SIM
+        }else{
+            $('.art27_N').each(function(){
+                $(this).attr('disabled', false);
+
+                if($(this).attr("id") == "stIncisoArtigo27_I" && '<?php echo $this->analise->stIncisoArtigo27_I == '1' ?>'){
+                    $(this).attr("checked", true); //checked
+                }
+                if($(this).attr("id") == "stIncisoArtigo27_II" && '<?php echo $this->analise->stIncisoArtigo27_II == '1' ?>'){
+                    $(this).attr("checked", true); //checked
+                }
+                if($(this).attr("id") == "stIncisoArtigo27_III" && '<?php echo $this->analise->stIncisoArtigo27_III == '1' ?>'){
+                    $(this).attr("checked", true); //checked
+                }
+                if($(this).attr("id") == "stIncisoArtigo27_IV" && '<?php echo $this->analise->stIncisoArtigo27_IV == '1' ?>'){
+                    $(this).attr("checked", true); //checked
+                }
+            });
+        }
+    }
+    
+    //ART. 03
+    function JSTrataArt3(){
+        
+        var valorArt03 = $("input:radio[name='stArtigo3']:checked").val();
+        
+        //se NAO
+        if(valorArt03 == "0"){
+            //inciso
+            $('#inciso_artigo3').val('');
+            $('#inciso_artigo3').attr("disabled", true);
+            //alinea
+            $('#dsAlineaArt3').val('');
+            $('#dsAlineaArt3').attr("disabled", true);
+            
+        }else{
+            //inciso
+            $('#inciso_artigo3').val('<?php echo $this->analise->nrIncisoArtigo3 ?>');
+            $('#inciso_artigo3').attr("disabled", false);
+            //alinea
+            $('#dsAlineaArt3').val('<?php echo $this->analise->dsAlineaArt3 ?>');
+            $('#dsAlineaArt3').attr("disabled", false);
+        }
+    }
+    
+    //ART. 18
+    function JSTrataArt18(){
+        
+        var valorArt18 = $("input:radio[name='stArtigo18']:checked").val();
+        
+        //se NAO
+        if(valorArt18 == "0"){
+            //alinea
+            $('#dsAlineaArt18').val("");
+            $('#dsAlineaArt18').attr("disabled", true);
+
+            //ARTIGO 26 (SIM)
+            $('#stArtigo26_S').attr("checked", true); //checked
+        }else{
+             //alinea
+            $('#dsAlineaArt18').val('<?php echo $this->analise->dsAlineaArtigo18 ?>');
+            $('#dsAlineaArt18').attr("disabled", false);
+
+            //ARTIGO 26 (SIM)
+            $('#stArtigo26_N').attr("checked", true); //checked
+        }
+    }
+    
+    //ART. 26
+    function JSTrataArt26(){
+        
+        var valorArt26 = $("input:radio[name='stArtigo26']:checked").val();
+        
+        //se NAO
+        if(valorArt26 == "0"){
+            //alinea - Art. 18
+            $('#dsAlineaArt18').val('<?php echo $this->analise->dsAlineaArtigo18 ?>');
+            $('#dsAlineaArt18').attr("disabled", false);
+
+            //ARTIGO 18 (SIM)
+            $('#stArtigo18_S').attr("checked", true); //checked
+        }else{
+            //alinea - Art 18
+            $('#dsAlineaArt18').val("");
+            $('#dsAlineaArt18').attr("disabled", true);
+
+            //ARTIGO 26 (SIM)
+            $('#stArtigo18_N').attr("checked", true); //checked
+        }
+    }
+</script>
+<!-- ================================== -->
+<!-- ========== INICIO MODAL ========== -->
+<!-- ================================== -->
+<!--<form name="formAlterarConteudo" id="formAlterarConteudo" action="<?php //echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'alterar-analise-de-conteudo')); ?>?idPronac=<?php //echo $_GET['idPronac'] ?>" method="post">-->
+<form name="formAlterarConteudo" id="formAlterarConteudo" action="<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'alterar-analise-de-conteudo'), '', true); ?>?idpronac=<?php echo $this->dadosprojeto->IdPRONAC; ?>" method="post">
+    <input type="hidden" name="IdPRONAC" value="<?php echo $this->dadosprojeto->IdPRONAC; ?>" />
+    <input type="hidden" name="idProduto" value="<?php echo $this->analise->idProduto; ?>" />
+    <input type="hidden" name="idPlanilha" value="<?php echo $this->analise->idAnaliseAprovacao; ?>" />
+    <input type="hidden" name="tpAnalise" value="<?php echo $this->analise->tpAnalise; ?>" />
+    <table class="tabela">
+        <tr>
+            <th colspan="2">
+                <p><strong>Pronac N&ordm; <?php echo $this->dadosprojeto->AnoProjeto . $this->dadosprojeto->Sequencial; ?>  - <?php echo $this->dadosprojeto->NomeProjeto; ?></strong></p>
+                <p <?php if ($this->analise->stPrincipal == 1) { echo 'style="color: red"'; } ?>>Produto: <?php echo (isset($this->analise->produto) ? $this->analise->produto : 'Administra&ccedil;&atilde;o do Projeto'); ?></p>
+            </th>
+        </tr>
+        <tr>
+            <td class="w300">
+                <strong>Lei 8.313 alterada pela Lei 9.874/1999*</strong><br />
+                <input type="radio" name="stLei8313" value="1" id="lei9874_S" class="checkradio" <?php if ($this->analise->stLei8313 == 1) echo "checked=\"checked\""; ?> /> <label for="lei9874_S">Sim</label>
+                <input type="radio" name="stLei8313" value="0" id="lei9874_N" class="checkradio" <?php if ($this->analise->stLei8313 == 0) echo "checked=\"checked\""; ?> /> <label for="lei9874_N">N&atilde;o</label>
+            </td>
+            <td>
+                <table class="w400 delFormatTD">
+                    <tr>
+                        <td class="delFormatTD">
+                            <strong>Artigo 3</strong><br />
+                            <input type="radio" name="stArtigo3" value="1" id="artigo3_S" class="checkradio lei8313 artigo3" <?php if ($this->analise->stArtigo3 == 1) echo "checked=\"checked\""; ?> /> <label for="artigo3_S">Sim</label>
+                            <input type="radio" name="stArtigo3" value="0" id="artigo3_N" class="checkradio lei8313 artigo3" <?php if ($this->analise->stArtigo3 == 0) echo "checked=\"checked\""; ?> /> <label for="artigo3_N">N&atilde;o</label>
+                        </td>
+                        <td class="delFormatTD"><strong><label for="inciso_artigo3">Inciso</label></strong><br />
+                            <select class="input_simples w50 lei8313" name="nrIncisoArtigo3" id="inciso_artigo3" >
+                                <option value="" <?php if (empty($this->analise->nrIncisoArtigo3)) echo "selected=\"selected\""; ?>> -- </option>
+                                <option value="1" <?php if ($this->analise->nrIncisoArtigo3 == 1) echo "selected=\"selected\""; ?>> I </option>
+                                <option value="2" <?php if ($this->analise->nrIncisoArtigo3 == 2) echo "selected=\"selected\""; ?>> II </option>
+                                <option value="3" <?php if ($this->analise->nrIncisoArtigo3 == 3) echo "selected=\"selected\""; ?>> III </option>
+                                <option value="4" <?php if ($this->analise->nrIncisoArtigo3 == 4) echo "selected=\"selected\""; ?>> IV </option>
+                                <option value="5" <?php if ($this->analise->nrIncisoArtigo3 == 5) echo "selected=\"selected\""; ?>> V </option>
+                            </select>
+                        </td>
+                        <td class="delFormatTD"><strong><label for="dsAlineaArt3">Alinea</label></strong><br />
+                            <input class="input_simples w50 lei8313" type="text" name="dsAlineaArt3" id="dsAlineaArt3" value="<?php echo $this->analise->dsAlineaArt3; ?>" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="delFormatTD">
+                            <strong>Artigo 18</strong><br />
+                            <input type="radio" name="stArtigo18" id="stArtigo18_S" value="1" class="checkradio lei8313" <?php if ($this->analise->stArtigo18 == 1) echo "checked=\"checked\""; ?> /> <label for="stArtigo18_S">Sim</label>
+                            <input type="radio" name="stArtigo18" id="stArtigo18_N" value="0" class="checkradio lei8313" <?php if ($this->analise->stArtigo18 == 0) echo "checked=\"checked\""; ?> /> <label for="stArtigo18_N">N&atilde;o</label>
+                        </td>
+                        <td class="delFormatTD"><strong><label for="dsAlineaArt18">Alinea</label></strong><br />
+                            <input class="input_simples w50 lei8313" type="text" name="dsAlineaArtigo18" id="dsAlineaArt18" value="<?php echo $this->analise->dsAlineaArtigo18; ?>" />
+                            <input type="hidden" name="AlineaArt18" id="AlineaArt18" value="<?php echo $this->analise->dsAlineaArtigo18; ?>" />
+                        </td>
+                        <td class="delFormatTD">
+                            <strong>Artigo 26</strong><br />
+                            <input type="radio" name="stArtigo26" id="stArtigo26_S" value="1" class="checkradio lei8313" <?php if ($this->analise->stArtigo26 == 1) echo "checked=\"checked\""; ?> /> <label for="stArtigo26_S">Sim</label>
+                            <input type="radio" name="stArtigo26" id="stArtigo26_N" value="0" class="checkradio lei8313" <?php if ($this->analise->stArtigo26 == 0) echo "checked=\"checked\""; ?> /> <label for="stArtigo26_N">N&atilde;o</label>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong><label for="stLei5761">Decreto 5761/2006*</label></strong><br />
+                <input type="radio" name="stLei5761" id="Lei5761_S" value="1" class="checkradio lei8313" <?php if ($this->analise->stLei5761 == 1) echo "checked=\"checked\""; ?> /> <label for="Lei5761_S">Sim</label>
+                <input type="radio" name="stLei5761" id="Lei5761_N" value="0" class="checkradio lei8313" <?php if ($this->analise->stLei5761 == 0) echo "checked=\"checked\""; ?> /> <label for="Lei5761_N">N&atilde;o</label>
+            </td>
+            <td>
+                <table class="w400 delFormatTD">
+                    <tr>
+                        <td class="delFormatTD">
+                            <strong><label>Artigo 27</label></strong><br />
+                            <input type="radio" name="stArtigo27" id="Art27_S" value="1" class="checkradio lei8313 art27" <?php if ($this->analise->stArtigo27 == 1) echo "checked=\"checked\""; ?> /> <label for="Art27_S">Sim</label>
+                            <input type="radio" name="stArtigo27" id="Art27_N" value="0" class="checkradio lei8313" <?php if ($this->analise->stArtigo27 == 0) echo "checked=\"checked\""; ?> /> <label for="Art27_N">N&atilde;o</label>
+                        </td>
+                        <td class="delFormatTD" valign="top">
+                            <strong>Inciso(s)</strong><br />
+                            <input type="checkbox" name="stIncisoArtigo27_I" id="stIncisoArtigo27_I" value="1" class="checkradio lei8313 art27_N" <?php if ($this->analise->stIncisoArtigo27_I == 1) echo "checked=\"checked\""; ?> /> <label for="stIncisoArtigo27_I">I</label>
+                            <input type="checkbox" name="stIncisoArtigo27_II" id="stIncisoArtigo27_II" value="1" class="checkradio lei8313 art27_N" <?php if ($this->analise->stIncisoArtigo27_II == 1) echo "checked=\"checked\""; ?> /> <label for="stIncisoArtigo27_II">II</label>
+                            <input type="checkbox" name="stIncisoArtigo27_III" id="stIncisoArtigo27_III" value="1" class="checkradio lei8313 art27_N" <?php if ($this->analise->stIncisoArtigo27_III == 1) echo "checked=\"checked\""; ?> /> <label for="stIncisoArtigo27_III">III</label>
+                            <input type="checkbox" name="stIncisoArtigo27_IV" id="stIncisoArtigo27_IV" value="1" class="checkradio lei8313 art27_N" <?php if ($this->analise->stIncisoArtigo27_IV == 1) echo "checked=\"checked\""; ?> /> <label for="stIncisoArtigo27_IV">IV</label>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <strong><label for="">Parecer Favor&aacute;vel?*</label></strong><br />
+                <input type="radio" name="stAvaliacao" id="stAv1" value="1" class="checkradio lei8313" <?php if ($this->analise->stAvaliacao == 1) echo "checked=\"checked\""; ?> /> <label for="stAv1">Sim</label>
+                <input type="radio" name="stAvaliacao" id="stAv0" value="0" class="checkradio lei8313" <?php if ($this->analise->stAvaliacao != 1) echo "checked=\"checked\""; ?> /> <label for="stAv0">N&atilde;o</label>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <label for="dsAvaliacao"><strong>Justificativa</strong></label><br />
+                <textarea class="textarea_simples w680 h100 lei8313" name="dsAvaliacao" id="dsAvaliacao" cols="70" rows="10" <?php echo $this->contadorTextarea('form.dsAvaliacao', 'form.exibirContadorTextarea', 5000); ?>><?php echo $this->analise->dsAvaliacao; ?></textarea>
+                <?php echo $this->exibirContadorTextarea('exibirContadorTextarea', 4, 5000, strlen($this->analise->dsAvaliacao)); ?><center><span id="msgErro" style="color: red;"></span></center>
+            </td>
+        </tr>
+    </table>
+    <?php foreach($this->parametrosBusca as $name=>$value):?>
+        <?php if(!is_array($value)): ?>
+        <input type="hidden" name="<?php echo $name?>" id="<?php echo $name?>" value="<?php echo $value?>"/>
+        <?php else: ?>
+            <?php foreach($value as $valor):?>
+                <input type="hidden" name="<?php echo $name?>[]" id="<?php echo $name?>" value="<?php echo $valor?>"/>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    <?php endforeach; ?>
+    <?php if(empty($this->parametrosBusca["pag"])):?>
+        <input type="hidden" name="pag" id="pag" value="<?php echo $this->pag; ?>" class="input_simples"/>
+    <?php endif; ?>
+    <input type="hidden" name="cabecalho" id="cabecalho" value="false">
+</form>
+<!-- ================================== -->
+<!-- ========== FIM MODAL ============= -->
+<!-- ================================== -->

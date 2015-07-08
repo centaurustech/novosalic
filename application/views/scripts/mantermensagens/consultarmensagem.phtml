@@ -1,0 +1,186 @@
+<?php require_once "inc/menu.inc.php"; // menu             ?>
+<script language="javascript" type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/jquery.tablesorter.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/jquery.tablesorter.mod.js"></script>
+<link type="text/css" rel="stylesheet" media="all" href="<?php echo $this->baseUrl(); ?>/public/css/OrderTabela.css" />
+
+<script>
+    function confirma (functionsim, functionnao){
+        $("#confirm").dialog({
+            title :'Confirma',
+            resizable: false,
+            width:400,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'Não': functionnao,
+                'Sim': functionsim
+            }
+        });
+    }
+    $(document).ready(function(){
+        $("table").tablesorter();
+        $("#error").dialog({
+            title :'Erro',
+            resizable: false,
+            width:400,
+            height:170,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'OK': function() {
+                    $(this).dialog('close');
+                }
+            }
+        });
+        $(".resposta").click(function(){
+            var idagente = $(this).attr('idagente');
+            var idmensagem = $(this).attr('idMensagem');
+            $("#resposta").dialog({
+                resizable: false,
+                width:1000,
+                height:600,
+                modal: true,
+                autoOpen:false,
+                title : 'Responder mensagem',
+                buttons : {
+                    'Cancelar': function(){
+                        $(this).dialog('close')
+                    },
+                    'Enviar resposta' : function(){
+                        var justificativa = $("#dsMensagem").val();
+                        var validar = true;
+                        if((justificativa.length < 20)){
+                            validar = false;
+                            var msgError = 'Mensagem menor que 20 caracteres.'
+                        }
+                        else if((justificativa.length > 5000)){
+                            validar = false;
+                            var msgError = 'Mensagem maior que 5000 caracteres.'
+                        }
+                        else if(($("#encaminhar").val() == 0)){
+                            validar = false;
+                            var msgError = 'Dados Obrigatórios nao informados.'
+                        }
+                        if(!validar){
+                            $('#error').html(msgError);
+                            $('#error').dialog('open');
+                        }
+                        else{
+                            $('#confirm').html('Tem certeza que deseja enviar essa mensagem?');       
+                            confirma(function(){
+                                $("#idMensagemProjeto").val(idmensagem);
+                                $("#idAgente").val(idagente);
+                                $('#formulario')[0].submit();
+                            },
+                            function(){
+                                $('#confirm').dialog('close');
+                            });
+                            $('#confirm').dialog('open');
+                        }
+
+                    }
+                }
+            });
+            $("#resposta").dialog('open');
+        })
+    })
+    
+</script>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'index', 'action' => 'index')); ?>" title="Ir para Início">Início</a></li>
+        <li class="last">Mensagens</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Mensagens</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <div id="error"></div>
+    <div id="confirm"></div>
+    <div id="resposta" class="sumir">
+        <table class="tabela">
+            <tr>
+                <th>
+                    Responder Mensagem
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <fieldset>
+                        <legend>Mensagem:</legend>
+                        <form id="formulario" method="post" action="<?php echo $this->url(array('controller' => 'mantermensagens', 'action' => 'incluirmensagem'), '', true) ?>">
+                            <input name="idpronac" type="hidden" value="<?php echo $this->idpronac; ?>"/>
+                            <input name="tipomensagem" type="hidden" value="R"/>
+                            <input name="idAgente" type="hidden" id="idAgente"/>
+                            <input name="idMensagemProjeto" type="hidden" id="idMensagemProjeto"/>
+                            <textarea name="dsMensagem" style="width: 65em; height: 20em;" class="input_simples" id="dsMensagem"></textarea>
+                        </form>
+                    </fieldset>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <table class="tabela">
+        <tr class="destacar">
+            <td align="center"><b>PRONAC</b></td>
+            <td align="center"><b>Nome do Projeto</b></td>
+        </tr>
+        <tr>
+            <td align="center"><?php echo $this->dadosProjeto['AnoProjeto'] . $this->dadosProjeto['Sequencial']; ?></td>
+            <td align="center"><?php echo $this->dadosProjeto['NomeProjeto']; ?></td>
+        </tr>
+    </table>
+
+    <table class="tabela tablesorter">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Remetente</th>
+                <th>Destinatário</th>
+                <th>Mensagem</th>
+                <th>Responder</th>
+            </tr>
+        </thead>
+        <?php 
+        if (count($this->mensagens) > 0) { ?>
+            <?php foreach ($this->mensagens as $mensagem) { ?>
+                <tr>
+                    <td><?php echo Data::tratarDataZend($mensagem->dtMensagem, 'brasileiro', true) ?></td>
+                    <td><?php echo $mensagem->nomeRemetente; ?></td>
+                    <td><?php echo $mensagem->nomeDestinatario; ?></td>
+                    <td><?php echo $mensagem->dsMensagem; ?></td>
+                    <td class="centro"><?php echo (isset( $this->mensagemperfil['idmensagemprojeto'][$mensagem->idMensagemProjeto]['destinatario']) and $mensagem->idDestinatario == $this->agentelogado and $this->logado == $this->mensagemperfil['idmensagemprojeto'][$mensagem->idMensagemProjeto]['destinatario']) ? "<img style='cursor:pointer;' class='resposta' idMensagem='" . $mensagem->idMensagemProjeto . "' idagente='" . $mensagem->idRemetente . "/" . $this->mensagemperfil['idmensagemprojeto'][$mensagem->idMensagemProjeto]['remetente'] . "' src='" . $this->baseUrl() . "/public/img/buttons/sair-p.gif' title='Responder mensagem'/>" : "<img title='N&atilde;o &eacute; permitido responder essa mensagem' src='" . $this->baseUrl() . "/public/img/buttons/sair-p-off.gif'/>"; ?></td>
+                </tr>
+            <?php } ?>
+        <?php } else { ?>
+            <tr>
+                <th colspan="5">
+                    Não existem mensagens para esse projeto!
+                </th>
+            </tr>
+        <?php } ?>
+    </table>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

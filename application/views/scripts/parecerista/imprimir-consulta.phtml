@@ -1,0 +1,197 @@
+<script language="javascript" type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        window.print();
+    });
+</script>
+
+<style type="text/css" media="all">
+    body {
+        margin:0;
+        font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+        color:#000;
+        line-height:14pt;
+    }
+    a:link, a:active, a:visited {
+        text-decoration:underline;
+    }
+    a:hover {
+        text-decoration:none;
+    }
+    .tabela { /* tamanho de tabelas com registros */
+        margin:10px auto;
+        width:97%;
+        font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+        border: 1px #999 solid;
+        border-spacing: 1px;
+        empty-cells: show;
+    }
+    table td {
+        background:#fff;
+        padding:4px;
+        color:auto;
+        font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+        border: 1px #999 solid;
+    }
+    table tr.destacar td, table td.destacar {
+        background:#e2e2e2;
+        font:12px "Trebuchet MS", Georgia, "Times New Roman", Times, serif;
+        border: 1px #999 solid;
+    }
+    table th {
+        background:#cdcdcd;
+        padding:4px;
+        text-transform:uppercase;
+        font-size:11px;
+        border: 1px #999 solid;
+        color: #000;
+    }
+    #brasao{
+        width : 85px;
+        height: 86px;
+    }
+    legend{
+        font-size:13px;
+        font-weight: bold;
+    }
+    .btn_imprimir{
+        border-top:1px solid #efefef;
+        border-left:1px solid #efefef;
+        border-right:1px solid #aaa;
+        border-bottom:1px solid #aaa;
+        margin:0 5px 0 0;
+        width:20px;
+        height:21px;
+        text-align:center;
+        cursor:pointer;
+        background:url('<?php echo $this->baseUrl(); ?>/public/img/buttons/imprimir.gif') center center no-repeat;
+    }
+    .btn_imprimir:hover{
+        background-color:#fff;
+        border-top:1px solid #aaa;
+        border-left:1px solid #aaa;
+        border-right:1px solid #efefef;
+        border-bottom:1px solid #efefef;
+    }
+    .paginaA4{
+        width:auto;
+        margin: 1.111cm 1cm 1cm 1.005cm;
+        page-break-after: always;
+    }
+    .TituloMinC{
+        font-size: 14px;
+        text-transform: uppercase;
+    }
+    .TituloDoDocumento{
+        font-size: 12px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    .DataDoDocumento{
+        font-size: 10px;
+    }
+    .QntdRegistros{
+        font-size: 12px;
+    }
+</style>
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div class="paginaA4">
+    <div align="center">
+        <img id="brasao" src="<?php echo $this->baseUrl(); ?>/public/img/brasaoArmas.jpg" alt="Ministério da Cultura"/>
+        <br clear="all" /><span class="TituloMinC">Ministério da Cultura</span>
+        <br clear="all" />
+            <span class="TituloDoDocumento">
+                Relatório - 
+                <?php if($this->situacaoPesquisa == 3){
+                    echo 'Enviado para Pagamento';
+                    } else if($this->situacaoPesquisa == 4){
+                        echo 'Enviado para o Parecerista';
+                    } else if($this->situacaoPesquisa == 5){
+                        echo 'Devolvido ao Minc pelo Parecerista';
+                    } else if($this->situacaoPesquisa == 7){
+                        echo 'Pagamento Finalizado';
+                    }
+                ?>
+            </span>
+        <br clear="all" /><span class="DataDoDocumento">Data da impressão: <?php echo date('d/m/Y - H:i:s'); ?></span>
+        <br clear="all" /><br clear="all" /><span class="QntdRegistros"><?php echo count($this->dados).' projetos listados'; ?></span>
+    </div>
+        
+    <?php if(count($this->dados) > 0): ?>
+    <table class="tabela tablesorter" id="tabela">
+        <thead>
+            <tr>
+                <th>Parecerista</th>
+                <th>Nº despacho</th>
+                <th>Dt geração pagamento</th>
+                <th>Dt efetivação pagamento</th>
+                <th>Dt Ordem bancária</th>
+                <th>Pronac</th>
+                <th>Projeto</th>
+                <th>Vinculada</th>
+                <th>RPA</th>
+                <th width="120">Valor pagamento</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+                $nmPa       = '';
+                $nrDe       = '';
+                $nmProjeto  = '';
+                $nmPronac   = '';
+                $vinc       = '';
+                $vt         = 0;
+                $i          = 0;
+            ?>
+            <?php foreach($this->dados as $p): ?>
+            <?php if(($nmPa != $p->Parecerista && $nmPa != '')): ?>
+            <tr>
+                <td class="fundo_linha3" colspan="9" style="text-align: right;">Valor Total:</td>
+                <td class="fundo_linha3" width="120"><?php echo $this->formatarReal($vt); ?></td>
+            </tr>
+            <?php $vt = 0; ?>
+            <?php endif; ?>
+            <tr>
+                <td><?php echo $nmPa == $p->Parecerista ? '' : $p->Parecerista; ?></td>
+                <td style="text-align: center;"><?php echo $nrDe == $p->nrDespacho ? '' : $p->nrDespacho; ?></td>
+                <td style="text-align: center;"><?php echo $p->dtGeracaoPagamento; ?></td>
+                <td style="text-align: center;"><?php echo $p->dtEfetivacaoPagamento; ?></td>
+                <td style="text-align: center;"><?php echo $p->dtOrdemBancaria; ?></td>
+                <td style="text-align: center;">
+                    <?php echo $nmPronac == $p->Pronac ? '' : $p->Pronac; ?>
+                </td>
+                <td><?php echo $nmProjeto == $p->NomeProjeto ? '' : $p->NomeProjeto; ?></td>
+                <td><?php echo $vinc == $p->Vinculada ? '' : $p->Vinculada; ?></td>
+                <td><?php // echo $p->CNPJCPF ; ?></td>
+                <td><?php echo $this->formatarReal($p->vlPagamento); ?></td>
+            </tr>
+            <?php  
+                $nmPa       = $p->Parecerista;
+                $nrDe       = $p->nrDespacho;
+                $nmProjeto  = $p->NomeProjeto;
+                $nmPronac   = $p->Pronac;
+                $vinc       = $p->Vinculada;
+                $vt         = $vt+$p->vlPagamento;
+            ?>
+            <?php $i++; ?>
+            <?php if($i == count($this->dados)): ?>
+            <tr>
+                <td class="fundo_linha3" colspan="9" style="text-align: right;">Valor Total:</td>
+                <td class="fundo_linha3" width="120"><?php echo $this->formatarReal($vt); ?></td>
+            </tr>
+            <?php endif; ?>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+    <?php else: ?>
+    <table class="tabela">
+        <tr>
+            <td>Nenhum registro encontrado!</td>
+        </tr>
+    </table>
+    <?php endif; ?>
+    
+    
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->

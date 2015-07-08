@@ -1,0 +1,128 @@
+<script>
+
+    $(document).ready( function() {
+	$("#logarComo").validate({
+		// Define as regras
+		rules:{
+                        cpf:{
+				// campoNome será obrigatório (required) e terá tamanho mínimo (minLength)
+				required: true, minlength: 2
+			},
+			senha:{
+				// campoNome será obrigatório (required) e terá tamanho mínimo (minLength)
+				required: true, minlength: 2
+			}
+
+		},
+		// Define as mensagens de erro para cada regra
+		messages:{
+                        cpf:{
+				required: "Digite o cpf",
+				minLength: "O seu nome deve conter, no mínimo, 11 caracteres"
+			},
+			senha:{
+				required: "Digite a senha",
+				minLength: "O seu nome deve conter, no mínimo, 2 caracteres"
+			}
+		}
+	});
+});
+
+
+
+</script>
+
+
+<div id="breadcrumb">
+
+<ul>
+<li class="last">Login</li>
+</ul>
+
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INï¿½CIO Tï¿½TULO ========== -->
+
+<div id="titulo">
+<div>Bem Vindo<span></span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+
+</div>
+<!-- ========== FIM Tï¿½TULO ========== -->
+
+
+
+<!-- ========== INï¿½CIO CONTEï¿½DO ========== -->
+
+	<div id="conteudo">
+
+<fieldset><legend>Login</legend>
+            <form method="POST" action="<?php echo $this->url(array('controller' => 'login', 'action' => 'logarcomo')); ?>" name="logarComo" id="logarComo">
+
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th colspan="2">SalicWeb - Conex?o ao Sistema
+                                Ambiente de DESENVOLVIMENTO
+
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr>
+                            <td>Cpf *</td>
+                            <td><input class="input_simples" type="text" name="cpf" id="cpf"  /> </td>
+                        </tr>
+                        <tr>
+                            <td>Senha *</td>
+                            <td><input class="input_simples" type="password" name="senha" id="senha"  /> </td>
+                        </tr>
+                        
+                        <tr>
+                            <td>Logar como:</td>
+                            <td>
+                                <select class="input_simples" id="logarComo" name="logarComo">
+
+                                    
+                                    <?php foreach ( $this->buscaUsuario as $buscaUsuario ) {?>
+                                    
+                                    <option value="<?php echo $buscaUsuario['usu_identificacao'] ?>">
+
+                                        <?php echo $buscaUsuario['usu_nome'] ?>
+
+                                    </option>
+                                    <?php }?>
+                                </select>
+
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td align="center" colspan="2">
+                            <input id='btConfirmar' type='submit' value='' class='btn_confirmar enviar' />
+                            <input id='btCancelar' type='button' value='' class='btn_cancelar enviar' onClick="history.go(-1)" onkeypress=" " />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+
+            </form>
+</fieldset>
+
+        </div>
+
+
+<!-- ========== FIM CONTEï¿½DO ========== -->
+
+
+
+<!-- ========== INï¿½CIO RODAPï¿½ DO CONTEï¿½DO ========== -->
+	<div id="rodapeConteudo"><span></span></div>
+
+<!-- ========== FIM RODAPï¿½ DO CONTEï¿½DO ========== -->
+			<br clear="all" />
+
+

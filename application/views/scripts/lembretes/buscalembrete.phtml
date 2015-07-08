@@ -1,0 +1,109 @@
+<script>
+$(document).ready(function(){
+    $("#tirar").click(function(){
+        $("#tirar").removeAttr('class');
+    })
+});
+</script>
+<?php require_once "inc/menu.inc.php"; // menu ?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para Início">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'areadetrabalho', 'action' => 'index')); ?>" title="Ir para Visualizar Área de Trabalho">Visualizar Área de Trabalho</a></li>
+		<li class="last">Busca Lembretes</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Lembretes <span>ID #23A</span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+
+
+<table class="tabela">
+  <tr class="titulo_tabela">
+    <th><div align="center">PRONAC</div></th>
+    <th><div align="center">Nome do Projeto</div></th>
+
+  </tr>
+<?php foreach($this->lembretesprojeto as $tblembretesprojeto): ?>
+   <tr>
+    <td><?php echo $this->escape($tblembretesprojeto->nrpronac);?></td>
+    <td><?php echo $this->escape($tblembretesprojeto->NomeProjeto);?></td>
+
+  </tr>
+  <?php endforeach;?>
+</table>
+
+
+
+<form class="form" name="formBuscar" id="formBuscar" method="post" 
+	action="<?php echo $this->url(array('controller' => 'lembretes', 'action' => 'buscalembrete')); ?>">
+
+	<table class="tabela_busca">
+		<tr>
+			<th colspan="2">Pesquisa do Lembrete</th>
+		</tr>
+		<tr>
+			<th class="titulo_campo"><label for="dtlembrete">Data do Lembrete:</label></th>
+			<td>
+				<div class="left"></div>
+				<input type="text" name="dtlembrete" id="dtlembrete" maxlength="10" 
+					onkeyup="mascara(this, format_data);" 
+					onmouseup=" "
+					onclick="limpar_campo(this, '00/00/0000');" value="00/00/0000" 
+					onkeypress=" "
+					onblur="restaurar_campo(this, '00/00/0000');"
+					onmouseout="restaurar_campo(this, '00/00/0000');"
+					class="input w100" />
+				<div class="right"></div> &nbsp; 
+				<input type="hidden" name="pronac" id="pronac" value="<?php echo $this->escape($tblembretesprojeto->IdPRONAC);?>" />
+				<input type="submit" title=" Pesquisar " class="btn_pesquisar" value=" " />
+			</td>
+		</tr>
+	</table>
+
+</form>
+		
+		
+		
+		
+		
+		
+		
+		
+
+
+
+
+
+
+
+<table class="tabela">
+	<tr>
+	<td class="center"> 	<a href="javascript:window.print()"><img src="<?php echo $this->baseUrl(); ?>/public/img/imprimir.gif" alt="Imprimir" /> </a></td>
+	</tr>	
+</table>
+
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

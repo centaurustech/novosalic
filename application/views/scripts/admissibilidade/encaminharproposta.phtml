@@ -1,0 +1,104 @@
+<?php
+    include_once 'scripts/admissibilidade/inc/menu.inc.php';
+    $SalvarAvaliacao = $this->url(array('controller' => 'admissibilidade', 'action' => 'salvardespacho'));
+?>
+<style type="text/css">
+    label.error{ color:red; font-weight: normal; }
+</style>
+
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.js"></script>
+
+<div id="titulo">
+    <div>Admissibilidade de propostas - Encaminhar proposta <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+
+<div id="conteudo">
+    <form id="formEncaminhar" name="formEncaminhar" method="post" action="<?php echo $SalvarAvaliacao;?>">
+
+        <table class="tabela">
+            <tr>
+                <th>
+                    <input type="hidden" name="idPreProjeto" id="idPreProjeto" value="<?php echo $this->idPreProjeto ?>" />
+                    Proposta Nr: <?php echo $this->idPreProjeto ?>
+                </th>
+            </tr>
+            <tr>
+                <td align="center">
+                    <input type="hidden" name="nomeProjeto" id="nomeProjeto" value="<?php echo $this->nomeProjeto ?>" />
+                    <?php echo $this->nomeProjeto ?>
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <th>Despacho *</th>
+            </tr>
+            <tr>
+                <td align="left">
+                    <textarea cols="80" id="despacho" name="despacho" rows="10"></textarea>
+                    <script type="text/javascript">
+                        //<![CDATA[
+                        CKEDITOR.replace('despacho', {	fullPage : true });
+                        //]]>
+                    </script>
+                </td>
+            </tr>
+        </table>
+        <table class="tabela">
+            <tr>
+                <td class="centro">
+                    <input type="submit" name="salvar" class="btn_salvar" value=" " title="Salvar" />
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />
+<script type="text/javascript">
+$(document).ready(function(){
+    /*$('.salvar').click(function(){
+
+        $('#formEncaminhar').attr('action','<?php echo $SalvarAvaliacao;?>');
+        $('#formEncaminhar').submit();
+
+    });*/
+
+    $("#formEncaminhar").validate({
+        rules: {
+            despacho: { validarDespacho: true }
+        },
+        messages: {
+            despacho: { validarDespacho: "Dado obrigat&oacute;rio n&atilde;o informado" }
+        },
+        submitHandler: function(form) {
+            form.submit();
+        }
+    });
+
+    //VALIDA CAMPO RESUMO DA PROPOSTA
+     jQuery.validator.addMethod("validarDespacho", function(value, element)
+     {
+        var texto = CKEDITOR.instances['despacho'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+
+        if (texto.length > 0)
+        {
+            // verifica se o usuário clicou no botão 'Reintegração'
+
+            $('#despacho').val(CKEDITOR.instances['despacho'].getData());
+            return true;
+        }
+        else
+        {
+            //apresentarDialog();
+            //$("#divMsg").show();
+            return false;
+        }
+     });
+});
+</script>

@@ -1,0 +1,160 @@
+<?php require_once "inc/menu.inc.php"; ?>
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $('#ufFone').change(function(){
+            var id = $(this).val();
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo $this->url(array('controller' => 'ddd', 'action' => 'combo-salvar-telefone')); ?>',
+                data: {
+                    id: id
+                },
+                success: function(data){
+                    var recebe = $('#dddFone');
+                    if(data.resposta){
+                        recebe.html('<option value="">- Selecione -</option>');
+                        for ( i in data.conteudo){
+                           recebe.append('<option value="'+data.conteudo[i].descricao+'">'+data.conteudo[i].descricao+'</option>');
+                        }
+                    } else {
+                        recebe.html('<option value=""> - Selecione - </option>');
+                    }
+                },
+                dataType : 'json'
+            });
+        });
+    });
+
+    function salvarTelefone(){
+        if(validaTelefone()){
+            $("#formTel").submit();
+        }
+    }
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="#" title="Ir para Início">Início</a></li>
+        <li><a href="#" title="Tramitação de Documentos">Manter Agentes</a></li>
+        <li class="last">Principal</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Telefones <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <?php require_once "inc/cabecalho.php";?>
+    <table class="tabela">
+        <tr>
+            <td>Para adicionar um novo telefone, clique em novo ao lado!</td>
+            <th width="150"><input type="button" class="btn_novo" value=" " onclick="novo();"/></th>
+        </tr>
+    </table>
+    <div id="formNovo" class="sumir">
+        <form id="formTel" action="<?php echo $this->url(array('controller' => 'agentes', 'action' => 'salvatelefone'));?>" method="post">
+
+            <table id="tabFone" class="tabela">
+                <tr>
+                    <th colspan="5">ADICIONE TELEFONES ATRAVÉS DO FORMULÁRIO ABAIXO!</th>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="tipoFone">Tipo *</label>
+                        <br />
+                        <select name="tipoFone" id="tipoFone" class="input_simples">
+                            <option value=""> - Selecione - </option>
+                            <?php foreach ($this->combotipostelefones as $combotipotelefone) { ?>
+                            <option value="<?php echo $combotipotelefone->id; ?>"><?php echo $combotipotelefone->descricao; ?></option>
+                            <?php } ?>
+                        </select>
+                    </td>
+                    <td>
+                        <label for="ufFone">UF *</label>
+                        <br />
+                        <select name="ufFone" id="ufFone" class="input_simples">
+                            <option value="0"> -- </option>
+                            <?php foreach ($this->comboestados as $combouffone) { ?>
+                            <option value="<?php echo $combouffone->id; ?>"><?php echo $combouffone->descricao; ?></option>
+                            <?php } ?>
+                        </select>
+                    </td>
+                    <td>
+                        <label for="dddFone">DDD *</label>
+                        <br />
+                        <select name="dddFone" id="dddFone" class="input_simples">
+                            <option value=""> -- </option>
+                        </select>
+                    </td>
+                    <td>
+                        <label for="fone">Telefone *</label>
+                        <br />
+                        <input type="text" name="fone" id="fone" maxlength="10" class="input_simples w100" onkeyup="mascara(this, format_tel);"
+                               onclick="limpar_campo(this, ' ');" onkeypress="limpar_campo(this, ' ');"
+                               onblur="restaurar_campo(this, ' ');" onmouseout="restaurar_campo(this, ' ');" value=" " />
+                    </td>
+                    <td>
+                        <label>Divulgar? *</label>
+                        <br />
+                        <input type="radio" name="divulgarFone" id="divulgarFoneS" value="1" class="checkradio"  style="background: none; border: 0%; float:none; clear:auto; display:inline;" />
+                        <label for="divulgarFoneS">Sim</label>
+                        <input type="radio" name="divulgarFone" id="divulgarFoneN" value="0" class="checkradio" checked="checked"  style="background: none; border: 0%; float:none; clear:auto; display:inline;" />
+                        <label for="divulgarFoneN">Não</label>
+                    </td>
+                </tr>
+            </table>
+            <table class="tabela">
+                <tr>
+                    <td class="centro">
+                        <input type="button" class="btn_salvar" value=" " onclick="salvarTelefone();" /> &nbsp;
+                        <input id="btncancelar" type="button" class="btn_cancelar" onclick="salvo();" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+
+    </div>
+
+    <div id="salvos">
+        <table id="tabFone" class="tabela <?php echo $this->telefones ? '' : 'sumir'; ?>">
+            <tr>
+                <th colspan="6">TELEFONES</th>
+            </tr>
+            <tr>
+                <td><label>Tipo</label></td>
+                <td align="center"><label>UF</label></td>
+                <td align="center"><label>DDD</label></td>
+                <td><label>Telefone</label></td>
+                <td><label>Divulgar?</label></td>
+                <td></td>
+            </tr>
+            <?php foreach($this->telefones as $t):?>
+            <tr>
+                <td><?php echo $t->dsTelefone ;?></td>
+                <td align="center"><?php echo $t->ufSigla ;?></td>
+                <td align="center"><?php echo $t->DDD ;?></td>
+                <td><?php echo $t->Numero ;?></td>
+                <td><?php echo $t->Divulgar == "1" ? "SIM" : "NÃO"; ?></td>
+                <td width="120" class="centro"><input type="button" class="btn_exclusao" value=" " style="width: 87px;" onclick="confirmaExclusao('', '<?php echo $this->url(array('controller' => 'agentes', 'action' => 'excluitelefone','idTelefone' => $t->idTelefone, 'qtdTel' => $this->qtdTel));?>');" /></td>
+            </tr>
+            <?php endforeach; ?>
+        </table>
+    </div>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

@@ -1,0 +1,124 @@
+<script>
+    $(document).ready(function(){
+        $('#btn_xls').click(function(){
+            $('#frmPaginacao').attr('target','_blank').append('<input type="hidden" name="xls" id="xls" value="xls"/>');
+            $('#frmPaginacao').submit();
+            $('#xls').remove();
+            
+        });
+        
+        $("#btn_imprimir").click(function(){
+            var campoGerarPdfTotal = '<input type="hidden" name="tipo" id="pdf" value="pdf"/>';
+            $("#frmPaginacao").append(campoGerarPdfTotal);
+            $("#frmPaginacao").attr('target', '_blank');
+            $("#frmPaginacao").submit();
+            $("#pdf").remove();
+        });
+    });
+
+    function paginar(pag){
+        $("#pag").val(pag);
+        jqAjaxForm(document.getElementById("frmPaginacao"), "resultadoConsulta");
+        $("#resultadoConsulta").html("Aguarde, carregando dados ...");
+    }
+</script>
+
+<fieldset>
+    <legend>Resultado</legend>
+<div class="conteudoImprimivel" id="conteudoImprimivel">
+<table class="tabela">
+    <tbody>
+    <tr>
+        <?php if(@in_array("cmpsOrd_p.AnoProjeto+p.Sequencial", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#abda5d">PRONAC</th><?php endif; ?>
+        <th valign="middle" align="left" bgcolor="#abda5d">Nome do Projeto</th>
+        <?php if(@in_array("cmpsOrd_Nome", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#abda5d">Proponente</th><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_#parecerfavoravel", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#abda5d">Parecer</th><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_SolicitadoReal", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="right" bgcolor="#abda5d">Solicitado</th><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_SugeridoReal", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="right" bgcolor="#abda5d">Sugerido</th><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_Processo", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#abda5d">Processo</th><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_o.Sigla", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#abda5d">Órg&atilde;o</th><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_TipoParecer", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#abda5d">Tipo de Parecer</th><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_NumeroReuniao", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#abda5d">Nr. Reuni&atilde;o</th><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_#ResumoParecer", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#abda5d">Parecer Técnico</th><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_#cgccpf", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#abda5d">CNPJ/CPF</th><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_s.Descricao", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#abda5d">Situa&ccedil;&atilde;o</th><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_Cidade", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#abda5d">Cidade</th><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_Uf", $this->parametrosBusca["visaoAgente"])): ?><th valign="middle" align="left" bgcolor="#abda5d">UF</th><?php endif; ?>
+    </tr>
+    <?php $auxArea = ""; ?>
+    <?php if(count($this->projetos) > 0):?>
+    <?php foreach($this->projetos as $projeto):?>
+    <?php if($auxArea == "" || $projeto->Area != $auxArea):?>
+    <tr>
+        <td colspan="19" align="left" bgcolor="#d1e4cf">&Aacute;rea Cultural: <?php echo $projeto->Area?></td>
+    </tr>
+    <?php endif; ?>
+    <tr>
+        <?php if(@in_array("cmpsOrd_p.AnoProjeto+p.Sequencial", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><a href="#"><?php echo $projeto->AnoProjeto.$projeto->Sequencial?></a></td><?php endif; ?>
+        <td valign="top" align="left"><?php echo $projeto->NomeProjeto?></td>
+        <?php if(@in_array("cmpsOrd_Nome", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><a href="#"><?php echo $projeto->Proponente?></a></td><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_#parecerfavoravel", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><a href="#"><?php //echo $projeto->TipoParecer?></a></td><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_SolicitadoReal", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="right" nowrap="nowrap"><?php echo $projeto->Solicitado?></td><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_SugeridoReal", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="right" nowrap="nowrap"><?php echo $projeto->Sugerido?></td><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_Processo", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><?php echo $projeto->Processo?></td><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_o.Sigla", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><?php echo $projeto->Orgao?></td><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_TipoParecer", $this->parametrosBusca["visaoAgente"])): ?>
+        <td valign="top" align="left">
+            <?php
+                $arrAux = array(1=>"Aprova&ccedil;&atilde;o", 2=>"Complementa&ccedil;&atilde;o", 3=>"Prorroga&ccedil;&atilde;o", 4=>"Redu&ccedil;&atilde;o");
+                echo $arrAux[$projeto->TipoParecer];
+            ?>
+        </td>
+        <?php endif; ?>
+        <?php if(@in_array("cmpsOrd_NumeroReuniao", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><?php echo $projeto->NrReuniao?></td><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_#ResumoParecer", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><a name="#resumoJustificativa" style="cursor:pointer;" onclick="abrirModal( $('#<?php echo $projeto->AnoProjeto.$projeto->Sequencial?>').html() );"><img src="<?php echo $this->baseUrl();?>/public/img/ico/kdict.png" /></a><span id="<?php echo $projeto->AnoProjeto.$projeto->Sequencial?>" class="naoImprimir" style="display: none;"><?php echo $projeto->ParecerTecnico?></span></td><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_#ResumoProjeto", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><?php //echo $projeto->NomeProjeto?></td><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_s.Descricao", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><?php echo $projeto->Situacao?></td><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_Cidade", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><?php echo $projeto->Cidade?></td><?php endif; ?>
+        <?php if(@in_array("cmpsOrd_Uf", $this->parametrosBusca["visaoAgente"])): ?><td valign="top" align="left"><?php echo $projeto->Uf?></td><?php endif; ?>
+    </tr>
+    <?php $auxArea = $projeto->Area; ?>
+    <?php endforeach; ?>
+    <?php else: ?>
+    <tr>
+        <td colspan="16" valign="top" align="center">Nenhum Registro Encontrado</td>
+    </tr>
+    <?php endif; ?>
+</tbody>
+</table>
+</div>
+
+<form action="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-extrato-pauta-reuniao-cnic')); ?>" method="post" name="frmPaginacao" id="frmPaginacao">
+<?php foreach($this->parametrosBusca as $name=>$value):?>
+    <?php if(!is_array($value)): ?>
+    <input type="hidden" name="<?php echo $name?>" id="<?php echo $name?>" value="<?php echo $value?>"/>
+    <?php else: ?>
+        <?php foreach($value as $valor):?>
+            <input type="hidden" name="<?php echo $name?>[]" id="<?php echo $name?>" value="<?php echo $valor?>"/>
+        <?php endforeach; ?>
+    <?php endif; ?>
+<?php endforeach; ?>
+    <?php if(empty($this->parametrosBusca["pag"])):?>
+    <input type="hidden" name="pag" id="pag" value="<?php echo $this->pag; ?>"/>
+    <?php endif; ?>
+</form>
+
+<table class="tabela">
+    <tr>
+        <td align="center">
+            <input type="button" style="width: 88px" class="btn_inicio" id="btn_inicio" onclick="paginar('1')"/>
+            <input type="button" style="width: 88px" class="btn_p_anterior" id="btn_p_anterior" onclick="paginar('<?php echo ($this->pag > 1)?$this->pag-1:1; ?>')"/>
+            <select name="pagina" id="pagina" class="input_simples" onchange="paginar(this.value)">
+                <?php for($i=1; $i<$this->totalPag+1; $i++): ?>
+                <option value="<?php echo $i; ?>" <?php if($i == $this->pag){ echo " selected='selected' "; } ?>><?php echo $i; ?></option>
+                <?php endfor; ?>
+            </select>
+            <input type="button" style="width: 88px" class="btn_p_proximo" id="btn_p_proximo" onclick="paginar('<?php echo ($this->pag < $this->totalPag)?$this->pag+1:$this->totalPag; ?>')"/>
+            <input type="button" style="width: 88px" class="btn_ultimo" id="btn_ultimo" onclick="paginar('<?php echo $this->totalPag; ?>')"/>
+            <input type="button" style="width: 44px" class="btn_xls" id="btn_xls" />
+            <input type="button" style="width: 88px" class="btn_imprimir" id="btn_imprimir" />
+            Exibindo de <b><?php echo $this->inicio; ?></b> a <b><?php echo $this->fim; ?></b> de um total de <b><?php echo $this->total; ?></b>
+        </td>
+    </tr>
+</table>
+</fieldset>

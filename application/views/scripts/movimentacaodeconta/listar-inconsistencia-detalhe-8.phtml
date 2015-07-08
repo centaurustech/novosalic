@@ -1,0 +1,17 @@
+<img src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png" class="corrigir-enquadramento" style="cursor: pointer" />
+<script>
+	$('.corrigir-enquadramento').click(function(){
+		$("#msgAlerta").dialog("destroy");
+        $("#msgAlerta").html(
+        	'<p>Diligencie o proponente!' +
+        	'<br />Após efetuar a devida correção, clicar novamente em validar.</p>'
+        );
+        $("#msgAlerta").dialog({
+            resizable: false,
+            title: 'Alerta!',
+            width: 700,
+            height: 100,
+            modal: true
+        });
+	});
+</script>

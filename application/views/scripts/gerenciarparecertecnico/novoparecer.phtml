@@ -1,0 +1,137 @@
+<?php
+include_once 'scripts/gerenciarparecertecnico/inc/menu.inc.php';
+?>
+<script>
+function valida_form(){
+
+var texto = CKEDITOR.instances['ResumoParecer'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+
+        if(texto.length > 0){
+          document.novo_parecer.submit();
+        }else{
+          alert("O parecer deve ser preenchido!");
+        }
+
+
+}
+
+
+</script>
+<!-- ========== INCIO BREADCRUMB (LINKS TOPO) ========== -->
+			<div id="breadcrumb">
+				<ul>
+					<li class="first"><a href="<?php echo $this->url(array('controller' => 'consultarparecertecnico', 'action' => 'index')); ?>" title="Ir para Incio">In&iacute;cio</a></li>
+					<li class="last">Projetos</li>
+				</ul>
+			</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INCIO TTULO ========== -->
+		<div id="titulo">
+			<div>Novo Parecer T&eacute;cnico <span>ID #23A</span> <span class="voltar">
+			<a href="#" onclick="voltar();">Voltar</a></span></div>
+		</div>
+<!-- ========== FIM TTULO ========== -->
+
+<!-- ========== INCIO CONTEDO ========== -->
+<div id="conteudo" style="min-height: 300px;" align="center">
+    <form action="<?php echo $this->url(array('controller' => 'gerenciarparecertecnico', 'action' => 'incluirparecer')) ?>" method="POST" id="novo_parecer" name="novo_parecer" onsubmit="valida_form()" >
+		<table width="70%">
+		<tr>
+			<th colspan="3">Identifica&ccedil;&atilde;o</th>	
+		</tr>
+		<tr>
+			<td width="35%" colspan="1"><b>PRONAC </b>
+                            <input type="hidden" name="pronac" value="<?php echo $this->parecer[0]->AnoProjeto."".$this->parecer[0]->Sequencial ?>" >
+			<br><input type="text" disabled="block"  name="pronac" value="<?php echo $this->parecer[0]->AnoProjeto."".$this->parecer[0]->Sequencial ?>" class="input_simples"/>
+			</td>
+			<td colspan="2"><b>Nome Do Projeto </b>
+			<br><input type="text" disabled="disabled" name="NomeProjeto" value="<?php echo $this->parecer[0]->NomeProjeto ?>" class="input_simples" style="width: 350px"/>
+			</td>
+		</tr>
+		<tr>
+			<td width="35%" colspan="1"><b>&Aacute;rea</b> 
+			<br><input type="text" disabled="disabled" name="AreaDescricao" value="<?php echo $this->parecer[0]->AreaDescricao ?>" class="input_simples"/>
+			</td>
+			<td colspan="2"><b>Seguimento</b>
+			<br><input type="text" disabled="disabled" name="SegmentoDescricao" value="<?php echo $this->parecer[0]->SegmentoDescricao ?>" class="input_simples"/>
+			</td>
+		</tr>
+		<tr>
+			<td width="35%" colspan="1"><b>UF</b> <br> <?php echo $this->parecer[0]->UfProjeto ?></td>
+			<td colspan="2"><b>Mecanismo de Incentivo </b><br><?php echo $this->parecer[0]->MecanismoDescricao ?> </td>
+		</tr>
+		</table>
+		
+		<table width="70%">
+		<tr>
+			<th colspan="3">Dados do Projeto</th>	
+		</tr>
+		<tr>
+			<td width="35%"><b>Tipo Parecer</b> 
+			<br>
+			<select class="select_simples" name="TipoParecer" style="width: 50%">
+				<option value="2">Complementa&ccedil;&atilde;o</option>
+				<option value="3">Redu&ccedil;&atilde;o</option>
+			</select>
+			</td>
+			<td><b>Parecer Favor&aacute;vel? </b>
+			<br>
+			<select class="select_simples" name="ParecerFavoravel" style="width: 20%">
+				<option value="2">Sim</option>
+				<option value="1">N&atilde;o</option>
+			</select> 
+			</td>
+			<td><b>Data do Parecer </b><br>
+                         <input type="text" disabled="disabled" name="DtParecer" value="<?php echo ConverteData(date('d/m/Y'),5); ?>" class="input_simples">
+                        </td>
+		</tr>
+		<tr>
+			<th colspan="3">Parecer</th>
+		</tr>
+		<tr>
+		<td align="justify" colspan="3"><!-- ========== EDITOR 1 ========== --> <script
+			type="text/javascript"
+			src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/ckeditor.js"></script>
+		<script type="text/javascript"
+			src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.js"></script>
+
+		<label for="editor1"> </label> <textarea cols="80" id="ResumoParecer"
+			name="ResumoParecer" rows="10">&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;&lt;p&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</textarea>
+		<script type="text/javascript">
+                        //<![CDATA[
+                        CKEDITOR.replace('ResumoParecer', {	fullPage : true });
+                        //]]>
+                    </script></td>
+		</tr>
+		</table>
+		<table width="70%">
+		<tr>
+			<th colspan="3">Sugerido</th>
+		</tr>
+		<tr>
+			<td width="50%" colspan="1">
+                            <b>Custeio Real</b> <br>
+                            <input type="text" name="SugeridoCusteioReal" onkeypress='$(this).numeric(null, numberInvalid);' class="input_simples" />
+                        </td>
+			<td colspan="2">
+                            <b>Capital Real </b><br>
+                            <input type="text" name="SugeridoCapitalReal" onkeypress='$(this).numeric(null, numberInvalid);' class="input_simples" />
+                        </td>
+		</tr>
+		<tr>
+			<td align="center" colspan="3">
+			<input type="button" onclick="valida_form()" class="btn_salvar" name="salvar" value="" /></td>
+		</tr>
+
+		</table>
+    </form>
+
+</div>
+			
+<!-- ========== FIM CONTEDO ========== -->
+
+<!-- ========== INCIO RODAP DO CONTEDO ========== -->
+	<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAP DO CONTEDO ========== -->
+			<br clear="all" />

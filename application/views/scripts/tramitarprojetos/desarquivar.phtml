@@ -1,0 +1,210 @@
+<script type="text/javascript">
+    erro = 0;
+    $(document).ready(function(){
+        $('.btn_salvar').click(function(){
+            var validar = true;
+            $('.valida').each(function(){
+                if($(this).val() == ''){
+                    validar = false;
+                }
+            });
+            if(validar == false){
+                $("#error").dialog("destroy");
+                $('#error').html('Dados obrigatórios n&atilde;o informados.');
+                $("#error").dialog({
+                    modal: true,
+                    draggable: false,
+                    resizable: false,
+                    closeOnEscape: false,
+                    buttons: {
+                        'OK': function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+                $('.ui-dialog-titlebar-close').remove();
+            }
+
+            if (erro == 2){
+                $("#error").html('Pronac tem que ter no mínimo 6 caracteres!');
+                $("#error").dialog('open');
+                $("#error").dialog({
+                    modal: true,
+                    draggable: false,
+                    resizable: false,
+                    closeOnEscape: false,
+                    buttons: {
+                        'OK': function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+                return false;
+            }
+            if (erro == 3){
+                $("#error").html('Pronac Inexistente!');
+                $("#error").dialog('open');
+                $("#error").dialog({
+                    modal: true,
+                    draggable: false,
+                    resizable: false,
+                    closeOnEscape: false,
+                    buttons: {
+                        'OK': function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+                return false;
+            }
+
+            if (erro == 0){
+                $("#error").html('Este projeto não se encontra nesta Unidade!');
+                $("#error").dialog('open');
+                $("#error").dialog({
+                    modal: true,
+                    draggable: false,
+                    resizable: false,
+                    closeOnEscape: false,
+                    buttons: {
+                        'OK': function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+                return false;
+            } else {
+                $('#form').submit();
+            }
+        });
+
+        $('.numero').keydown(function(event){
+            if((event.keyCode >= 96 && event.keyCode <= 105) || (event.keyCode >= 48 && event.keyCode <= 57) || event.keyCode == 8 || event.keyCode ==9 ){
+                return true;
+            } else {
+                return false;
+            }
+        });
+    });
+
+    function sumiraqui(id){
+        $('img[class='+id+']').toggle();
+        $('tr[class='+id+']').toggle();
+    }
+
+    function buscarProjeto2(v){
+        $.ajax({
+            url : '<?php echo $this->url(array('controller' => 'tramitarprojetos', 'action' => 'buscaprojeto')); ?>',
+            data : {
+                pronac: v,
+                codOrgao: <?php echo $this->codOrgao; ?>,
+                msg : 'ok'
+            },
+            success: function(data){
+                recebe = $('#orgaoERROR');
+                if(data.resposta){
+                    for ( i in data.conteudo){
+                        recebe.html(data.conteudo.NomeProjeto+' - '+data.conteudo.Processo+' - '+data.conteudo.Sigla+' - '+data.conteudo.Orgao);
+                        recebe.css("color", "black");
+                        erro = 1;
+                    }
+                } else {
+                    recebe.html('Este projeto n&atilde;o se encontra nessa unidade');
+                    recebe.css("color", "red");
+                    erro = 0;
+                }
+            },
+            type : 'post'
+            ,dataType : 'json'
+        });
+    }
+
+    function buscarProjeto(v){
+        $.ajax({
+            url : '<?php echo $this->url(array('controller' => 'tramitarprojetos', 'action' => 'buscaprojetodespachar')); ?>',
+            data : {
+                pronac: v,
+                msg : 'ok'
+            },
+            success: function(data){
+                recebe = $('#orgaoERROR');
+                if(data.resposta){
+                    for ( i in data.conteudo){
+                        buscarProjeto2(v);
+                    }
+                } else {
+                    if($("#pronac").val().length < 6){
+                        $("#error").html('Pronac tem que ter no mínimo 6 caracteres!');
+                        $("#error").dialog('open');
+                        $("#error").dialog({
+                            modal: true,
+                            draggable: false,
+                            resizable: false,
+                            closeOnEscape: false,
+                            buttons: {
+                                'OK': function(){
+                                    $(this).dialog('close');
+                                }
+                            }
+                        });
+                        $(".ui-dialog-titlebar-close").remove();
+                        erro = 2;
+                    } else {
+                        recebe.html('Pronac Inexistente.');
+                        recebe.css("color", "red");
+                        erro = 3;
+                    }
+                }
+            },
+            type : 'post'
+            ,dataType : 'json'
+        });
+    }
+</script>
+
+<?php require_once "inc/menu.inc.php"; // menu ?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para p&aacute;gina inicial">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'tramitarprojetos', 'action' => 'index')); ?>" title="Ir para Tramitar projetos">Tramitar projetos</a></li>
+        <li class="last">Desarquivamento de projetos</li>
+    </ul>
+</div>
+<!-- ========== FIM BRADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Desarquivamento de projetos <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="error" class="sumir" title="Alerta!"></div>
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <form name="form" id="form" method="post">
+        <table class="tabela" width="50%" align="center">
+            <tr>
+                <td class="destacar bold" align="right" width="120"><label for="name">PRONAC <span style="color: red;">*</span></label></td>
+                <td colspan="3">
+                    <input type="text" class="input_simples valida numero" name="pronac" id="pronac" value="" size="10" maxlength="7" style="float:left" onchange="buscarProjeto(this.value);" />
+                    <div id="orgaoERROR" style="float:left; margin-left: 10px">&nbsp;</div>
+                </td>
+            </tr>
+        </table>
+        <table class="tabela">
+            <tr>
+                <td align="center"><input type="button" class="btn_salvar" id="btn_salvar" title="Salvar" /></td>
+            </tr>
+        </table>
+    </form>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

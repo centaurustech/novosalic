@@ -1,0 +1,180 @@
+<?php include_once 'scripts/admissibilidade/inc/menu.inc.php'; ?>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second">Admissibilidade</li>
+        <li class="last">Admissibilidade de propostas - Redistribuir análise</li>
+    </ul>
+</div>
+<div id="titulo">
+    <div>Admissibilidade de propostas - Redistribuir análise <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<style type="text/css">
+<!--
+.mensagem {
+    padding: 8px;
+    border: darkgreen;
+    background: #e3e3c7;
+}
+-->
+</style>
+<script type="text/javascript">
+<!--
+$(document).ready(function() {
+
+    //$("#tabelaRedistribuir").tablesorter();
+    //$("#tabelaRedistribuir_0_0").tablesorter();
+    //$("#tabelaRedistribuir_0_1").tablesorter();
+
+});
+
+/*
+ * Função responsável pela exibição ou ocultamento de conteúdo,
+ * mudando a imagem.
+ **/
+function abrirDinamico(elemento, obj) {
+    if($(elemento).css('display') == 'none') {
+        $(elemento).fadeIn('fast', function() {
+            $('img', $(obj)).attr('src','<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png');
+        });
+    } else {
+        $(elemento).fadeOut('fast', function() {
+            $('img', $(obj)).attr('src','<?php echo $this->baseUrl(); ?>/public/img/navigation-baixo.PNG');
+        });
+    }
+}
+function toogleAjax(id, url){
+    if(!url) {
+        $('#'+id).toggle('slow');
+    } else {
+        elemento = '#'+id;
+        if($(elemento).css('display') == 'none') {
+            $(elemento).html('<img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /> ');
+            $(elemento).fadeIn('fast');
+            $.ajax({
+                type: "POST",
+                data: {
+                    teste: 'testando'
+                },
+                url: url,
+                success: function(data) {
+                    $(elemento).html(data);
+                }
+            });
+        } else {
+            $(elemento).fadeOut('fast');
+        }
+    }
+};
+//-->
+</script>
+<form action="<?php echo $this->urlResumo; ?>" method="post" name="frmResumo" id="frmResumo">
+<?php
+    foreach ($this->analistas as $nomeAnalista => $fases) {
+?>
+    <input type="hidden" name="<?php echo str_replace("_", " ", $nomeAnalista); ?>" value="<?php echo count($fases); ?>"/>
+<?php
+    }
+?>
+</form>
+<div id="conteudo">
+    <table class="tabela">
+        <tr>
+            <th>
+                Propostas Distribuidas para Análise
+            </th>
+        </tr>
+        <?php
+        $html = '';
+        $i = 0;
+        foreach ($this->analistas as $nomeAnalista => $fases) {
+            $qtd = 0;
+            foreach ($fases as $fase) {
+                $qtd += count($fase);
+            }
+            $html .= "<tr onclick=\"abrirDinamico('#tr_{$i}', $(this))\" style=\"cursor:pointer\">
+                         <td align=\"center\">
+                             <img src=\"{$this->baseUrl()}/public/img/navigation-right.png\" id=\"imgDinamica\" align=\"left\"/>
+                             Analista : {$nomeAnalista} ( {$qtd} )
+                         </td>
+                     </tr>
+                     <tr id='tr_{$i}' style='display:none'><td>";
+            $j = 0;
+            foreach ($fases as $faseNome => $faseItems) {
+                $html .= "<table class='tabela'>
+                          <tr>
+                              <th onclick=\"abrirDinamico('#tr_{$i}_{$j}', $(this))\" style=\"cursor:pointer\">
+                                  <img src=\"{$this->baseUrl()}/public/img/navigation-right.png\" id=\"imgDinamica\" align=\"left\"/>
+                                  Fase: {$faseNome} ( " . count($fases[$faseNome]) . " )
+                              </th>
+                          </tr>";
+                $html .= '<tr id="tr_' . $i . '_' . $j . '" style="display:none">
+                          <td>
+                              <table class="tabela" id="tabelaRedistribuir_' . $i . '_' . $j . '">
+                                <thead>
+                                <tr>
+                                    <th>
+                                        Redistribuir
+                                    </th>
+                                    <th style="cursor:pointer" title="Clique aqui para ordenar">
+                                        Nr.Proposta
+                                    </th>
+                                    <th style="cursor:pointer" title="Clique aqui para ordenar">
+                                        Proposta
+                                    </th>
+                                    <th style="cursor:pointer" title="Clique aqui para ordenar">
+                                        Dt. Distribuição
+                                    </th>
+                                    <th>
+                                        Fase
+                                    </th>
+                                </tr>
+                                </thead><tbody>';
+                foreach ($faseItems as $faseItem) {
+                    $html.= '<tr>
+                                <td align="center">
+                                    <a href="' . $this->baseUrl() . '/admissibilidade/redistribuiranaliseitem?idProjeto=' . $faseItem['nrProposta'] . '&fase=' . $faseNome . '">
+                                        <img src="' . $this->baseUrl() . '/public/img/user_gray.png" />
+                                    </a>
+                                </td>
+                                <td align="center">
+                                    <a href="' . $this->baseUrl() . '/admissibilidade/exibirpropostacultural?idPreProjeto=' . $faseItem['nrProposta'] . '&fase=' . $faseNome . '">
+                                    ' . $faseItem['nrProposta'] . '
+                                    </a>
+                                </td>
+                                <td align="center">
+                                    ' . $faseItem['NomeProjeto'] . '
+                                </td>
+                                <td align="center">
+                                    ' . $faseItem['DtMovimentacao'] . '
+                                </td>
+                                <td align="center">
+                                    ' . $faseNome . '
+                                </td>
+                            </tr>';
+                }
+                echo '<script>setTimeout(\'$("#tabelaRedistribuir_' . $i . '_' . $j . '").tablesorter()\',700);</script>';
+                $j++;
+                $html .='</tbody></table>
+                      </td>
+                  </tr></table>';
+            }
+            $html .= '</td></tr>';
+            $i++;
+        }
+        echo $html;
+        ?>
+    </table>
+    <table class="tabela">
+        <tr>
+            <td class="centro">
+        		<input type="button" style="width: 88px" class="btn_resumo" id="btn_resumo" title="Resumo" onclick="$('#frmResumo').submit();" />
+        	</td>
+		</tr>
+    </table>
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

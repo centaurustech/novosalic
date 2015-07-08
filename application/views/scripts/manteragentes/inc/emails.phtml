@@ -1,0 +1,102 @@
+<?php
+/**
+ * Formulário para Cadastro de Conselheiro
+ * @author Equipe RUP - Politec
+ * @since 29/03/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.views.scripts.conselheiro.inc
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/json.js"></script>
+
+
+
+<!-- ========== FORMULÁRIO E-MAIL ========== -->
+<table id="tabEmail" width="800" align="center">
+
+	<tr>
+		<td class="titulo_tabela">ADICIONE E-MAILS ATRAVÉS DO FORMULÁRIO ABAIXO</td>
+	<tr>
+		<td>
+			<label for="tipoEmail">Tipo *</label> 
+			<br />
+			<select name="tipoEmail" id="tipoEmail">
+				<option value="0">- Selecione - </option>
+
+				<?php foreach ($this->combotiposemails as $combotipoemail){ ?>
+				<option value="<?php echo $combotipoemail->id; ?>"><?php echo $combotipoemail->descricao; ?></option>
+				<?php } ?>
+
+			</select>
+		</td>
+		<td>
+			<label for="email">E-mail *</label> 
+			<br />
+			<input type="text" name="email" id="email" maxlength="70" />
+		</td>
+		<td>
+			<label>Posso Divulgar? *</label> 
+			<br />
+			<input type="radio" name="divulgarEmail" id="divulgarEmailS" value="1" class="checkradio" /> 
+			<label for="divulgarEmailS">Sim</label> 
+			<input type="radio" name="divulgarEmail" id="divulgarEmailN" value="0" class="checkradio" checked="checked" /> 
+			<label for="divulgarEmailN">Não</label>
+		</td>
+		<td>
+			<label>Para correpondência? *</label> 
+			<br />
+			<input type="radio" name="enviarEmail" id="enviarEmailS" value="1" class="checkradio" checked="checked" /> 
+			<label for="enviarEmailS">Sim</label> 
+			<input type="radio" name="enviarEmail" id="enviarEmailN" value="0" class="checkradio" /> 
+			<label for="enviarEmailN">Não</label>
+		</td>
+		<td class="center" width="30">
+			<input id="btnAddEmail" type="button" title="Adicionar E-mail" class="btn_add" 
+				value=" " onclick="adicionar_email_agente();" />
+		</td>
+	</tr>
+
+</table>
+
+<!-- ========== BUSCA E-MAILS ADICIONADOS ========== -->
+<table id="tabBuscaEmail" width="800" align="center">
+	<tr>
+		<td class="titulo_tabela">TIPO</td>
+		<td class="titulo_tabela" >E-MAIL</td>
+		<td class="titulo_tabela" >DIVULGAR?</td>
+		<td class="titulo_tabela" >PARA CORRESPONDÊNCIA?</td>
+		<td width="60">AÇÃO</td>
+	</tr>
+
+	<?php if (isset($this->Emails)): ?>
+		<?php for ($i = 0; $i < count($this->Emails); $i++): ?>
+		<tr id="email<?php echo $i; ?>">
+			<td>
+				<?php foreach ($this->combotiposemails as $combotipoemail){ ?>
+				<?php echo $this->tipoEmails[$i] == $combotipoemail->id ? $combotipoemail->descricao : ''; ?>
+				<?php } ?>
+				<input type="hidden" name="tipoEmails[]" id="tipoEmails[]" value="<?php echo $this->tipoEmails[$i]?>" />
+			</td>
+			<td>
+				<?php echo $this->Emails[$i] ?>
+				<input type="hidden" name="Emails[]" id="Emails[]" value="<?php echo $this->Emails[$i]?>" />
+			</td>
+			<td class="center">
+				<?php echo $this->divulgarEmails[$i] == 1 ? 'Sim' : 'Não'; ?>
+				<input type="hidden" name="divulgarEmails[]" id="divulgarEmails[]" value="<?php echo $this->divulgarEmails[$i]?>" />
+			</td>
+			<td class="center">
+				<?php echo $this->enviarEmails[$i] == 1 ? 'Sim' : 'Não'; ?>
+				<input type="hidden" name="enviarEmails[]" id="enviarEmails[]" value="<?php echo $this->enviarEmails[$i]?>" />
+			</td>
+			<td class="center">
+				<input type="button" title=" Excluir E-mail " class="btn_excluir" onclick="$('#email<?php echo $i; ?>').remove();" />
+			</td>
+		</tr>
+		<?php endfor; ?>
+	<?php endif; ?>
+
+</table>

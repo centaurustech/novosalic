@@ -1,0 +1,49 @@
+	<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ui/jquery.bgiframe-2.1.1.js"></script>
+	<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ui/jquery.ui.core.js"></script>
+	<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ui/jquery.ui.widget.js"></script>
+	<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ui/jquery.ui.mouse.js"></script>
+	<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ui/jquery.ui.draggable.js"></script>
+	<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ui/jquery.ui.position.js"></script>
+	<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ui/jquery.ui.resizable.js"></script>
+	<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ui/jquery.ui.dialog.js"></script>
+	
+	<script type="text/javascript">
+	function modal(){
+		$("#dialog").dialog("destroy");
+		$("#dialog-modal").dialog({
+			height: 200,
+			width: 500,
+			resizable: true,
+			EscClose: false,
+			modal: true
+		});
+	}
+	</script>
+
+<a href="#" onclick="modal();">Abrir Modal</a>
+
+
+
+
+<div id="dialog-modal" title="Basic modal dialog" style="display:none;">
+	<table>
+	<tr>
+		<td>t00</td>
+		<td>t01</td>
+		<td>t02</td>
+	</tr>
+	<tr>
+		<td>t10</td>
+		<td>t11</td>
+		<td>t12</td>
+	</tr>
+	<tr>
+		<td>t20</td>
+		<td>t21</td>
+		<td>t22</td>
+	</tr>
+</table>
+
+</div>
+	
+	

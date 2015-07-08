@@ -1,0 +1,51 @@
+<?php
+
+    $cod = "0";
+    if(isset($this->idPreProjeto)){
+        $cod = "&idPreProjeto=".$this->idPreProjeto;
+    }elseif(isset($_GET['idPreProjeto'])){
+        $cod = "&idPreProjeto=".$this->idPreProjeto;
+    }
+
+    if(isset($this->idPronac)){
+        $cod = "&idPronac=".$this->idPronac;
+    }elseif(isset($_GET['idPronac'])){
+        $cod = "&idPronac=".$_GET['idPronac'];
+    }
+?>
+
+<div style="display: none;" id="exclusaoArquivo2">Deseja realmente excluir o arquivo?</div>
+<div style="display: none;" id="alerta2"></div>
+<table width="90%" style="margin-top: 20px; margin-bottom: 20px;" id="listadeArquivos">
+    <tr class="destacar" align="center" style="font-weight: bold;">
+        <td>Tipo de Documento</td>
+        <td>Nome</td>
+        <td>Arquivo</td>
+        <td>Tamanho</td>
+        <td>Data de Envio</td>
+        <td></td>
+    </tr>
+    <?php if(count($this->dadosComprovantes3) > 0){
+        foreach ($this->dadosComprovantes3 as $dadosComprovantes3){
+    ?>
+    <tr>
+        <td><?php echo utf8_decode(htmlentities($dadosComprovantes3['dsTipoDocumento'])); ?></td>
+        <td><?php echo utf8_decode(htmlentities($dadosComprovantes3['nmTitulo'])); ?></td>
+        <td><a href="<?php echo $this->url(array('controller'=>'upload', 'action'=>'abrir')); ?>?id=<?php echo $dadosComprovantes3['idArquivo']; ?>"><?php echo utf8_decode(htmlentities($dadosComprovantes3['nmArquivo'])); ?></a></td>
+        <td><?php echo round($dadosComprovantes3['nrTamanho']/1024)." kb"; ?></td>
+        <td><?php echo data::tratarDataZend($dadosComprovantes3['dtEnvio'], 'brasileiro'); ?></td>
+        <td align="center">
+            <input type="button" class="btn_exclusao" onclick="excluirArquivo2('<?php echo utf8_decode(htmlentities($dadosComprovantes3['idDocumentoAceitacao'])); ?>');">
+            <input type="hidden" name="TermoAceitacaoArq" value="true" id="TermoAceitacaoArq">
+        </td>
+    </tr>
+    <?php } } else { ?>
+    <tr>
+        <td colspan="6" align="center">
+            N&atilde;o h&aacute; arquivos anexados.
+            <input type="hidden" name="TermoAceitacaoArq" value="" id="TermoAceitacaoArq">
+        </td>
+    </tr>
+    <?php } ?>
+</table>
+<div id="msgRetorno"></div>

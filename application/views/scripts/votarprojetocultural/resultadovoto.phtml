@@ -1,0 +1,448 @@
+<?php
+/**
+ * ResultadoVotacao
+ * @author Equipe RUP - Politec
+ * @since 07/06/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.controller.gerenciarpautareuniao
+ * @link http://www.cultura.gov.br
+ * @copyright  2010 - Ministerio da Cultura - Todos os direitos reservados.
+ */
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.js"></script>
+<script>
+    $(document).ready(function(){
+        
+        $('#btn_finalizar_consolidacao').click(function(){
+            $(this).remove();
+        });
+        
+        $(".aprovacaoprojeto_<?php echo $this->idpronac; ?>").click(function(){
+            $("#resultadovotacao_<?php echo $this->idpronac; ?>").val($(this).val());
+            if($(this).val() == 'IS'){
+                $(".situacaoindeferimento_<?php echo $this->idpronac; ?>").removeClass('sumir');
+            }else{
+                $(".situacaoindeferimento_<?php echo $this->idpronac; ?>").addClass('sumir');
+            }
+        })
+        
+        $("#enviar_<?php echo $this->idpronac; ?>").click(function(){
+        
+            var stAnaliseComponente = '<?php echo $this->dadosprojeto['stAnalise']; ?>';
+            var stAnaliseSecretaria = $("#resultadovotacao_<?php echo $this->idpronac; ?>").val();
+            var tipoResultado;
+            //var parecerconsolidado =  CKEDITOR.instances['parecerconsolidado'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+            if($("#vtpresidente_<?php echo $this->idpronac; ?>").val() == 'true'){
+                var valida = 0;
+                $(".aprovacaoprojeto_<?php echo $this->idpronac; ?>").each(function(){
+                    if($(this).attr('checked') == true){
+                        valida ++;
+                    }
+                });
+                if(valida == 0){
+                    /*$("#alerta_<?php echo $this->idpronac; ?>").html("<font color='red'>Favor selecionar o VOTO DO PRESIDENTE para conclus&atilde;o da vota&ccedil;&atilde;o!</font>")
+                    alerta(function(){$("#alerta_<?php echo $this->idpronac; ?>").dialog("close")});
+                    $('.ui-dialog-titlebar-close').remove();
+                    $("#alerta_<?php echo $this->idpronac; ?>").dialog("open");*/
+                    
+                    message('Favor selecionar o VOTO DO PRESIDENTE para consolidar a vota&ccedil;&atilde;o', 'ERROR');
+                    return false;
+                }
+            }
+            //if($.trim(parecerconsolidado)==''){
+                /*$("#alerta").html("<font color='red'>Favor digite o parecer para consolida&ccedil;&atilde;o da vota&ccedil;&atilde;o do Projeto atual!</font>")
+                alerta(function(){$("#alerta").dialog("close")});
+                $('.ui-dialog-titlebar-close').remove();
+                $("#alerta").dialog("open");
+                return false;*/
+            //}
+            //else
+            //{
+                //atualiza o parecer no campo que sera utilizado para gravar na tabela consolidacao
+                //var parecerconsolidado = CKEDITOR.instances['parecerconsolidado'].getData().toString();
+                var parecerconsolidado = $('#parecerconsolidado_<?php echo $this->idpronac; ?>').val();
+                $("#parecerconsolidadoAtual_<?php echo $this->idpronac; ?>").val(parecerconsolidado); //foi necessario essa alteracao pq o parecer nao estava sendo recuperado quando o salvamento era feito com ajax
+
+                if((stAnaliseComponente == 'AC'  &&  stAnaliseSecretaria == 'AS') || (stAnaliseComponente == 'IC'  &&  stAnaliseSecretaria == 'IS')){
+                    tipoResultado = '1'; // Manteve o resultado igual
+                }
+                else if(stAnaliseComponente == 'AC' &&  stAnaliseSecretaria == 'IS')
+                {
+                    tipoResultado = '2'; // Projeto deferido pelo componente a reprovado pela plenaria
+                    if($("#situacao_<?php echo $this->idpronac; ?>").val()==''){
+                        
+                        /*$("#alerta_<?php echo $this->idpronac; ?>").html("<font color='red'>Favor selecione a nova situa&ccedil;&atilde;o para o projeto votado.</font>")
+                        alerta(function(){$("#alerta_<?php echo $this->idpronac; ?>").dialog("close")});
+                        $('.ui-dialog-titlebar-close').remove();
+                        $("#alerta_<?php echo $this->idpronac; ?>").dialog("open");
+                        return false;*/
+                        
+                        message('Favor selecione a nova situa&ccedil;&atilde;o para o projeto votado', 'ERROR');
+                        return false;
+                        
+                    }
+                }
+                else if(stAnaliseComponente == 'IC' &&  stAnaliseSecretaria == 'AS'){
+                    tipoResultado = '3'; // Projeto indeferido pelo componente a aprovado pela plenaria
+                    $("#tpresultadovotacao_<?php echo $this->idpronac; ?>").val(tipoResultado);
+                    //$("#alerta_<?php echo $this->idpronac; ?>").html('Projeto aprovado pela CNIC. Reaberto para ajustes do componente!');
+                    //alerta(function(){$("#alerta_<?php echo $this->idpronac; ?>").dialog("close")});
+                    //$('.ui-dialog-titlebar-close').remove();
+                    //$("#alerta_<?php echo $this->idpronac; ?>").dialog("open");
+                    //alerta(function(){jqAjaxForm(document.getElementById('frmconsolidacao'),'consolidar');})
+                    //$("#frmconsolidacao_<?php echo $this->idpronac; ?>").submit();
+                    var mensagem = 'Projeto aprovado pela CNIC. Reaberto para ajustes do componente!';
+                    consolidar('<?php echo $this->idpronac; ?>',mensagem);
+                    return false;
+                }
+                $("#tpresultadovotacao_<?php echo $this->idpronac; ?>").val(tipoResultado);
+                //jqAjaxForm(document.getElementById('frmconsolidacao'),'consolidar');
+                //$('html').css('overflow', 'auto');
+                //alert('VAI SUMETER FORM <?php echo $this->idpronac; ?>');
+                consolidar('<?php echo $this->idpronac; ?>');
+                $('html, body').animate({
+                    scrollTop:  $("#projetoemvotacao_<?php echo $this->idpronac; ?>").offset().top
+                }, 1000);
+                //$("#frmconsolidacao_<?php echo $this->idpronac; ?>").submit();
+            //}
+        }
+    );
+    });
+    
+    var resultado = setInterval(function() {
+        var idpronac = '<?php echo $this->idpronac; ?>';
+        verificardados(idpronac);
+    }, 5000);
+    
+    function verificardados(idpronac)
+    {   
+        if($("#processando_"+idpronac).html()==""){
+            $("#processando_"+idpronac).html('<center>[ Carregando dados ... <img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /> ]</center>');
+        }
+        
+        setTimeout(function(){
+            $.ajax({
+                url: '<?php echo $this->url(array('controller' => 'votarprojetocultural', 'action' => 'verificarvotacao')); ?>',
+                dataType: 'json',
+                type: "POST",
+                data: {
+                    idpronac: idpronac
+                },
+                success: function(data){
+
+                    $('#aprovados_'+idpronac).html(data.aprovados);
+                    $('#indeferidos_'+idpronac).html(data.indeferidos);
+                    $('#abstencao_'+idpronac).html(data.abstencao);
+                    $('#dsjustificativa_'+idpronac).html(data.dsjustificativa);
+                    $('#totalvotos_'+idpronac).html(data.total);
+                    if(data.totalvotos==<?php echo $this->qtdVotantes; ?>)
+                    {
+                        //clearInterval(resultado);
+                        $('#enviar_'+idpronac).removeClass('sumir');
+                        $('#linhaParecer_'+idpronac).removeClass('sumir');
+                        if(data.aprovados > data.indeferidos){
+                            $(".votopresidente_"+idpronac).addClass('sumir');
+                            $("#vtpresidente_"+idpronac).val('false');
+                            $("#resultadovotacao_"+idpronac).val('AS');
+
+                        }else if(data.indeferidos > data.aprovados){
+                            $(".votopresidente_"+idpronac).addClass('sumir');
+                            $("#vtpresidente_"+idpronac).val('false');
+                            $("#resultadovotacao_"+idpronac).val('IS');
+                            $(".situacaoindeferimento_"+idpronac).removeClass('sumir');
+                        }
+                        /*else if(data.abstencao > 0 && data.aprovados > data.indeferidos && data.totalvotos != data.abstencao){
+                            $(".votopresidente_"+idpronac).addClass('sumir');
+                            $("#vtpresidente_"+idpronac).val('false');
+                            $("#resultadovotacao_"+idpronac).val('AS');
+                        }
+                        else if(data.abstencao > 0 && data.indeferidos > data.aprovados  && data.totalvotos != data.abstencao){
+                            $(".votopresidente_"+idpronac).addClass('sumir');
+                            $("#vtpresidente_"+idpronac).val('false');
+                            $("#resultadovotacao_"+idpronac).val('IS');
+                        }*/
+                        else if(data.totalvotos == data.abstencao || data.aprovados == data.indeferidos){
+                            $(".votopresidente_"+idpronac).removeClass('sumir');
+                            $("#vtpresidente_"+idpronac).val('true');
+                        }
+                    }else{
+                        $('#enviar_'+idpronac).addClass('sumir');
+                        $('#linhaParecer_'+idpronac).addClass('sumir');
+                    }
+
+                },
+                complete: function(){
+                    $("#processando_"+idpronac).html('&nbsp;');
+                    //window.parent.JSVerificaArquivosVotacao();
+                    //parent.JSVerificaArquivosVotacao();
+
+                }
+            }, '1000');//intervalo para verificar dados
+        });
+    }
+    
+    function alerta(funcionok){
+        $("#alerta_<?php echo $this->idpronac; ?>").dialog({
+            resizable: false,
+            width:470,
+            height:160,
+            modal: true,
+            autoOpen:false,
+            buttons : {
+                'OK' : funcionok
+            }
+        });
+    }
+    
+    function msg(texto){
+        //$('#tela').dialog('close'); // fecha a modal
+        $("#modalMsg_<?php echo $this->idpronac; ?>").dialog("destroy");
+        $("#modalMsg_<?php echo $this->idpronac; ?>").dialog
+        ({
+            width:450,
+            height:200,
+            EscClose:false,
+            modal:true
+            ,buttons:
+            {
+                'OK':function()
+                {
+                    $('div').dialog('close'); // fecha a modal
+                }
+            }
+        });
+        return false;
+    }
+    
+    function consolidar(idPronac,mensagemRetorno){
+
+        var msgAdicional = '';
+        
+        if(mensagemRetorno != undefined) { 
+            msgAdicional = mensagemRetorno;
+        }else{ 
+            msgAdicional = '';
+        }
+        
+        var action = $("#frmconsolidacao_<?php echo $this->idpronac; ?>").attr("action");
+        var stPlanoAnual = $('#stPlanoAnual_'+idPronac).val();
+        
+        $.ajax({
+            async: true,
+            type: "POST",
+            url: action,
+            data:{
+                idpronac: idPronac,
+                resultadovotacao    : $("#resultadovotacao_"+idPronac).val(),
+                tpresultadovotacao  : $("#tpresultadovotacao_"+idPronac).val(),
+                vtpresidente        : $("#vtpresidente_"+idPronac).val(),
+                parecerconsolidado  : $("#parecerconsolidado_"+idPronac).val(),
+                situacao            : $("#situacao_"+idPronac).val(),
+                tpconsolidacaovotacao : $("#tpconsolidacaovotacao_"+idPronac).val()
+            },
+            beforeSend: function() {
+                $("#votacao_"+idPronac).html('<br><center>Aguarde, consolidando votação...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br>');
+            },
+            success: function(data)
+            {
+                if(!data.error){
+                    $("#projetoemvotacao_"+idPronac).addClass("sumir");
+                    message(msgAdicional + ' Votação consolidada com sucesso!', 'CONFIRM');
+                }else{
+                    $("#projetoemvotacao_"+idPronac).addClass("sumir");
+                    message('Erro! N&atilde;o foi poss&iacute;vel realizar consolidação da votação. ' + data.descricao, 'ERROR');
+                }
+                return false;
+            },
+            complete: function(){
+                
+                /*var qtdeVotacoesConsolidadas = $("#qtdeVotacoesConsolidadas").val();
+                    qtdeVotacoesConsolidadas = parseInt(qtdeVotacoesConsolidadas)+1;
+                $("#qtdeVotacoesConsolidadas").val(qtdeVotacoesConsolidadas);
+                
+                if(qtdeVotacoesConsolidadas == 3){
+                    $("#qtdeVotacoesConsolidadas").val('0');
+                    setTimeout(function(){
+                        window.location.reload();
+                    }, '3000');
+                }*/
+            }
+            ,dataType : 'json'
+        });
+    }
+</script>
+
+<div id="modalMsg_<?php echo $this->idpronac; ?>" class="sumir">Projeto consolidado com sucesso!</div>
+<div id="alerta_<?php echo $this->idpronac; ?>" title="Alerta"></div>
+<input id="vtpresidente_<?php echo $this->idpronac; ?>" type="hidden" value="false"/>
+<div id="consolidar">
+<!--<form id="frmconsolidacao_<?php //echo $this->idpronac; ?>" name="frmconsolidacao_<?php //echo $this->idpronac; ?>" method="post" action="<?php //echo $this->url(array('controller' => 'votarprojetocultural', 'action' => 'resultadovoto')); ?>">-->
+<form id="frmconsolidacao_<?php echo $this->idpronac; ?>" name="frmconsolidacao_<?php echo $this->idpronac; ?>" method="post" action="<?php echo $this->url(array('controller' => 'votarprojetocultural', 'action' => 'consolidar-votacao')); ?>">
+    <input class="input_simples" name="resultadovotacao_<?php echo $this->idpronac; ?>" type="hidden" id="resultadovotacao_<?php echo $this->idpronac; ?>"/>
+    <input class="input_simples"  name="tpresultadovotacao_<?php echo $this->idpronac; ?>" type="hidden" id="tpresultadovotacao_<?php echo $this->idpronac; ?>"/>
+    <input class="input_simples"  name="dadosidpronac" type="hidden" value="<?php echo $this->idpronac; ?>"/>
+    <input class="input_simples"  name="tpconsolidacaovotacao_<?php echo $this->idpronac; ?>" id="tpconsolidacaovotacao_<?php echo $this->idpronac; ?>" type="hidden" value="<?php echo $this->dadosprojeto['tpConsolidacaoVotacao']; ?>"/>
+    <input type="hidden" value="<?php echo $this->idpronac; ?>" name="idPronac" id="idPronac" class="input_simples"/>
+    <input type="hidden" value="<?php echo $this->stPlanoAnual; ?>" name="stPlanoAnual_<?php echo $this->idpronac; ?>" id="stPlanoAnual_<?php echo $this->idpronac; ?>" class="input_simples"/>
+    
+    <table class="tabela">
+        <!--<tr>
+            <td style="font-size:  11pt" class="centro">Vota&ccedil;&atilde;o: <a id="consultarprojetos" href="<?php echo $this->Url(array('controller' => 'dadosprojeto', 'action' => 'index', 'idpronac'=>$this->dadosprojeto['IdPRONAC']),'',true) ; ?>" target="_new" title="Ir para Consultar Projetos"><?php echo $this->dadosprojeto['pronac']; ?> - <?php echo $this->dadosprojeto['NomeProjeto']; ?></a></td>
+        </tr>-->
+        <!--<tr>
+            <td style="font-size:  11pt;">
+                <div style="width: 100%">
+                    <div style="width: 40%; float: left; text-align: right;"><b>Componente da Comiss&atilde;o</b>:</div> <div style="width: 50%;"> <?php //echo $this->componente;?></div>
+                    <div style="width: 40%; float: left; text-align: right;"><b>An&aacute;lise</b>:</div> <div style="width: 50%;"> <?php //echo $this->tipoAprovacao($this->dadosprojeto['stAnalise']); ?></div>
+                </div>
+            </td>
+        </tr>-->
+        <!--<tr>
+            <td>Componente da Comiss&atilde;o : <?php //echo $this->componente;?></td>
+        </tr>
+        <tr>
+            <td align="center"><div id="aprovados">Aprovados: 0</div></td>
+        </tr>
+        <tr>
+            <td align="center"><div id="indeferidos">Indeferidos: 0</div></td>
+        </tr>
+        <tr>
+            <td align="center"><div id="abstencao">Absten&ccedil;&atilde;o: 0</div></td>
+        </tr>
+        <tr>
+            <td align="center"><div id="totalvotos">Total de Votos: 0</div></td>
+        </tr>-->
+        <tr>
+            <td>
+                <span id="processando_<?php echo $this->idpronac; ?>"></span>
+                <fieldset>
+                    <legend>Consolidação da votação</legend>
+                    <table class="tabela">
+                        <tr>
+                            <th>Aprovados</th>
+                            <th>Indeferidos</th>
+                            <th>Absten&ccedil;&atilde;o</th>
+                            <th>Total de Votos</th>
+                        </tr>
+                        <tr>
+                            <td class="centro" style="font-size: 11pt;"><div id="aprovados_<?php echo $this->idpronac; ?>"></div></td>
+                            <td class="centro" style="font-size: 11pt;"><div id="indeferidos_<?php echo $this->idpronac; ?>"></div></td>
+                            <td class="centro" style="font-size: 11pt;"><div id="abstencao_<?php echo $this->idpronac; ?>"></div></td>
+                            <td class="centro" style="font-size: 11pt;"><div id="totalvotos_<?php echo $this->idpronac; ?>"></div></td>
+                        </tr>
+                    </table>
+                    <!--<div id="aprovados" style="padding:3px; font-size: 11pt"><b>Aprovados</b>: 0</div>
+                    <div id="indeferidos" style="padding:3px; font-size: 11pt"><b>Indeferidos</b>: 0</div>
+                    <div id="abstencao" style="padding:3px; font-size: 11pt">Absten&ccedil;&atilde;o: 0</div>
+                    <div id="totalvotos" style="padding:3px; font-size: 11pt">Total de Votos: 0</div>-->
+                </fieldset>
+            <!--</td>
+        </tr>
+        <tr>
+            <td>-->
+                <fieldset>
+                    <legend>Componente x Voto</legend>
+                    <div id="dsjustificativa_<?php echo $this->idpronac; ?>"></div>
+                </fieldset>
+            </td>
+        </tr>
+        <!--<tr>
+            <th>Justificativas Consolidadas</th>
+        </tr>
+        <tr>
+            <td align="left">
+                <div id="dsjustificativa">
+                </div>
+            </td>
+        </tr>-->
+        <!--<tr class="votopresidente sumir">
+            <th>Voto do presidente</th>
+        </tr>
+        <tr class="votopresidente sumir">
+            <td class="centro">
+                <input type="radio" name="votopresidente" class="aprovacaoprojeto" value="AS"/> Aprovar projeto Cultural
+                <input type="radio" name="votopresidente" class="aprovacaoprojeto" value="IS"/> Indeferir projeto Cultural
+            </td>
+        </tr>-->
+        <tr class="votopresidente_<?php echo $this->idpronac; ?> sumir">
+            <td>
+                <fieldset>
+                    <legend>Voto do presidente</legend>
+                    <div style="width:99%">
+                        <input type="radio" name="votopresidente_<?php echo $this->idpronac; ?>" class="aprovacaoprojeto_<?php echo $this->idpronac; ?>" value="AS"/> Aprovar projeto Cultural&nbsp;&nbsp;
+                        <input type="radio" name="votopresidente_<?php echo $this->idpronac; ?>" class="aprovacaoprojeto_<?php echo $this->idpronac; ?>" value="IS"/> Indeferir projeto Cultural
+                    </div>
+                </fieldset>
+            </td>
+        </tr>
+        <tr id="linhaParecer_<?php echo $this->idpronac; ?>" class="sumir">
+            <td>
+                <fieldset>
+                    <legend>Parecer Administrativo</legend>
+                    <div style="width:99%">
+                        <textarea id="parecerconsolidado_<?php echo $this->idpronac; ?>" name="parecerconsolidado_<?php echo $this->idpronac; ?>" class="input_simples" style="width: 99%" rows="8"></textarea>
+                        <textarea  id="parecerconsolidadoAtual_<?php echo $this->idpronac; ?>" name="parecerconsolidadoAtual_<?php echo $this->idpronac; ?>" style="display: none"></textarea>
+                    </div>
+                </fieldset>
+            </td>
+        </tr>
+        <!--<tr>
+            <th>Parecer Administrativo</th>
+        </tr>
+        <tr>
+            <td>
+                <textarea id="parecerconsolidado" name="parecerconsolidado"></textarea>
+                <!--<script>
+                    //CKEDITOR.replace('parecerconsolidado', {	fullPage : true });
+                </script>--
+                <textarea  id="parecerconsolidadoAtual" name="parecerconsolidadoAtual" style="display: none"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td align="center">
+                <?php //echo $this->exibirContadorTextarea('exibirContadorTextarea', 3, 8000, strlen($this->descricao)); ?>
+            </td>
+        </tr>-->
+        <tr class="sumir situacaoindeferimento_<?php echo $this->idpronac; ?>">
+            <td>
+                <fieldset>
+                    <legend>Situa&ccedil;&atilde;o do Projeto</legend>
+                    <div style="width:99%">
+                        <select class="input_simples" id="situacao_<?php echo $this->idpronac; ?>" name="situacao_<?php echo $this->idpronac; ?>" >
+                            <option value="">--Selecione--</option>
+                            <?php foreach ($this->situacaoindeferimento as $situacao) {
+                            ?>
+                                <option value="<?php echo $situacao->Codigo; ?>"><?php echo $situacao->Descricao; ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                </fieldset>
+            </td>
+        </tr>
+        <!--<tr class="sumir situacaoindeferimento">
+            <th align="center">Situa&ccedil;&atilde;o do Projeto:</th>
+        </tr>
+        <tr class="sumir situacaoindeferimento">
+            <td align="center">
+                <select class="input_simples" id="situacao" name="situacao">
+                    <option value="">--Selecione--</option>
+                    <?php //foreach ($this->situacaoindeferimento as $situacao) {
+                    ?>
+                        <option value="<?php //echo $situacao->Codigo; ?>"><?php //echo $situacao->Descricao; ?></option>
+                    <?php //} ?>
+                </select>
+            </td>
+        </tr>-->
+        <tr id="enviar_<?php echo $this->idpronac; ?>" class="sumir">
+            <td align="center">
+                <input type="button" value="Consolidar Vota&ccedil;&atilde;o" class="btn" id="btn_finalizar_consolidacao"/>
+            </td>
+        </tr>
+    </table>
+</form>
+<br>
+</div>
+<div id="erro"></div>

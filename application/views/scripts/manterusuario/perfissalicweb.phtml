@@ -1,0 +1,177 @@
+<script type="text/javascript">
+$(document).ready( function() {
+	$("#acaoDiv").dialog({
+        title :'Alteração',
+        resizable: false,
+        width:400,
+        height:170,
+        modal: true,
+        autoOpen:false,
+        buttons: {
+            'Não': function() {
+                $("#abrir_produto").css('display','');
+                $("#abrir_adm").css('display','');
+                $("#menunovo").css('display','');
+                window.location.reload();
+            },
+            'Sim': function() {
+                $("#abrir_produto").css('display','');
+                $("#abrir_adm").css('display','');
+                $("#menunovo").css('display','');
+                window.location = '<?php echo $this->baseUrl(); ?>/manterusuario/excluir-permissao?usuario=<?php echo $this->usu_codigo ?>&orgao=<?php echo $this->org_codigo ?>&grupo=<?php echo $this->perfil ?>';
+            }
+        }
+    });
+        $("#perfissalicweb").validate({
+		// Define as regras
+		rules:{
+            usuario:"required",
+			unidade:"required",
+			perfil: "required",
+			status: "required"
+
+		},
+		// Define as mensagens de erro para cada regra
+		messages:{
+            usuario:'<br><font color="red">Informe usuário</font>',
+			unidade:'<br><font color="red">Informe unidade</font>',
+			perfil:'<font color="red">Informe perfil</font>',
+			status: '<font color="red">Informe status</font>'
+		}
+	});
+});
+
+
+function replaceAll(string, token, newtoken) {
+	while (string.indexOf(token) != -1) {
+ 		string = string.replace(token, newtoken);
+	}
+	return string;
+}
+
+    function carregaCampo(cpf){
+
+   }
+
+
+</script>
+
+
+<!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== -->
+<div style="display:none" id="confirm">Por favor, informe seu email!</div>
+<div style="display:none" id="dialog-alert2"></div>
+<div style="display:none" id="confirmInforma">Por favor, digite seu email corretamente!</div>
+<div id="breadcrumb">
+
+<ul>
+<li class="first"><a href="<?php echo $this->url(array('controller' => 'manterusuario', 'action' => 'index')); ?>">In&iacute;cio</a></li>
+<li class="last">Alterar Perfil</li>
+</ul>
+
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INICIO TITULO ========== -->
+
+<div id="titulo">
+<div>Alterar Perfil<span></span> <span class="voltar"><a href="javascript:voltar();">Voltar</a></span></div>
+
+
+</div>
+<!-- ========== FIM TITULO ========== -->
+
+
+
+<!-- ========== INICIO CONTEUDO ========== -->
+
+<div id="conteudo">
+<fieldset><legend>Informações</legend>
+
+            <form method="POST" action="<?php echo $this->url(array('controller' => 'manterusuario', 'action' => 'perfissalicweb')); if ( !empty ( $_GET['unidade'] ) ) { echo "?editar=sim"; } ?>" name="perfissalicweb" id="perfissalicweb">
+
+			<input type="hidden" name="usuariooff" value="<?php echo $this->usu_codigo; ?>" />
+			<input type="hidden" name="unidadeoff" value="<?php echo @$_GET['unidade']; ?>" />
+			<input type="hidden" name="perfiloff" value="<?php echo $this->perfil?>" />
+			<input type="hidden" name="statusoff" value="<?php echo $this->estado; ?>" />
+			
+
+                <table class="tabela">
+                    <thead>
+                        <tr>
+                            <th colspan="2">Atualiza&ccedil;&atilde;o de Perfil / Usu&aacute;rio </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Usuário *</td>
+                            <td>
+                                <select id="usuario" name="usuario" class="select_simples" <?php echo (!empty($this->usu_codigo))?" readonly":""; ?> style="min-width: 250px;" >
+                                    <option value="">Selecione um usuário</option>
+                                   <?php if ( !empty ( $this->usu_codigo ) ): ?>
+                                    <option selected="selected" value="<?php echo $this->usu_codigo; ?>"><?php echo $this->usu_nome; ?></option>
+                                    <?php else: ?>
+	                                 <?php
+	                                    foreach ($this->resultadoUsuario as $resultadoUsuario) :	                                        
+	                                 ?>
+	                                        <option value="<?php echo $resultadoUsuario->usu_codigo;?>"><?php echo $resultadoUsuario->usu_nome . " - " . $resultadoUsuario->usu_identificacao;?></option>
+	                                 <?php
+	                                    endforeach;
+	                                 ?>
+                            		<?php endif; ?>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Unidade *</td>
+                           <td>
+                                <select id="unidade" name="unidade" class="select_simples" <?php echo (!empty($this->usu_codigo))?" readonly":""; ?> style="min-width: 250px;" >
+                                     <option value="">Selecione uma unidade</option>
+                                     
+                                    <?php foreach ($this->orgaos as $resultadoUnidade): ?>
+	                                    <?php if ($resultadoUnidade['Codigo'] == @$_GET['unidade']):?>
+	                                    	<option selected="selected" value="<?php echo $resultadoUnidade['Codigo'] ?>"><?php echo $resultadoUnidade['Sigla'] ?></option>
+										<?php else:?>
+	                                    	<option value="<?php echo $resultadoUnidade['Codigo'] ?>"><?php echo $resultadoUnidade['Sigla'] ?></option>
+                                     	<?php endif; ?>
+	                                <?php endforeach;?>
+                                </select>
+                            </td>
+                          </tr>
+                        <tr>
+                            <td>Perfil *</td>
+                            <td>
+                                <?php foreach ($this->resultadoGrupo as $resultadoGrupo):?>
+                                    <input type="radio" name="perfil" id="perfil" value="<?php echo $resultadoGrupo['gru_codigo']?>" <?php if($resultadoGrupo['gru_codigo'] == $this->perfil){echo 'checked="checked"';} ?> />
+                                        <?php echo $resultadoGrupo['gru_nome']?><br/>
+                                 <?php endforeach; ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Status *</td>
+                            <td>
+                                <input type="radio" name="status" id="perfil1" value="1" <?php echo ($this->estado==1)?" checked='checked'":""; ?> /> <label for="perfil1">Habilitado</label>
+                                <input type="radio" name="status" id="perfil0" value="0" <?php echo ($this->estado==0)?" checked='checked'":""; ?> /> <label for="perfil0">Desabilitado</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="center" colspan="2">
+                            <input id='btIncluir' type='submit' value='' class='btn_salvar enviar'/>
+                            <?php if ( !empty ( $this->usu_codigo ) ):  ?>
+                            <input id='acao' type='button' value='' onclick="$('#acaoDiv').dialog('open');" class='btn_exclusao' title="Excluir" style="width: 88px;" />
+                            <div id="acaoDiv">Tem certeza que deseja excluir o registro?</div>
+                            <?php endif; ?>
+                            
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+
+            </form>
+</fieldset>
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

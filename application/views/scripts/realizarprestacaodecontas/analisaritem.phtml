@@ -1,0 +1,309 @@
+<?php require_once"inc/menu.inc.php"; ?>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.js"></script>
+<script language="javascript">
+    
+    $(document).ready(function(){
+    });
+
+    function JSValidarItem(idComprovantePagamento) {
+
+        var editor = CKEDITOR.instances['observacao'];
+        if (editor) { editor.destroy(true); }
+        CKEDITOR.replace('observacao');
+        $("#frmValidar").each(function() {
+            this.reset();
+	});
+
+        $("#idComprovantePagamento").val(idComprovantePagamento);
+
+        $("#validar_item").dialog("destroy");
+        $("#validar_item").dialog
+        ({
+            width:750,
+            height:600,
+            EscClose:true,
+            draggable: true,
+            resizable: true,
+            closeOnEscape: false,
+            modal:true
+            ,buttons:
+            {
+                'Cancelar': function(){
+                    $(this).dialog('close');
+                },
+                'Salvar': function(){
+                    var erro = '';
+                    var texto = CKEDITOR.instances['observacao'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+
+                    if (!$("input[@name='situacao']:checked").val()) {
+                       erro = '<b>Dados obrigatórios não informados!</b><br/>';
+                    }
+
+                    if(texto == '')
+                    {
+                        erro = '<b>Dados obrigatórios não informados!</b><br/>';
+                    }
+
+                    if(erro != ''){
+                        $("<div></div>").appendTo('body').attr('title','Alerta').html(erro).dialog({
+                            resizable: false,
+                            width:400,
+                            height:150,
+                            modal: true,
+                            buttons: {
+                                'OK': function() {
+                                    $(this).dialog('close');
+                                }
+                            }
+                        });
+                    }else{
+                        $("#frmValidar").submit();
+                    }
+                }
+            }
+        });
+        return false;
+    }
+
+    function AnalisarItem() {
+		$("#analisar").dialog("destroy");
+		$('html').css('overflow', 'hidden');
+		$("#enviar-confirm").dialog
+		({
+			width:750,
+	        height:600,
+			modal: true,
+			draggable: true,
+			resizable: true,
+			closeOnEscape: false,
+			buttons: {
+				'Salvar': function(){
+					redirecionar('<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'analisaritem'), '', true); ?>');
+				},
+				'Cancelar': function(){
+					$(this).dialog('close');
+				}
+			}
+		});
+		$('.ui-dialog-titlebar-close').open();
+	}
+	</script>
+
+<script>
+    <?php if(isset($_GET['tipoMsg'])):?>
+        $("#novas_mensagens", document).append("<div class='msg<?php echo $_GET['tipoMsg']; ?>'><div class='float_right'><input type='button' class='btn_close' title='Fechar mensagem' id='msg<?php echo $_GET['tipoMsg']; ?>' onclick='$(\".msg<?php echo $_GET['tipoMsg']; ?>\").hide();' onkeypress='$(\".msg<?php echo $_GET['tipoMsg']; ?>\").hide();'/></div><div><?php echo $_GET['msg'] ?></div></div>");
+    <?php endif;?>
+</script>
+<div id="validar_item" class="sumir" title="Analisar Item">
+    <form id="frmValidar" name="frmValidar" action="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'validaritem'), '', true);?>" method="post">
+        <input type="hidden" name="idPronac" value="<?php echo $this->idPronac;?>" />
+        <input type="hidden" id="idPlanilhaItem" name="idPlanilhaItem" value="<?php echo $this->idPlanilhaItem;?>" />
+        <input type="hidden" id="idPlanilhaAprovacao" name="idPlanilhaAprovacao" value="<?php echo $this->idPlanilhaAprovacao;?>" />
+        <input type="hidden" id="idComprovantePagamento" name="idComprovantePagamento" value="" />
+        <table class="tabela">
+            <tr>
+                <th colspan="2">PRONAC</th>
+                <th colspan="2">NOME DO PROJETO</th>
+            </tr>
+            <tr>
+                <td colspan="2"><?php echo $this->AnalisarItem->PRONAC;?></td>
+                <td colspan="2"><?php echo $this->AnalisarItem->NomeProjeto;?></td>
+            </tr>
+        </table>
+        <table class="tabela">
+            <tr>
+                <th>SITUAÇÃO</th>
+            </tr>
+            <tr>
+                <td >
+                    <input type="radio" name="situacao" value="1"> Executado Integralmente<br>
+                    <input type="radio" name="situacao" value="2"> Executado Parcialmente<br>
+                    <input type="radio" name="situacao" value="3"> Não Executado<br>
+                    <input type="radio" name="situacao" value="4"> Sem Informação<br>
+
+                </td>
+            </tr>
+        </table>
+        <table class="tabela">
+            <tr>
+                <th>
+                    Observação:
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <textarea name="observacao" id="observacao"></textarea>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<div id="breadcrumb">
+    <ul>
+       <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''), '', true); ?>" title="Ir para p&aacute;gina inicial">Início</a></li>
+        <li class=""><a href="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'tecnicoprestacaocontas'));?>">Analisar presta&ccedil;&atilde;o de contas</a></li>
+        <li class=""><a href="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'planilhaorcamentaria', 'idPronac' => $this->AnalisarItem->IdPRONAC, 'idPlanilhaAprovacao' => $this->AnalisarItem->idPlanilhaAprovacao, 'idPlanilhaItem' => $this->AnalisarItem->idPlanilhaItens), '', true); ?>">Planilha or&ccedil;amentária comprovada</a></li>
+        <li class="last">Analisar item</li>
+    </ul>
+</div>
+<div id="titulo">
+    <div>
+        Consultar item
+        <span class="voltar" style="float:right;"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span>
+    </div>
+</div>
+<div id="conteudo">
+    <form action="#" id="form" method="post">
+        <table class="tabela">
+            <tr>
+                <th colspan="2">PRONAC</th>
+                <th colspan="2">NOME DO PROJETO</th>
+            </tr>
+            <tr>
+                <td colspan="2"><?php echo $this->AnalisarItem->PRONAC;?></td>
+                <td colspan="2"><?php echo $this->AnalisarItem->NomeProjeto;?></td>
+            </tr>
+            <!-- ****** DADOS DA LICITACAO *********** -->
+            <?php if(!empty($this->AnalisarItem->nrLicitacao)):?>
+                <tr>
+                    <th colspan="4"><b>Licita&ccedil;&atilde;o</b></th>
+                </tr>
+                <tr>
+                    <td><b>Número de Licita&ccedil;&atilde;o</b></td>
+                    <td colspan="3"><?php echo $this->AnalisarItem->nrLicitacao;?></td>
+                </tr>
+                <tr>
+                    <td><b>Modalidade</b></td>
+                    <td colspan="3"><?php echo $this->AnalisarItem->modalidadeLicitacao;?></td>
+                </tr>
+                <tr>
+                    <td><b>Número de Processo</b></td>
+                    <td colspan="3"><?php echo $this->AnalisarItem->processoLicitacao;?></td>
+                </tr>
+                <tr>
+                    <td><b>Data Publica&ccedil;&atilde;o do Edital</b></td>
+                    <td colspan="3"><?php echo ConverteData($this->AnalisarItem->dtPubliEditalLicitacao,5);?></td>
+                </tr>
+                <tr>
+                    <td><b>Objeto</b></td>
+                    <td colspan="3"><?php echo $this->AnalisarItem->objetoLicitacao;?></td>
+                </tr>
+                <tr>
+                    <td><b>Fundamento Legal</b></td>
+                    <td colspan="3"><?php echo $this->AnalisarItem->fundamentoLicitacao;?></td>
+                </tr>
+            <?php endif; ?>
+
+            <!-- ****** DADOS DA DISPENSA *********** -->
+            <?php if(!empty($this->AnalisarItem->dsDispensa)):?>
+                <tr>
+                    <th colspan="4">Dispensa</th>
+                </tr>
+                <tr>
+                    <td><b>Descri&ccedil;&atilde;o da dispensa</b></td>
+                    <td colspan="3"><?php echo $this->AnalisarItem->dsDispensa;?></td>
+                </tr>
+                <tr>
+                    <td><b>Data da Dispensa</b></td>
+                    <td colspan="3"><?php echo date('d/m/Y',strtotime($this->AnalisarItem->dtDispensa));?></td>
+                </tr>
+            <?php endif; ?>
+
+            <!-- ****** DADOS DA COTACAO *********** -->
+            <?php if(!empty($this->AnalisarItem->nrCotacao)):?>
+                <tr>
+                    <th colspan="4">Cota&ccedil;&atilde;o</th>
+                </tr>
+                <tr>
+                    <td><b>No. cota&ccedil;&atilde;o</b></td>
+                    <td colspan="3"><?php echo $this->AnalisarItem->nrCotacao;?></td>
+                </tr>
+                <tr>
+                    <td><b>Descri&ccedil;&atilde;o da cota&ccedil;&atilde;o</b></td>
+                    <td colspan="3"><?php echo $this->AnalisarItem->dsCotacao;?></td>
+                </tr>
+                <tr>
+                    <td><b>Data da cota&ccedil;&atilde;o</b></td>
+                    <td colspan="3"><?php echo date('d/m/Y',strtotime($this->AnalisarItem->dtCotacao));?></td>
+                </tr>
+            <?php endif; ?>
+            <tr>
+                <th colspan="4">Comprova&ccedil;&atilde;o de Pagamento do Item</th>
+            </tr>
+            <tr>
+                <td width="15%"><b>Produto:</b></td>
+                <td width="35%" colspan="3"><?php echo $this->AnalisarItem->Produto;?></td>
+            </tr>
+            <tr>
+                <td width="15%"><b>Etapa:</b></td>
+                <td width="35%"><?php echo $this->AnalisarItem->Etapa;?></td>
+                <td><b>Item de Custo:</b></td>
+                <td><?php echo $this->AnalisarItem->NomeItem;?></td>
+            </tr>
+            <tr>
+                <td><b>Valor Aprovado:</b></td>
+                <td>R$ <?php echo number_format($this->AnalisarItem->Total,2,',','.');?></td>
+                <td><b>Valor Comprovado:</b></td>
+                <td>R$ <?php echo number_format($this->AnalisarItem->vlComprovado,2,',','.');?></td>
+            </tr>
+            <!-- =============== ANALISE DO ITEM  ==================== -->
+            <tr>
+                <th colspan="4">Analise dos Itens</th>
+            </tr>
+            <tr>
+                <td colspan="4" align="center">
+                    <?php if(is_object($this->ComprovantePagamento)){ ?>
+                        <table class="tabela"  >
+                            <tr>
+                                <th>Produto</th>
+                                <th>Etapa</th>
+                                <th>Item</th>
+                                <th>N&uacute;mero</th>
+                                <th>Documento</th>
+                                <th>Situa&ccedil;&atilde;o</th>
+                                <th>Observa&ccedil;&atilde;o</th>
+                                <th>Data Avalia&ccedil;&atilde;o</th>
+                            </tr>
+                            <?php
+                            if (count($this->ComprovantePagamento) > 0)
+                            {
+                                foreach ($this->ComprovantePagamento as $comprovante) {
+                            ?>
+                                <tr>
+                                    <td><?php echo $this->AnalisarItem->Produto;?></td>
+                                    <td><?php echo $this->AnalisarItem->Etapa;?></td>
+                                    <td><?php echo $this->AnalisarItem->NomeItem;?></td>
+                                    <td><?php echo $comprovante->nrComprovante;?></td>
+                                    <td><a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir'));?>?id=<?php echo $comprovante->idArquivo;?>" padrao="false" retorna="true"><?php echo utf8_encode($comprovante->nmArquivo);?></a></td>
+                                    <?php  if($this->codGrupo != 124 || $comprovante->stItemAvaliado == 1): ?>
+                                        <td><?php echo $this->tipoSituacao[$comprovante->stItemAvaliado];?></td>
+                                    <?php else: ?>
+                                        <td align="center">
+                                            <input type="button" class="btn_validarItem" name="Validar item" id="validar" value="" style="width: 88px" onclick="JSValidarItem('<?php echo $comprovante->idComprovantePagamento;?>');">
+                                        </td>
+                                    <?php endif; ?>
+                                    <td><?php echo $comprovante->dsJustificativa;?></td>
+                                    <td><?php echo ConverteData($comprovante->dtValidacao,5);?></td>
+                                </tr>
+                                <?php
+                                }
+                            }
+                            else
+                            {
+                            ?>
+                            <tr>
+                                 <td class="centro" colspan="8">Nenhuma comprova&ccedil;&atilde;o de pagamento cadastrada.</td>
+                            </tr>
+                            <?php } ?>
+                        </table>
+                       <?php } ?>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div id="rodapeConteudo" ><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

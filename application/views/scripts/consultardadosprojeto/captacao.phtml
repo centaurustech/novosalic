@@ -1,0 +1,99 @@
+<?php
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+<script>
+     function paginar(pag){
+        $("#pag").val(pag);
+        jqAjaxForm(document.getElementById("frmPaginacao"), "resultadoConsulta");
+        //$("#resultadoConsulta").html("");
+        //$("#div_loading").html('<br><center>Aguarde, carregando dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br>');
+    }
+</script>
+<div id="resultadoConsulta">
+<?php
+    //$incentivador = null;
+    //$novoIncentivador = null;
+    //$totalIncentivador = null;
+    //$ct = 1;
+
+    if(is_array($this->registros) && isset($this->registros['incentivador']) && count($this->registros['incentivador'])>0): ?>
+    <table class="tabela">
+        <tr class="destacar">
+            <th align="center" width="20%"><b>Tipo de apoio</b></th>
+            <th align="center" width="20%"><b>Nr. Recibo</b></th>
+            <th align="center" width="20%"><b>Dt. Recibo</b></th>
+            <th align="center" width="20%"><b>Dt. Transferência</b></th>
+            <th align="center" width="20%"><b>Vl. Captado</b></th>
+        </tr>
+        <?php foreach($this->registros['incentivador'] as $incentivador) : ?>
+            <tr class="destacar">
+                <td colspan="5">Incentivador: <b><?php echo $incentivador['nome'];?></b></td>
+            </tr>
+            <?php foreach($incentivador['recibo'] as $recibo): ?>
+            <tr>
+                <td align="center"><?php echo $recibo['TipoApoio'];?></td>
+                <td align="center"><?php echo $recibo['NumeroRecibo'];?></td>
+                <td align="center"><?php echo $recibo['DtRecibo'];?></td>
+                <td align="center"><?php echo $recibo['DtTransferenciaRecurso'];?></td>
+                <td align="center">R$ <?php echo $recibo['CaptacaoReal'];?></td>
+            </tr>
+            <?php endforeach; ?>
+            <tr class="linha">
+                <td colspan="4">Total Incentivador:</td>
+                <td align="center"><b>R$ <?php echo $incentivador['totaIncentivador'];?></b></td>
+            </tr>
+        <?php endforeach; ?>
+        <?php if($this->fim == $this->total): ?>
+        <tr class="destacar" style="font-size: 12pt;">
+            <td colspan="4"><b>Total Geral:</b></td>
+            <td align="center"><b>R$ <?php echo $this->registros['totalgeral'];?></b></td>
+        </tr>
+        <?php endif; ?>
+    </table>
+<?php else: ?>
+    <table class="tabela">
+        <tr>
+            <td align="center"><em>Dados n&atilde;o informados!</em></td>
+        </tr>
+    </table>
+<?php endif; ?>
+<form action="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'captacao')); ?>" method="post" name="frmPaginacao" id="frmPaginacao">
+    <input type="hidden" class="input_simples" name="idPronac" id="idPronac" value="<?php echo $this->idPronac; ?>"/>
+<?php if(!empty($this->parametrosBusca)) foreach($this->parametrosBusca as $name=>$value):?>
+    <?php if(!is_array($value)): ?>
+    <input type="hidden" name="<?php echo $name?>" id="<?php echo $name?>" value="<?php echo $value?>"/>
+    <?php else: ?>
+        <?php foreach($value as $valor):?>
+    <input type="hidden" name="<?php echo $name?>[]" id="<?php echo $name?>" value="<?php echo $valor?>"/>
+        <?php endforeach; ?>
+    <?php endif; ?>
+<?php endforeach; ?>
+    <?php if(empty($this->parametrosBusca["pag"])):?>
+    <input type="hidden" name="pag" id="pag" value="<?php echo $this->pag; ?>"/>
+    <?php endif; ?>
+</form>
+<table class="tabela">
+    <tr>
+        <td align="center">
+            Exibindo de <b><?php echo $this->inicio; ?></b> a <b><?php echo $this->fim; ?></b> de um total de <b><?php echo $this->total; ?></b><br>
+            <?php if($this->pag<=1): ?>
+            <input type="button" style="width: 88px" class="btn_p_anterior-off" id="btn_p_anterior">
+            <?php else: ?>
+            <input type="button" style="width: 88px" class="btn_inicio" id="btn_inicio" onclick="paginar('1')"/>
+            <input type="button" style="width: 88px" class="btn_p_anterior" id="btn_p_anterior" onclick="paginar('<?php echo ($this->pag > 1)?$this->pag-1:1; ?>')"/>
+            <?php endif; ?>
+            <select name="pagina" id="pagina" class="input_simples" onchange="paginar(this.value)">
+                <?php for($i=1; $i<$this->totalPag+1; $i++): ?>
+                <option value="<?php echo $i; ?>" <?php if($i == $this->pag){ echo " selected='selected' "; } ?>><?php echo $i; ?></option>
+                <?php endfor; ?>
+            </select>
+            <?php if($this->pag+1 > $this->totalPag): ?>
+            <input type="button" style="width: 88px" class="btn_p_proximo-off" id="btn_p_proximo"/>
+            <?php else: ?>
+            <input type="button" style="width: 88px" class="btn_p_proximo" id="btn_p_proximo" onclick="paginar('<?php echo ($this->pag < $this->totalPag)?$this->pag+1:$this->totalPag; ?>')"/>
+            <input type="button" style="width: 88px" class="btn_ultimo" id="btn_ultimo" onclick="paginar('<?php echo $this->totalPag; ?>')"/>
+            <?php endif; ?>
+        </td>
+    </tr>
+</table>
+</div>

@@ -1,0 +1,56 @@
+<?php  
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>  
+
+<div class="sumir" id="email">
+    Deseja solicitar o vínculo ao proponente?
+</div>
+<fieldset>
+    <legend>Vincular ao Proponente</legend>
+    <table class="tabela">
+        <tr>
+             <th colspan="3" class="w500">Vincular ao Proponente</th>
+        </tr>
+        <tr class="destacar">
+            <td tabindex="1"><b>CPF:</b></td>
+            <td tabindex="1"><b>Nome:</b></td>
+            <td tabindex="1"><b>Solicitar Vínculo:</b></td>
+        </tr>
+        <?php $idAgente = null; ?>
+        
+        <?php foreach ($this->vinculo as $vinculo): ?>
+        
+            <?php if($vinculo->idAgente != $idAgente):?>
+	            <tr class="centro">
+	                <td align="left"> <?php echo Validacao::mascaraCPFCNPJ($vinculo->CNPJCPF); ?></td>
+	                <td align="left"><?php echo $vinculo->NomeAgente ?></td>
+	                <td style="font-weight: 600;">
+	                
+	                
+		                <?php if(($vinculo->UsuarioVinculo) == null): ?>
+		                
+		                	<?php if(($vinculo->siVinculo != '')): ?>
+
+		                		<?php echo $this->stVinculo($vinculo->siVinculo); ?>
+
+		                	<?php else:   ?>
+
+		                        <img style="cursor: pointer;" class="vincular" id="vincular" onclick="vincularproponente('<?php echo $vinculo->idAgente; ?>');" idAgente="<?php echo $vinculo->idAgente; ?>" src="<?php echo $this->baseUrl(); ?>/public/img/passed.gif" />
+		                    
+		                	<?php endif;?>
+		                    
+		                <?php else: ?>    
+		                	Servidor do Ministério da Cultura não pode ser Proponente!
+		                <?php endif; ?>  
+		                  
+	                    
+	                    
+	                </td>
+	            </tr>
+	        <?php $idAgente = $vinculo->idAgente; ?>
+	        <?php endif;?>
+        
+        <?php endforeach; ?>
+    </table>
+</fieldset>
+

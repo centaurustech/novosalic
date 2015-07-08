@@ -1,0 +1,186 @@
+<?php
+    $incluirHref    = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'incluircotacao')) . '?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $ExcluirHref    = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'excluircotacao')) . '?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $FinalizarHref  = $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'finalizarcotacao')) . '?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    $anteriorHref          =   $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'pagamento')) . '?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac;
+    include_once 'scripts/comprovarexecucaofinanceira/inc/menu.inc.php';
+?>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principalproponente', 'action' => ''), null, true); ?>" title="Ir para p&aacute;gina inicial" onclick="carregandoModal();">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')) . '?idPronac=' . Seguranca::encrypt($this->idpronac); ?>" title="Ir para In&iacute;cio">Consultar dados do Projeto</a></li>
+        <li>Comprovar Execu&ccedil;&atilde;o Financeira</li>
+        <li class="last">Cota&ccedil;&atilde;o</li>
+    </ul>
+</div> <!-- final: #breadcrumb -->
+
+<div id="titulo">
+    <div>Cota&ccedil;&atilde;o<span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+
+<div id="conteudo" align="center">
+    <div id="cotacaoAjax">
+        <table class="tabela">
+            <tr>
+                <th>PRONAC</th>
+                <th>NOME DO PROJETO</th>
+            </tr>
+            <tr>
+                <td><?php echo $this->pronac;?></td>
+                <td><?php echo $this->nomeProjeto;?></td>
+            </tr>
+        </table>
+
+        <br/>
+
+        <table class="tabela">
+            <tr>
+                <th>N&uacute;mero da Cota&ccedil;&atilde;o</th>
+                <th>Descri&ccedil;&atilde;o</th>
+                <th>Data de Cota&ccedil;&atilde;o</th>
+                <th>Detalhar</th>
+                <th>Alterar</th>
+            </tr>
+
+            <?php
+            if(is_array($this->listacotacao) and count($this->listacotacao)>0)
+            {
+                foreach ($this->listacotacao as $linha){
+                ?>
+                <tr id="linha<?php echo $linha['idcotacao'];?>" class="centro">
+                    <td>
+                        <?php echo $linha['nrcotacao'];?>
+                    </td>
+                    <td class="esquerda">
+                        <?php echo $linha['descricao'];?>
+                    </td>
+                    <td>
+                        <?php echo $linha['datacotacao'];?>
+                    </td>
+                    <td class="centro">
+                        <a href="<?php echo $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'detalharcotacao')) . '?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac .'&idcotacao=' . $linha['idcotacao']; ?>" idcotacao="<?php echo $linha['idcotacao'];?>" ><img border="0" width="18" title="Detalhar" src="<?php echo $this->baseUrl(); ?>/public/img/ico/kdict.png"></a>
+                    </td>
+                    <td class="centro">
+                        <?php
+                        if(!$linha['finalizado']){
+                        ?>
+                            <?php if(!$this->vrSituacao) { ?>
+                            <a href="<?php echo $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'incluircotacao')) . '?idusuario=' . $this->idusuario . '&idpronac=' . $this->idpronac .'&idcotacao=' . $linha['idcotacao'];?>" class="finaliza" idcotacao="<?php echo $linha['idcotacao'];?>" ><img border="0" width="18" title="Alterar" src="<?php echo $this->baseUrl(); ?>/public/img/ico/edit.png"></a>
+                                <?php } else { ?>
+                                    -
+                                <?php } ?>
+                        <?php
+                        }
+                        ?>
+                    </td>
+                </tr>
+                <?php
+                } // fecha for
+            } // fecha if
+            else
+            {
+            ?>
+            <tr>
+                    <td colspan="5" class="centro">Nenhuma cota&ccedil;&atilde;o cadastrada at&eacute; o momento.</td>
+            </tr>
+            <?php } ?>
+        </table>
+        <div style="text-align: center;">
+            <?php if(!$this->vrSituacao) { ?>
+            <a href="<?php echo $incluirHref;?>" style="text-decoration:none;"><input type="button" class="btn_novo" /></a>
+            <?php } ?>
+        </div>
+    </div>
+    <br clear="left" />
+</div>
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />
+
+<script type="text/javascript">
+    $(document).ready(function(){
+
+        /*$('#cotacaoAjax a').click(function(){
+
+            if($(this).attr('padrao')!='false'){
+
+                if($(this).attr('excluir')=='true' || $(this).attr('finalizar')=='true'){
+                    var este = this;
+
+                    var nomeJanelaAlerta =   janelaObj({
+                        parametros : {
+                            width:      400,
+                            autoOpen:   false,
+                            resizable:  false,
+                            modal:      true,
+                            buttons: {
+                                'N\u00e3o':function(){
+                                    $(this).dialog('close');
+                                },
+                                Sim: function() {
+
+                                    var carregarCont    =   requisicaoAjaxObj();
+                                    carregarCont.executar({
+                                        pagina      :   $(este).attr('href'),
+                                        parametros  :   {idcotacao:$(este).attr('idcotacao'),idpronac:'<?php //echo $this->idpronac;?>'},
+                                        resposta    :   '',
+                                        async       :   false,
+                                        funcaoRetorno : function(resposta){
+                                            if(resposta.resp && $(este).attr('excluir')=='true')
+                                                $('#cotacaoAjax #linha'+$(este).attr('idcotacao')).remove();
+                                            if(resposta.resp && $(este).attr('finalizar')=='true')
+                                                $('#cotacaoAjax #linha'+$(este).attr('idcotacao')+' .finaliza').remove();
+
+                                            if(resposta.mensagem != ''){
+                                                var nomeJanelaAlerta =   janelaObj({
+                                                    parametros : {
+                                                        width:      400,
+                                                        autoOpen:   false,
+                                                        resizable:  false,
+                                                        modal:      true,
+                                                            buttons: {
+                                                                Ok: function() {
+                                                                    $(this).dialog('close');
+                                                                }
+                                                            }
+                                                    },
+                                                    removerBtFechar:true,
+                                                    title : 'Alerta'
+                                                });
+                                                nomeJanelaAlerta.divConteudo.html(resposta.mensagem);
+                                                nomeJanelaAlerta.abrirJanela();
+                                            }
+                                        },
+                                        dataType : 'json'
+                                    });
+
+                                    $(this).dialog('close');
+                                }
+
+
+                            }
+                        },
+                        removerBtFechar:true,
+                        title : 'Alerta'
+                    });
+                    if($(this).attr('excluir')=='true')
+                        nomeJanelaAlerta.divConteudo.html(ag4);
+                    if($(this).attr('finalizar')=='true')
+                        nomeJanelaAlerta.divConteudo.html(me72);
+                    nomeJanelaAlerta.abrirJanela();
+                }
+                else{
+
+                    var pagina = requisicaoAjaxObj();
+                    pagina.executar({
+                        pagina: $(this).attr('href'),
+                        parametros:{idcotacao:$(this).attr('idcotacao'),idpronac:'<?php //echo $this->idpronac;?>'}
+                    });
+                }
+            }
+            return false;
+        });*/
+    });
+</script>

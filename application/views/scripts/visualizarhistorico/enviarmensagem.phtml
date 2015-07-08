@@ -1,0 +1,82 @@
+<?php require_once "inc/menu.inc.php"; // menu ?>
+  
+
+<?php 
+
+require_once 'menu.phtml';
+
+?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para Início">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'areadetrabalho', 'action' => 'index')); ?>" title="Ir para Visualizar Área de Trabalho">Visualizar Área de Trabalho</a></li>
+		<li class="last">Histórico</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Histórico <span>ID #23A</span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+
+
+<table width="800" border="2"> <div align="center" class="titulo_tabela">Enviar Mensagem</div>
+<form id="formCadastrar" name="formCadastrar" method="post" action="">
+  <label>  <div align="center">
+  <textarea  type="text" name="descricao" id="descricao" cols="60" rows="4"><?php echo isset($this->dsMensagem) ? $this->dsMensagem : ''; ?></textarea>
+</div>
+  
+
+ 
+  
+  
+
+  </table>
+  <table>
+  <div align="right">Encaminhar para: 
+  
+  <label>
+
+  
+  
+  <select name="componenteComissao" id="tipoDocumento">
+				<?php foreach ($this->componentecomissao as $comboComponenteComissao) { ?>
+				<option value="<?php echo $comboComponenteComissao->nomeConselheiro; ?>"><?php echo $comboComponenteComissao->nomeConselheiro;  ?></option>
+				<?php } ?>
+			
+			</select>	
+  
+</label>
+<label>
+<input type="submit" class="btn_enviar" name="enviar" id="enviar" value=" " />
+  </label>
+
+  </label>
+</form>
+</div>
+</table>
+
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

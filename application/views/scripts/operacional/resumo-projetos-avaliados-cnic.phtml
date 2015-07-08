@@ -1,0 +1,54 @@
+<script>
+    function JSImprimir(){
+        //$(".naoImprimir").css("display", "none");
+        $("#divConteudoPDF").html($(".conteudoImprimivel").html());
+        $("#divConteudoPDF").find('.naoImprimivel').each(function(){
+            $(this).remove();
+        });
+        $("#conteudoImprimir").val($("#divConteudoPDF").html());
+        $("#formGerarPdf").submit();
+    }
+</script>
+<form method="POST" id="formGerarPdf" target="_blank" name="formGerarPdf" action="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'gerar-pdf')); ?>" style="display:none">
+    <div id="divConteudoPDF"></div>
+    <textarea name="html" id="conteudoImprimir"></textarea>
+</form>
+<form action="<?php echo $this->urlGerarGrafico; ?>" method="post" name="frmGraficoResumo" id="frmGraficoResumo" target="_blank">
+    <div class="conteudoImprimivel" id="conteudoImprimivel">
+    <table class="tabela" style="width: 70%;">
+        <tr>
+            <th colspan="2">
+            Resumo: Projetos avaliados na CNIC
+            </th>
+            <th class="naoImprimivel"></th>
+        </tr>
+        <tr>
+            <th width="70%">Situa&ccedil;&atilde;o dos projetos avaliados na CNIC</th>
+            <th width="20%">Quantidade</th>
+            <th width="10%" class="naoImprimivel"><input type="submit" name="todos" class="btn_gerar_grafico" value="" /></th>
+        </tr>
+        <?php $totalGeral=0;?>
+        <?php foreach($this->registros as $situacao => $qtde): ?>
+
+        <input type="hidden" name="gVal_<?php echo $situacao; ?>" value="<?php echo $qtde; ?>"/>
+        <tr>
+            <td align="left"><?php echo $situacao; ?></td>
+            <td align="right"><?php echo $qtde; ?></td>
+            <td width="10%" class="naoImprimivel"><!--<input type="submit" name="<?php echo $situacao; ?>" class="btn_gerar_grafico" value=""/>--></td>
+        </tr>
+        <?php $totalGeral+=$qtde; ?>
+        <?php endforeach; ?>
+        <tr>
+            <th align="left">Total Geral</th>
+            <th align="right"><?php echo $totalGeral; ?></th>
+            <th width="10%" class="naoImprimivel"></th>
+        </tr>
+    </table>
+    </div><!-- fecha conteudo imprimivel -->
+<?php echo Grafico::formConfiguracao($this->baseUrl(),null,false) ; ?>
+</form>
+<div align="center">
+    <input  type="button" name="imprimir" class="btn_imprimir" onclick='javascript:JSImprimir()'>
+    <input type="button" class="btn_configurar_grafico" id="btn_configurar_grafico"  onclick="$('#confGrafico').toggle(); $(this).hide();" />
+    <!--<input type="button" class="btn_voltar" onclick="voltar();"/>-->
+</div>

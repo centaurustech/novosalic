@@ -1,0 +1,73 @@
+<?php
+/**
+ * Emissão de Parecer (Não Acompanhar Parecer)
+ * @author Equipe RUP - Politec
+ * @since 12/05/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.views.scripts.execucaofisicaprojeto
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+
+require_once "inc/menu.inc.php"; // menu
+?>
+
+
+
+<!-- ========== INÍCIO TÍTULO PÁGINA ========== -->
+<table class="w1000" style="margin:10px auto;">
+
+	<?php foreach ($this->pronac as $p) : ?>
+	<tr>
+		<td class="titulo_tabela">
+			<p>Emitir Parecer - Não acompanhar parecer</p>
+			<p>PRONAC: <?php echo $p->IdPRONAC; ?> - <?php echo $p->NomeProjeto; ?></p>
+		</td>
+	</tr>
+	<?php endforeach; ?>
+
+</table>
+<!-- ========== FIM TÍTULO PÁGINA ========== -->
+
+
+
+<!-- ========== INÍCIO FORMULÁRIO ========== -->
+<form action="<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'aprovarparecer')); ?>" method="post">
+	<input type="hidden" name="idPlanilha" value="<?php echo $_GET['idPlanilha']; ?>" />
+	<input type="hidden" name="idPronac" value="<?php echo $_GET['idPronac']; ?>" />
+	<input type="hidden" name="idProduto" value="<?php echo $_GET['idProduto']; ?>" />
+	<input type="hidden" name="AnoProjeto" value="<?php echo $p->AnoProjeto; ?>" />
+	<input type="hidden" name="Sequencial" value="<?php echo $p->Sequencial; ?>" />
+
+	<table class="w1000" style="margin:auto;">
+		<tr>
+			<td colspan="6">
+				<textarea name="justificativa" id="justificativa" cols="70" rows="10" style="width:980px; height:300px; border:1px solid #ccc;" <?php echo $this->contadorTextarea('form.justificativa', 'form.exibirContadorTextarea', 5000); ?>></textarea>
+				<?php echo $this->exibirContadorTextarea('exibirContadorTextarea', 4, 5000, strlen($this->justificativa)); ?>
+			</td>
+		</tr>
+	</table>
+
+	<div class="center">
+		<br />
+		<p>
+			<input type="submit" style="width:auto;" class="btn" value=" Aprovar " />
+			<input type="button" style="width:auto;" class="btn" value=" Indeferir "  onclick="redirecionar('');" />
+			<input type="button" style="width:auto;" class="btn" value=" Diligênciar " onclick="redirecionar('');" />
+			<input type="button" style="width:auto;" class="btn" value=" Submeter a CNIC " onclick="redirecionar('');" />
+		</p>
+		<br />
+	</div>
+</form>
+<!-- ========== FIM FORMULÁRIO ========== -->
+
+
+
+<!-- ========== BOTÕES ========== -->
+<br />
+<p class="center" style="margin-right:10px;">
+	<input type="button" class="btn_p_anterior" value=" " onclick="redirecionar('<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'emitirparecer')); ?>?idPronac=<?php echo $_GET['idPronac']; ?>');" />
+	<input type="button" class="btn_salvar" value=" " onclick="redirecionar('');" />
+</p>
+<br />

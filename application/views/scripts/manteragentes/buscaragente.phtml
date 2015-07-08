@@ -1,0 +1,207 @@
+<?php  
+/**
+ * Busca Agentes
+ * @author Equipe RUP - Politec
+ * @since 28/04/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.manteragentes
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+
+<?php require_once "inc/menu.inc.php"; ?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->baseUrl(); ?>" title="Início">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'manteragentes', 'action' => 'agentes')); ?>?acao=cc">Manter Agentes</a></li>
+		<li class="last">Pesquisar Agentes</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Pesquisar Agentes <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+
+
+	<script type="text/javascript">
+	<!--
+	function filtroCPF()
+	{
+		document.getElementById('cpf').value     = "";
+		document.getElementById('cpf').maxLength = "14";
+		document.getElementById('cpf').onkeyup   = function() { mascara(document.formBuscar.cpf, format_cpf); };
+		document.getElementById('cpf').focus(); 
+	}
+	function filtroCNPJ()
+	{
+		document.getElementById('cpf').value     = "";
+		document.getElementById('cpf').maxLength = "18";
+		document.getElementById('cpf').onkeyup   = function() { mascara(document.formBuscar.cpf, format_cnpj); };
+		document.getElementById('cpf').focus();
+	}
+	//-->
+	</script>
+	<!-- ========== FORMULÁRIO PARA BUSCAR PRONAC ========== -->
+	<form class="form" name="formBuscar" id="formBuscar" method="post" 
+		action="<?php echo $this->url(array('controller' => 'manteragentes', 'action' => 'buscaragente')); ?>">
+
+		<table class="tabela_busca" style="width:50%;">
+			<tr>
+				<th class="esquerda titulo_campo">
+					<input type="radio" name="Tipo" id="0" value="0" class="checkradio" checked="checked" onclick="filtroCPF();" onkeypress="filtroCPF();" /> <label for="0">CPF</label> &nbsp;&nbsp;&nbsp;
+					<input type="radio" name="Tipo" id="1" value="1" class="checkradio" onclick="filtroCNPJ();" onkeypress="filtroCNPJ();" /> <label for="1">CNPJ</label>
+				</th>
+				<td>
+					<div class="left"></div>
+					<label for="cpf"> </label>
+					<input class="input w150" type="text" name="cpf" id="cpf" 
+						onclick="limpar_campo(this, ' ');" onkeypress="limpar_campo(this, ' ');" 
+						onblur="restaurar_campo(this, ' ');" onmouseout="restaurar_campo(this, ' ');" 
+						value=" " 
+						maxlength="14" onkeyup="mascara(this, format_cpf);" onmouseup=" " value="<?php echo (isset($this->cpf) ? $this->cpf : ''); ?>"  />
+					<div class="right"></div>
+				</td>
+			</tr>
+			<tr>
+				<th class="esquerda titulo_campo"><label for="nome">Nome:</label></th>
+				<td>
+					<div class="left"></div>
+					<input class="input w300" type="text" name="nome" id="nome" 
+						onclick="limpar_campo(this, ' ');" onkeypress="limpar_campo(this, ' ');" 
+						onblur="restaurar_campo(this, ' ');" onmouseout="restaurar_campo(this, ' ');" 
+						value=" " 
+						maxlength="70" value="<?php echo (isset($this->nome) ? $this->nome : ''); ?>" />
+					<div class="right"></div>
+				</td>
+			</tr>
+		</table>
+
+		<p class="centro">
+			<input class="btn" type="submit" value=" Buscar " /> &nbsp; 
+			<input class="btn" type="button" value=" Incluir Agente "  onclick="redirecionar('<?php echo $this->url(array('controller' => 'manteragentes', 'action' => 'agentes')); ?>?acao=cc');" 
+				onkeypress="redirecionar('<?php echo $this->url(array('controller' => 'manteragentes', 'action' => 'agentes')); ?>?acao=cc');" />
+		</p>
+	</form>
+	<!-- ========== FIM FORMULÁRIO DE BUSCA PRONAC ========== -->
+
+
+
+	<script type="text/javascript">
+	<!--
+	// valida o envio do formulário
+    $('#formBuscar').submit(function()
+	{
+		cpf = document.getElementById('cpf').value;
+		nome = document.getElementById('nome').value;
+		msg = '';
+		Tipo = "";
+	    for (i = 0; i < document.formBuscar.Tipo.length; i++)
+	    {
+        	if (document.formBuscar.Tipo[i].checked)
+        	{
+            	Tipo = document.formBuscar.Tipo[i].value;
+        	}
+   		}
+
+
+
+                if (cpf.length <= 1 && nome.length <= 1)
+		{
+			msg = 'Alerta!';
+			$("#dialog").dialog("destroy");
+			$("#dialog-alert2").dialog
+			({
+				modal: true,
+				draggable: false,
+				resizable: false,
+				closeOnEscape: false,
+				title: msg,
+				buttons:
+				{
+					Ok:function()
+					{
+						$(this).dialog('close');
+					}
+				}
+			});
+			return false;
+		}
+
+
+
+                else if (Tipo == 0 && cpf.length != 14 && (nome == "" || nome == " "))
+		{
+			msg = 'CPF inválido!';
+			$("#dialog").dialog("destroy");
+			$("#dialog-alert").dialog
+			({
+				modal: true,
+				draggable: false,
+				resizable: false,
+				closeOnEscape: false,
+				title: msg,
+				buttons:
+				{
+					Ok:function()
+					{
+						$(this).dialog('close');
+					}
+				}
+			});
+			return false;
+		}
+		else if (Tipo == 1 && cpf.length != 18 && (nome == "" || nome == " "))
+		{
+			msg = 'CNPJ inválido!';
+			$("#dialog").dialog("destroy");
+			$("#dialog-alert").dialog
+			({
+				modal: true,
+				draggable: false,
+				resizable: false,
+				closeOnEscape: false,
+				title: msg,
+				buttons:
+				{
+					Ok:function()
+					{
+						$(this).dialog('close');
+					}
+				}
+			});
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+    });
+	//-->
+	</script>
+        <div id="dialog-alert" class="sumir">Informe um documento v&aacute;lido!</div>
+        <div id="dialog-alert2" class="sumir">Dados Obrigat&oacute;rios n&atilde;o informados!</div>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

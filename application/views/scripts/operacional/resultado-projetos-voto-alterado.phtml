@@ -1,0 +1,158 @@
+<script>
+    $(document).ready(function(){
+        $(".orderBy").click(function(){
+            var campo = $(this).attr("valorOrdenacao");
+
+            if("ASC" == $("#tipoOrdenacao").val()){
+                tipo = "DESC";
+            }else{
+                tipo = "ASC";
+            }
+
+            ordenar(campo, tipo);
+        });
+
+        $(".orderBy").each(function(){
+            if($("#ordenacao").val() == $(this).attr("valorOrdenacao")){
+                if($("#tipoOrdenacao").val() == "ASC"){
+                    $(this).after('<span style="padding-left:4px;"><img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-baixo.PNG" align="absmiddle"></span>');
+                }else{
+                    $(this).after('<span style="padding-left:4px;"><img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-cima.PNG" align="absmiddle"></span>');
+                }
+            }
+        });
+
+        $(".gerarResumo").click(function(){
+            var campoGerarResumo = "<input type='hidden' name='gerarResumo' id='gerarResumo' value='true'>";
+            $("#frmPaginacao").append(campoGerarResumo);
+            jqAjaxForm(document.getElementById("frmPaginacao"), "resultadoConsulta");
+        });
+        
+        
+        $('#btn_xls').click(function(){
+            $('#frmPaginacao').attr('target','_blank').append('<input type="hidden" name="tipo" id="xls" value="xls"/>');
+            $('#frmPaginacao').submit();
+            $('#xls').remove();
+        });
+        
+        $('#btn_imprimir').click(function(){
+            $('#frmPaginacao').attr('target','_blank').append('<input type="hidden" name="tipo" id="pdf" value="pdf"/>');
+            $('#frmPaginacao').submit();
+            $('#pdf').remove();
+        });
+
+    });
+
+    function paginar(pag){
+        $("#pag").val(pag);
+        jqAjaxForm(document.getElementById("frmPaginacao"), "resultadoConsulta");
+        $("#resultadoConsulta").html("");
+        $("#resultadoConsulta").html("Aguarde, carregando dados ...");
+    }
+
+    function ordenar(campo, tipo){
+        $("#ordenacao").val(campo);
+        $("#tipoOrdenacao").val(tipo);
+        paginar(1);
+    }
+</script>
+<fieldset>
+    <legend>Resultado</legend>
+<div class="conteudoImprimivel" id="conteudoImprimivel">
+<table class="tabela">
+    <tbody>
+    <tr>
+        <th valign="middle" align="center" bgcolor="#abda5d"><a href="#resultadoConsulta" class="orderBy" valorOrdenacao="13">Proponente</a></th>
+        <th valign="middle" align="center" bgcolor="#abda5d"><a href="#resultadoConsulta" class="orderBy" valorOrdenacao="5">PRONAC</a></th>
+        <th valign="middle" align="center" bgcolor="#abda5d"><a href="#resultadoConsulta" class="orderBy"  valorOrdenacao="6">Nome do Projeto</a></th>
+        <th valign="middle" align="center" bgcolor="#abda5d"><a href="#resultadoConsulta" class="orderBy"  valorOrdenacao="11">&Aacute;rea Cultural</a></th>
+        <th valign="middle" align="center" bgcolor="#abda5d"><a href="#resultadoConsulta" class="orderBy"  valorOrdenacao="12">Segmento Cultural</a></th>
+        <th valign="middle" align="center" bgcolor="#abda5d"><a href="#resultadoConsulta" class="orderBy"  valorOrdenacao="4">Resultado da Avalia&ccedil;&atilde;o</a></th>
+        <th valign="middle" align="center" bgcolor="#abda5d"><a href="#resultadoConsulta" class="orderBy"  valorOrdenacao="3">Vl. Aprovado</a></th>
+    </tr>
+    <?php $auxSituacao = ""; ?>
+    <?php if(count($this->registros) > 0):?>
+    <?php foreach($this->registros as $registro):?>
+    <?php $qtd = $this->arrQtdeRegistros[$registro->DescSituacao];?>
+    <?php if($registro->DescSituacao != $auxSituacao):?>
+    <tr class="destacar">
+        <td valign="top" align="left" colspan="7"><b><?php echo $registro->DescSituacao?> (<?php echo $qtd; ?>)</b></td>
+    </tr>
+    <?php endif; ?>
+    <tr>
+        <td valign="top" align="left"><?php echo $registro->Proponente?></td>
+        <td valign="top" align="center"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')); ?>?idPronac=<?php echo $registro->IdPronac; ?>" title="Ir para Consultar Dados do Projeto" target="_blank"><?php echo $registro->Pronac?></a></td>
+        <td valign="top" align="left"><?php echo $registro->NomeProjeto?></td>
+        <td valign="top" align="left" nowrap="nowrap"><?php echo $registro->DescArea?></td>
+        <td valign="top" align="left" nowrap="nowrap"><?php echo $registro->DescSegmento?></td>
+        <td valign="top" align="left"><?php $arrRA = array("AC"=>"Aprovado-Componente", "AS"=>"Aprovado-Plen&aacute;ria", "IC"=>"Indeferido-Componente", "IS"=>"Indeferido-Plen&aacute;ria"); echo $arrRA[$registro->stAnalise]?></td>
+        <td valign="top" align="right"><?php echo number_format($registro->VlAprovado, 2, ",", ".")?></td>
+    </tr>
+    <?php $auxSituacao = $registro->DescSituacao; ?>
+    <?php endforeach; ?>
+    <?php else: ?>
+    <tr>
+        <td colspan="16" valign="top" align="center">Nenhum Registro Encontrado</td>
+    </tr>
+    <?php endif; ?>
+</tbody>
+</table>
+</div>
+
+<form action="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-projetos-voto-alterado')); ?>" method="post" name="frmPaginacao" id="frmPaginacao">
+<?php foreach($this->parametrosBusca as $name=>$value):?>
+    <?php if(!is_array($value)): ?>
+    <input type="hidden" name="<?php echo $name?>" id="<?php echo $name?>" value="<?php echo $value?>"/>
+    <?php else: ?>
+        <?php foreach($value as $valor):?>
+            <input type="hidden" name="<?php echo $name?>[]" id="<?php echo $name?>" value="<?php echo $valor?>"/>
+        <?php endforeach; ?>
+    <?php endif; ?>
+<?php endforeach; ?>
+    <?php if(empty($this->parametrosBusca["pag"])):?>
+    <input type="hidden" name="pag" id="pag" value="<?php echo $this->pag; ?>"/>
+    <?php endif; ?>
+    <?php if(empty($this->parametrosBusca["ordenacao"])):?>
+    <input type="hidden" name="ordenacao" id="ordenacao" value="<?php echo (!empty($this->parametrosBusca["ordenacao"]))?$this->parametrosBusca["ordenacao"]:""; ?>"/>
+    <?php endif; ?>
+    <?php if(empty($this->parametrosBusca["tipoOrdenacao"])):?>
+    <input type="hidden" name="tipoOrdenacao" id="tipoOrdenacao" value="<?php echo (!empty($this->parametrosBusca["tipoOrdenacao"]))?$this->parametrosBusca["tipoOrdenacao"]:""; ?>"/>
+    <?php endif; ?>
+</form>
+
+<form method="POST" id="formGerarXls" name="formGerarXls" action="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'gerar-xls')); ?>" style="display:none">
+    <textarea name="html" id="conteudoXLS"></textarea>
+</form>
+
+<form method="POST" target="_blank" id="formGerarPdf" name="formGerarPdf" action="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'gerar-pdf')); ?>" style="display:none">
+    <textarea name="html" id="conteudoImprimir"></textarea>
+</form>
+
+<table class="tabela">
+    <tr>
+        <td align="center">
+            Exibindo de <b><?php echo $this->inicio; ?></b> a <b><?php echo $this->fim; ?></b> de um total de <b><?php echo $this->total; ?></b><br>
+            <?php if($this->pag<=1): ?>
+            <input type="button" style="width: 88px" class="btn_p_anterior-off" id="btn_p_anterior">
+            <?php else: ?>
+            <input type="button" style="width: 88px" class="btn_inicio" id="btn_inicio" onclick="paginar('1')"/>
+            <input type="button" style="width: 88px" class="btn_p_anterior" id="btn_p_anterior" onclick="paginar('<?php echo ($this->pag > 1)?$this->pag-1:1; ?>')"/>
+            <?php endif; ?>
+            <select name="pagina" id="pagina" class="input_simples" onchange="paginar(this.value)">
+                <?php for($i=1; $i<$this->totalPag+1; $i++): ?>
+                <option value="<?php echo $i; ?>" <?php if($i == $this->pag){ echo " selected='selected' "; } ?>><?php echo $i; ?></option>
+                <?php endfor; ?>
+            </select>
+            <?php if($this->pag+1 > $this->totalPag): ?>
+            <input type="button" style="width: 88px" class="btn_p_proximo-off" id="btn_p_proximo"/>
+            <?php else: ?>
+            <input type="button" style="width: 88px" class="btn_p_proximo" id="btn_p_proximo" onclick="paginar('<?php echo ($this->pag < $this->totalPag)?$this->pag+1:$this->totalPag; ?>')"/>
+            <input type="button" style="width: 88px" class="btn_ultimo" id="btn_ultimo" onclick="paginar('<?php echo $this->totalPag; ?>')"/>
+            <?php endif; ?>
+            <input type="button" style="width: 44px" class="btn_xls" id="btn_xls" />
+            <input type="button" style="width: 88px" class="btn_imprimir" id="btn_imprimir" />
+            <input type="button" style="width: 88px" class="btn_resumo gerarResumo" id="btn_resumo" />
+        </td>
+    </tr>
+</table>
+</fieldset>

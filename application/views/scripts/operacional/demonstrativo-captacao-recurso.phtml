@@ -1,0 +1,269 @@
+<script>
+    $(document).ready(function(){
+        $(".btn_pesquisar").click(function(){
+            $(".colorpicker").html("");
+            //jqAjaxLink("<?php echo $this->baseUrl()?>/operacional/tabelas?consulta="+$("#consulta").val(), null, "resultadoConsulta");
+            $("#resultadoConsulta").html("");
+            var tpDtCaptacao = $("#tpDtCaptacao").val();
+            var dtCaptacao   = $("#dtCaptacao").val();
+            
+            if(tpDtCaptacao == ""){
+                $("#msgErro1").html("<br><font color='red'>Dados obrigat&oacute;rios n&atilde;o informados.</font>");
+                $("#msgErro2").html("");
+            }else if((tpDtCaptacao == 'igual' || tpDtCaptacao == 'entre'  || tpDtCaptacao == 'maior'  || tpDtCaptacao == 'menor') && dtCaptacao == ""){
+                $("#msgErro1").html("");
+                $("#msgErro2").html("<font color='red'>Dados obrigat&oacute;rios n&atilde;o informados.</font>");
+            }else{
+                $("#msgErro1").html("");
+                $("#msgErro2").html("");
+                if(($("#vlInicio").val() != "" && $("#vlFim").val()=="")){
+                   $("#msgErro3").html("<font color='red'>Dados obrigat&oacute;rios n&atilde;o informados.</font>");
+                   return false;
+                }
+                if(($("#vlInicio").val() == "" && $("#vlFim").val()!="")){
+                   $("#msgErro3").html("<font color='red'>Dados obrigat&oacute;rios n&atilde;o informados.</font>");
+                   return false;
+                }
+                $("#msgErro3").html("");
+                jqAjaxForm(document.getElementById("frmDemonstrativo"), "resultadoConsulta");
+            }
+        });
+
+        $(".cmpNumerico").numeric().attr("maxlength", "9");
+        $(".cmpNome").attr("maxlength", "50");
+
+        $("#area").change(function(){
+            carregar_combo(this.value, 'segmento', '<?php echo $this->url(array('controller' => 'segmentocultural', 'action' => 'combo-z')); ?>', ' - Selecione uma &Aacute;rea Cultural - ');
+        });
+
+        $('#regiao').change(function(){
+            //var regiao = $(this).val();
+            var regiao = $(':selected',$(this)).val();
+            if(regiao){
+                $(".optUF").each(function(indice, elemento){
+                    if($(elemento).attr("regiao") != regiao){
+                        $(elemento).hide();
+                        //$("#uf").val("");
+                    } else {
+                        $(elemento).show();
+                    }
+                });
+            }else{
+                $("#uf").find("option").show();
+                $("#uf").val("");
+            }
+        });
+
+        $("#uf").change(function(){
+            carregar_combo($(this).val(), "cidade", "<?php echo $this->url(array('controller'=>'cidade', 'action'=>'combo')); ?>", "Selecione uma UF", "");
+        });
+        
+        $("#tpDtExecucao").change(function(){
+            if($("#spanDtExecucao").css("display")=="none" && $(this).val() == "entre"){
+                $("#spanDtExecucao").show();
+            }else{
+                $("#spanDtExecucao").hide();
+            }
+            //$("#spanDtFinal").toggle();
+        });
+
+        $("#tpDtCaptacao").change(function(){
+            if($("#spanDtCaptacao").css("display")=="none" && $(this).val() == "entre"){
+                $("#spanDtCaptacao").show();
+            }else{
+                $("#spanDtCaptacao").hide();
+            }
+            //$("#spanDtFinal").toggle();
+        });
+
+        $(function()
+        {
+            $.datepicker.regional['pt-BR'] = {
+                closeText: 'Fechar',
+                prevText: '&#x3c;Anterior',
+                nextText: 'Pr&oacute;ximo&#x3e;',
+                currentText: 'Hoje',
+                monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+                monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+                dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+                dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                weekHeader: 'Sm',
+                dateFormat: 'dd/mm/yy',
+                firstDay: 0,
+                isRTL: false,
+                showMonthAfterYear: false,
+                yearSuffix: ''};
+            $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+            $(".cmpData").datepicker($.datepicker.regional['pt-BR']);
+        });
+
+    $("#vlInicio").priceFormat({
+                limit:11,
+                centsLimit: 2
+            });
+    $("#vlFim").priceFormat({
+                limit:11,
+                centsLimit: 2
+            });
+    });
+    
+</script>
+
+<?php include("scripts/operacional/inc/menu.inc.php"); ?>
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Demonstrativo de capta&ccedil;&atilde;o de recursos</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="conteudo" align="center">
+
+    <fieldset>
+        <legend> Filtros de pesquisa </legend>
+        <form action="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'resultado-demonstrativo-captacao-recurso')); ?>" method="post" name="frmDemonstrativo" id="frmDemonstrativo">
+               <table class="tabela">
+                <tbody>
+                <tr>
+                    <th colspan="3">Selecionar campos para pesquisa</th>
+                </tr>
+                <tr>
+                    <td>Regi&atilde;o</td>
+                    <td align="left" colspan="2">
+                        <select class="input_simples w200" name="regiao" id="regiao">
+                            <option value="">Todas</option>
+                                <?php foreach($this->regioes as $regiao):?>
+                                <option value="<?php echo $regiao; ?>"><?php echo $regiao; ?></option>
+                                <?php endforeach; ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Unidade da Federa&ccedil;&atilde;o</td>
+                    <td align="left" colspan="2">
+                        <select class="input_simples w200" name="uf" id="uf">
+                            <option value="">Todas</option>
+                                <?php foreach($this->ufs as $uf):?>
+                                <option class='optUF' value="<?php echo $uf->Sigla; ?>" regiao="<?php echo $uf->Regiao; ?>"><?php echo $uf->Descricao; ?></option>
+                                <?php endforeach; ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Per&iacute;odo de capta&ccedil;&atilde;o*</td>
+                    <td width="20%">
+                        <select name="tpDtCaptacao" id="tpDtCaptacao" class="select_simples" onchange="if($(this).val()=='OT' || $(this).val()=='U7' || $(this).val()=='SP' || $(this).val()=='MM' || $(this).val()=='UM'){$('#camposDataDtCaptacao').css('display','none');}else{$('#camposDataDtCaptacao').css('display','');}">
+                            <OPTGROUP LABEL="Normais">
+                                <option value="">Selecione</option>
+                                <option value="igual">Exatamente Igual</option>
+                                <option value="entre">Entre dois valores</option>
+                                <option value="maior">Maior ou igual a </option>
+                                <option value="menor">Menor ou igual a</option>
+                            </OPTGROUP>
+                            <OPTGROUP LABEL="Especiais">
+                               <option value="OT">Ontem</option>
+                               <option value="U7">&Uacute;ltimos 7 dias</option>
+                               <option value="SP">Semana Passada (seg-dom)</option>
+                               <option value="MM">Este m&ecirc;s</option>
+                               <option value="UM">&Uacute;ltimo m&ecirc;s</option>
+                            </OPTGROUP>
+                        </select> <span id="msgErro1"></span>
+                    </td>
+                    <td align="left">
+                        <span id="camposDataDtCaptacao">
+                            <input name="dtCaptacao" id="dtCaptacao" value=""  onkeyup="mascara(this, format_data);"  class="input_simples btn_calendario cmpData" maxlength="10"/>
+                            <span id="spanDtCaptacao" style="display: none;">&nbsp;e&nbsp;<input  onkeyup="mascara(this, format_data);"  name="dtCaptacao_Final" id="dtCaptacao_Final" value="" class="input_simples btn_calendario cmpData" maxlength="10"/></span>
+                        </span>
+                        <span id="msgErro2"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Per&iacute;odo de execu&ccedil;&atilde;o</td>
+                    <td width="20%">
+                        <select name="tpDtExecucao" id="tpDtExecucao" class="select_simples" onchange="if($(this).val()=='OT' || $(this).val()=='U7' || $(this).val()=='SP' || $(this).val()=='MM' || $(this).val()=='UM'){$('#camposDataDtExecucao').css('display','none');}else{$('#camposDataDtExecucao').css('display','');}">
+                            <OPTGROUP LABEL="Normais">
+                                <option value="">Selecione</option>
+                                <option value="igual">Exatamente Igual</option>
+                                <option value="entre">Entre dois valores</option>
+                                <option value="maior">Maior ou igual a </option>
+                                <option value="menor">Menor ou igual a</option>
+                            </OPTGROUP>
+                            <OPTGROUP LABEL="Especiais">
+                               <option value="OT">Ontem</option>
+                               <option value="U7">&Uacute;ltimos 7 dias</option>
+                               <option value="SP">Semana Passada (seg-dom)</option>
+                               <option value="MM">Este m&ecirc;s</option>
+                               <option value="UM">&Uacute;ltimo m&ecirc;s</option>
+                            </OPTGROUP>
+                        </select>
+                    </td>
+                    <td align="left">
+                        <span id="camposDataDtExecucao">
+                            <input name="dtExecucao" id="dtExecucao"  onkeyup="mascara(this, format_data);" value="" class="input_simples btn_calendario cmpData" maxlength="10"/>
+                            <span id="spanDtExecucao" style="display: none;">&nbsp;e&nbsp;<input  onkeyup="mascara(this, format_data);" name="dtExecucao_Final" id="dtExecucao_Final" value="" class="input_simples btn_calendario cmpData" maxlength="10"/></span>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Valor autorizado</td>
+                    <td align="left" colspan="2">
+                        entre <input name="vlInicio" id="vlInicio" value="" class="input_simples"/> e <input name="vlFim" id="vlFim" value="" class="input_simples"/>
+                        <span id="msgErro3"></span>
+                    </td>
+                </tr>
+                <tr>
+                        <td align="left">&Aacute;rea Cultural</td>
+                        <td align="left" colspan="2">
+                            <select name="tipoPesqArea" id="tipoPesqArea" style="width: 140px;" class="input_simples">
+                                <option value="EIG">Exatamente igual</option>
+                                <option value="DI">Diferente</option>
+                            </select>
+                            <select name="area" id="area" style="width: 200px;" class="input_simples">
+                                <option value="">Selecione</option>
+                                <?php foreach($this->areas as $area):?>
+                                <option value="<?php echo $area->Codigo; ?>"><?php echo $area->Descricao; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+                </tr>
+                <tr>
+                    <td align="left" width="120">Segmento Cultural</td>
+                    <td align="left" colspan="2">
+                        <div style="float: left; width: 140px" >Exatamente igual &nbsp;</div>
+                        <select name="segmento" id="segmento" style="width: 200px;" class="input_simples">
+                            <option selected="selected" value=""> - Selecione uma &Aacute;rea Cultural - </option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">&nbsp;</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <table class="tabela">
+            <tr>
+                <td align="center">
+                    <input type="button" style="width: 88px" class="btn_pesquisar" id="btn_pesquisar"/>
+                    <input type="reset" style="width: 88px" class="btn_limpar" id="btn_limpar" value="" onclick="$('#resultadoConsulta').html(''); $('.colorpicker').html(''); $('#msgErro1').html(''); $('#msgErro2').html(''); $('#msgErro3').html(''); "/>
+                    <!--<input type="button" style="width: 88px" class="btn_voltar" id="btn_voltar"/>-->
+                </td>
+            </tr>
+        </table>
+        
+        </form>
+</fieldset>
+
+<div id="resultadoConsulta"></div>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

@@ -1,0 +1,98 @@
+<script type="text/javascript">
+    function xls(){
+        $('#formxls').submit();
+    }
+
+    $(document).ready(function(){
+        $('.btn_imprimir').click(function(){
+            var idPronac = $(this).attr('idpronac');
+            window.open("<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'imprimir-tramitacao'),'',true); ?>/idpronac/"+idPronac, '_blank');
+        });
+    });
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => ''),'',true); ?>" title="Ir para Início">Início</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'index'),'',true); ?>" title="Gerenciar Pareceres">Gerenciar Pareceres T&eacute;cnicos</a></li>
+        <li class="last">Tramita&ccedil;&atilde;o do projeto</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Tramita&ccedil;&atilde;o do projeto <span class="voltar"><a href="javascript:voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <form id="formxls" action="<?php echo $this->url(array('controller' => 'gerenciarpareceres', 'action' => 'gerarxls')); ?>" method="post">
+        <textarea name="html" class="sumir"><?php echo $this->html; ?></textarea>
+    </form>
+
+    <table class="tabela">
+        <tr>
+            <th>Pronac</th>
+            <th>Projeto</th>
+        </tr>
+        <tr>
+            <td><?php echo $this->PRONAC; ?></td>
+            <td><?php echo $this->nomeprojeto; ?></td>
+        </tr>
+    </table>
+
+    <?php if($this->dados) { ?>
+    <table class="tabela">
+        <tr>
+            <td align="center">
+                <input type="button" class="btn_imprimir" name="btn_imprimir" value="" idpronac="<?php echo $this->idPronac; ?>" />
+                <input type="button" class="btn_xls" name="btn_xls" style="width:44px;" value=" " onclick="xls();" />
+            </td>
+        </tr>
+    </table>
+
+    <table class="tabela">
+        <tr>
+            <th width="30%" align="left">Produto</th>
+            <th width="10%" align="left">Tipo An&aacute;lise</th>
+            <th width="10%" align="left">Unidade</th>
+            <th width="5%" align="center">Data de Envio</th>
+            <th width="5%" align="center">Data de Retorno</th>
+            <th width="30%" align="left">Observa&ccedil;&atilde;o</th>
+            <th width="10%" align="left">Usu&aacute;rio</th>
+        </tr>
+        <?php $idproduto = ''; $unidade = '';?>
+        <?php foreach($this->dados as $d) { ?>
+        <tr>
+            <td><?php if($idproduto != $d->idProduto)  echo $d->Produto; ?></td>
+            <td><?php echo $d->TipoAnalise; ?></td>
+            <td><?php if($unidade != $d->Unidade)echo $d->Unidade; ?></td>
+            <td align="center" nowrap><?php echo $d->DtEnvio; ?></td>
+            <td align="center" nowrap><?php echo $d->DtDevolucao; ?></td>
+            <td><?php echo $d->Observacao; ?></td>
+            <td><?php echo $d->Usuario; ?></td>
+        </tr>
+        <?php $idproduto = $d->idProduto; $unidade = $d->Unidade;?>
+        <?php } ?>
+    </table>
+
+    <?php } else { ?>
+    <table class="tabela">
+        <tr>
+            <td align="center" style="font-size: 15px;">Nenhum registro encontrado</td>
+        </tr>
+    </table>
+    <?php } ?>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

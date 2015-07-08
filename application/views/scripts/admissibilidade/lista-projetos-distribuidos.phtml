@@ -1,0 +1,196 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.btn_imprimir').click(function(){
+            $('#formImpressao').submit();
+        });
+    });
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"> <a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li>Admissibilidade</li>
+        <li><a href="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'listar-propostas')); ?>" title="Ir para In&iacute;cio">Avalia&ccedil;&atilde;o</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'painel-projetos-distribuidos')); ?>" title="Projetos Distribuídos por Órgãos">Projetos Distribuídos por Órgãos</a></li>
+        <li class="last">Lista</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Projeto Distribuído por &Oacute;rg&atilde;o - Lista <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+    <?php if(count($this->dados)>0){ ?>
+    <!-- ============ PAGINAÇÃO ============ -->
+    <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+        <tbody>
+            <tr>
+                <td align="center">
+                <form name="form1" id="form1" action="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'lista-projetos-distribuidos'));?>" method="get">
+                    <?php if($this->paginacao['pag']>1) { ?>
+                    <input class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'lista-projetos-distribuidos')).'?pag=1'."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronac='.$this->pronac.'&orgao='.$this->orgao.'&estado='.$this->estado; ?>'">
+                    <?php } ?>
+                    <input id="btn_p_anterior" type="button"
+                    <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                    <?php }else { ?>
+                           class="btn_p_anterior" onclick="location.href='<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'lista-projetos-distribuidos')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronac='.$this->pronac.'&orgao='.$this->orgao.'&estado='.$this->estado; ?>'"
+                    <?php } ?>>
+                    <input id="btn_p_proximo" type="button"
+                           <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                           class="btn_p_proximo-off"
+                    <?php }else { ?>
+                           class="btn_p_proximo" onclick="location.href='<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'lista-projetos-distribuidos')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronac='.$this->pronac.'&orgao='.$this->orgao.'&estado='.$this->estado; ?>'"
+                    <?php } ?>>
+                    <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                    <input class="btn_ultimo" id="btn_ultimo" type="button"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'lista-projetos-distribuidos')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronac='.$this->pronac.'&orgao='.$this->orgao.'&estado='.$this->estado; ?>'">
+                    <?php } ?>
+                    Pág.:<select name="pag" id="pag" onchange="$('#form1').submit()" class="input_simples" style="vertical-align: top;">
+                        <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                        <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                        <?php endfor; ?>
+                    </select>
+                    &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>" style="vertical-align: top;"><input type="submit" class="btn_recarregar" value="" style="vertical-align: top;">
+                    <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                    <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                    <input type="hidden" name="pag" value="1">
+                    <input type="hidden" name="pronac" value="<?php echo $this->pronac;?>">
+                    <input type="hidden" name="orgao" value="<?php echo $this->orgao;?>">
+                    <input type="hidden" name="estado" value="<?php echo $this->estado;?>">
+                    <input type="button" value=" " class="btn_imprimir" title="Imprimir" style="vertical-align: top;" />
+                 </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <center>
+        <?php
+            echo $this->paginacao['inicio']." a ";
+            echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+            echo " de ". $this->paginacao['total']. " Projetos listados";
+        ?>
+    </center>
+    <!-- ========== FIM PAGINAÇÃO ========== -->
+    <?php } ?>
+
+
+    <?php if($this->qtdDocumentos != 0){ ?>
+    <table class="tabela tablesorter">
+        <thead>
+            <tr class="titulo_tabela">
+                <th><a href="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'lista-projetos-distribuidos')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=2&ordem='.$this->paginacao['novaOrdem'].'&pronac='.$this->pronac.'&orgao='.$this->orgao.'&estado='.$this->estado;?>">PRONAC</a></th>
+                <th nowrap><a href="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'lista-projetos-distribuidos')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=3&ordem='.$this->paginacao['novaOrdem'].'&pronac='.$this->pronac.'&orgao='.$this->orgao.'&estado='.$this->estado;?>">Nome do Projeto</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'lista-projetos-distribuidos')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=8&ordem='.$this->paginacao['novaOrdem'].'&pronac='.$this->pronac.'&orgao='.$this->orgao.'&estado='.$this->estado;?>">Órgão</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'lista-projetos-distribuidos')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=5&ordem='.$this->paginacao['novaOrdem'].'&pronac='.$this->pronac.'&orgao='.$this->orgao.'&estado='.$this->estado;?>">Produto</a></th>
+                <th nowrap><a href="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'lista-projetos-distribuidos')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=6&ordem='.$this->paginacao['novaOrdem'].'&pronac='.$this->pronac.'&orgao='.$this->orgao.'&estado='.$this->estado;?>">Tipo de Análise</a></th>
+                <th nowrap><a href="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'lista-projetos-distribuidos')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=11&ordem='.$this->paginacao['novaOrdem'].'&pronac='.$this->pronac.'&orgao='.$this->orgao.'&estado='.$this->estado;?>">N&ordm; Dias</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'lista-projetos-distribuidos')).'?pag=1&qtde='.$this->paginacao['qtde'].'&campo=12&ordem='.$this->paginacao['novaOrdem'].'&pronac='.$this->pronac.'&orgao='.$this->orgao.'&estado='.$this->estado;?>">Estado</a></th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach($this->dados as $d){ ?>
+            <tr>
+                <td align="center">
+                    <a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'));?>?idPronac=<?php echo ($d->idPronac); ?>" target="_blank">
+                        <?php echo $d->Pronac; ?>
+                    </a>
+                </td>
+                <td><?php echo $d->NomeProjeto; ?></td>
+                <td><?php echo $d->Orgao; ?></td>
+                <td><?php echo $d->Produto; ?></td>
+                <td><?php echo $d->DescricaoAnalise; ?></td>
+                <td align="right"><?php echo $this->formatarMilhar($d->NrDias); ?></td>
+                <td nowrap><?php echo $d->Situacao; ?></td>
+            <?php } ?>
+        </tbody>
+    </table>
+
+    <?php if(count($this->dados)>0){ ?>
+
+        <!-- ============ PAGINAÇÃO ============ -->
+        <?php if($this->qtdDocumentos > 10) { //echo $this->dados; ?>
+        <center>
+            <?php
+                echo $this->paginacao['inicio']." a ";
+                echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+                echo " de ". $this->paginacao['total'];
+            ?>
+        </center>
+        <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+            <tbody>
+                <tr>
+                    <td align="center">
+                    <form name="form2" id="form2" action="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'lista-projetos-distribuidos'));?>" method="get">
+                        <?php if($this->paginacao['pag']>1) { ?>
+                        <input class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'lista-projetos-distribuidos')).'?pag=1'."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronac='.$this->pronac.'&orgao='.$this->orgao.'&estado='.$this->estado; ?>'">
+                        <?php } ?>
+                        <input id="btn_p_anterior" type="button"
+                        <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                        <?php }else { ?>
+                               class="btn_p_anterior" onclick="location.href='<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'lista-projetos-distribuidos')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronac='.$this->pronac.'&orgao='.$this->orgao.'&estado='.$this->estado; ?>'"
+                        <?php } ?>>
+                        <input id="btn_p_proximo" type="button"
+                               <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                               class="btn_p_proximo-off"
+                        <?php }else { ?>
+                               class="btn_p_proximo" onclick="location.href='<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'lista-projetos-distribuidos')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronac='.$this->pronac.'&orgao='.$this->orgao.'&estado='.$this->estado; ?>'"
+                        <?php } ?>>
+                        <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                        <input class="btn_ultimo" id="btn_ultimo" type="button"
+                               onclick="location.href='<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'lista-projetos-distribuidos')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao'].'&pronac='.$this->pronac.'&orgao='.$this->orgao.'&estado='.$this->estado; ?>'">
+                        <?php } ?>
+                        Pág.:<select name="pag" id="pag" onchange="$('#form2').submit()" class="input_simples" style="vertical-align: top;">
+                            <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                            <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                            <?php endfor; ?>
+                        </select>
+                        &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>" style="vertical-align: top;"><input type="submit" class="btn_recarregar" value="" style="vertical-align: top;">
+                        <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                        <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                        <input type="hidden" name="pag" value="1">
+                        <input type="hidden" name="pronac" value="<?php echo $this->pronac;?>">
+                        <input type="hidden" name="orgao" value="<?php echo $this->orgao;?>">
+                        <input type="hidden" name="estado" value="<?php echo $this->estado;?>">
+                        <input type="button" value=" " class="btn_imprimir" title="Imprimir" style="vertical-align: top;" />
+                     </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- ========== FIM PAGINAÇÃO ========== -->
+
+    <?php } } ?>
+
+
+    <?php } else { ?>
+    <table class="tabela">
+        <tr>
+            <td align="center">Nenhum registro encontrado.</td>
+        </tr>
+    </table>
+    <?php } ?>
+    <br clear="all" />
+
+    <form name="formImpressao" id="formImpressao" action="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'imprimir-projetos-distribuidos'));?>" method="post" target="_blank">
+        <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+        <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+        <input type="hidden" name="pronac" value="<?php echo $this->pronac;?>">
+        <input type="hidden" name="orgao" value="<?php echo $this->orgao;?>">
+        <input type="hidden" name="estado" value="<?php echo $this->estado;?>">
+    </form>
+
+</div>
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

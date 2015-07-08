@@ -1,0 +1,195 @@
+<!--<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">-->
+<!--<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>-->
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.btn_avaliar').click(function(){
+            id = $(this).attr('idPronac');
+            window.open("<?php echo $this->url(array('controller' => 'cidadao', 'action' => 'cadastrar-opiniao'), null, true); ?>?idPronac="+id,"_blank");
+        });
+        
+        $('.btn_ver').click(function(){
+            id = $(this).attr('idPronac');
+            window.open("<?php echo $this->url(array('controller' => 'cidadao', 'action' => 'visualizar-opinioes'), null, true); ?>?idPronac="+id,"_blank");
+        });
+        
+        $('.btn_imprimir').click(function(){
+            $('#formImpressao').submit();
+        });
+        
+        $('.btn_xls').click(function(){
+            $('#formxls').submit();
+        });
+        
+        $('.tooltip').click(function(){
+            return false;
+        });
+    });
+</script>
+
+<style type="text/css">
+    .tooltip{
+        display: inline;
+        position: relative;
+    }
+
+    .tooltip:hover:after{
+        background: #ddd;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        bottom: 26px;
+        color: #333;
+        content: attr(title);
+        left: 20%;
+        padding: 10px 15px;
+        position: absolute;
+        z-index: 98;
+        width: 320px;
+        font-size: 14px;
+        line-height: 1.5em;
+    }
+
+    .tooltip:hover:before{
+        border: solid;
+        border-color: #ddd transparent;
+        border-width: 6px 6px 0 6px;
+        bottom: 20px;
+        content: "";
+        left: 50%;
+        position: absolute;
+        z-index: 99;
+    }
+    
+    .faleconosco{
+        color: #35953F !important;
+        font-size: 20px;
+        text-decoration: underline !important;
+    }
+</style>
+
+<?php if($this->intranet){ $intranet = '&intranet'; } else { $intranet = ''; } ?>
+
+<div id="alerta" class="sumir"></div>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para Inï¿½cio">Início</a></li>
+        <li class="last">Lista de Projetos</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Pauta da CNIC n&ordm; <?php echo $this->reuniao['NrReuniao']; ?> <?php if($this->intranet){ echo ' - Intranet'; } else { if(!$this->usuarioInterno){ echo ' - Visão Cidadão'; } } ?> <span class="direita"><a href="http://ouvidoria.cultura.gov.br/" target="_blank" class="faleconosco">Fale Conosco</a></span></div>
+</div>
+
+
+<div id="conteudo" align="center">
+
+    <br clear="all" />
+    <center>
+        <?php echo count($this->dados). " Projetos listados"; ?>
+        <input type="button" class="btn_imprimir">
+        <input type="button" class="btn_xls" />
+    </center>
+
+    <?php if(count($this->dados)>0){ ?>
+    <table class="tabela tablesorter">
+        <thead>
+            <tr class="titulo_tabela">
+                <th><a href="<?php echo $this->url(array('controller' => 'cidadao', 'action' => 'index')).'?pronac='.$this->pronac.'&campo=1&ordem='.$this->novaOrdem.$intranet;?>">PRONAC</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'cidadao', 'action' => 'index')).'?pronac='.$this->pronac.'&campo=3&ordem='.$this->novaOrdem.$intranet;?>">Nome do Projeto</a> <br /><span class="red" style="text-transform: none;">Passe o mouse sobre o nome do projeto para ver a síntese</span></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'cidadao', 'action' => 'index')).'?pronac='.$this->pronac.'&campo=4&ordem='.$this->novaOrdem.$intranet;?>">Proponente</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'cidadao', 'action' => 'index')).'?pronac='.$this->pronac.'&campo=5&ordem='.$this->novaOrdem.$intranet;?>">UF</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'cidadao', 'action' => 'index')).'?pronac='.$this->pronac.'&campo=6&ordem='.$this->novaOrdem.$intranet;?>">Município</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'cidadao', 'action' => 'index')).'?pronac='.$this->pronac.'&campo=7&ordem='.$this->novaOrdem.$intranet;?>">Enquadramento</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'cidadao', 'action' => 'index')).'?pronac='.$this->pronac.'&campo=8&ordem='.$this->novaOrdem.$intranet;?>">Área</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'cidadao', 'action' => 'index')).'?pronac='.$this->pronac.'&campo=9&ordem='.$this->novaOrdem.$intranet;?>">Segmento</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'cidadao', 'action' => 'index')).'?pronac='.$this->pronac.'&campo=10&ordem='.$this->novaOrdem.$intranet;?>">Avaliação</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'cidadao', 'action' => 'index')).'?pronac='.$this->pronac.'&campo=11&ordem='.$this->novaOrdem.$intranet;?>">Vl.Solicitado</a></th>
+                <th><a href="<?php echo $this->url(array('controller' => 'cidadao', 'action' => 'index')).'?pronac='.$this->pronac.'&campo=12&ordem='.$this->novaOrdem.$intranet;?>">Vl.Sugerido</a></th>
+                <?php /*if(!$this->intranet){ ?>
+                <th><?php echo ($this->usuarioInterno) ? 'Opiniões' : 'Cidadão'; ?></th>
+                <?php }*/ ?>
+            </tr>
+        </thead>
+        <tbody>
+            <?php $TotalSol = 0; $TotalSug = 0; ?>
+            <?php foreach($this->dados as $d){ ?>
+            <tr>
+                <td align="center" class="w100">
+                    <a href="<?php echo $this->url(array('controller' => 'cidadao', 'action' => 'dados-projeto'));?>?idPronac=<?php echo Seguranca::encrypt($d->idPronac); ?>" target="_blank">
+                        <?php echo $d->Pronac; ?>
+                    </a>
+                </td>
+                <td>
+                    <a href="#" title="<?php echo $d->ResumoProjeto; ?>" class="tooltip" style="text-decoration: none;">
+                        <span title=" "><?php echo $d->NomeProjeto; ?></span>
+                    </a>
+                </td>
+                <td><?php echo $d->Proponente; ?></td>
+                <td><?php echo $d->UF; ?></td>
+                <td><?php echo $d->Cidade; ?></td>
+                <td><?php echo $d->descEnquadramento; ?></td>
+                <td><?php echo $d->dsArea; ?></td>
+                <td><?php echo $d->dsSegmento; ?></td>
+                <td>
+                    <a href="<?php echo $this->url(array('controller' => 'cidadao', 'action' => 'parecer-consolidado'));?>?idPronac=<?php echo Seguranca::encrypt($d->idPronac); ?>" target="_blank"><?php echo $d->descAvaliacao; ?></a>
+                </td>
+                <td align="right"><?php echo (!empty($d->vlSolicitado)) ? @number_format($d->vlSolicitado, 2, ",", ".") : ''; ?></td>
+                <td align="right"><?php echo (!empty($d->vlSugerido)) ? @number_format($d->vlSugerido, 2, ",", ".") : ''; ?></td>
+                <?php /*if(!$this->intranet){ ?>
+                <td align="center" nowrap>
+                    <input type="button" class="btn_ver" idPronac="<?php echo Seguranca::encrypt($d->idPronac); ?>">
+                    <?php if(!$this->usuarioInterno){ ?>
+                    <input type="button" class="btn_avaliar" idPronac="<?php echo Seguranca::encrypt($d->idPronac); ?>">
+                    <?php } ?>
+                </td>
+                <?php }*/ ?>
+            </tr>
+            <?php $TotalSol=$TotalSol+$d->vlSolicitado; $TotalSug=$TotalSug+$d->vlSugerido; } ?>
+            <tr class="direita bold destacar" style="font-size: 14px;">
+                <td colspan="9" style="padding: 15px 5px;">TOTAL</td>
+                <td nowrap><?php echo @number_format($TotalSol, 2, ",", "."); ?></td>
+                <td nowrap><?php echo @number_format($TotalSug, 2, ",", "."); ?></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <br clear="all" />
+    <center>
+        <?php echo count($this->dados). " Projetos listados"; ?>
+        <input type="button" class="btn_imprimir">
+        <input type="button" class="btn_xls" />
+    </center>
+
+    <form target="_blank" class="form" name="formImpressao" id="formImpressao" method="post" action='<?php echo $this->url(array('controller' => 'cidadao', 'action' => 'imprimir-listagem')); ?>'>
+        <input type="hidden" name="campo" value="<?php echo $this->campo;?>">
+        <input type="hidden" name="ordem" value="<?php echo $this->ordem;?>">
+        <input type="hidden" name="pronac" value="<?php echo $this->pronac;?>">
+    </form>
+    
+    <form target="_blank" class="form" name="formxls" id="formxls" method="post" action='<?php echo $this->url(array('controller' => 'cidadao', 'action' => 'xls-listagem')); ?>'>
+        <input type="hidden" name="campo" value="<?php echo $this->campo;?>">
+        <input type="hidden" name="ordem" value="<?php echo $this->ordem;?>">
+        <input type="hidden" name="pronac" value="<?php echo $this->pronac;?>">
+    </form>
+        
+    <?php } else { ?>
+    <table class="tabela">
+        <tr>
+            <td align="center">Nenhum registro encontrado.</td>
+        </tr>
+    </table>
+    <?php } ?>
+    <br clear="all" />
+</div>
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

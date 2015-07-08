@@ -1,0 +1,133 @@
+<?php include_once 'scripts/admissibilidade/inc/menu.inc.php'; ?>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second">Admissibilidade</li>
+        <li class="last">Admissibilidade de Propostas - Gerenciar Analistas</li>
+    </ul>
+</div>
+<div id="titulo">
+    <div>Admissibilidade de propostas - Gerenciar analistas <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<style type="text/css">
+<!--
+.mensagem {
+    padding: 8px;
+    border: darkgreen;
+    background: #e3e3c7;
+}
+-->
+</style>
+<script type="text/javascript">
+<!--
+$(document).ready(function() {
+
+    $("#tabelaAnalistas").tablesorter();
+
+    $('th').css("cursor","pointer");
+    $('th').attr("title","Clique aqui para ordenar");
+
+});
+
+/*
+ * Função responsável pela exibição ou ocultamento de conteúdo,
+ * mudando a imagem.
+ **/
+function abrirDinamico(elemento, obj) {
+    if($(elemento).css('display') == 'none') {
+        $(elemento).fadeIn('fast', function() {
+            $('img', $(obj)).attr('src','<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png');
+        });
+    } else {
+        $(elemento).fadeOut('fast', function() {
+            $('img', $(obj)).attr('src','<?php echo $this->baseUrl(); ?>/public/img/navigation-baixo.PNG');
+        });
+    }
+}
+function toogleAjax(id, url){
+    if(!url) {
+        $('#'+id).toggle('slow');
+    } else {
+        elemento = '#'+id;
+        if($(elemento).css('display') == 'none') {
+            $(elemento).html('<img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /> ');
+            $(elemento).fadeIn('fast');
+            $.ajax({
+                type: "POST",
+                data: {
+                    teste: 'testando'
+                },
+                url: url,
+                success: function(data) {
+                    $(elemento).html(data);
+                }
+            });
+        } else {
+            $(elemento).fadeOut('fast');
+        }
+    }
+};
+//-->
+</script>
+<div id="conteudo">
+    <table class="tabela" id="tabelaAnalistas">
+        <thead>
+        <tr>
+            <th>
+                CPF
+                <!--<input type="button" name="ordena" class="btn_ord_down" value="">-->
+            </th>
+            <th>
+                Nome
+            </th>
+            <th>
+                Lota&ccedil;&atilde;o
+            </th>
+            <th>
+                Telefone
+            </th>
+            <th>
+                Unidade Autorizada
+            </th>
+            <th>
+                Status
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php
+        $html = '<tr><td colspan="7" align="center">N&atilde;o foram encontrados registros.</td></tr>';
+        $i    = 0;
+        if($this->analistas) {
+            $html = '';
+            foreach($this->analistas as $analista) {
+                $html .= '<tr>';
+                $html .= "<td align='center'>".aplicaMascara($analista->usu_identificacao, "999.999.999-99")."</td>";
+                $html .= "";
+                $html .= "<td align='center'>
+                              <a href={$this->baseUrl()}/admissibilidade/gerenciaranalista?usu_cod={$analista->usu_cod}&usu_orgao={$analista->uog_orgao}&gru_codigo={$analista->gru_codigo}>
+                                  {$analista->usu_nome}
+                              </a>
+                          </td>";
+                $html .= "<td align='center'>{$analista->usu_orgaolotacao}</td>";
+                $html .= "<td align='center'>{$analista->usu_telefone}</td>";
+                $html .= "<td align='center'>{$analista->org_siglaautorizado}</td>";
+                if((int)$analista->uog_status == 1) {
+                    $html .= "<td align='center'>Habilitado</td>";
+                } else {
+                    $html .= "<td align='center' style='color:red'>Desabilitado</td>";
+                }
+                $html .= '</tr>';
+                $i++;
+            }
+        }
+        echo $html;
+        ?>
+        </tbody>
+    </table>
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

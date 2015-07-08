@@ -1,0 +1,220 @@
+<?php
+/**
+ * Parecer Consolidado
+ * @author Equipe RUP - Politec
+ * @since 12/05/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.realizaranaliseprojeto
+ * @copyright  2010 - Ministerio da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+
+<!-- ========== Inicio Parecer Consolidado ========== -->
+<table class="tabela">
+    <tr>
+        <th colspan="2">PRONAC</th>
+        <th colspan="3">Nome do Projeto</th>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <?php
+            echo $this->projeto['AnoProjeto'] . $this->projeto['Sequencial'];
+            ?>
+        </td>
+        <td colspan="3">
+            <?php
+            echo $this->projeto['NomeProjeto'];
+            ?>
+    </tr>
+    <tr>
+        <th>Enquadramento</th>
+        <th>Tipo de parecer</th>
+        <th>Parecer Favor&aacute;vel?</th>
+        <th>Dt. parecer</th>
+        <th>Sugerido pelo componente da comiss&atilde;o</th>
+    </tr>
+    <tr>
+        <td><?php echo $this->escape($this->enquadramento); ?></td>
+        <td><?php if($this->ResultRealizarAnaliseProjeto['TipoParecer'] == '2'){ 
+                        echo 'COMPLEMENTAÇÃO';
+                   }elseif($this->ResultRealizarAnaliseProjeto['TipoParecer'] == '4'){
+                        echo 'REDUÇÃO';
+                   }else{
+                        echo 'APROVAÇÃO INICIAL';
+                   }
+            ?>
+        </td>
+        <td><?php echo $this->ResultRealizarAnaliseProjeto['ParecerFavoravel'] == '2' ? 'SIM' : 'NÃO'; ?></td>
+        <td><?php echo Data::tratarDataZend($this->ResultRealizarAnaliseProjeto['DtParecer'], 'brasileiro'); ?></td>
+        <td><?php echo $this->escape($this->formatarReal($this->valorcomponente)); ?></td>
+    </tr>
+</table>
+<table class="tabela">
+    <tr>
+        <th colspan="2">Mem&oacute;ria de C&aacute;lculo</th>
+    </tr>
+    <tr>
+        <td width="50%">Valor Solicitado(A)</td>
+        <td width="50%">
+            <?php
+            if (isset($this->fontesincentivo)) {
+                echo $this->escape($this->formatarReal($this->fontesincentivo));
+            }
+            else
+                echo 'R$ 0,00';
+            ;
+            ?>
+        </td>
+    </tr>
+    <tr>
+        <td>Valor de outras fontes(B)</td>
+        <td>
+            <?php
+            if (isset($this->outrasfontes)) {
+                echo $this->escape($this->formatarReal($this->outrasfontes));
+            }
+            else
+                echo 'R$ 0,00';
+            ;
+            ?>
+        </td>
+    </tr>
+    <tr>
+        <td>Valor da Proposta(C=A+B)</td>
+        <td>
+            <?php
+            if (isset($this->valorproposta)) {
+                echo $this->escape($this->formatarReal($this->valorproposta));
+            }
+            else
+                echo 'R$ 0,00';
+            ;
+            ?>
+        </td>
+    </tr>
+    <tr>
+        <td>Valor sugerido pelo parecerista<!--Valor Sugerido para Aprovacao(D)--></td>
+        <td>
+            <?php
+            if (isset($this->valorparecerista)) {
+                echo $this->escape($this->formatarReal($this->valorparecerista));
+            }
+            else
+                echo 'R$ 0,00';
+            ;
+            ?>
+        </td>
+    </tr>
+    <tr>
+        <td>Valor sugerido pelo componente <!--Valor Sugerido para Aprovacao(D)--></td>
+        <td>
+            <?php
+            if (isset($this->valorcomponente)) {
+                echo $this->escape($this->formatarReal($this->valorcomponente));
+            }
+            else
+                echo 'R$ 0,00';
+            ;
+            ?>
+        </td>
+    </tr>
+    <tr>
+        <th>
+            Área 
+        </th>
+        <th>
+            Segmento
+        </th>
+    </tr>
+    <tr>
+        <td><?php echo $this->area;?></td>
+        <td><?php echo $this->segmento;?></td>
+    </tr>
+</table>
+<table class="tabela">
+    <tr>
+        <th colspan="6">Outras Informa&ccedil;&otilde;es</th>
+    </tr>
+    <tr>
+        <th>Produto</th>
+        <th>Enquadramento</th>
+        <th>Artigo 27 - Inciso I </th>
+        <th>Artigo 27 - II</th>
+        <th>Artigo 27 - III</th>
+        <th>Artigo 27 - IV</th>
+    </tr>
+    <?php foreach ($this->ResultProduto as $produto) { ?>
+        <tr>
+            <td>
+                <?php echo $this->escape($produto->produto); ?>
+            </td>
+            <td>
+                <?php if($produto->stArtigo18 == '1') echo 'Artigo 18'; if($produto->stArtigo26 == '1') echo 'Artigo 26';?>
+            </td>
+            <?php if ($produto->stArtigo27 == 1) : ?>
+                <td>
+                    <?php echo ($produto->stIncisoArtigo27_I == '1') ? 'Sim' : 'N&atilde;o'; ?>
+                </td>
+                <td>
+                    <?php echo ($produto->stIncisoArtigo27_II == '1') ? 'Sim' : 'N&atilde;o'; ?>
+                </td>
+                <td>
+                    <?php echo ($produto->stIncisoArtigo27_III == '1') ? 'Sim' : 'N&atilde;o'; ?>
+                </td>
+                <td>
+                    <?php echo ($produto->stIncisoArtigo27_IV == '1') ? 'Sim' : 'N&atilde;o'; ?>
+                </td>
+            <?php else: ?>
+                <td>N&atilde;o</td>
+                <td>N&atilde;o</td>
+                <td>N&atilde;o</td>
+                <td>N&atilde;o</td>
+            <?php endif; ?>
+        </tr>
+    <?php } ?>
+    </table>
+    <table class="tabela">
+        <tr>
+            <th>
+                Parecer Parecerista
+            </th>
+        </tr>
+        <tr>
+            <td>
+            <?php
+            echo $this->ResultRealizarAnaliseProjeto['ParecerParecerista'];
+            ?>
+        </td>
+    </tr>
+        <tr>
+            <th>
+                Parecer Componente da Comiss&atilde;o
+            </th>
+        </tr>
+        <tr>
+            <td>
+            <?php
+            echo $this->ResultRealizarAnaliseProjeto['ParecerComponente'];
+            ?>
+        </td>
+    </tr>
+        <tr>
+            <th>
+                Justificativa de Envio para Plen&aacute;ria
+            </th>
+        </tr>
+        <tr>
+            <td>
+            <?php
+            echo $this->ResultRealizarAnaliseProjeto['Envioplenaria'];
+            ?>
+        </td>
+    </tr>
+</table>
+
+
+<!-- ========== BOTOES ========== -->
+<br />

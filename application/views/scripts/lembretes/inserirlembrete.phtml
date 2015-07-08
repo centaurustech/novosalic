@@ -1,0 +1,87 @@
+<?php require_once "inc/menu.inc.php"; // menu ?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para Início">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'areadetrabalho', 'action' => 'index')); ?>" title="Ir para Visualizar Área de Trabalho">Visualizar Área de Trabalho</a></li>
+		<li class="last">Lembretes</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Lembretes <span>ID #23A</span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+
+
+<table class="tabela">
+  <tr class="titulo_tabela">
+    <th><div align="center">PRONAC</div></th>
+    <th><div align="center">Nome do Projeto</div></th>
+
+  </tr>
+<?php foreach($this->lembretesprojeto as $tblembretesprojeto): ?>
+   <tr>
+    <td><?php echo $this->escape($tblembretesprojeto->nrpronac);?></td>
+    <td><?php echo $this->escape($tblembretesprojeto->NomeProjeto);?></td>
+
+  </tr>
+  <?php endforeach;?>
+</table>
+
+
+<table class="tabela">
+ 
+<form id="formExcluir" name="formExcluir" method="post" action="<?php echo $this->url(array('controller' => 'lembretes','action' => 'inserirlembrete')); ?>?pronac=<?php echo $this->escape($tblembretesprojeto->IdPRONAC);?>">
+   <tr><td align="center">
+  <div class="center">	
+  <label for="descricao">Lembretes</label><br />
+     <textarea class="textarea_simples" name="descricao" id="descricao" cols="40" rows="4" <?php echo $this->contadorTextarea('form.descricao', 'form.exibirContadorTextarea', 500); ?>  class="w600"><?php echo isset($this->Lembrete) ? $this->Lembrete : ''; ?>
+     
+     </textarea>
+     <?php echo $this->exibirContadorTextarea('exibirContadorTextarea', 3, 500, strlen($this->descricao)); ?>
+       </td></tr></div>
+  </table>
+	<table class="tabela">
+  <tr><td align="center">
+<input type="hidden" name="pronac" value="<?php echo $this->escape($tblembretesprojeto->IdPRONAC);?>" />
+<input type="hidden" name="AnoProjeto" value="<?php echo $this->anoprojeto;?>" />
+<input type="hidden" name="Sequencial" value="<?php echo $this->sequencial;?>" />
+             
+<input type="submit" class="btn_incluir" name="enviar" id="enviar" value=" " />
+<input type="reset" class="btn_limpar" name="cancelar" id="cancelar" value=" " />
+   </td></tr>
+
+</form>
+
+</table>
+
+
+	<div align="center">
+     <a href="javascript:window.print()"><img src="<?php echo $this->baseUrl(); ?>/public/img/imprimir.gif" alt="Imprimir"/>
+	</div>
+
+
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

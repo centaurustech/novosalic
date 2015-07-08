@@ -1,0 +1,90 @@
+<?php
+$pareceristaHref                = $this->url(array('controller' => 'gerenciarparecer', 'action' => 'parecerista'));
+$resconsolidacaopareceristaHref = $this->url(array('controller' => 'gerarrelatorioparecerista', 'action' => 'resconsolidacaoparecerista'));
+
+?>
+<div id="menu">
+    <!-- início: conteúdo principal #container -->
+    <div id="container">
+        
+        <!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+        <div id="breadcrumb">
+            <ul>
+                <li class="first"><a href="index.phtml" title="Ir para Início">Início</a></li>
+
+                <li class="last">Principal</li>
+            </ul>
+        </div>
+        <!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+        <!-- ========== BUTTON VOLTAR ========== -->
+        <div id="titulo">
+            <div>Análise por parecerista<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+        </div>
+        <!-- ========== FIM TÍTULO ========== -->
+        <!-- ========== GRID NOME DA PROPOSTA ========== -->
+        <div id="conteudo" align="center">
+            <form id="formConsolidacaoParecerista" action="<?php echo $resconsolidacaopareceristaHref;?>" method="post">
+                <table class="tabela">
+                    <tr>
+                        <td><b>Parecerista *</b></td>
+                        <td colspan="1">
+                            <select name="parecerista" id="parecerista" null="false" style="width: 250px;">
+                                <option value="">Selecione</option>
+                                <?php
+                                foreach ($this->Pareceristas as $val) {
+                                    ?>
+                                <option value="<?php echo $val->idAgente;?>"><?php echo $val->Nome;?></option>
+                                    <?php
+                                }
+                                ?>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+                <table class="tabela">
+                    <tr>
+                        <td align="center">
+                            <input type="submit" value="" class="btn_localizar"/>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <!-- ========== FIM CONTEÚDO ========== -->
+        <!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+        <div id="rodapeConteudo"><span></span></div>
+        <!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+        <br clear="all" />
+    </div>
+</div>
+<script>
+$(function(){
+    var form = '#formConsolidacaoParecerista';
+    mascaras(form);
+    $(form).submit(function(){
+       return validarFormulario(this,'Preencha o(s) campo(s) obrigat&oacute;rio(s)!');
+    });
+    $(form).find('select').each(function(){
+        if($(this).attr('label')!=undefined){
+            var label = $(this).attr('label');
+            $(this).change(function(){
+                switch($(this).val()){
+                    case '1':
+                        $('#l_dt_'+label).addClass('sumir');
+                        $('#dt_f_'+label).addClass('sumir').val('');
+                        break;
+                    case '2':
+                        $('#l_dt_'+label).removeClass('sumir');
+                        $('#dt_f_'+label).removeClass('sumir').val('');
+                        break;
+                }
+
+            });
+        }
+    });
+    $('#orgao').change(function(){
+        carregarPgHtml('<?php echo $pareceristaHref;?>','#parecerista',{idOrgao:$(this).val()},'Selecione');
+    });
+});
+</script>

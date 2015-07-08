@@ -1,0 +1,482 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#area").change(function(){
+            var cdarea = $(this).val();
+            $.ajax({
+                type: "POST",
+                url:  "<?php echo $this->url(array('controller' => 'projetosgerenciar', 'action' => 'index')); ?>",
+                data: {
+                    cdarea : cdarea
+                },
+                success: function(data)
+                {
+                    if(!data.error){
+                        $("#idAgenteComponente").find('option').remove();
+                        $("#idAgenteComponente").append('<option value="">--Selecione--</option>');
+                        for (i in data){
+                            $("#idAgenteComponente").append('<option value="'+data[i].idAgente+'">'+data[i].stTitular+" - "+data[i].nome+'</option>');
+                        }
+                    }
+                }
+                , dataType : 'json'
+            });
+        })
+        $(".encaminharprojeto").click(function(){
+            $(".errojustificativa").removeClass('sumir')
+            $("#frmEncaminharProjeto").each(function(){
+                this.reset();
+            })
+            var idpronac = $(this).attr('idpronac')
+            var pronac = $(this).attr('pronac')
+            var nome = $(this).attr('nome')
+            var area = $(this).attr('area')
+            
+            $.ajax({
+                type: "POST",
+                url:  "<?php echo $this->url(array('controller' => 'projetosgerenciar', 'action' => 'index')); ?>",
+                data: {
+                    idpronac : idpronac
+                },
+                success: function(data) {
+                    if(!data.error){
+                        $("#idAgenteComponente").find('option').remove();
+                        $("#idAgenteComponente").append('<option value="">--Selecione--</option>');
+                        for (i in data){
+                            $("#idAgenteComponente").append('<option value="'+data[i].idAgente+'">'+data[i].Area+' - '+data[i].stTitular+" - "+data[i].nome+'</option>');
+                        }
+                    }
+                },
+                dataType : 'json'
+            });
+            
+            $("#frmEncaminharProjeto").attr('action', '<?php echo $this->baseUrl(); ?>/projetosgerenciar/encaminharprojeto');
+            $("#nrpronac").html(pronac);
+            $("#nome").html(nome);
+            $("#idPRONAC").val(idpronac);
+            confirma( function(){
+                    $("#frmEncaminharProjeto").submit();
+                    $(this).dialog('close')
+                },
+                function(){
+                    $(this).dialog('close')
+                },
+                'encaminharprojeto'
+            )
+            $(".tela[id='encaminharprojeto']").dialog('open')
+        })
+        
+        $(".expandir").click(function(){
+            var idagente = $(this).attr('idagente');
+            if($(".projetos[idagente='"+idagente+"']").attr('aberto') == 'false'){
+                $(".projetos[idagente='"+idagente+"']").removeClass('sumir');
+                $(".projetos[idagente='"+idagente+"']").attr('aberto','true');
+                $(this).attr('src', '<?php echo $this->baseUrl(); ?>/public/img/btn_menos.gif')
+            }
+            else{
+                $(".projetos[idagente='"+idagente+"']").addClass('sumir');
+                $(".projetos[idagente='"+idagente+"']").attr('aberto','false');
+                $(this).attr('src', '<?php echo $this->baseUrl(); ?>/public/img/buttons/btn_adicionar.gif')
+            }
+        })
+        
+        $('.justificativastatus').keyup(function(){
+            if($(this).val().length < 15){
+                $(".errojustificativa").removeClass('sumir');
+                $(".ui-button-text:contains('Salvar')").addClass('ui-state-disabled').parent().attr('disabled',true); 
+            }
+            else{
+                $(".ui-button-text:contains('Salvar')").removeClass('ui-state-disabled').parent().removeAttr('disabled'); 
+                $(".errojustificativa").addClass('sumir');
+            }
+        })
+        $(".statuscomponente").click(function(){
+            $(".errojustificativa").removeClass('sumir')
+            $("#frmStatusComponente").each(function(){
+                this.reset();
+            })
+            var idagente = $(this).attr('idagente'); 
+            var status = $(this).attr('status'); 
+            if(status == 'desabilitar'){
+                $("#frmStatusComponente").attr('action', '<?php echo $this->baseUrl(); ?>/projetosgerenciar/desabilitarcomponente');
+                $(".acao").html('desabilitar')
+            }
+            if(status == 'habilitar'){
+                $("#frmStatusComponente").attr('action', '<?php echo $this->baseUrl(); ?>/projetosgerenciar/habilitarcomponente');
+                $(".acao").html('habilitar')
+            }
+            confirma(
+                function(){
+                    $(this).dialog('close')
+                    $("#idAgenteStatus").val(idagente);
+                    $("#frmStatusComponente").submit();
+                },
+                function(){
+                    $(this).dialog('close')
+                },
+                'statuscomponente'
+            )
+            $(".tela[id='statuscomponente']").dialog('open')
+        })
+    })
+    
+    function confirma(functionsim, functionnao, id){
+        $(".tela[id='"+id+"']").dialog({
+            resizable: false,
+            width: 800,
+            height:435,
+            modal: true,
+            buttons: {
+                'Cancelar': functionnao,
+                'Salvar': functionsim
+            }
+        });
+        $(".ui-button-text:contains('Salvar')").addClass('ui-state-disabled').parent().attr("disabled",true); 
+    }
+
+    //DEVOLVE PROJETO PARA ANALISE TECNICA - PARECERISTA
+    function JSDevolverParaAnalise(idPronac){
+        $("#devolverprojeto").html("<br><br><br><br><center>Carregando dados <br><img src='<?php echo $this->baseUrl(); ?>/public/img/ajax.gif' /></center>");
+        jqAjaxLinkSemLoading('<?php echo $this->url(array('controller' => 'projetosgerenciar', 'action' => 'form-devolver-para-analise')); ?>?idpronac='+idPronac, '', 'devolverprojeto');
+
+        // modal com os dados do dirigente
+        $("#devolverprojeto").dialog("destroy");
+        $("#devolverprojeto").dialog({
+            width:750,
+            height:450,
+            title: "Devolver projeto para análise técnica",
+            EscClose:false,
+            modal:true,
+            buttons: {
+                'Cancelar':function(){
+                    $(this).dialog('close'); // fecha a modal
+                },
+                'Enviar':function(){
+                    fecharModal('frmDevolver');
+                    carregandoModal();
+
+                    idPronacPauta    = document.getElementById('idPronacPauta').value;
+                    idRetirarDePauta = document.getElementById('idRetirarDePauta').value;
+                    tpAcaoPauta      = document.getElementById('tpAcaoPauta').value;
+                    $.ajax({
+                        type: "POST",
+                        url:  "<?php echo $this->url(array('controller' => 'projetosgerenciar', 'action' => 'retirar-de-pauta')); ?>",
+                        data: {
+                            idPronacPauta : idPronacPauta,
+                            idRetirarDePauta : idRetirarDePauta,
+                            tpAcaoPauta : tpAcaoPauta
+                        },
+                        success: function(data){
+                        },
+                        dataType : 'json'
+                    });
+                    $("#frmDevolver").submit();
+                }
+            }
+        });
+        $('.ui-dialog-titlebar-close').remove();
+    }
+
+	// funcao para retirar os projetos de pauta
+	function retirarDePauta(idPronac, pronac, nomeProjeto, idRetirarDePauta, Motivo){
+            $('#retirar-pauta').dialog("destroy");
+            $('#retirar-pauta').dialog({
+                modal: true,
+                resizable: false,
+                width: 700,
+                height: 620,
+                title: 'Retirar de Pauta'
+            });
+
+            // restaura valores de campos
+            document.getElementById('idPronacPauta').value            = idPronac;
+            document.getElementById('pronacPauta').innerHTML          = pronac;
+            document.getElementById('nomeProjetoPauta').innerHTML     = nomeProjeto;
+            document.getElementById('idRetirarDePauta').value         = idRetirarDePauta;
+            document.getElementById('justificativaCoordenador').value = '';
+            document.getElementById('exibirContadorTextarea').value   = 1000;
+            document.getElementById('motivoPauta').innerHTML          = Motivo;
+            document.getElementById('justificativaPauta').innerHTML   = document.getElementById('justificativa'+idPronac).innerHTML;
+            $('#erroJustificativa').html('');
+        } // fecha funcao retirarDePauta()
+
+
+	// funcao com as acoes de retirada de pauta
+	function enviarRetirarDePauta(tpAcao){
+            idPronac         = document.getElementById('idPronacPauta').value;
+            idRetirarDePauta = document.getElementById('idRetirarDePauta').value
+            justificativa    = document.getElementById('justificativaCoordenador').value;
+            document.getElementById('tpAcaoPauta').value = tpAcao;
+
+            if (justificativa == '' && (tpAcao == '3' || tpAcao == '5')){
+                $('#erroJustificativa').html('<p>Por favor, informe a justificativa!</p>');
+                return false;
+            } else if (justificativa.length < 20 && (tpAcao == '3' || tpAcao == '5')) {
+                $('#erroJustificativa').html('<p>A justificativa deve conter no m&iacute;nimo 20 caracteres!!</p>');
+                return false;
+            } else {
+                $('#erroJustificativa').html('');
+                fecharModal('retirar-pauta');
+                carregandoModal();
+                if (tpAcao == '3'){ // Devolvido para vinculada pelo Coordenador de Analise
+                    //fecharModal('carregandoModalAjax');
+                    //JSDevolverParaAnalise(idPronac);
+                    $('#formRetirarPauta').submit();
+                } else if (tpAcao == '4'){ // Cancelamento da retirada de pauta pelo Coordenador de Analise
+                    $('#cancelar-retirar-pauta').dialog("destroy");
+                    $('#cancelar-retirar-pauta').dialog({
+                        modal: true,
+                        resizable: false,
+                        EscClose: false,
+                        width: 300,
+                        height: 200,
+                        title: 'Confirma&ccedil;&atilde;o',
+                        buttons: {
+                            Não: function(){
+                                fecharModal('cancelar-retirar-pauta');
+                                fecharModal('carregandoModalAjax');
+                            },
+                            "Sim": function(){
+                                fecharModal('cancelar-retirar-pauta');
+                                $('#formRetirarPauta').submit();
+                            }
+                        }
+                    });
+                    $('.ui-dialog-titlebar-close').remove();
+
+                } else if (tpAcao == '5'){ // outras
+                    $('#formRetirarPauta').submit();
+                }
+            }
+        } // fecha enviarRetirarDePauta()
+</script>
+
+<!-- ========== INICIO TITULO ========== -->
+<div id="titulo">
+    <div>Gerenciar Componente da Comiss&atilde;o <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+
+<!-- ========== INICIO CONTEUDO ========== -->
+<div id="conteudo">
+	<!-- ========== INICIO FORMULARIO PARA CANCELAR A RETIRADA DE PAUTA ========== -->
+	<div id="cancelar-retirar-pauta" class="sumir">
+		Tem certeza que deseja cancelar solicita&ccedil;&atilde;o de retirada de pauta? 
+		O Projeto ser&aacute; liberado novamente para o componente.
+	</div>
+	<!-- ========== FIM FORMULARIO PARA CANCELAR A RETIRADA DE PAUTA ========== -->
+
+        <div id="retirar-pauta" class="sumir">
+            <form name="formRetirarPauta" id="formRetirarPauta" action="<?php echo $this->url(array('controller' => 'projetosgerenciar', 'action' => 'retirar-de-pauta')); ?>" method="post">
+                <input type="hidden" name="idPronacPauta" id="idPronacPauta" />
+                <input type="hidden" name="idRetirarDePauta" id="idRetirarDePauta" />
+                <input type="hidden" name="tpAcaoPauta" id="tpAcaoPauta" />
+                <table class="tabela">
+                    <tr>
+                        <th>Pronac</th>
+                        <th>Nome do Projeto</th>
+                    </tr>
+                    <tr>
+                        <td id="pronacPauta"></td>
+                        <td id="nomeProjetoPauta"></td>
+                    </tr>
+                </table>
+                <table class="tabela">
+                    <tr>
+                        <th>Motivo</th>
+                    </tr>
+                    <tr>
+                        <td id="motivoPauta"></td>
+                    </tr>
+                </table>
+                <table class="tabela">
+                    <tr>
+                        <th>Justificativa do Componente</th>
+                    </tr>
+                    <tr>
+                        <td id="justificativaPauta"></td>
+                    </tr>
+                </table>
+
+                <table class="tabela">
+                    <tr>
+                        <th><label for="justificativaCoordenador">Justificativa do Coordenador</label></th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span id="erroJustificativa" class="red bold"></span>
+                            <textarea name="justificativaCoordenador" id="justificativaCoordenador" class="input_simples w98p h100" cols="100" rows="5" <?php echo $this->contadorTextarea('form.justificativaCoordenador', 'form.exibirContadorTextarea', 1000); ?>></textarea>
+                            <?php echo $this->exibirContadorTextarea('exibirContadorTextarea', 4, 1000, 0, '5%'); ?>
+                        </td>
+                    </tr>
+                </table>
+                <table class="tabela">
+                    <tr>
+                        <td class="centro">
+                            <input type="button" class="btn_devolver_vinculada" title="Devolver para Vinculada" onclick="enviarRetirarDePauta('3');" value=" " />
+                            <input type="button" class="btn_cancelar_retirar_pauta" title="Cancelar retirada de Pauta" onclick="enviarRetirarDePauta('4');" value=" " />
+                            <input type="button" class="btn_confirmar" title="Confirmar" onclick="enviarRetirarDePauta('5')" value=" " />
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+
+        <div class="tela sumir" id="statuscomponente">
+            <form id="frmStatusComponente" action="" method="post">
+                <input id="idAgenteStatus" name="idAgente" type="hidden"/>
+                <table class="tabela">
+                    <tr>
+                        <th><span class="acao"></span> Componente</th>
+                    </tr>
+                    <tr>
+                        <th>Informe a justificativa para <span class="acao"></span>  o componente: </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <textarea name="justificativa" style="width: 97%;" rows="8" class="input_simples justificativastatus"></textarea>
+                        </td>
+                    </tr>
+                    <tr class="errojustificativa">
+                        <td class="centro" style="color: red; font-weight: 600">Justificativa deve conter, no m&iacute;nimo, 15 caracteres.</td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+
+        <div class="tela sumir" id="encaminharprojeto">
+            <form id="frmEncaminharProjeto" action="" method="post">
+                <input id="idPRONAC" name="idPRONAC" type="hidden"/>
+                <table class="tabela">
+                    <tr>
+                        <th colspan="2">Encaminhar projeto <span id="nrpronac"></span> - <span id="nome"></span></th>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <textarea name="justificativa" style="width: 97%;" rows="8" class="input_simples justificativastatus"></textarea>
+                        </td>
+                    </tr>
+                    <tr class="errojustificativa">
+                        <td colspan="2" class="centro" style="color: red; font-weight: 600">Justificativa deve conter, no m&iacute;nimo, 15 caracteres.</td>
+                    </tr>
+                    <tr>
+                        <td class="centro">
+                            Componente :
+                            <select class="select_simples" id="idAgenteComponente" name="idAgente">
+                                <option>--Selecione--</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div class="sumir" id="devolverprojeto"></div>
+        <table class="tabela" border="0">
+            <tr>
+                <th colspan="6">Habilitados</th>
+            </tr>
+            <tr class="destacar">
+                <td width="5%"></td>
+                <td width="50%"><b>Nome</b></td>
+                <td width="15%" align="center"><b>&Aacute;rea Cultural</b></td>
+                <td width="10%" align="center"><b>Qtd. Projetos</b></td>
+                <td width="10%" align="center"><b>Solicita&ccedil;&atilde;o de Retirada de Pauta</b></td>
+                <td width="10%" align="center"><b>Desabilitar</b></td>
+            </tr>
+            <?php foreach ($this->componenteshabilitados['A'] as $habilitados) { ?>
+            <tr>
+                <td class="centro"><img style="cursor: pointer;" class="expandir" idAgente="<?php echo $habilitados['idAgente']; ?>" src='<?php echo $this->baseUrl(); ?>/public/img/buttons/btn_adicionar.gif'/></td>
+                <td><?php echo $habilitados['Nome'] ?></td>
+                <td class="centro"><?php echo $habilitados['Area'] ?></td>
+                <td class="centro"><?php echo $habilitados['QtdProjetos'] ?></td>
+                <td class="centro"><?php echo $habilitados['QtdRetirarPauta']; ?></td>
+                <td class="centro"><img style="cursor: pointer;" class="statuscomponente" status="desabilitar" idAgente="<?php echo $habilitados['idAgente']; ?>" src='<?php echo $this->baseUrl(); ?>/public/img/btn_fechar.png'/></td>
+            </tr>
+            <tr idAgente="<?php echo $habilitados['idAgente']; ?>" class="projetos sumir" aberto="false">
+                <td colspan="6">
+                    <table class="tabela" >
+                        <tr>
+                            <th width="10%">PRONAC</th>
+                            <th width="55%">Nome do Projeto</th>
+                            <th width="10%">Qtd. Dias</th>
+                            <th width="15%">Data Recebimento</th>
+                            <th width="10%" nowrap>Encaminhar Projeto</th>
+                            <th width="10%">Solicita&ccedil;&atilde;o de Retirada de Pauta</th>
+                            <!--<th width="10%" nowrap>Devolver para An&aacute;lise T&eacute;cnica</th>-->
+                        </tr>
+                        <?php
+                        if (count($habilitados['projetos']) > 0) {
+                            foreach ($habilitados['projetos'] as $projetos) {
+                                $pronac = '<a href='.$this->url(array("controller" => "dadosprojeto", "action" => "index", "idpronac" =>$projetos['idPRONAC'])).' target="_blank">'.$projetos['PRONAC'].'</b></a>';
+                                ?>
+                                <tr>
+                                    <td class="centro"><?php echo $pronac; ?></td>
+                                    <td><?php echo $projetos['NomeProjeto'] ?></td>
+                                    <td class="centro"><?php echo $projetos['Dias'] ?></td>
+                                    <td class="centro"><?php echo $projetos['dtDistribuicao'] ?></td>
+                                    <td class="centro"><img style="cursor: pointer;" class="encaminharprojeto" src='<?php echo $this->baseUrl(); ?>/public/img/user_gray.png' idpronac="<?php echo $projetos['idPRONAC'] ?>" nome="<?php echo $projetos['NomeProjeto'] ?>" pronac="<?php echo $projetos['PRONAC'] ?>"/></td>
+                                    <td class="centro">
+	                                    <?php if ( isset($this->statusRetirarDePauta($projetos['idPRONAC'])->idRetirarDePauta) && ($this->statusRetirarDePauta($projetos['idPRONAC'])->tpAcao == '1') ) { ?>
+										<img style="cursor: pointer;" class="devolverprojeto" src="<?php echo $this->baseUrl(); ?>/public/img/ico/enviar.png" 
+											onclick="retirarDePauta('<?php echo $projetos['idPRONAC']; ?>', 
+												'<?php echo $projetos['PRONAC']; ?>', 
+												'<?php echo $this->escape($projetos['NomeProjeto']); ?>', 
+												'<?php echo $this->statusRetirarDePauta($projetos['idPRONAC'])->idRetirarDePauta; ?>', 
+												'<?php echo $this->escape($this->motivoRetirarDePauta($this->statusRetirarDePauta($projetos['idPRONAC'])->MotivoRetirada)); ?>');" />
+	                                    <div class="sumir" id="justificativa<?php echo $projetos['idPRONAC']; ?>"><?php echo nl2br($this->escape($this->statusRetirarDePauta($projetos['idPRONAC'])->dsJustificativa)); ?></div>
+	                                    <?php } else { ?>
+	                                    &nbsp;
+	                                    <?php } ?>
+                                    </td>
+                                    <!--<td class="centro"><img style="cursor: pointer;" class="devolverprojeto" src="<?php echo $this->baseUrl(); ?>/public/img/ico/undo.png" onclick="JSDevolverParaAnalise('<?php echo $projetos['idPRONAC']; ?>');"/></td>-->
+                                </tr>
+                                <?php
+                            }
+                        } else {
+                            ?>
+                            <tr>
+                                <td colspan="6" class="centro">N&atilde;o há projetos para esse componente!</td>
+                            </tr>
+                        <?php } ?>
+                    </table>
+                <?php } ?>
+            </td>
+    </table>
+    <table class="tabela">
+        <tr>
+            <th colspan="4">Desabilitados</th>
+        </tr>
+        <tr class="destacar">
+            <td></td>
+            <td><b>Nome</b></td>
+            <td><b>&Aacute;rea Cultural</b></td>
+            <td><b>Habilitar</b></td>
+        </tr>
+        <?php foreach ($this->componentesdesabilitados as $desabilitados) { ?>
+            <tr>
+                <td class="centro"><img style="cursor: pointer;" class="expandir" idAgente="<?php echo $desabilitados->idAgente; ?>"src='<?php echo $this->baseUrl(); ?>/public/img/buttons/btn_adicionar.gif'/></td>
+                <td><?php echo $desabilitados->Nome ?></td>
+                <td class="centro"><?php echo $desabilitados->Area ?></td>
+                <td class="centro"><img style="cursor: pointer;" class="statuscomponente" status="habilitar" idAgente="<?php echo $desabilitados->idAgente; ?>" src='<?php echo $this->baseUrl(); ?>/public/img/passed.gif'/></td>
+            </tr>
+            <tr>
+                <td colspan="4" idAgente="<?php echo $desabilitados->idAgente; ?>" class="projetos sumir" aberto="false">
+                    <table class="tabela">
+                        <tr>
+                            <th>Justificativa para desativa&ccedil;&atilde;o</th>
+                            <th>Data de Desativa&ccedil;&atilde;o:</th>
+                        </tr>
+                        <tr>
+                            <td><?php echo $desabilitados->Just ?></td>
+                            <td><?php echo $desabilitados->Data ?></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        <?php } ?>
+    </table>
+</div>
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+
+<br clear="all" />

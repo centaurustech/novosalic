@@ -1,0 +1,337 @@
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/listarsolicitacoestecnico.js"></script>
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl(); ?>/public/css/formularioAltProjeto.css" media="screen" />
+<?php
+//print "<pre>";
+//print_r($this->resultBusca);
+//print_r($this->resultTotal);
+//die;
+?>
+<div class="box">
+    <div style="font-weight: 600; text-align: left; padding-bottom: 3px;" >SOLICITAÇÃO DE ALTERAÇÃO</div>
+
+    <div style="color: #C0C0C0;   border-bottom: 2px solid #C0C0C0; padding-bottom: 1px; width: 90%;">Técnico</div>
+    <br><br><br>
+    <div style="color: #335EA8; font-weight: 600; padding-left: 5%; padding-bottom: 3px; float: left; width: 80%; ">SOLICITAÇÃO DE ALTERAÇÃO</div>
+    <div style="color: #000000; text-align: center; font-weight: 600; padding-left: 5%; padding-bottom: 3px;width: 10%; Overflow: auto; text-align: center;" >Quantidade de projetos</div>
+    <div class="mouse">
+        <div class="botao_icone" style="float: left; width: 2%; height: 21px;">
+            <a class="novo_ico" title="Maximizar" id="maissTabelaAlteracaoNomPropst" href="#" onclick="abrir_fechar('TabelaAlteracaoNomPropst')"></a>
+            <a class="novo_ico_off" title="Minimizar" href="#"  id="menossTabelaAlteracaoNomPropst" style="display: none;" onclick="abrir_fechar('TabelaAlteracaoNomPropst')">Minimizar</a>
+        </div>
+        <div style="float: left; width: 90%; height: 22px;">Nome do Projeto</div>
+        <div style="text-align: center; width: auto; margin-bottom: 5px;"><?php echo $this->resultTotal['AltNomProj'];?></div>
+    </div>
+    <?php
+    if($this->resultTotal['AltNomProj'] > 0)
+    {
+        ?>
+    <div id="TabelaAlteracaoNomPropst" style="display:none;" >
+        <table class="tabela">
+            <tr>
+                <th>PRONAC</th>
+                <th>Nome do Projeto</th>
+                <th>Área/Segmento</th>
+                <th>Data de Início</th>
+                <th>Data Fim</th>
+                <th>Cidade</th>
+                <th>Status</th>
+                <th>Controle</th>
+            </tr>
+                <?php
+                foreach($this->resultBusca['AltNomProj'] as $AltNomProj)
+                {
+                    ?>
+            <tr>
+                <td><a href='<?php echo $this->url(array('controller' => 'verificaralteracaotecnico', 'action' => 'solaltnomproj'))."?idpedidoalteracao=". $this->escape($AltNomProj->idpedidoalteracao); ?>'><?php echo $this->escape($AltNomProj->idPRONAC);?></a></td>
+                <td><?php echo $this->escape($AltNomProj->NomeProjeto);?></td>
+                <td><?php echo $this->escape($AltNomProj->area)."/".$this->escape($AltNomProj->segmento);?></td>
+                <td><?php echo $this->escape($AltNomProj->dtinicioexecucao);?></td>
+                <td><?php echo $this->escape($AltNomProj->dtfimexecucao);?></td>
+                <td><?php echo $this->escape($AltNomProj->municipio);?></td>
+                <td><?php echo $this->StatusAvalicacaoPedidoAlteracao($AltNomProj->idpedidoalteracao)?></td>
+                <td align="center"><img align="center" src='<?php echo $this->baseUrl()."/public/img/bola_".$this->escape(Data::verificacaoData($AltNomProj->dtSolicitacao));?>.gif' alt='<?php echo $this->statusAnalise($this->escape(Data::verificacaoData($AltNomProj->dtSolicitacao))); ?>' /></td>
+            </tr>
+                    <?php
+                }
+                ?>
+        </table>
+    </div>
+        <?php
+    }
+    ?>
+    <div class="mouse">
+    <div class="botao_icone" style="float: left; width: 2%; height: 21px;">
+        <a class="novo_ico" title="Maximizar" id="maissTabelaRazSocial" href="#" onclick="abrir_fechar('TabelaRazSocial')"></a>
+        <a class="novo_ico_off" title="Minimizar" href="#"  id="menossTabelaRazSocial" style="display: none;" onclick="abrir_fechar('TabelaRazSocial')">Minimizar</a>
+    </div>
+    <div style="float: left; width: 90%; height: 22px;">Razão Social</div>
+    <div style="text-align: center; width: auto; margin-bottom: 5px;"><?php echo $this->resultTotal['AltRaz'];?></div>
+    </div>
+    <?php
+    if($this->resultTotal['AltRaz'] > 0)
+    {
+        ?>
+    <div id="TabelaRazSocial" style="display: none;">
+        <table style="width: 100%; padding-bottom: 5px;">
+            <tr>
+                <th>PRONAC</th>
+                <th>Nome do Projeto</th>
+                <th>Área/Segmento</th>
+                <th>Data de Início</th>
+                <th>Data Fim</th>
+                <th>Cidade</th>
+                <th>Status</th>
+                <th>Controle</th>
+            </tr>
+                <?php
+                foreach($this->resultBusca['AltRaz'] as $AltRaz)
+                {
+                    ?>
+            <tr>
+                <td><a href='<?php echo $this->url(array('controller' => 'verificaralteracaotecnico', 'action' => 'solaltrazsoc'))."?idpedidoalteracao=". $this->escape($AltRaz->idpedidoalteracao); ?>'><?php echo $this->escape($AltRaz->idPRONAC);?></a></td>
+                <td><?php echo $this->escape($AltRaz->NomeProjeto);?></td>
+                <td><?php echo $this->escape($AltRaz->area)."/".$this->escape($AltRaz->segmento);?></td>
+                <td><?php echo $this->escape($AltRaz->dtinicioexecucao);?></td>
+                <td><?php echo $this->escape($AltRaz->dtfimexecucao);?></td>
+                <td><?php echo $this->escape($AltRaz->municipio);?></td>
+                <td><?php echo $this->StatusAvalicacaoPedidoAlteracao($AltRaz->idpedidoalteracao)?></td>
+                <td align="center"><img align="center" src='<?php echo $this->baseUrl()."/public/img/bola_".$this->escape(Data::verificacaoData($AltRaz->dtSolicitacao));?>.gif' alt='<?php echo $this->statusAnalise($this->escape(Data::verificacaoData($AltRaz->dtSolicitacao))); ?>' /></td>
+            </tr>
+                    <?php
+                }
+                ?>
+        </table>
+    </div>
+        <?php
+    }
+    ?>
+    <div class="mouse">
+    <div class="botao_icone" style="float: left; width: 2%; height: 21px;">
+        <a class="novo_ico" title="Maximizar" id="maissTabelaLocReal" href="#" onclick="abrir_fechar('TabelaLocReal')"></a>
+        <a class="novo_ico_off" title="Minimizar" href="#"  id="menossTabelaLocReal" style="display: none;" onclick="abrir_fechar('TabelaLocReal')">Minimizar</a>
+    </div>
+    <div style="float: left; width: 90%; height: 22px;">Local Realização</div>
+    <div style="text-align: center; width: auto; margin-bottom: 5px;"><?php echo $this->resultTotal['LocRel'];?></div>
+    </div>
+    <?php
+    if($this->resultTotal['LocRel'] > 0)
+    {
+        ?>
+    <div id="TabelaLocReal" style="display: none;">
+        <table style="width: 100%; padding-bottom: 5px;">
+            <tr>
+                <th>PRONAC</th>
+                <th>Nome do Projeto</th>
+                <th>Área/Segmento</th>
+                <th>Data de Início</th>
+                <th>Data Fim</th>
+                <th>Cidade</th>
+                <th>Status</th>
+                <th>Controle</th>
+            </tr>
+                <?php
+                foreach($this->resultBusca['LocRel'] as $LocRel)
+                {
+                    ?>
+            <tr>
+                <td><a href='<?php echo $this->url(array('controller' => 'verificaralteracaotecnico', 'action' => 'solaltlocrel'))."?idpedidoalteracao=". $this->escape($LocRel->idpedidoalteracao); ?>'><?php echo $this->escape($LocRel->idPRONAC);?></a></td>
+                <td><?php echo $this->escape($LocRel->NomeProjeto);?></td>
+                <td><?php echo $this->escape($LocRel->area)."/".$this->escape($LocRel->segmento);?></td>
+                <td><?php echo $this->escape($LocRel->dtinicioexecucao);?></td>
+                <td><?php echo $this->escape($LocRel->dtfimexecucao);?></td>
+                <td><?php echo $this->escape($LocRel->municipio);?></td>
+                <td><?php echo $this->StatusAvalicacaoPedidoAlteracao($LocRel->idpedidoalteracao);?></td>
+                <td align="center"><img align="center" src='<?php echo $this->baseUrl()."/public/img/bola_".$this->escape(Data::verificacaoData($LocRel->dtSolicitacao));?>.gif' alt='<?php echo $this->statusAnalise($this->escape(Data::verificacaoData($LocRel->dtSolicitacao))); ?>' /></td>
+            </tr>
+                    <?php
+                }
+                ?>
+        </table>
+    </div>
+
+        <?php
+    }
+    ?>
+    <div class="mouse">
+    <div class="botao_icone" style="float: left; width: 2%; height: 21px;">
+        <a class="novo_ico" title="Maximizar" id="maissTabelaNomProp" href="#" onclick="abrir_fechar('TabelaNomProp')"></a>
+        <a class="novo_ico_off" title="Minimizar" href="#"  id="menossTabelaNomProp" style="display: none;" onclick="abrir_fechar('TabelaNomProp')">Minimizar</a>
+    </div>
+    <div style="float: left; width: 90%; height: 22px;">Nome Proponente</div>
+    <div style="text-align: center; width: auto; margin-bottom: 5px;"><?php echo $this->resultTotal['AltNmProp'];?></div>
+    </div>
+    <?php
+    if($this->resultTotal['AltNmProp'] > 0)
+    {
+        ?>
+    <div id="TabelaNomProp" style="display: none;">
+        <table style="width: 100%; padding-bottom: 5px;">
+            <tr>
+                <th>PRONAC</th>
+                <th>Nome do Projeto</th>
+                <th>Área/Segmento</th>
+                <th>Data de Início</th>
+                <th>Data Fim</th>
+                <th>Cidade</th>
+                <th>Status</th>
+                <th>Controle</th>
+            </tr>
+                <?php
+                foreach($this->resultBusca['AltNmProp'] as $AltNmProp)
+                {
+                    ?>
+            <tr>
+                <td><a href='<?php echo $this->url(array('controller' => 'verificaralteracaotecnico', 'action' => 'solaltnomprp'))."?idpedidoalteracao=". $this->escape($AltNmProp->idpedidoalteracao); ?>'><?php echo $this->escape($AltNmProp->idPRONAC);?></a></td>
+                <td><?php echo $this->escape($AltNmProp->NomeProjeto);?></td>
+                <td><?php echo $this->escape($AltNmProp->area)."/".$this->escape($AltNmProp->segmento);?></td>
+                <td><?php echo $this->escape($AltNmProp->dtinicioexecucao);?></td>
+                <td><?php echo $this->escape($AltNmProp->dtfimexecucao);?></td>
+                <td><?php echo $this->StatusAvalicacaoPedidoAlteracao($AltNmProp->idpedidoalteracao);?></td>
+                <td><?php echo $this->escape($AltNmProp->municipio);?></td>
+                <td align="center"><img align="center" src='<?php echo $this->baseUrl()."/public/img/bola_".$this->escape(Data::verificacaoData($AltNmProp->dtSolicitacao));?>.gif' alt='<?php echo $this->statusAnalise($this->escape(Data::verificacaoData($AltNmProp->dtSolicitacao))); ?>' /></td>
+            </tr>
+                    <?php
+                }
+                ?>
+        </table>
+    </div>
+        <?php
+    }
+    ?>
+    <div class="mouse">
+    <div class="botao_icone" style="float: left; width: 2%; height: 21px;">
+        <a class="novo_ico" title="Maximizar" id="maissTabelaFicTec" href="#" onclick="abrir_fechar('TabelaFicTec')"></a>
+        <a class="novo_ico_off" title="Minimizar" href="#"  id="menossTabelaFicTec" style="display: none;" onclick="abrir_fechar('TabelaFicTec')">Minimizar</a>
+    </div>
+    <div style="float: left; width: 90%; height: 22px;">Ficha Técnica</div>
+    <div style="text-align: center; width: auto; margin-bottom: 5px;"><?php echo $this->resultTotal['FicTec'];?></div>
+    </div>
+    <?php
+    if($this->resultTotal['FicTec'] > 0)
+    {
+        ?>
+    <div id="TabelaFicTec" style="display: none;">
+        <table style="width: 100%; padding-bottom: 5px;">
+            <tr>
+                <th>PRONAC</th>
+                <th>Nome do Projeto</th>
+                <th>Área/Segmento</th>
+                <th>Data de Início</th>
+                <th>Data Fim</th>
+                <th>Cidade</th>
+                <th>Status</th>
+                <th>Controle</th>
+            </tr>
+                <?php
+                foreach($this->resultBusca['FicTec'] as $FicTec)
+                {
+                    ?>
+            <tr>
+                <td><a href='<?php echo $this->url(array('controller' => 'verificaralteracaotecnico', 'action' => 'solaltfictec'))."?idpedidoalteracao=". $this->escape($FicTec->idpedidoalteracao); ?>'><?php echo $this->escape($FicTec->idPRONAC);?></a></td>
+                <td><?php echo $this->escape($FicTec->NomeProjeto);?></td>
+                <td><?php echo $this->escape($FicTec->area)."/".$this->escape($FicTec->segmento);?></td>
+                <td><?php echo $this->escape($FicTec->dtinicioexecucao);?></td>
+                <td><?php echo $this->escape($FicTec->dtfimexecucao);?></td>
+                <td><?php echo $this->escape($FicTec->municipio);?></td>
+                <td><?php echo $this->StatusAvalicacaoPedidoAlteracao($FicTec->idpedidoalteracao);?></td>
+                <td align="center"><img align="center" src='<?php echo $this->baseUrl()."/public/img/bola_".$this->escape(Data::verificacaoData($FicTec->dtSolicitacao));?>.gif' alt='<?php echo $this->statusAnalise($this->escape(Data::verificacaoData($FicTec->dtSolicitacao))); ?>' /></td>
+            </tr>
+                    <?php
+                }
+                ?>
+        </table>
+    </div>
+        <?php
+    }
+    ?>
+    <div class="mouse">
+    <div class="botao_icone" style="float: left; width: 2%; height: 21px;">
+        <a class="novo_ico" title="Maximizar" id="maissTabelaPrPraCap" href="#" onclick="abrir_fechar('TabelaPrPraCap')"></a>
+        <a class="novo_ico_off" title="Minimizar" href="#"  id="menossTabelaPrPraCap" style="display: none;" onclick="abrir_fechar('TabelaPrPraCap')">Minimizar</a>
+    </div>
+    <div style="float: left; width: 90%; height: 22px;">Prorrogação de prazos - Capactação</div>
+    <div style="text-align: center; width: auto; margin-bottom: 5px;"><?php echo $this->resultTotal['AltProrPrazC'];?></div>
+    </div>
+    <?php
+    if($this->resultTotal['AltProrPrazC'] > 0)
+    {
+        ?>
+    <div id="TabelaPrPraCap" style="display: none;">
+        <table style="width: 100%; padding-bottom: 5px;">
+            <tr>
+                <th>PRONAC</th>
+                <th>Nome do Projeto</th>
+                <th>Área/Segmento</th>
+                <th>Data de Início</th>
+                <th>Data Fim</th>
+                <th>Cidade</th>
+                <th>Status</th>
+                <th>Controle</th>
+            </tr>
+                <?php
+                foreach($this->resultBusca['AltProrPrazC'] as $AltProrPrazC)
+                {
+                    ?>
+            <tr>
+                <td><a href='<?php echo $this->url(array('controller' => 'verificaralteracaotecnico', 'action' => 'solaltprogprazcap'))."?idpedidoalteracao=". $this->escape($AltProrPrazC->idpedidoalteracao); ?>'><?php echo $this->escape($AltProrPrazC->idPRONAC);?></a></td>
+                <td><?php echo $this->escape($AltProrPrazC->NomeProjeto);?></td>
+                <td><?php echo $this->escape($AltProrPrazC->area)."/".$this->escape($AltProrPrazC->segmento);?></td>
+                <td><?php echo $this->escape($AltProrPrazC->dtinicioexecucao);?></td>
+                <td><?php echo $this->escape($AltProrPrazC->dtfimexecucao);?></td>
+                <td><?php echo $this->escape($AltProrPrazC->municipio);?></td>
+                <td><?php echo $this->StatusAvalicacaoPedidoAlteracao($AltProrPrazC->idpedidoalteracao);?></td>                
+                <td align="center"><img align="center" src='<?php echo $this->baseUrl()."/public/img/bola_".$this->escape(Data::verificacaoData($AltProrPrazC->dtSolicitacao));?>.gif' alt='<?php echo $this->statusAnalise($this->escape(Data::verificacaoData($AltProrPrazC->dtSolicitacao))); ?>' /></td>
+            </tr>
+                    <?php
+                } ?>
+        </table>
+    </div>
+        <?php
+    }
+    ?>
+    <div class="mouse">
+    <div class="botao_icone" style="float: left; width: 2%; height: 21px;">
+        <a class="novo_ico" title="Maximizar" id="maissTabelaPrPraExe" href="#" onclick="abrir_fechar('TabelaPrPraExe')"></a>
+        <a class="novo_ico_off" title="Minimizar" href="#"  id="menossTabelaPrPraExe" style="display: none;" onclick="abrir_fechar('TabelaPrPraExe')">Minimizar</a>
+    </div>
+    <div style="float: left; width: 90%; height: 22px;">Prorrogação de prazos - Execução</div>
+    <div style="text-align: center; width: auto; margin-bottom: 5px;"><?php echo $this->resultTotal['AltProrPrazE'];?></div>
+    </div>
+    <?php
+    if($this->resultTotal['AltProrPrazE'] > 0)
+    {
+        ?>
+    <div id="TabelaPrPraExe" style="display: none;">
+        <table style="width: 100%; padding-bottom: 5px;">
+            <tr>
+                <th>PRONAC</th>
+                <th>Nome do Projeto</th>
+                <th>Área/Segmento</th>
+                <th>Data de Início</th>
+                <th>Data Fim</th>
+                <th>Cidade</th>
+                <th>Status</th>
+                <th>Controle</th>
+            </tr>
+                <?php
+                foreach($this->resultBusca['AltProrPrazE'] as $AltProrPrazE)
+                {
+                    ?>
+            <tr>
+                <td><a href='<?php echo $this->url(array('controller' => 'verificaralteracaotecnico', 'action' => 'solaltprogprazexec'))."?idpedidoalteracao=". $this->escape($AltProrPrazE->idpedidoalteracao); ?>'><?php echo $this->escape($AltProrPrazE->idPRONAC);?></a></td>
+                <td><?php echo $this->escape($AltProrPrazE->NomeProjeto);?></td>
+                <td><?php echo $this->escape($AltProrPrazE->area)."/".$this->escape($AltProrPrazE->segmento);?></td>
+                <td><?php echo $this->escape($AltProrPrazE->dtinicioexecucao);?></td>
+                <td><?php echo $this->escape($AltProrPrazE->dtfimexecucao);?></td>
+                <td><?php echo $this->escape($AltProrPrazE->municipio);?></td>
+                <td><?php echo$this->StatusAvalicacaoPedidoAlteracao($AltProrPrazE->idpedidoalteracao);?></td>
+                <td align="center"><img align="center" src='<?php echo $this->baseUrl()."/public/img/bola_".$this->escape(Data::verificacaoData($AltProrPrazE->dtSolicitacao));?>.gif' alt='<?php echo $this->statusAnalise($this->escape(Data::verificacaoData($AltProrPrazE->dtSolicitacao))); ?>' /></td>
+            </tr>
+                    <?php
+                } ?>
+        </table>
+    </div>
+        <?php
+    }
+    ?>
+</div>

@@ -1,0 +1,174 @@
+<script> 
+    $(document).ready(function(){
+        $(".btn_pesquisar").click(function(){
+            
+            //jqAjaxLink("<?php echo $this->baseUrl()?>/operacional/tabelas?consulta="+$("#consulta").val(), null, "resultadoConsulta");
+            //$("#resultadoConsulta").html("");
+            //jqAjaxForm(document.getElementById("frmPesquisa"), "resultadoConsulta");
+        });
+
+        $(".cmpNumerico").numeric().attr("maxlength", "9");
+        $(".cmpNome").attr("maxlength", "50");
+
+        $("#tpPeriodoExecucao").change(function(){
+            var opcao = $(this).val();
+            if(opcao == '1'){
+                $('#labelTipo1').html('Dt. Início:');
+                $('#labelTipo2').html('Dt. Fim:');
+                $("#spandtExecucaoIni").show();
+                $("#spandtExecucaoFim").show();
+            }else if(opcao == '2'){
+                $('#labelTipo1').html('A partir de:');
+                $('#labelTipo2').html('');
+                $("#spandtExecucaoIni").show();
+                $("#spandtExecucaoFim").hide();
+            }else if(opcao == '3'){
+                $('#labelTipo1').html('');
+                $('#labelTipo2').html('Finaliza em:');
+                $("#spandtExecucaoIni").hide();
+                $("#spandtExecucaoFim").show();
+            }else if(opcao == '4'){
+                $('#labelTipo1').html('De:');
+                $('#labelTipo2').html('até:');
+                $("#spandtExecucaoIni").show();
+                $("#spandtExecucaoFim").show();
+            }else{
+                $('#labelTipo1').html('');
+                $('#labelTipo2').html('');
+                $("#spandtExecucaoIni").hide();
+                $("#spandtExecucaoFim").hide();
+            }
+        });
+        
+        $(function()
+        {
+            $.datepicker.regional['pt-BR'] = {
+                closeText: 'Fechar',
+                prevText: '&#x3c;Anterior',
+                nextText: 'Pr&oacute;ximo&#x3e;',
+                currentText: 'Hoje',
+                monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+                monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+                dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+                dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                weekHeader: 'Sm',
+                dateFormat: 'dd/mm/yy',
+                firstDay: 0,
+                isRTL: false,
+                showMonthAfterYear: false,
+                yearSuffix: ''};
+            $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+            $(".cmpData").datepicker($.datepicker.regional['pt-BR']);
+        });
+
+    });
+
+    function JSTravaCampos(obj){
+
+        var id = $(obj).attr("id");
+        var n = $("#"+id).val().length;
+        if(n > 0){
+            $("#tipoPesqNomeProjeto").attr("disabled",true);
+            $("#NomeProjeto").attr("disabled",true);
+            $("#uf").attr("disabled",true);
+            $("#tpPeriodoExecucao").attr("disabled",true);
+            $("#dtExecucao").attr("disabled",true);
+            $("#dtExecucao_Final").attr("disabled",true);
+            $("#mecanismo").attr("disabled",true);
+            $("#situacao").attr("disabled",true);
+            $("#diligencia").attr("disabled",true);
+        }else{
+            $("#tipoPesqNomeProjeto").attr("disabled",false);
+            $("#NomeProjeto").attr("disabled",false);
+            $("#uf").attr("disabled",false);
+            $("#tpPeriodoExecucao").attr("disabled",false);
+            $("#dtExecucao").attr("disabled",false);
+            $("#dtExecucao_Final").attr("disabled",false);
+            $("#mecanismo").attr("disabled",false);
+            $("#situacao").attr("disabled",false);
+            $("#diligencia").attr("disabled",false);
+        }
+    }
+    function JSLiberaCampos(){
+        $("#tipoPesqNomeProjeto").attr("disabled",false);
+        $("#NomeProjeto").attr("disabled",false);
+        $("#uf").attr("disabled",false);
+        $("#tpPeriodoExecucao").attr("disabled",false);
+        $("#dtExecucao").attr("disabled",false);
+        $("#dtExecucao_Final").attr("disabled",false);
+        $("#mecanismo").attr("disabled",false);
+        $("#situacao").attr("disabled",false);
+        $("#diligencia").attr("disabled",false);
+    }
+</script>
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Analisar Presta&ccedil;&atilde;o de Contas</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="conteudo" align="center">
+
+    <form action="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'coordenadorgeralprestacaocontas')); ?>" method="post" name="frmPesquisa" id="frmPesquisa">
+        <table class="tabela">
+            <tbody>
+                <tr>
+                    <th colspan="3">Selecionar campos para pesquisa</th>
+                </tr>
+                <tr>
+                    <td class="destacar bold" width="120">PRONAC</td>
+                    <td align="left" colspan="2">
+                        <input class="input_simples cmpNumerico" name="pronac" id="pronac" maxlength="10" type="text" onblur="JSTravaCampos(this)" onchange="JSTravaCampos(this)" onkeypress="JSTravaCampos(this)" onkeyup="JSTravaCampos(this)" onclick="JSTravaCampos(this)" onfocus="JSTravaCampos(this)">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="destacar bold">Nome do Projeto</td>
+                    <td align="left" colspan="2">
+                        <select name="tipoPesqNomeProjeto" id="tipoPesqNomeProjeto" style="width: 140px;" class="input_simples">
+                            <option value="QC">Que contenha</option>
+                            <option value="EIG">Exatamente igual</option>
+                            <option value="IIG">In&iacute;cio igual</option>
+                        </select>
+                        <input type="text" name="NomeProjeto" id="NomeProjeto" class="input_simples w200 cmpNome" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="destacar bold">Situaç&atilde;o do projeto</td>
+                    <td align="left" colspan="2">
+                        <select name="situacao" id="situacao" class="select_simples focus" >
+                            <option value=""> - Selecione - </option>
+                            <?php foreach ($this->situacoes as $situacao): ?>
+                            <option value="<?php echo $situacao->Codigo; ?>"><?php echo $situacao->Codigo . ' - ' . $situacao->Descricao; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="destacar bold">Dilig&ecirc;ncia</td>
+                    <td align="left" colspan="2">
+                        <select name="diligencia" id="diligencia" class="select_simples focus">
+                            <option value=""> - Selecione - </option>
+                            <option value="abertas">Abertas</option>
+                            <option value="respondidas">Respondidas</option>
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <input type="submit" class="btn_pesquisar" id="btn_pesquisar" value=" "/>
+        <input type="reset" class="btn_limpar" id="btn_limpar" value=" " onclick="$('#spandtExecucaoIni').hide(); $('#spandtExecucaoFim').hide(); $('#labelTipo1').html('');$('#labelTipo2').html(''); JSLiberaCampos();" value=""/>
+        
+    </form>
+    <br clear="all" />
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" /> 

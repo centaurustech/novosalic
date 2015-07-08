@@ -1,0 +1,112 @@
+<?php
+require_once "scripts/manterpropostaincentivofiscal/inc/menu.inc.php"; // menu
+$UpdateDivulgacao  = $this->url(array('controller' => 'divulgacao', 'action' => 'updatedivulgacao'));
+$buscarVeiculo   = $this->url(array('controller' => 'divulgacao', 'action' => 'Veiculo')).'?veiculo='.$this->idveiculo;
+?>
+
+<script>
+
+    $(document).ready(function(){
+
+        <?php if(isset($this->movimentacaoAtual) && $this->movimentacaoAtual != '95'): ?>
+             //DESABILITA ALTERACOES NOS DADOS DO FORMULARIO (INCLUIR/ALTERAR/EXCLUIR)
+             JSBloquearAlteracaoFormulario();
+        <?php endif; ?>
+        
+        /*$('#miolo #salvar').click(function(){
+
+            //alert('teste');
+            $('#formDivulgacao').attr('action','<?php echo $UpdateDivulgacao;?>');
+            $('#formDivulgacao').submit();
+
+        });*/
+
+        $('#peca').click(function(){
+            jqAjaxLinkSemLoading('<?php echo $buscarVeiculo; ?>&idOpcao='+$(this).val(), "", "veiculo");
+        });
+        
+
+        $("#formDivulgacao").validate({
+            rules: {
+                peca: { required: true } ,
+                veiculo: { required: true }
+            },
+            messages: {
+                peca: { required: "<br>Dado obrigat&oacute;rio n&atilde;o informado" },
+                veiculo: { required: "<br>Dado obrigat&oacute;rio n&atilde;o informado" }
+            },
+            submitHandler: function(form) {
+                form.submit();
+            }
+        });
+
+    });
+</script>
+<!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'projetos')); ?>" title="Projetos">Projetos</a></li>
+        <li class="last">Divulga&ccedil;&atilde;o</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INICIO TITULO ========== -->
+<div id="titulo">
+    <div>Divulga&ccedil;&atilde;o<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TITULO ========== -->
+
+<!-- ========== INICIO CONTEUDO ========== -->
+<div id="conteudo">
+<form id="formDivulgacao" method="post" action="<?php echo $UpdateDivulgacao;?>">
+    <input type="hidden" name="idDivulgacao" id="idDivulgacao" value="<?php echo $this->idDivulgacao ?>"/>
+    <input type="hidden" name="idPreProjeto" id="idPreProjeto" value="<?php echo $this->idPreProjeto;?>">
+    <table class="tabela">
+
+        <tr class="titulo_tabela">
+            <th width="50%">Pe&ccedil;a de Divulga&ccedil;&atilde;o</th>
+            <th width="50%">Ve&iacute;culo de Divulga&ccedil;&atilde;o</th>
+        </tr>
+
+        <tr class="fundo">
+            <td class="centro">
+                <select name="peca" id="peca" class="input_simples w350">
+                            <?php
+                            if(is_array($this->itensplano) and count($this->itensplano)>0)
+                            foreach ($this->itensplano as $itensConteudo){
+                                ?>
+                                <option value="<?php echo $itensConteudo->idVerificacao?>" <?php if($this->idpeca==$itensConteudo->idVerificacao) echo 'selected';?> ><?php echo $itensConteudo->Descricao?></option>
+                                <?php
+                            }
+                            ?>
+                </select>
+            </td>
+            <td class="centro">
+                <select name="veiculo" id="veiculo" class="input_simples w150">
+                            <?php
+                            if(is_array($this->veiculo) and count($this->veiculo)>0)
+                            foreach ($this->veiculo as $veiculoConteudo){
+                                ?>
+                                <option value="<?php echo $veiculoConteudo->idVerificacaoVeiculo?>" <?php if($this->idveiculo==$veiculoConteudo->idVerificacaoVeiculo) echo 'selected';?> ><?php echo $veiculoConteudo->VeiculoDescicao?></option>
+                                <?php
+                            }
+                            ?>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td align="center" colspan="2">
+                <input type="submit" class="btn_salvar" id="btn_salvar" value="">
+            </td>
+        </tr>
+    </table>
+</form>
+
+</div><!-- ========== FIM CONTEUDO ========== -->
+
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

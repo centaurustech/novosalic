@@ -1,0 +1,64 @@
+<script>
+
+janelaAlerta('<?php echo $this->mensagem;?>',function(){
+   window.history.go(-2);
+});
+
+function janelaObj(dados){
+    var divConteudo = $('<div></div>')
+                        .attr('title',dados.title)
+                        .appendTo('body');
+    var novaJanela = {
+        divConteudo : divConteudo,
+        removerBtFechar: true,
+        parametros : {autoOpen: false},
+        iniciarJanela : function(dados){
+            this.refineParametrosObj(dados);
+
+            this.divConteudo.dialog(this.parametros);
+        },
+        abrirJanela:function(){
+            this.divConteudo.dialog('open');
+            if(this.removerBtFechar)
+            $('.ui-dialog-titlebar-close').remove();
+        },
+        fecharJanela:function(){
+            this.divConteudo.dialog('close');
+            this.divConteudo.remove();
+        },
+        refineParametrosObj : function(data){
+            if(data!= undefined)
+                for(var j in data){
+                    this[j]=data[j];
+                }
+        }
+    }
+    novaJanela.iniciarJanela(dados);
+    return novaJanela;
+}
+function janelaAlerta(mensagem,funcaoAdcional){
+    if(funcaoAdcional==undefined){
+        funcaoAdcional = function(){}
+    }
+    var nomeJanelaAlerta =   janelaObj({
+            parametros : {
+                width:      400,
+                autoOpen:   false,
+                resizable:  false,
+                modal:      true,
+                buttons: {
+                    OK: function() {
+                        funcaoAdcional();
+                        $(this).dialog('close');
+                    }
+                }
+            },
+            removerBtFechar:true,
+            title : 'Alerta'
+        });
+        nomeJanelaAlerta.divConteudo.html(mensagem);
+        nomeJanelaAlerta.abrirJanela();
+
+        return nomeJanelaAlerta;
+}
+</script>

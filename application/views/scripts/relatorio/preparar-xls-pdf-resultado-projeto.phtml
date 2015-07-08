@@ -1,0 +1,43 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#conteudoXLS').val($('#conteudoImprimivel').html());
+        $('#formGerarXls').submit();
+    });
+</script>
+<form method="POST" id="formGerarXls" name="formGerarXls" action="<?php echo $this->url(array('controller' => 'relatorio', 'action' => ($this->tipo == 'xls')?'gerar-xls':'html2-pdf' )); ?>" style="display:none">
+    <textarea name="html" id="conteudoXLS"></textarea>
+</form>
+
+<div class="conteudoImprimivel" id="conteudoImprimivel" style="display:none">
+<table class="tabela" width="100%" align="center">
+    <tr>
+        <th width="10%">Pronac</th>
+        <th width="20%">Nome do Projeto</th>
+        <th width="20%">Agente</th>
+        <th width="15%">&Aacute;rea</th>
+        <th width="15%">Segmento</th>
+        <th width="5%">UF</th>
+        <th width="10%">Valor</th>
+        <th width="5%">Habilitado</th>
+    </tr>
+    <?php if(count($this->registros) > 0): ?>
+    <?php foreach($this->registros as $registro): ?>
+    <tr class="linha">
+        <td align="center"><?php echo $registro->AnoProjeto.$registro->Sequencial?></td>
+        <td align="left"><?php echo $registro->NomeProjeto?></td>
+        <td align="left"><?php echo $registro->NomeAgente?></td>
+        <td align="left"><?php echo $registro->Area?></td>
+        <td><?php echo $registro->Segmento?></td>
+        <td align="center"><?php echo $registro->UfProjeto?></td>
+        <td align="left"><?php echo number_format($registro->SolicitadoReal, 2, ",", ".")?></td>
+        <td align="left"><?php if($registro->Habilitado == 'S'){echo 'Sim';}elseif($registro->Habilitado == 'N'){echo 'Não';}?></td>
+    </tr>
+    <?php endforeach; ?>
+    <?php else: ?>
+    <tr>
+        <td colspan="8" valign="top" align="center">Nenhum Registro Encontrado</td>
+    </tr>
+    <?php endif; ?>
+</table>
+</div>
+

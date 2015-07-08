@@ -1,0 +1,76 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#conteudoXLS').val($('#conteudoImprimivel').html());
+        $('#formGerarXls').submit();
+    });
+</script>
+<form method="POST" id="formGerarXls" name="formGerarXls" action="<?php echo $this->url(array('controller' => 'operacional', 'action' => ($this->tipo == 'xls')?'gerar-xls':'gerar-pdf')); ?>" style="display:none">
+    <textarea name="html" id="conteudoXLS"></textarea>
+</form>
+<div id="conteudoImprimivel" style="position:absolute; z-index: 1;">
+    <table class="tabela" style="width: 100%">
+        <tbody>
+            <tr>
+                <th width="5%" align="center" bgcolor="#D0D0D0">Pronac</th>
+                <th width="20%" align="center" bgcolor="#D0D0D0">Projeto</th>
+                <th width="5%" align="center" bgcolor="#D0D0D0">Nr. Documento</th>
+                <th width="15%" align="center" bgcolor="#D0D0D0">Documento</th>
+                <th width="10%" align="center" bgcolor="#D0D0D0">Dt. Envio</th>
+                <th width="10%" align="center" bgcolor="#D0D0D0">Dt. Recebimento</th>
+                <th width="5%" align="center" bgcolor="#D0D0D0">Lote</th>
+                <th width="10%" align="center" bgcolor="#D0D0D0">A&ccedil;&atilde;o</th>
+                <th width="10%" align="center" bgcolor="#D0D0D0">Dt. Documento</th>
+                <th width="5%" align="center" bgcolor="#D0D0D0">C&oacute;digo do Correio</th>
+                <th width="10%" align="center" bgcolor="#D0D0D0">Origem</th>
+                <th width="10%" align="center" bgcolor="#D0D0D0">Destino</th>
+            </tr>
+            <?php if (count($this->tramitacoes) > 0): ?>
+                <?php foreach ($this->tramitacoes as $tramitacao): ?>
+                    <tr>
+                        <td align="center"><?php echo $tramitacao->Pronac ?></td>
+                        <td align="left"><?php echo $tramitacao->NomeProjeto ?></td>
+                        <td align="center"><?php echo $tramitacao->idDocumento ?></td>
+                        <td align="left"><?php echo $tramitacao->NoArquivo ?></td>
+                        <td align="center"><?php echo ConverteData($tramitacao->dtTramitacaoEnvio, 5) ?></td>
+                        <td align="center"><?php echo ConverteData($tramitacao->dtTramitacaoRecebida, 5) ?></td>
+                        <td align="center"><?php echo $tramitacao->idLote ?></td>
+                        <td align="center">
+                            <?php
+                            switch ($tramitacao->Acao) {
+                                case 1:
+                                    echo "Despachado/Cadastrado";
+                                    break;
+                                case 2:
+                                    echo "Enviado";
+                                    break;
+                                case 3:
+                                    echo "Recebido";
+                                    break;
+                                case 4:
+                                    echo "Recusado";
+                                    break;
+                                case 6:
+                                    echo "Anexado";
+                                    break;
+                                default:
+                                    break;
+                            }
+                            ?>
+                        </td>
+                        <td align="center"><?php echo ConverteData($tramitacao->dtDocumento, 5) ?></td>
+                        <td align="center"><?php echo $tramitacao->CodigoCorreio ?></td>
+                        <td align="center"><?php echo $tramitacao->Origem ?></td>
+                        <td align="center"><?php echo $tramitacao->Destino ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="10" valign="top" align="center">Nenhum Registro Encontrado</td>
+                </tr>
+            <?php endif; ?>
+        </tbody>
+    </table>
+</div>
+
+
+

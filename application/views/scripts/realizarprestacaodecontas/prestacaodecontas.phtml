@@ -1,0 +1,544 @@
+<?php
+/**
+ * Prestação de Contas (UC45)
+ * @author Equipe RUP - Politec
+ * @since 27/12/2010
+ * @version 1.0
+ * @subpackage application.view.scripts.prestacaodeocontas
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+<?php
+
+require_once "inc/menu.inc.php"; // menu
+
+
+$grupo = $this->Grupo;
+?>
+
+<div id="breadcrumb">
+<ul>
+	<li class="first"><a href="<?php echo $this->baseUrl(); ?>"
+		title="Início">Início</a></li>
+	<li class="last">Analisar Prestação de Contas</li>
+</ul>
+</div>
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+<div>Analisar Prestação de Contas <span>ID #23A</span> <span
+	class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo"><script>
+
+function areadetrabalho()
+{
+    $('#abrir_fechar').click(function(){
+        $('#pautaplenaria').toggle('slow');
+    });
+    $('#abrir_fechar1').click(function(){
+        $('#naoanalisados').toggle('slow');
+    });
+    $('#abrir_fechar2').click(function(){
+        $('#fecharmecenato').toggle('slow');
+    });
+    $('#abrir_fechar3').click(function(){
+        $('#fechardiligenciados').toggle('slow');
+    });
+
+    $('#abrir_fechar4').click(function(){
+        $('#fechartce').toggle('slow');
+    });
+    
+}
+window.onload = function() {areadetrabalho();};
+</script> <!-- MODAL PARA ENCAMINHAMENTO PARA ANALISE -->
+	<?php //foreach($this->Projetos as $chave => $prescontas){ ?>
+            <script type="text/javascript">
+
+    function encaminhar2(idPronac, nomeProjeto){
+
+    	$("#idPronac").html(idPronac);
+    	$("#nomeProjeto").html(nomeProjeto);
+    	
+	$("#encaminhar2").dialog({
+         title : 'Encaminhar Projeto para Análise',
+         resizable: false,
+         width:560,
+         height:580,
+         modal: true,
+         autoOpen:false,
+         buttons: {
+             'OK': function() {
+                 $(this).dialog('close');
+             }
+         }
+     });
+     $("#encaminhar2").dialog('open');
+ }
+
+    $(document).ready(function(){
+	    $('#passaValor').change(function(){		
+	    	
+	        var idorgao = $('#passaValor').val();
+alert(idorgao);
+	        $.ajax({
+                url : '<?php echo $this->url(array('controller' => 'RealizarPrestacaoDeContas', 'action' => 'prestacaodecontas')); ?>',
+                data :
+                {
+                    idorgao : idorgao,
+                    verifica : 'a'
+                },
+                success: function(data){
+                        //$('#encaminhar').find('.AgentePerfil').val('');
+                        var recebe = $('#encaminhar2').find('#recebeValor');
+                        alert(recebe);
+                        
+                        if(data.resposta){
+                            recebe.html('');
+                            recebe.append("<option value=''>Selecione o agente</option>");
+                            for ( i in data.conteudo)
+                            {
+                                recebe.append("<option value='"+data.conteudo[i].idAgente+"/"+data.conteudo[i].idperfil+"'>"+data.conteudo[i].Perfil+" - "+data.conteudo[i].usu_nome+"</option>");
+                            }
+                        }
+                        else{
+                            recebe.html('');
+                            recebe.append("<option value=''>Nenhum registro encontrado</option>");
+                        }
+                },
+                type : 'post'
+                ,dataType : 'json'
+            });
+	        
+	    });
+
+	    $('#encaminhar2').find('#recebeValor').change(function(){
+  			
+            var perfil = $(this).val().split('/');
+            $('#encaminhar2').find('.AgentePerfil').val(perfil[1]);
+            $('#encaminhar2').find('.AgenteId').val(perfil[0]);
+	
+        });
+        
+    });
+    
+	  </script>
+
+<div style="display: none;" id="encaminhar2"
+	title="Encaminhar projeto para análise">
+<form name="formencaminhar"
+	id="form<?php //echo $AnaliseGeral->ID_PRONAC; ?>"
+	action="#"
+	method="post" onsubmit="return validaForm()">
+
+<table width="95%">
+	<tr>
+		<th width="1%">PRONAC</th>
+		<th>Nome do Projeto</th>
+	</tr>
+	<tr>
+		<td id="idPronac" ></td>
+		<td id="nomeProjeto"></td>
+	</tr>
+</table>
+
+<br />
+<br />
+
+<textarea name="dsjustificativa" id="dsjustificativa" rows="6"
+	cols="50" style="width: 95%;"
+	onclick="limpar_campo(this, 'Digite a observação...');" onkeypress=" "
+	onblur="restaurar_campo(this, 'Digite a observação...');">Digite a observação...</textarea>
+
+<br />
+<br>
+<div>
+<tr>
+	<td><b>Encaminhar para:</b></td>
+	<td><select name="passaValor" id="passaValor" style="width: 70%;">
+		<option value="0">Selecione uma opção</option>
+                                <?php foreach($this->listaEntidades as $listaEntidades): ?>
+                                <option
+			value="<?php echo $listaEntidades->Codigo;?>"><?php echo $listaEntidades->Sigla; ?></option>
+                                <?php endforeach; ?>
+                            </select></td>
+</tr>
+<tr>
+	<td><b style="margin-left: 2.6em;">Destinatário:</b></td>
+	<td><select name="recebeValor" id="recebeValor"
+		style="width: 70%; margin-top: 0.5em;"></select></td>
+</tr>
+</div>	
+
+<br />
+
+<input type="hidden" name="idPronac" value=" "/>
+<input type="hidden" name="idAgenteOrigem" value=" "/>
+<input type="hidden" name="dtInicioEncaminhamento" value=" "/>
+<input type="hidden" name="dsJustificativa" value=" "/>
+<input type="hidden" name="idOrgao" value=" "/>
+<input type="hidden" name="idAgenteDestino" value=" "/>
+<input type="hidden" name="idTipoAgente" value=" "/>
+<input type="hidden" name="dtFimEncaminhamento" value=" "/>
+<input type="hidden" name="stAtivo" value=" "/>
+  
+<p align="center" style="margin-top: 1%;"><input type="button" value=" " class="btn_enviar salvarencaminhamento2<?php //echo $AnaliseGeral->ID_PRONAC.$AnaliseGeral->tpAlteracaoProjeto; ?>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="reset" value=" " class="btn_limpar" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="reset" value=" " class="btn_cancelar" /></p>
+</form>
+<table>
+	<tr>
+		<th>Data de Envio</th>
+		<th>Remetente</th>
+		<th>Destinatário</th>
+		<th>Órgão</th>
+	</tr>
+	<tr>
+		<td><?php echo $date = date('d/m/Y') ; ?></td>
+		<td><?php echo 'Zé Lelé' ?></td>
+		<td><?php echo 'Lex Luthor'; ?></td>
+		<td><?php echo 'Zona Fantasma'; ?></td>
+	</tr>
+</table>
+
+</div>
+<!-- FIM DO MODAL PARA ENCAMINHAMENTO PARA ANALISE -->
+<?php //} ?>
+
+    <div id="miolo">
+<table class="tabela">
+	<tr>
+		<td><input type="button" id="abrir_fechar" class="btn_adicionar" />AGUARDANDO
+		ANÁLISE</td>
+	</tr>
+</table>
+        
+        <?php foreach($this->Projetos as $chave => $prescontas){ ?>
+        <div id="pautaplenaria">
+<table class="tabela tablesorter">
+	<thead>
+<?php 	if ($grupo =='124' || $grupo=='132' || $grupo=='94'){  ?>
+		<tr class="titulo_tabela">
+			<th width="60">Número</th>
+			<th width="60">Pronac</th>
+			<th>Nome do Projeto</th>
+			<th width="220">Área / Segmento</th>
+			<th width="60">Data de Recebimento</th>
+			<th width="60">Cidade</th>
+			<th width="130">Análisar Prestação de Contas</th>
+			<th width="130">Qtd Dias</th>	
+			<th width="60">Controle</th>
+		</tr>
+	</thead>
+	<tr class="fundo_<?php //echo $fundo; ?>">
+		<td align="center"><?php echo "01"; ?></td>
+		<td class="centro"><a class="itenspronac"
+			style="text-decoration: underline; cursor: pointer;" onclick='envia(<?php echo '1111524'; ?> , <?php //echo $consultaProjetosPautaReuniao->NumeroReuniao ?>, "S")'>
+                            <?php echo $prescontas->AnoProjeto  .''. $prescontas->Sequencial; ?>
+                        </a></td>
+		<td class="centro"><?php echo $prescontas->NomeProjeto; ?></td>
+		<td class="centro"><?php echo $prescontas->Area . ' / '. $prescontas->Segmento; ?></td>
+		<td class="centro"><?php echo $datePresContas = date('d/m/Y'); ?></td>
+		<td class="centro"><?php echo $prescontas->UfProjeto; ?></td>
+		<td align="center"><img style="cursor: pointer;"
+			src="../public/img/user_gray.png"
+			onclick="return encaminhar2('<?php echo $prescontas->AnoProjeto .''. $prescontas->Sequencial; ?>', '<?php echo $prescontas->NomeProjeto; ?>')"
+			onkeypress="return encaminhar2('<?php echo $prescontas->AnoProjeto .''. $prescontas->Sequencial; ?>', '<?php echo $prescontas->NomeProjeto; ?>')"
+			alt="Encaminhar" /></td>
+
+		<td class="centro"><?php echo "10"; ?></td>
+		<td align="center"> <?php //$qntdDias = round(Data::CompararDatas($AguardAnalise5->DataEnvio,date("Y-m-d")))+1;
+                            if($datePresContas < 10 ){ echo '<img src="../public/img/bola_verde.gif"></img>'; }
+                            else if($datePresContas >= 10 && $datePresContas < 20){ echo '<img src="../public/img/bola_amarelo.gif"></img>'; }
+                            else if($datePresContas >= 20){ echo '<img src="../public/img/bola_vermelho.gif"></img>'; }
+                            ?>
+                        </td>
+	</tr>
+
+                <?php
+                
+                
+ /*                           $i++;
+                        }
+                    };*/
+                ?>
+<?php }else{ ?>
+<thead>
+		<tr class="titulo_tabela">
+			<th width="60">Número</th>
+			<th width="60">Pronac</th>
+			<th>Nome do Projeto</th>
+			<th width="220">Área / Segmento</th>
+			<th width="60">Cidade</th>
+			<th width="130">Encaminhar p/Análise</th>
+			<th width="130">Data de Início</th>
+			<th width="60">Controle</th>
+		</tr>
+	</thead>
+	<tr class="fundo_<?php //echo $fundo; ?>">
+		<td align="center"><?php echo "01"; ?></td>
+		<td class="centro"><a class="itenspronac"
+			style="text-decoration: underline; cursor: pointer;" onclick='envia(<?php echo '1111524'; ?> , <?php //echo $consultaProjetosPautaReuniao->NumeroReuniao ?>, "S")'>
+                            <?php echo $prescontas->AnoProjeto  .''. $prescontas->Sequencial; ?>
+                        </a></td>
+		<td class="centro"><?php echo $prescontas->NomeProjeto; ?></td>
+		<td class="centro"><?php echo $prescontas->Area . ' / '. $prescontas->Segmento; ?></td>
+		<td class="centro"><?php echo $prescontas->UfProjeto; ?></td>
+		<td align="center"><img style="cursor: pointer;"
+			src="../public/img/user_gray.png"
+			onclick="return encaminhar2('<?php echo $prescontas->AnoProjeto .''. $prescontas->Sequencial; ?>', '<?php echo $prescontas->NomeProjeto; ?>')"
+			onkeypress="return encaminhar2('<?php echo $prescontas->AnoProjeto .''. $prescontas->Sequencial; ?>', '<?php echo $prescontas->NomeProjeto; ?>')"
+			alt="Encaminhar" /></td>
+
+		<td class="centro"><?php echo $datePresContas = date('d/m/Y') //$prescontas->UfProjeto; ?></td>
+		<td align="center"> <?php //$qntdDias = round(Data::CompararDatas($AguardAnalise5->DataEnvio,date("Y-m-d")))+1;
+                            if($datePresContas < 10 ){ echo '<img src="../public/img/bola_verde.gif"></img>'; }
+                            else if($datePresContas >= 10 && $datePresContas < 20){ echo '<img src="../public/img/bola_amarelo.gif"></img>'; }
+                            else if($datePresContas >= 20){ echo '<img src="../public/img/bola_vermelho.gif"></img>'; }
+                            ?>
+                        </td>
+	</tr>
+	
+	
+<?php  } }?>
+                </table>
+</div>
+
+<table class="tabela">
+	<tr>
+		<td><input type="button" id="abrir_fechar1" class="btn_adicionar" />DEVOLVIDOS
+		APÓS ANÁLISE</td>
+	</tr>
+</table>
+        <?php foreach($this->ProjetosApos as $chaves => $prescontasApos){ ?>
+        <div id="naoanalisados">
+<table class="tabela tablesorter">
+	<thead>
+		<tr class="titulo_tabela">
+			<th width="50">Número</th>
+			<th width="50">Pronac</th>
+			<th>Nome do Projeto</th>
+			<th width="220">Área / Segmento</th>
+			<th width="130">Data de Inicio</th>
+			<th width="130">Data Fim</th>
+			<th width="130">Visualizar Historico</th>
+			<th width="140">Dilegenciar Proponente</th>
+			<th width="60">Finalizar</th>
+			<th width="60">Controle</th>
+		</tr>
+	</thead>
+
+	<tr class="fundo_<?php //echo $fundo; ?>">
+		<td><?php //echo $i + 1; ?></td>
+		<td class="centro">
+                                
+<?php //echo ">>>".$prescontas->Area; ?>
+                                    <a class="itenspronac"
+			style="text-decoration: underline; cursor: pointer;"
+			onclick='envia(<?php //echo $consultaProjetosPautaReuniao->idPronac ?> , <?php //echo $consultaProjetosPautaReuniao->NumeroReuniao ?>, "S")'>
+                            <?php echo $prescontasApos->AnoProjeto .''. $prescontasApos->Sequencial; ?>
+                        </a></td>
+		<td class="centro"><?php echo $prescontasApos->NomeProjeto; ?></td>
+		<td class="centro"><?php echo $prescontasApos->Area . ' / '. $prescontasApos->Segmento; ?></td>
+		<td class="centro"><?php echo $DateInicio = date('d/m/Y'); ?></td>
+		<td class="centro"><?php echo $DateInicio = date('d/m/Y'); ?></td>
+		<td class="centro"><?php echo $prescontasApos->UfProjeto; ?></td>
+		<td align="center"><img style="cursor: pointer;"
+			src="../public/img/table_multiple.png"
+			onclick="return encaminhar2('<?php //echo $prescontas->AnoProjeto; ?>')"
+			onkeypress="return encaminhar2('<?php //echo $prescontas->AnoProjeto; ?>')"
+			alt="Encaminhar" /></td>
+
+		<td class="centro"><img src="../public/img/passed.gif"></img></td>
+		<td align="center"><img src="../public/img/bola_verde.gif"></img>
+                            <?php //$qntdDias = round(Data::CompararDatas($AguardAnalise5->DataEnvio,date("Y-m-d")))+1;
+                            //if($qntdDias < 10 ){ echo '<img src="../public/img/bola_verde.gif"></img>'; }
+                            //else if($qntdDias >= 10 && $qntdDias < 20){ echo '<img src="../public/img/bola_amarelo.gif"></img>'; }
+                            //else if($qntdDias >= 20){ echo '<img src="../public/img/bola_vermelho.gif"></img>'; }
+                            ?>
+                        </td>
+	</tr>
+                <?php
+ /*                           $i++;
+                        }
+                    };*/
+                ?>
+<?php } ?>
+                </table>
+</div>
+<table class="tabela">
+	<tr>
+		<td><input type="button" id="abrir_fechar2" class="btn_adicionar" />PROJETOS
+		EM TCE / MECENATO</td>
+	</tr>
+</table>
+        <div id="fecharmecenato">
+<table class="tabela tablesorter">
+	<thead>
+		<tr class="titulo_tabela">
+			<th width="60">Número</th>
+			<th width="60">Pronac</th>
+			<th>Nome do Projeto</th>
+			<th width="220">Área / Segmento</th>
+			<th width="60">Cidade</th>
+			<th width="130">Data de Início</th>
+			<th width="60">Controle</th>
+		</tr>
+	</thead>
+<?php foreach($this->ProjetosTceMecenato as $chave => $prescontas){ ?>        
+
+	<tr class="fundo_<?php //echo $fundo; ?>">
+		<td><?php //echo $i + 1; ?></td>
+		<td class="centro">
+                                
+
+                                    <a class="itenspronac"
+			style="text-decoration: underline; cursor: pointer;"
+			onclick='envia(<?php //echo $consultaProjetosPautaReuniao->idPronac ?> , <?php //echo $consultaProjetosPautaReuniao->NumeroReuniao ?>, "S")'>
+                            <?php echo $prescontas->AnoProjeto .''. $prescontas->Sequencial; ?>
+                        </a></td>
+		<td class="centro"><?php echo $prescontas->NomeProjeto; ?></td>
+		<td class="centro"><?php echo $prescontas->Area . ' / '. $prescontas->Segmento; ?></td>
+		<td class="centro"><?php echo $prescontasApos->UfProjeto; ?></td>
+		<td class="centro"><?php echo $DateInicio = date('d/m/Y'); ?></td>
+		<td align="center"><img src="../public/img/bola_vermelho.gif"></img>
+                            <?php //$qntdDias = round(Data::CompararDatas($AguardAnalise5->DataEnvio,date("Y-m-d")))+1;
+                            //if($qntdDias < 10 ){ echo '<img src="../public/img/bola_verde.gif"></img>'; }
+                            //else if($qntdDias >= 10 && $qntdDias < 20){ echo '<img src="../public/img/bola_amarelo.gif"></img>'; }
+                            //else if($qntdDias >= 20){ echo '<img src="../public/img/bola_vermelho.gif"></img>'; }
+                            ?>
+                        </td>
+	</tr>
+
+                <?php
+ /*                           $i++;
+                        }
+                    };*/
+                ?>
+<?php } ?>
+                </table>
+</div>
+
+<table class="tabela">
+	<tr>
+		<td><input type="button" id="abrir_fechar4" class="btn_adicionar" />PROJETOS
+		EM PROCESSO DE INSTAURAÇÃO DE TCE</td>
+	</tr>
+</table>
+        <div id="fechartce">
+<table class="tabela tablesorter">
+	<thead>
+		<tr class="titulo_tabela">
+			<th width="60">Número</th>
+			<th width="60">Pronac</th>
+			<th>Nome do Projeto</th>
+			<th width="220">Área / Segmento</th>
+			<th width="60">Cidade</th>
+			<th width="130">Data de Início</th>
+			<th width="60">Controle</th>
+		</tr>
+	</thead>
+        <?php foreach($this->ProjetosTCE as $chave => $prescontas){ ?>
+
+	<tr class="fundo_<?php //echo $fundo; ?>">
+		<td><?php //echo $i + 1; ?></td>
+		<td class="centro">
+                                
+<?php //echo ">>>".$prescontas->Area; ?>
+                                    <a class="itenspronac"
+			style="text-decoration: underline; cursor: pointer;"
+			onclick='envia(<?php //echo $consultaProjetosPautaReuniao->idPronac ?> , <?php //echo $consultaProjetosPautaReuniao->NumeroReuniao ?>, "S")'>
+                            <?php echo $prescontas->AnoProjeto .''. $prescontas->Sequencial; ?>
+                        </a></td>
+		<td class="centro"><?php echo $prescontas->NomeProjeto; ?></td>
+		<td class="centro"><?php echo $prescontas->Area . ' / '. $prescontas->Segmento; ?></td>
+		<td class="centro"><?php echo $prescontas->UfProjeto; ?></td>
+		<td class="centro"><?php echo $DateInicio = date('d/m/Y'); ?></td>
+		<td align="center"><img src="../public/img/bola_vermelho.gif"></img>
+                            <?php //$qntdDias = round(Data::CompararDatas($AguardAnalise5->DataEnvio,date("Y-m-d")))+1;
+                            //if($qntdDias < 10 ){ echo '<img src="../public/img/bola_verde.gif"></img>'; }
+                            //else if($qntdDias >= 10 && $qntdDias < 20){ echo '<img src="../public/img/bola_amarelo.gif"></img>'; }
+                            //else if($qntdDias >= 20){ echo '<img src="../public/img/bola_vermelho.gif"></img>'; }
+                            ?>
+                        </td>
+	</tr>
+
+<?php } ?>
+                </table>
+</div>
+<table class="tabela">
+	<tr>
+		<td><input type="button" id="abrir_fechar3" class="btn_adicionar" />PROJETOS
+		DILIGÊNCIADOS</td>
+	</tr>
+</table>
+        <div id="fechardiligenciados">
+<table class="tabela tablesorter">
+	<thead>
+		<tr class="titulo_tabela">
+			<th width="60">Número</th>
+			<th width="60">Pronac</th>
+			<th>Nome do Projeto</th>
+			<th width="220">Área / Segmento</th>
+			<th width="60">Cidade</th>
+			<th width="130">Data de Recebimento</th>
+			<th width="130">Visualizar Historico</th>
+			<th width="60">Diligencia</th>
+			<th width="60">Controle</th>
+		</tr>
+	</thead>
+        <?php foreach($this->ProjetosDiligenciados as $chave => $prescontas){ ?>
+	<tr class="fundo_<?php //echo $fundo; ?>">
+		<td><?php //echo $i + 1; ?></td>
+		<td class="centro">
+                                
+<?php //echo ">>>".$prescontas->Area; ?>
+                                    <a class="itenspronac"
+			style="text-decoration: underline; cursor: pointer;"
+			onclick='envia(<?php //echo $consultaProjetosPautaReuniao->idPronac ?> , <?php //echo $consultaProjetosPautaReuniao->NumeroReuniao ?>, "S")'>
+                            <?php echo $prescontas->AnoProjeto .''. $prescontas->Sequencial; ?>
+                        </a></td>
+		<td class="centro"><?php echo $prescontas->NomeProjeto; ?></td>
+		<td class="centro"><?php echo $prescontas->Area . ' / '. $prescontas->Segmento; ?></td>
+		<td class="centro"><?php echo $prescontas->UfProjeto; ?></td>
+		<td class="centro"><?php echo $DateInicio = date('d/m/Y'); ?></td>
+		<td align="center"><img style="cursor: pointer;"
+			src="../public/img/table_multiple.png"
+			onclick="return encaminhar2('<?php //echo $prescontas->AnoProjeto; ?>')"
+			onkeypress="return encaminhar2('<?php //echo $prescontas->AnoProjeto; ?>')"
+			alt="Encaminhar" /></td>
+		<td align="center"><img style="cursor: pointer;"
+			src="../public/img/table_multiple.png"
+			onclick="return encaminhar2('<?php //echo $prescontas->AnoProjeto; ?>')"
+			onkeypress="return encaminhar2('<?php //echo $prescontas->AnoProjeto; ?>')"
+			alt="Encaminhar" /></td>
+		<td align="center"><img src="../public/img/bola_vermelho.gif"></img>
+                            <?php //$qntdDias = round(Data::CompararDatas($AguardAnalise5->DataEnvio,date("Y-m-d")))+1;
+                            //if($qntdDias < 10 ){ echo '<img src="../public/img/bola_verde.gif"></img>'; }
+                            //else if($qntdDias >= 10 && $qntdDias < 20){ echo '<img src="../public/img/bola_amarelo.gif"></img>'; }
+                            //else if($qntdDias >= 20){ echo '<img src="../public/img/bola_vermelho.gif"></img>'; }
+                            ?>
+                        </td>
+	</tr>
+
+                <?php
+ /*                           $i++;
+                        }
+                    };*/
+                ?>
+<?php } ?>
+                </table>
+</div>
+</div>
+</div>
+<!-- início: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+<br clear="all" />

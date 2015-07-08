@@ -1,0 +1,149 @@
+<?php include_once 'inc/menu-modulo.php'; ?>
+<div id="alerta" class="sumir"></div>
+<div id="breadcrumb">
+    <ul>
+        <li class="first">Início</li>
+        <li class=""><a href="edital/index">Criar Edital - Passo 1</a></li>
+        <li class="">Nova Categoria</li>
+    </ul>
+</div>
+
+<div id="titulo">
+    <div>Nova Categoria</div>
+</div> 
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    
+    <fieldset>
+        <br />
+        <div id="msg" class="msgALERT sumir" style="margin: 0px 20px 0px 20px">
+            <div class="float_right"><input type="button" class="btn_close" title="Fechar mensagem" id="msgALERT" onclick="$('.msgALERT').hide();" onkeypress="$('.msgALERT').hide();"/></div>
+            <div id="txtmsg" style="line-height: 25px;"></div>
+        </div>
+        
+        <form id="formularioCategoria" action="<?php echo $this->url(array('controller' => 'edital', 'action' => 'salva-categoria'),null, true); ?>" method="post">
+            <input type="hidden" name="idModulo" id="idModulo" value="<?php echo $this->idModulo;?>" /> 
+            <input type="hidden" name="idEdital" id="idEdital" value="<?php echo $this->idEdital;?>" />
+            <table class="tabela">
+                <tr>
+                    <td class="destacar bold w150 esquerdo">Nome da Categoria <span style="color: red;">*</span></td>
+                    <td><input maxlength="200" type="text" name="nomeCategoria" id="nomeCategoria" class="input_simples w300 required"></td>
+                </tr>
+                <tr>
+                    <td class="destacar bold w150 esquerdo">
+                        Reutilizar Categoria
+                    </td>
+                    <td>
+                        <img src="<?php echo $this->baseUrl(); ?>/public/img/botaoReutilizar.png" style="cursor: pointer;" onclick="JSReutilizar()"/>&nbsp;&nbsp;</th>  
+                    </td>
+                </tr>
+            </table>
+            <div style="width: 100%; text-align: center;">
+                <input class="btn_salvar" type="submit" value="" name="salvar" id="btsalvar">
+            </div>
+        </form>    
+
+    </fieldset>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+
+        $("#formularioCategoria").submit(function() {
+
+            $('#msg').hide();
+            $('#txtmsg').html('');
+
+            var check = 0;
+            var enviar = 0;
+
+            $('.required').each(function() {
+
+                var obj = $(this).val();
+
+                if (obj === '') {
+                    check = 1;
+                }
+
+            });
+
+            if ((check === 1)) {
+                $('#txtmsg').html('Verifique os campos obrigatórios!<br />');
+                $('#msg').show();
+                enviar = 1;
+            } else {
+                $('#txtmsg').html('');
+                $('#msg').hide();
+            }
+
+            // Enviar o Form
+            if ((enviar === 1)) {
+                return false;
+            }
+
+            $('#txtmsg').html('');
+            $('#msg').hide();
+            $(this).submit();
+
+
+        });
+
+
+        $("#btnProximo").click(function() {
+            window.location = "<?php echo $this->url(array('controller' => 'edital', 'action' => 'modulosedital', 'idEdital' => $this->idEdital), '', true); ?>";
+        });
+
+        $("#btnVoltar").click(function() {
+            window.location = "form-criterios-de-participacao.htm";
+        });
+
+        //CALENDARIO - CAMPOS DATA
+        $.datepicker.regional['pt-BR'] =
+                {
+                    closeText: 'Fechar',
+                    prevText: '&#x3c;Anterior',
+                    nextText: 'Pr&oacute;ximo&#x3e;',
+                    currentText: 'Hoje',
+                    monthNames: ['Janeiro', 'Fevereiro', 'Mar&ccedil;o', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                    monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                    dayNames: ['Domingo', 'Segunda-feira', 'Ter&ccedil;a-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'S&aacute;bado'],
+                    dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
+                    dayNamesMin: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
+                    weekHeader: 'Sm',
+                    dateFormat: 'dd-mm-yy',
+                    firstDay: 0,
+                    isRTL: false,
+                    showMonthAfterYear: false,
+                    yearSuffix: ''
+                };
+
+        $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+
+        // classe dos campos que utilizarao o calendario
+        $(".cmpData").datepicker($.datepicker.regional['pt-BR']);
+
+        $('.decimal').live('keypress', function(e) {
+            var key_code_val = (e.keyCode ? e.keyCode : e.which);
+            var valor = String.fromCharCode(key_code_val);
+            var exp = new RegExp(/[0-9,]/);
+            if ((key_code_val == 8) || (key_code_val == 9)) {
+                return true;
+            }
+            return (exp.test(valor));
+        });
+    });
+
+    function num(dom) {
+        dom.value = dom.value.replace(/\D/g, '');
+    }
+
+</script>

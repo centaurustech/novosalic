@@ -1,0 +1,181 @@
+<script>
+    $(document).ready(function(){
+        
+            $(".orderBy").click(function(){
+                    var campo = $(this).attr("valorOrdenacao");
+
+                    if("ASC" == $("#tipoOrdenacao").val()){
+                        tipo = "DESC";
+                    }else{
+                        tipo = "ASC";
+                    }
+
+                    ordenar(campo, tipo);
+            });
+
+            $(".orderBy").each(function(){
+                if($("#ordenacao").val() == $(this).attr("valorOrdenacao")){
+                    if($("#tipoOrdenacao").val() == "ASC"){
+                        $(this).after('<span style="padding-left:4px;"><img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-baixo.PNG" align="absmiddle"></span>');
+                    }else{
+                        $(this).after('<span style="padding-left:4px;"><img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-cima.PNG" align="absmiddle"></span>');
+                    }
+                }
+            });
+                
+            $('#btn_xls').click(function(){
+                $('#frmPaginacao').attr('target','_blank').append('<input type="hidden" name="tipo" id="xls" value="xls"/>');
+                $('#frmPaginacao').submit();
+            	$('#frmPaginacao').attr('target','');
+            	$('#xls').remove();
+            });
+
+            $('#btn_imprimir').click(function(){
+                $('#frmPaginacao').attr('target','_blank').append('<input type="hidden" name="tipo" id="pdf" value="pdf"/>');
+                $('#frmPaginacao').submit();
+            	$('#frmPaginacao').attr('target','');
+            	$('#pdf').remove();
+            });
+
+
+   
+          $('tr.registros, .registros tr').mouseover(function() // mouse em cima da linha
+          {
+                over_tr(this);
+          });
+          $('tr.registros, .registros tr').focus(function() // mouse em cima da linha
+          {
+                over_tr(this);
+          });
+          $('tr.registros, .registros tr').mouseout(function() // retirar mouse de cima da linha
+          {
+                out_tr(this);
+          });
+          $('tr.registros, .registros tr').blur(function() // retirar mouse de cima da linha
+          {
+                out_tr(this);
+          });
+          $('tr.registros, .registros tr').click(function() // clicar em cima da linha
+          {
+                click_tr(this);
+          });
+          $('tr.registros, .registros tr').keypress(function() // clicar em cima da linha
+          {
+                click_tr(this);
+          });
+
+          $('input[name=grid1]').click(function() // grid modelo 1
+          {
+                grid_01(this.id); return false;
+          });
+          $('div[name=grid3]').click(function() // grid modelo 3
+          {
+                grid_03(this.id); return false;
+          });
+
+          /* planilha de custos */
+          $('.planilha_incentivo').click(function() // mecanismo
+          {
+                planilha_custos(this, 'MECANISMO'); return false;
+          });
+          $('.planilha_produto').click(function() // produto
+          {
+                planilha_custos(this, 'PRODUTO'); return false;
+          });
+          $('.planilha_etapa').click(function() // etapa
+          {
+                planilha_custos(this, 'ETAPA'); return false;
+          });
+          $('.planilha_uf').click(function() // uf
+          {
+                planilha_custos(this, 'UF'); return false;
+          });
+    });
+
+    function paginar(pag){
+        $("#pag").val(pag);
+        jqAjaxForm(document.getElementById("frmPaginacao"), "resultadoConsulta");
+        $("#resultadoConsulta").html("Aguarde, carregando dados ...");
+    }
+
+    function ordenar(campo, tipo){
+    	$("#ordenacao").val(campo);
+        $("#tipoOrdenacao").val(tipo);
+        paginar(1);
+    }
+</script>
+<fieldset>
+    <legend>Resultado</legend>
+    <div class="conteudoImprimivel">
+    <table class="tabela">
+    	<thead>    	
+	        <tr>
+	            <th align="center" valign="middle"><a href="#resultadoConsulta" class="orderBy"  valorOrdenacao="5">Regi&atilde;o</a></th>
+	            <th align="center" valign="middle"><a href="#resultadoConsulta" class="orderBy"  valorOrdenacao="4">UF</a></th>
+	            <th align="center" valign="middle"><a href="#resultadoConsulta" class="orderBy"  valorOrdenacao="3">Cidade</a></th>
+	            <th align="center" valign="middle"><a href="#resultadoConsulta" class="orderBy"  valorOrdenacao="2">Qtde</a></th>
+	            <th align="center" valign="middle"><a href="#resultadoConsulta" class="orderBy"  valorOrdenacao="1">Vl. Convenio</a></th>
+	        </tr>
+        </thead>
+        <tbody class="registros">
+			<?php foreach($this->registros as $item): ?>        
+		        <tr>
+		            <td align="center" valign="top"><?php echo $item->Regiao?></td>
+		            <td align="center" nowrap="nowrap" valign="top"><?php echo $item->UF?></td>
+		            <td align="center" nowrap="nowrap" valign="top"><?php echo $item->Cidade?></td>
+		            <td align="center" valign="top"><?php echo $item->Qtde?></td>
+		            <td align="center" valign="top"><?php echo number_format($item->Custo, 2, ",", ".")?></td>
+		        </tr>        
+	        <?php endforeach; ?>
+        </tbody>
+    </table>
+    </div>
+
+    <form action="<?php echo $this->url(array('controller' => 'relatorio', 'action' => 'resultado-pc-regiao-uf-cidade')); ?>" method="post" name="frmPaginacao" id="frmPaginacao">
+    <?php foreach($this->parametrosBusca as $name=>$value):?>
+        <?php if(!is_array($value)): ?>
+        <input type="hidden" name="<?php echo $name?>" id="<?php echo $name?>" value="<?php echo $value?>"/>
+        <?php else: ?>
+            <?php foreach($value as $valor):?>
+                <input type="hidden" name="<?php echo $name?>[]" id="<?php echo $name?>" value="<?php echo $valor?>"/>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    <?php endforeach; ?>
+        <?php if(empty($this->parametrosBusca["pag"])):?>
+        <input type="hidden" name="pag" id="pag" value="<?php echo $this->pag; ?>"/>
+        <?php endif; ?>
+        <?php if(empty($this->parametrosBusca["ordenacao"])):?>
+	    <input type="hidden" name="ordenacao" id="ordenacao" value="<?php echo (!empty($this->parametrosBusca["ordenacao"]))?$this->parametrosBusca["ordenacao"]:""; ?>"/>
+	    <?php endif; ?>
+	    <?php if(empty($this->parametrosBusca["tipoOrdenacao"])):?>
+	    <input type="hidden" name="tipoOrdenacao" id="tipoOrdenacao" value="<?php echo (!empty($this->parametrosBusca["tipoOrdenacao"]))?$this->parametrosBusca["tipoOrdenacao"]:""; ?>"/>
+	    <?php endif; ?>
+    </form>
+
+    <form method="POST" id="formGerarXls" name="formGerarXls" action="<?php echo $this->url(array('controller' => 'relatorio', 'action' => 'gerar-xls')); ?>" style="display:none">
+        <textarea name="html" id="conteudoXLS"></textarea>
+    </form>
+
+    <form method="POST" id="formGerarPdf" name="formGerarPdf" action="<?php echo $this->url(array('controller' => 'relatorio', 'action' => 'gerar-pdf')); ?>" style="display:none">
+        <textarea name="html" id="conteudoImprimir"></textarea>
+    </form>
+
+    <table class="tabela">
+        <tr>
+            <td align="center">
+                <input type="button" style="width: 88px" class="btn_inicio" id="btn_inicio" onclick="paginar('1')"/>
+                <input type="button" style="width: 88px" class="btn_p_anterior" id="btn_p_anterior" onclick="paginar('<?php echo ($this->pag > 1)?$this->pag-1:1; ?>')"/>
+                <select name="pagina" id="pagina" class="input_simples" onchange="paginar(this.value)">
+                    <?php for($i=1; $i<$this->totalPag+1; $i++): ?>
+                    <option value="<?php echo $i; ?>" <?php if($i == $this->pag){ echo " selected='selected' "; } ?>><?php echo $i; ?></option>
+                    <?php endfor; ?>
+                </select>
+                <input type="button" style="width: 88px" class="btn_p_proximo" id="btn_p_proximo" onclick="paginar('<?php echo ($this->pag < $this->totalPag)?$this->pag+1:$this->totalPag; ?>')"/>
+                <input type="button" style="width: 88px" class="btn_ultimo" id="btn_ultimo" onclick="paginar('<?php echo $this->totalPag; ?>')"/>
+                <input type="button" style="width: 44px" class="btn_xls" id="btn_xls" />
+                <input type="button" style="width: 88px" class="btn_imprimir" id="btn_imprimir" />
+                Exibindo de <b><?php echo $this->inicio; ?></b> a <b><?php echo $this->fim; ?></b> de um total de <b><?php echo $this->total; ?></b>
+            </td>
+        </tr>
+    </table>
+</fieldset>

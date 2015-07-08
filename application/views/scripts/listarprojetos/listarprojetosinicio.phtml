@@ -1,0 +1,78 @@
+<script type="text/javascript">
+
+	function filtroCPF()
+	{
+		document.getElementById('cpf').value     = "";
+		document.getElementById('cpf').maxLength = "14";
+		document.getElementById('cpf').onkeyup   = function() { mascara(document.formBuscar.cpf, format_cpf); };
+		document.getElementById('cpf').focus(); 
+	}
+	function filtroCNPJ()
+	{
+		document.getElementById('cpf').value     = "";
+		document.getElementById('cpf').maxLength = "18";
+		document.getElementById('cpf').onkeyup   = function() { mascara(document.formBuscar.cpf, format_cnpj); };
+		document.getElementById('cpf').focus();
+	}
+
+	</script>
+
+<div id="breadcrumb">
+	 <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'listarprojetos', 'action' => 'index')); ?>" title="Ir para InÃ¯Â¿Â½cio">In&iacute;cio</a></li>
+      <li class="second"><a href="<?php echo $this->url(array('controller' => 'listarprojetos', 'action' => 'projetos')); ?>" title="Projetos">Projetos</a></li>
+       <li class="last">Listar Projetos</li>
+    </ul>
+</div>
+
+
+
+
+
+<div id="titulo">
+	<div>Listar Projetos <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+
+
+
+
+
+
+<div id="conteudo">
+
+<form name="form" action="<?php echo $this->url(array('controller' => 'listarprojetos','action' => 'listarprojetos')); ?>" method="post">
+	
+		<table class="tabela_busca" style="width:50%;">
+			<tr>
+				<th class="esquerda titulo_campo">
+					<input type="radio" name="Tipo" id="0" value="0" class="checkradio" checked="checked" onclick="filtroCPF();" onkeypress="filtroCPF();" /> <label for="0">CPF</label> &nbsp;&nbsp;&nbsp;
+					<input type="radio" name="Tipo" id="1" value="1" class="checkradio" onclick="filtroCNPJ();" onkeypress="filtroCNPJ();" /> <label for="1">CNPJ</label>
+				</th>
+				<td>
+					<div class="left"></div>
+					<label for="cpf"> </label>
+					<input class="input_simples" type="text" name="cpf" id="cpf" 
+						onclick="limpar_campo(this, ' ');" onkeypress="limpar_campo(this, ' ');" 
+						onblur="restaurar_campo(this, ' ');" onmouseout="restaurar_campo(this, ' ');" 
+						value=" " 
+						maxlength="14" onkeyup="mascara(this, format_cpf);" onmouseup=" " value=" <?php echo (isset($this->cpf) ? $this->cpf : ''); ?> "  />
+					<div class="right"></div>
+				</td>
+			</tr>			
+		</table>
+
+		<p class="centro">
+			<input class="btn" type="submit" value=" buscar " />		
+		</p>
+		
+	</form>
+	
+
+	<div id="dialog-alert" class="sumir">Informe um documento vÃ¡lido!</div>
+</div>
+
+
+
+<div id="rodapeConteudo"><span></span></div>
+
+<br clear="all" />

@@ -1,0 +1,126 @@
+<?php require_once "inc/menu.inc.php"; // menu ?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para Início">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'areadetrabalho', 'action' => 'index')); ?>" title="Ir para Visualizar Área de Trabalho">Visualizar Área de Trabalho</a></li>
+		<li class="last">Análise de Cortes Sugeridos</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Análise de Cortes Sugeridos <span>ID #23A</span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+
+
+	<table class="tabela" style="margin:10px auto; ">
+  <tr>
+    <th><div align="center" class="titulo_tabela">PRONAC</div></th>
+    <th><div align="center" class="titulo_tabela">Nome do Projeto</div></th>
+
+  </tr>
+<?php foreach($this->lembretesprojeto as $tblembretesprojeto): ?>
+   <tr>
+    <td><?php echo $this->escape($tblembretesprojeto->IdPRONAC);?></td>
+    <td><?php echo $this->escape($tblembretesprojeto->NomeProjeto);?></td>
+
+  </tr>
+  <?php endforeach;?>
+</table>
+
+
+
+	
+
+
+
+
+
+
+<table class="tabela" align="center" valign = "middle">
+
+    <form name="formBuscar" id="formBuscar" method="post" 
+	action="<?php echo $this->url(array('controller' => 'lembretes','action' => 'alterarlembrete')); ?>">	
+
+
+
+
+
+  <tr>
+    <th><div align="center" class="titulo_tabela">Data</div></th>
+    <th><div align="center" class="titulo_tabela">Lembrete</div></th>
+
+  </tr>
+ <?php foreach($this->lembretes as $tblembretes): ?>
+   <tr>
+ 
+       <td><?php echo $this->escape($tblembretes->dtlembrete);?></td>
+   <td><textarea type="text" name="descricao" id="descricao" cols="125" rows="4" ><?php echo $this->escape($tblembretes->lembrete);?></textarea></td>
+
+ </tr> </table>
+<table class="tabela" align="center" valign = "middle">
+  <td></td>
+	 
+	            <td class="right">	<input type="submit"  class="btn_salvar" name=" " title=" " value="  " />
+	            					<input type="button"  class="btn_salvar" name=" " title=" Cancelar " value="  "/>
+         
+</td>
+
+  <?php endforeach;?>
+</table>
+</form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table class="tabela" align="center" valign = "middle">
+  <tr>
+  
+		<td class="center" >
+     <a href="javascript:window.print()"><img src="<?php echo $this->baseUrl(); ?>/public/img/imprimir.gif" />
+   
+			</td>
+ </td>
+  </tr>
+ 
+</table>
+
+			<div class="float_left">
+				<a href="javascript:history.go(-1);" style="text-decoration:none;"><img src="<?php echo $this->baseUrl(); ?>/public/img/adm_btn_voltar.gif" /> Voltar</a>
+			</div>
+
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

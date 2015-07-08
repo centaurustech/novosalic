@@ -1,0 +1,45 @@
+<?php 
+	if ($this->gerar == 'html') { 
+		echo '<div id="div_g1_1" class="miolo_grid_01 sumir">';
+	}
+?>
+    <div class="conteudoImprimivel">
+		<?php if(count($this->projetos['valores']) != 0): ?>    
+			<table class="tabela">
+			    <tbody><tr>
+			        <th valign="middle" align="left" bgcolor="#abda5d"><a href="#resultadoConsulta" class="orderBy"  valorOrdenacao="1">C&oacute;digo</a></th>
+			        <th valign="middle" align="left" bgcolor="#abda5d"><a href="#resultadoConsulta" class="orderBy"  valorOrdenacao="3">Situa&ccedil;&atilde;o</a></th>
+			        <th valign="middle" align="left" bgcolor="#abda5d"><a href="#resultadoConsulta" class="orderBy"  valorOrdenacao="2">Qtde</a></th>
+			    </tr>
+			    <?php foreach($this->projetos['valores'] as $item):?>
+			    <tr>
+			        <td rowspan="1" valign="top" align="center" bgcolor=""><a href="<?php echo $this->url(array('controller' => 'operacional', 'action' => 'exibirresultadoprojetoporsituacao')); ?>?situacao=<?php echo $item->Situacao?>" target="_blank"><?php echo $item->Situacao?></a></td>
+			        <td rowspan="1" valign="top" align="left" bgcolor=""><?php echo $item->SituacaoNome?></td>
+			        <td rowspan="1" valign="top" align="left" bgcolor=""><?php echo $item->Qtde?></td>
+			    </tr>
+			    <?php endforeach; ?>
+			</tbody>
+			</table>
+			<?php else: ?>
+			<table class="tabela">
+				<tr>
+					<td align="center">Nenhum registro encontrado!</td>
+				</tr>
+			</table>
+		<?php endif; ?>
+	</div>
+<?php 
+if ($this->gerar == 'html') { 
+	echo '</div>';
+}
+?>
+<?php if ($this->gerar == 'html') { ?>
+	 <form method="POST" id="formGerarPdf" name="formGerarPdf" action="<?php echo $this->url(array('controller' => 'relatorio', 'action' => 'gerar-pdf')); ?>" style="display:none">
+        <textarea name="html" id="conteudoImprimir"></textarea>
+    </form>
+	<script>
+		$("#conteudoImprimir").val($(".conteudoImprimivel").html());
+		$("#formGerarPdf").submit();
+	</script>
+<?php } ?>
+	

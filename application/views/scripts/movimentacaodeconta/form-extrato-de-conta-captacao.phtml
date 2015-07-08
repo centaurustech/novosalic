@@ -1,0 +1,208 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+
+        $('form#frmExtratoCaptacao').find('input:not(.btn_limpar,.btn_pesquisar)').live("keypress", function(e){
+            if(e.keyCode == 13){
+                $(".btn_pesquisar").click();
+            }
+        });
+        
+        $(".btn_pesquisar").click(function(){
+            //$("#resultadoConsulta").html("");
+            //jqAjaxForm(document.getElementById("frmExtratoCaptacao"), "resultadoConsulta");
+            $("#frmExtratoCaptacao").submit();
+        });
+
+        $("#tpDtLote").change(function(){
+            if($("#spandtLote").css("display")=="none" && $(this).val() == "entre"){
+                $("#spandtLote").show();
+            }else{
+                $("#spandtLote").hide();
+            }
+            //$("#spanDtFinal").toggle();
+        });
+
+        $("#tpDtCaptacao").change(function(){
+            if($("#spanDtCaptacao").css("display")=="none" && $(this).val() == "entre"){
+                $("#spanDtCaptacao").show();
+            }else{
+                $("#spanDtCaptacao").hide();
+            }
+            //$("#spanDtFinal").toggle();
+        });
+
+        $(function()
+        {
+            $.datepicker.regional['pt-BR'] = {
+                closeText: 'Fechar',
+                prevText: '&#x3c;Anterior',
+                nextText: 'Pr&oacute;ximo&#x3e;',
+                currentText: 'Hoje',
+                monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+                monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+                dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+                dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                weekHeader: 'Sm',
+                dateFormat: 'dd/mm/yy',
+                firstDay: 0,
+                isRTL: false,
+                showMonthAfterYear: false,
+                yearSuffix: ''};
+            $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+            $(".cmpData").datepicker($.datepicker.regional['pt-BR']);
+        });
+        
+        $(".cmpNumerico").numeric().attr("maxlength", "9");
+           
+    });
+    
+    function JSTravaCampos(obj){
+
+        var id = $(obj).attr("id");
+        var n = $("#"+id).val().length;
+        if(n > 0){
+            $("#dtLote").attr("disabled",true);
+            $("#dtLote_Final").attr("disabled",true);
+            $("#dtCaptacao").attr("disabled",true);
+            $("#dtCaptacao_Final").attr("disabled",true);
+            $("#tpDtLote").attr("disabled",true);
+            $("#tpDtCaptacao").attr("disabled",true);
+            
+            $("#dtLote").val('');
+            $("#dtLote_Final").val('');
+            $("#dtCaptacao").val('');
+            $("#dtCaptacao_Final").val('');
+            $("#tpDtLote").val('');
+            $("#tpDtCaptacao").val('');
+            
+            $('#camposDataDtLote').hide(); 
+            $('#camposDataDtCaptacao').hide();
+        }else{
+            $("#dtLote").attr("disabled",false);
+            $("#dtLote_Final").attr("disabled",false);
+            $("#dtCaptacao").attr("disabled",false);
+            $("#dtCaptacao_Final").attr("disabled",false);
+            $("#tpDtLote").attr("disabled",false);
+            $("#tpDtCaptacao").attr("disabled",false);
+        }
+    }
+    
+    function JSLiberaCampos(){
+        $("#dtLote").attr("disabled",false);
+        $("#dtLote_Final").attr("disabled",false);
+        $("#dtCaptacao").attr("disabled",false);
+        $("#dtCaptacao_Final").attr("disabled",false);
+        $("#tpDtLote").attr("disabled",false);
+        $("#tpDtCaptacao").attr("disabled",false);
+    }
+</script>
+<?php 
+    require_once 'scripts/controlarmovimentacaobancaria/inc/menu.inc.php';
+?>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'), '', true); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second">Movimenta&ccedil;&atilde;o banc&aacute;ria</li>
+        <li>Extrato de conta capta&ccedil;&atilde;o</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Extrato de conta capta&ccedil;&atilde;o</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<div id="conteudo" align="center">
+    <br>
+    <form action="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'resultado-extrato-de-conta-captacao')); ?>" method="post" name="frmExtratoCaptacao" id="frmExtratoCaptacao">
+    <input type="hidden" name="modal" id="modal" value="n">
+    <table class="tabela" style="width: 90%">
+        <tbody>
+            <tr>
+                <td class="destacar bold" align="right" width="120">PRONAC</td>
+                <td align="left" colspan="2">
+                    <input class="input_simples cmpNumerico" name="pronac" id="pronac" maxlength="10" type="text" onblur="JSTravaCampos(this)" onchange="JSTravaCampos(this)" onkeypress="JSTravaCampos(this)" onkeyup="JSTravaCampos(this)" onclick="JSTravaCampos(this)" onfocus="JSTravaCampos(this)">
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right" width="120">Data do lote</td>
+                <td width="220">
+                    <select name="tpDtLote" id="tpDtLote" class="select_simples" onchange="if($(this).val()=='OT' || $(this).val()=='U7' || $(this).val()=='SP' || $(this).val()=='MM' || $(this).val()=='UM' || $(this).val()==''){$('#camposDataDtLote').css('display','none');}else{$('#camposDataDtLote').css('display','');}">
+                        <OPTGROUP LABEL="Normais">
+                            <option value="">Selecione</option>
+                            <option value="igual">Exatamente Igual</option>
+                            <option value="entre">Entre dois valores</option>
+                            <option value="maior">Maior ou igual a </option>
+                            <option value="menor">Menor ou igual a</option>
+                        </OPTGROUP>
+                        <OPTGROUP LABEL="Especiais">
+                            <option value="OT">Ontem</option>
+                            <option value="U7">&Uacute;ltimos 7 dias</option>
+                            <option value="SP">Semana Passada (seg-dom)</option>
+                            <option value="MM">Este m&ecirc;s</option>
+                            <option value="UM">&Uacute;ltimo m&ecirc;s</option>
+                        </OPTGROUP>
+                    </select>
+                </td>
+                <td align="left">
+                    <span id="camposDataDtLote" style="display: none;">
+                        <input name="dtLote" id="dtLote" value="" class="input_simples cmpData" onkeyup="mascara(this, format_data);"/> 
+                        <span id="spandtLote" style="display: none;">&nbsp;e&nbsp;<input name="dtLote_Final" id="dtLote_Final" value="" class="input_simples cmpData"  onkeyup="mascara(this, format_data);"/></span>
+                         (dd/mm/aaaa)
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right" width="120">Data da capta&ccedil;&atilde;o</td>
+                <td width="220">
+                    <select name="tpDtCaptacao" id="tpDtCaptacao" class="select_simples" onchange="if($(this).val()=='OT' || $(this).val()=='U7' || $(this).val()=='SP' || $(this).val()=='MM' || $(this).val()=='UM' || $(this).val()==''){$('#camposDataDtCaptacao').css('display','none');}else{$('#camposDataDtCaptacao').css('display','');}">
+                        <OPTGROUP LABEL="Normais">
+                            <option value="">Selecione</option>
+                            <option value="igual">Exatamente Igual</option>
+                            <option value="entre">Entre dois valores</option>
+                            <option value="maior">Maior ou igual a </option>
+                            <option value="menor">Menor ou igual a</option>
+                        </OPTGROUP>
+                        <OPTGROUP LABEL="Especiais">
+                            <option value="OT">Ontem</option>
+                            <option value="U7">&Uacute;ltimos 7 dias</option>
+                            <option value="SP">Semana Passada (seg-dom)</option>
+                            <option value="MM">Este m&ecirc;s</option>
+                            <option value="UM">&Uacute;ltimo m&ecirc;s</option>
+                        </OPTGROUP>
+                    </select>
+                </td>
+                <td align="left">
+                    <span id="camposDataDtCaptacao" style="display: none;">
+                        <input name="dtCaptacao" id="dtCaptacao" value="" class="input_simples cmpData"  onkeyup="mascara(this, format_data);"/>
+                        <span id="spanDtCaptacao" style="display: none;">&nbsp;e&nbsp;<input name="dtCaptacao_Final" id="dtCaptacao_Final" value="" class="input_simples cmpData"  onkeyup="mascara(this, format_data);"/></span>
+                         (dd/mm/aaaa)
+                    </span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="tabela" style="width: 90%">
+        <tr>
+            <td align="center">
+                <input type="button" style="width: 88px" class="btn_pesquisar" id="btn_pesquisar" value=""/>
+                <input type="reset" style="width: 88px" class="btn_limpar" id="btn_limpar" value="" onclick="$('#camposDataDtLote').hide(); $('#camposDataDtCaptacao').hide(); JSLiberaCampos();"/>
+            </td>
+        </tr>
+    </table>
+    </form>
+    <br>
+<div id="resultadoConsulta"></div>
+    
+</div>
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

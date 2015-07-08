@@ -1,0 +1,328 @@
+<script type="text/javascript">
+
+    $(document).ready(function(){
+
+        $('.expandir').click(function(){
+            var elemento = $(this),
+                idAgente = elemento.attr('idAgente');
+
+            $('.mostraProposta_'+idAgente).toggle()
+            if (elemento.hasClass('btn_adicionar')){
+                elemento.addClass('btn_remover');
+                elemento.removeClass('btn_adicionar');
+            } else {
+                elemento.addClass('btn_adicionar');
+                elemento.removeClass('btn_remover');
+            }
+        });
+
+        $('#mecanismo').change(function(){
+            var mecanismo = $(this).val();
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo $this->url(array('controller' => 'listarprojetos', 'action' => 'buscar-proponentes-combo')); ?>',
+                data: {
+                    mecanismo: mecanismo
+                },
+                success: function(data){
+                    var recebe = $('#idProponente');
+                    if(data.resposta){
+                        $('#idProponente option.results').remove()
+                        for ( i in data.conteudo){
+                           recebe.append('<option class="results" value="'+data.conteudo[i].idAgenteProponente+'">'+data.conteudo[i].proponente+'</option>');
+                        }
+                    } else {
+                        $('#idProponente option.results').remove()
+                    }
+                },
+                dataType : 'json'
+            });
+        });
+    });
+
+    function gerar_pdf(formato){
+        $("#html").val("<html><style>table {width:798px;} table td { background-color:#EEE; padding:3px; text-align:center}table th { background-color:#CCC; padding:3px; text-align:center}</style><center><h2>Listar Projetos</h2></center>");
+        $("#conteudoRelatorio").html($("#corpo_impressao").html());
+        $('#conteudoRelatorio').find('.retirar').each(function(){$(this).remove();});
+        $('a', $('#conteudoRelatorio')).attr('href','#');
+        //$('#conteudoRelatorio').find('retirar').each(function(){$(this).remove();});
+        $('#html').val($("#html").val() + $("#conteudoRelatorio").html() + "</html>");
+        $("#formato").val(formato);
+        $("#frmGerarRelatorio").submit();
+    }
+</script>
+
+<div id="conteudoRelatorio" class="sumir"></div>
+<form name="frmGerarRelatorio" id="frmGerarRelatorio" class="sumir" method="post" action="<?php echo $this->url(array('controller' => 'mantercalendariocnic', 'action' => 'gerarpdf')); ?>" >
+    <input type="hidden" id="html" name="html" value="">
+    <input type="hidden" id="formato" name="formato" value="">
+</form>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principalproponente', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="last">Listar Projetos</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Listar Projetos</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<!-- ========== INÌCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <form method="POST" action="<?php echo $this->url(array('controller' => 'listarprojetos', 'action' => 'listarprojetos')); ?>" name="localiza" id="localiza">
+        <table  class="tabela">
+            <tr class="centro">
+                <th>Filtro</th>
+            </tr>
+            <tr>
+                <td align="left">Mecanismo:&nbsp;
+                    <select name="mecanismo" id="mecanismo" class="input_simples w200">
+                        <option value="">- Selecione -</option>
+                        <option value="1" <?php echo ($this->mecanismo == 1) ? 'selected="selected"' : ''; ?>>Incentivo Fiscal Federal</option>
+                        <?php /* ?>
+                        <option value="2" <?php //echo ($this->mecanismo == 2) ? 'selected="selected"' : ''; ?>>FNC</option>
+                        <option value="6" <?php //echo ($this->mecanismo == 6) ? 'selected="selected"' : ''; ?>>Recurso do Tesouro</option>
+                        <?php */ ?>
+                    </select>
+                    CPF/CNPJ Proponente: &nbsp;&nbsp;
+                    <select name="idProponente" id="idProponente" class="input_simples">
+                        <option value="">Todos</option>
+                        <?php foreach ($this->buscaProponente as $proponente) { ?>
+                        <option class="results" value="<?php echo $proponente['idAgenteProponente'] ?>" <?php echo ($this->agenteId == $proponente['idAgenteProponente']) ? 'selected="selected"' : ''; ?>><?php echo "[" . Validacao::mascaraCPFCNPJ($proponente['CPF']) . "] - " . $proponente['Nome'] ?></option>
+                        <?php } ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <input class="btn_localizar" type="submit" value="" name="localizar" id="localizar" >
+                </td>
+            </tr>
+        </table>
+    </form>
+<div id="corpo_impressao">
+<?php
+$i = 0;
+$z = 0;
+$idAgente=0;
+if ( empty ( $this->listarprojetos ) )
+{
+    if(isset($_POST) && !empty($_POST)){
+    echo '<fieldset style="text-align:center">Não existem projetos cadastrados.</fieldset>';
+    }
+}
+else {
+
+echo '<fieldset><legend>Registros</legend>';
+
+ if(count($this->listarprojetos)>0){ 
+     $ct=0;
+  foreach($this->listarprojetos as $projetos): $ct++;
+
+    $cpfCnpj = $projetos->CgcCpf;
+    if(strlen($cpfCnpj)==11){
+        $projetos->CgcCpf = aplicaMascara($projetos->CgcCpf, "999.999.999-99");
+
+     }else{
+         $projetos->CgcCpf = aplicaMascara($projetos->CgcCpf, "99.999.999/9999-99");
+     }
+?>
+
+<?php if($idAgente != $projetos->idAgente && $idAgente != 0): ?>
+<?php echo '</table></td></tr>' ?>
+
+<?php endif;  ?>
+
+<?php if($idAgente != $projetos->idAgente): ?>
+
+<table class="tabela">
+<tr>
+   <td class="esquerda">
+        <input type="button" class="btn_adicionar expandir" idAgente="<?php echo $projetos->idAgente; ?>"/><b><?php echo $projetos->CgcCpf." - ". utf8_decode(htmlentities($projetos->NomeProponente)); ?></b>
+        (<?php
+            if($projetos->Ordem == 0){
+                echo 'Proponente';
+            } else if($projetos->Ordem == 1){
+                if($projetos->idSolicitante == 989898){ // Código cadastrado pelo Rômulo para identificar procuradores que foram migrados do sistema antigo para o novo com perfil de procurador, mas com função de Responsável.
+                    echo 'Responsável';
+                } else {
+                    echo 'Procurador';
+                }
+            } else if($projetos->Ordem == 2){
+                echo 'Dirigente';
+            }
+        ?>)
+   </td>
+</tr>
+
+<tr class="mostraProposta_<?php echo $projetos->idAgente; ?>" style="display:none">
+    <td>
+        <table class="tabela">
+             <tr>
+                <th>Pronac</th>
+                <th>Nome do Projeto</th>
+                <th>Situa&ccedil;&atilde;o do Projeto</th>
+                <th>Per&iacute;odo de Execu&ccedil;&atilde;o</th>
+                <th>Mecanismo</th>
+            </tr>
+
+<?php endif;  ?>
+             <tr>
+                 <td class="centro"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index')); ?>?idPronac=<?php echo Seguranca::encrypt($this->escape($projetos->IdPRONAC));?>" target="_blanck"><?php echo $this->escape($projetos->Pronac);?></a></td>
+                 <td><?php echo $this->escape($projetos->NomeProjeto);?></td>
+                 <td><?php echo $this->escape($projetos->Situacao).' - '.$this->escape($projetos->Descricao);?></td>
+                 <td>
+                     <?php
+                        if(!empty($projetos->DtInicioDeExecucao) && !empty($projetos->DtFinalDeExecucao)){
+                            echo Data::tratarDataZend($projetos->DtInicioDeExecucao, 'brasileiro'). ' a '.Data::tratarDataZend($projetos->DtFinalDeExecucao, 'brasileiro');
+                        }
+                     ?>
+                 <td>
+                 <?php if($projetos->Mecanismo == 1){
+                     echo 'Incentivo Fiscal Federal';
+                     } else if($projetos->Mecanismo == 2){
+                         echo 'FNC';
+                     }  else if($projetos->Mecanismo == 6){
+                         echo 'Recurso do Tesouro';
+                     }
+                 ?></td>
+            </tr>
+
+<?php $idAgente = $projetos->idAgente; ?>
+
+<?php endforeach; ?>
+        </table>
+    </td>
+</tr>
+</table>
+
+<?php }else{ ?>
+<table class="tabela">
+<tr>
+    <td>
+        <div><font color='red'>Nenuma proposta encontrada.</font></div>
+    </td>
+</tr>
+</table>
+<?php }
+
+} ?>
+
+
+
+<!-- Lista com os vinculados -->
+<?php
+//xd($this->listarprojetos);
+$i = 0;
+$z = 0;
+$idAgente = 0;
+
+if ( empty ( $this->listarprojetosVinculados ) )
+{
+    //echo '<table><tr><div id="nada"></div></tr></table>';
+}
+else {
+
+
+ if(count($this->listarprojetosVinculados)>0){ 
+     $ct=0;
+  foreach($this->listarprojetosVinculados as $projetos): $ct++;
+
+    $cpfCnpj = $projetos->CgcCpf;
+    if(strlen($cpfCnpj)==11){
+        $projetos->CgcCpf = aplicaMascara($projetos->CgcCpf, "999.999.999-99");
+
+     }else{
+         $projetos->CgcCpf = aplicaMascara($projetos->CgcCpf, "99.999.999/9999-99");
+     }
+?>
+
+<?php if($idAgente != $projetos->idAgente && $idAgente != 0): ?>
+<?php echo '</table></td></tr>' ?>
+        
+<?php endif;  ?>
+
+<?php if($idAgente != $projetos->idAgente): ?>
+
+<table class="tabela">
+<tr>
+   <td class="esquerda">
+        <input type="button" class="btn_adicionar" onclick="$('.mostraProposta_<?php echo $projetos->idAgente; ?>').toggle()"/><b><?php echo $projetos->CgcCpf." - ". utf8_decode(htmlentities($projetos->NomeProponente)); ?> </b>
+   </td>
+</tr>
+
+<tr class="mostraProposta_<?php echo $projetos->idAgente; ?>" style="display:none">
+    <td>
+        <table class="tabela">
+             <tr>
+                <th>Pronac</th>
+                <th>Nome do Projeto</th>
+                <th>Situa&ccedil;&atilde;o do Projeto</th>
+                <th>Per&iacute;odo de Execu&ccedil;&atilde;o</th>
+                <th>Mecanismo</th>
+            </tr>
+
+<?php endif;  ?>
+             <tr>
+                 <td class="centro"><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index')); ?>?idPronac=<?php echo Seguranca::encrypt($this->escape($projetos->IdPRONAC));?>" target="_blanck"><?php echo $this->escape($projetos->Pronac);?></a></td>
+                 <td><?php echo $this->escape($projetos->NomeProjeto);?></td>
+                 <td><?php echo $this->escape($projetos->Situacao).' - '.$this->escape($projetos->Descricao);?></td>
+                 <td><?php echo ConverteData($projetos->DtInicioDeExecucao,5);?> <?php if(!empty($projetos->DtFinalDeExecucao)){ echo "a ";} echo ConverteData($projetos->DtFinalDeExecucao,5);?></td>
+                 <td>
+                 <?php if($projetos->Mecanismo == 1){
+                     echo 'Incentivo Fiscal Federal';
+                     } else if($projetos->Mecanismo == 2){
+                         echo 'FNC';
+                     }  else if($projetos->Mecanismo == 6){
+                         echo 'Recurso do Tesouro';
+                     }
+                 ?></td>
+            </tr>
+
+<?php $idAgente = $projetos->idAgente; ?>
+
+<?php endforeach; ?>
+        </table>
+    </td>
+</tr>
+</table>
+
+<?php }else{ ?>
+<table class="tabela">
+<tr>
+    <td>
+        <div><font color='red'>Nenuma proposta encontrada.</font></div>
+    </td>
+</tr>
+</table>
+<?php }
+
+} ?>
+
+<?php if(!empty($_POST) && (count($this->listarprojetosVinculados)>0 || count($this->listarprojetos)>0)){  echo '</fieldset>'; } ?>
+
+<table class="tabela">
+<tr class="retirar">
+    <td align="center">
+        <input type="button" class="btn_pdf" style="margin-right:20px" onclick="gerar_pdf('pdf')">
+        <input type="button" class="btn_xls" onclick="gerar_pdf('excel')">
+    </td>
+</tr>
+</table>
+
+</div> <!-- ========== DIV IMPRESSAO ========== -->
+</div> <!-- ========== DIV CONTEUDO ========== -->
+
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<br clear="all" />
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+	<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->

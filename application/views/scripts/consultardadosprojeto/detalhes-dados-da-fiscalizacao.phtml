@@ -1,0 +1,910 @@
+<?php
+    $relatorio = $this->relatorioFiscalizacao;
+    $projeto = $this->projeto;
+    $dtInicioFiscalizacao = strtotime($this->relatorioFiscalizacao->dtInicioFiscalizacaoProjeto);
+    $dtDeCorte = strtotime(date('2013-09-15 00:00:00'));
+    header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+
+<div>
+    <table  id="tableItensCusto" class="tabela" >
+        <tr>
+            <td class="destacar" align="center"><b>Locais</b></td>
+        </tr>
+    </table>
+    
+    <table  id="tableItensCusto" class="tabela">
+        <tr>
+            <td class='destacar' align='center'>
+                <b>Regi&atilde;o</b>
+            </td>
+            <td class='destacar' align='center'>
+                <b>UF</b>
+            </td>
+            <td class='destacar' align='center'>
+                <b>Cidade</b>
+            </td>
+        </tr>
+        <?php foreach ($this->infoProjeto as $value) { ?>
+            <tr>
+                <td><?php echo $value->Regiao; ?> </td>
+                <td><?php echo $value->uf; ?></td>
+                <td><?php echo $value->cidade; ?></td>
+            </tr>
+        <?php } ?>
+    </table>
+    
+    <table  id="tableItensCusto" class="tabela" >
+        <tr>
+            <td class="destacar" align="center"><b>Oficializar Fiscaliza&ccedil;&atilde;o</b></td>
+        </tr>
+    </table>
+    
+    <table class="tabela">
+        <tr>
+            <td>
+                <table class='tabela'>
+                    <tr>
+                        <td colspan="2" class="destacar" align="center"><b>Datas / Demandante</b></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b>Data In&iacute;cio</b><br>
+                            <?php
+                                if ($this->infoProjeto[0]->dtInicioFiscalizacaoProjeto != '') {
+                                    echo date('d/m/Y', strtotime($this->infoProjeto[0]->dtInicioFiscalizacaoProjeto));
+                                } else {
+                                    echo 'Não informado';
+                                }
+                            ?>
+                        </td>
+                        <td>
+                            <b>Data Fim&nbsp;</b><br>
+                            <?php
+                                if ($this->infoProjeto[0]->dtFimFiscalizacaoProjeto != '') {
+                                    echo date('d/m/Y', strtotime($this->infoProjeto[0]->dtFimFiscalizacaoProjeto));
+                                } else {
+                                    echo 'Não informado';
+                                }
+                            ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b>Demandante&nbsp;da&nbsp;Fiscaliza&ccedil;&atilde;o</b><br>
+                            <?php
+                                if ($this->infoProjeto[0]->tpDemandante == 0)
+                                    echo 'SEFIC';
+                                if ($this->infoProjeto[0]->tpDemandante == 1)
+                                    echo 'SAV';
+                            ?>
+                        </td>
+                        <td>
+                            <b>Data&nbsp;de&nbsp;Resposta&nbsp;at&eacute;*</b><br>
+                            <?php if ($this->infoProjeto[0]->dtRespostaSolicitada != '')
+                                echo date('d/m/Y', strtotime($this->infoProjeto[0]->dtRespostaSolicitada));
+                            ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="destacar" align="center"><b>Identificaç&atilde;o do T&eacute;cnico</b></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b>CPF</b><br>
+                            <?php echo Validacao::mascaraCPFCNPJ($this->infoProjeto[0]->cpfTecnico); ?>
+                        </td>
+                        <td>
+                            <b>Nome</b><br>
+                            <?php echo $this->infoProjeto[0]->nmTecnico; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><b>Dados para Fiscaliza&ccedil;&atilde;o</b><br>
+                            <?php echo!empty($this->infoProjeto[0]->dsFiscalizacaoProjeto) ? $this->infoProjeto[0]->dsFiscalizacaoProjeto : 'Não informado'; ?>
+                        </td>
+                    </tr>
+                </table>
+                <?php
+                //INICIO - SOBRE ORGAOS
+                if (is_object($this->dadosOrgaos))
+                    foreach ($this->dadosOrgaos as $key => $value) {
+                        ?>
+                        
+                <table class='tabela'>
+                    <tr>
+                        <td colspan="2" class="destacar" align="center"><b>&Oacute;rg&atilde;o:</b> <?php echo $value->Sigla; ?></td>
+                    </tr>
+                    <?php if ($value->CNPJCPF) { ?>
+                    <tr>
+                        <td colspan="2" class="destacar" align="center"><b>Identificaç&atilde;o do Parecerista</b></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b>CPF/CNPJ</b><br>
+                            <?php echo Validacao::mascaraCPFCNPJ($value->CNPJCPF); ?>
+                        </td>
+                        <td>
+                            <b>Nome/Raz&atilde;o Social</b><br>
+                            <?php echo $value->Descricao; ?>
+                        </td>
+                    </tr>
+                    <?php } ?>
+                    <tr>
+                        <td colspan="2"><b>Observa&ccedil;&atilde;o</b><br>
+                            <?php echo!empty($value->dsObservacao) ? $value->dsObservacao : 'Não informado'; ?>
+                        </td>
+                    </tr>
+                </table>
+                <?php } //FIM - SOBRE ORGAOS  ?>
+            </td>
+        </tr>
+    </table>
+    
+    <br clear="all"/>
+    
+    
+    <!-- =======================   INICIO DOS DADOS DA FISCALIZAÇ?O ===================================>-->
+    <?php $y = 1;
+    // INICIO RELATORIO
+    if (!$this->email) { if (count($relatorio)) { ?>
+    <table class="tabela">
+        <tr>
+            <td class="destacar" align="center"><b>Fiscalizaç&atilde;o Conclu&iacute;da para Parecer</b></td>
+        </tr>
+    </table>
+            
+    <table class="tabela">
+        <!-- ************************************** Resumo da Execuç&atilde;o ************************************ -->
+        <tr>
+            <td colspan="3" class="destacar" align="center"><b>Resumo da Execuç&atilde;o</b></td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <fieldset>
+                    <legend><?php echo $y++.'.'; ?> Aç&otilde;es Programadas</legend>
+                    <table class="tabela"><tr><td>
+                        <?php if (isset($relatorio->dsAcoesProgramadas))
+                                echo !empty($relatorio->dsAcoesProgramadas) ? $relatorio->dsAcoesProgramadas : 'Não informado'; ?>
+                    </td></tr></table>
+                </fieldset>
+                <fieldset>
+                    <legend><?php echo $y++.'.'; ?> Aç&otilde;es Executadas</legend>
+                    <table class="tabela"><tr><td>
+                        <?php if (isset($relatorio->dsAcoesExecutadas))
+                        echo !empty($relatorio->dsAcoesExecutadas) ? $relatorio->dsAcoesExecutadas : 'Não informado'; ?>
+                    </td></tr></table>
+                </fieldset>
+                <fieldset>
+                    <legend><?php echo $y++.'.'; ?> Benef&iacute;cios Alcançados</legend>
+                    <table class="tabela"><tr><td>
+                        <?php if (isset($relatorio->dsBeneficioAlcancado))
+                        echo !empty($relatorio->dsBeneficioAlcancado) ? $relatorio->dsBeneficioAlcancado : 'Não informado'; ?>
+                    </td></tr></table>
+                </fieldset>
+                <fieldset>
+                    <legend><?php echo $y++.'.'; ?> Dificuldades Encontradas</legend>
+                    <table class="tabela"><tr><td>
+                        <?php if (isset($relatorio->dsDificuldadeEncontrada))
+                        echo !empty($relatorio->dsDificuldadeEncontrada) ? $relatorio->dsDificuldadeEncontrada : 'Não informado'; ?>
+                    </td></tr></table>
+                </fieldset>
+            </td>
+        </tr>
+        <?php if($dtInicioFiscalizacao < $dtDeCorte){ ?>
+        <tr>
+            <!-- ************************************** Situaç&atilde;o do Conv&ecirc;nio na Realizaç&atilde;o da Fiscalizaç&atilde;o ************************************ -->
+            <td colspan="3" class="destacar" align="center"><b>Situaç&atilde;o do Conv&ecirc;nio na Realizaç&atilde;o da Fiscalizaç&atilde;o</b></td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> Situaç&atilde;o SIAFI </td>
+            <td>
+                <?php if (isset($relatorio->stSiafi))
+                        $selected = $relatorio->stSiafi; ?>
+                <?php if ($selected == null)
+                        echo '--'; ?>
+                <?php if ($selected == 1)
+                        echo 'Aprovado'; ?>
+                <?php if ($selected == 2)
+                        echo 'A aprovar'; ?>
+                <?php if ($selected == 3)
+                        echo 'A comprovar'; ?>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> Prestaç&atilde;o de Contas Apresentada?</td>
+            <td>
+                <?php if (isset($relatorio->stPrestacaoContas))
+                    $selected = $relatorio->stPrestacaoContas; ?>
+                <?php if ($selected == null)
+                    echo '--' ?>
+                <?php if ($selected == 1)
+                echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                    echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> Foram cumpridas as normas estabelecidas?</td>
+            <td>
+                <?php if (isset($relatorio->stCumpridasNormas))
+                $selected = $relatorio->stCumpridasNormas; ?>
+                <?php if ($selected == null)
+                echo '--' ?>
+                <?php if ($selected == 1)
+                echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                    echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> Foi cumprido o prazo para entrega da prestação de contas?</td>
+            <td>
+                <?php if (isset($relatorio->stCumpridoPrazo))
+                $selected = $relatorio->stCumpridoPrazo; ?>
+                <?php if ($selected == null)
+                    echo '--' ?>
+                <?php if ($selected == 1)
+                    echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                    echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <?php } ?>
+        <tr>
+            <!-- ****************************************** Utilizaç&atilde;o de Recursos ************************************************************* -->
+            <td colspan="3" class="destacar" align="center"><b>Utilizaç&atilde;o de Recursos</b></td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> Foi apurado por unidade fiscalizadora ou auditora a aplicaç&atilde;o irregular de recursos?</td>
+            <td>
+                <?php if (isset($relatorio->stApuracaoUFiscalizacao))
+                $selected = $relatorio->stApuracaoUFiscalizacao; ?>
+                <?php if ($selected == null)
+                echo '--' ?>
+                <?php if ($selected == 1)
+                    echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                    echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                    echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> Comprovou a correta utilizaç&atilde;o dos recursos da contrapartida?</td>
+            <td>
+                <?php if (isset($relatorio->stComprovacaoUtilizacaoRecurso))
+                    $selected = $relatorio->stComprovacaoUtilizacaoRecurso; ?>
+                <?php if ($selected == null)
+                    echo '--' ?>
+                <?php if ($selected == 1)
+                echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                    echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <?php echo $y++.'.'; ?>
+                <?php if($dtInicioFiscalizacao < $dtDeCorte){ ?>
+                    H&aacute; compatibilidade entre o desembolso e a evolu&ccedil;&atilde;o?
+                <?php } else { ?>
+                    H&aacute; compatibilidade entre os recursos transferidos e a evolu&ccedil;&atilde;o do projeto?
+                <?php } ?>
+            </td>
+            <td>
+                <?php if (isset($relatorio->stCompatibilidadeDesembolsoEvo))
+                $selected = $relatorio->stCompatibilidadeDesembolsoEvo; ?>
+                <?php if ($selected == null)
+                echo '--' ?>
+                <?php if ($selected == 1)
+                    echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                    echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                    echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> Ocorreu despesas com multas, juros, taxas banc&aacute;rias ou correç&atilde;o monet&aacute;ria?</td>
+            <td>
+                <?php if (isset($relatorio->stOcorreuDespesas))
+                    $selected = $relatorio->stOcorreuDespesas; ?>
+                <?php if ($selected == null)
+                    echo '--' ?>
+                <?php if ($selected == 1)
+                echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                    echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <?php if($dtInicioFiscalizacao < $dtDeCorte){ ?>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> Ocorreu pagamento de servidor p&uacute;blico?</td>
+            <td>
+                <?php if (isset($relatorio->stPagamentoServidorPublico))
+                $selected = $relatorio->stPagamentoServidorPublico; ?>
+                <?php if ($selected == null)
+                echo '--' ?>
+                <?php if ($selected == 1)
+                    echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                    echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                    echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> Ocorreu despesa com taxa de administraç&atilde;o?</td>
+            <td>
+                <?php if (isset($relatorio->stDespesaAdministracao))
+                    $selected = $relatorio->stDespesaAdministracao; ?>
+                <?php if ($selected == null)
+                    echo '--' ?>
+                <?php if ($selected == 1)
+                echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                    echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> H&aacute; transfer&ecirc;ncia de recurso para clubes/associaç&otilde;es ou outras entidades cong&ecirc;neres?</td>
+            <td>
+                <?php if (isset($relatorio->stTransferenciaRecurso))
+                        $selected = $relatorio->stTransferenciaRecurso; ?>
+                <?php if ($selected == null)
+                        echo '--' ?>
+                <?php if ($selected == 1)
+                        echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                        echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                        echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> H&aacute; despesas com publicidade, salvo as de car&aacute;ter educativo, informativo ou de orientaç&atilde;o social?</td>
+            <td>
+                <?php if (isset($relatorio->stDespesasPublicidade))
+                        $selected = $relatorio->stDespesasPublicidade; ?>
+                <?php if ($selected == null)
+                        echo '--' ?>
+                <?php if ($selected == 1)
+                        echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                        echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                        echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> Ocorreu aditamento prevendo alteraç&atilde;o de objeto?</td>
+            <td>
+                <?php if (isset($relatorio->stOcorreuAditamento))
+                        $selected = $relatorio->stOcorreuAditamento; ?>
+                <?php if ($selected == null)
+                        echo '--' ?>
+                <?php if ($selected == 1)
+                        echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                        echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                        echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <?php } ?>
+        <tr>
+            <td colspan="2">
+                <?php echo $y++.'.'; ?>
+                <?php if($dtInicioFiscalizacao < $dtDeCorte){ ?>
+                    N&atilde;o foram aplicados os recursos de contrapartida?
+                <?php } else { ?>
+                    Os recursos de contrapartida foram depositados na conta do projeto?
+                <?php } ?>
+            </td>
+            <td>
+                <?php if (isset($relatorio->stAplicadosRecursos))
+                        $selected = $relatorio->stAplicadosRecursos; ?>
+                <?php if ($selected == null)
+                        echo '--' ?>
+                <?php if ($selected == 1)
+                        echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                        echo 'N&atilde;o'; ?>
+                <?php if($dtInicioFiscalizacao < $dtDeCorte){ ?>
+                    <?php if ($selected == 3) echo 'N&atilde;o se aplica'; ?>
+                <?php } else { ?>
+                    <?php if ($selected == 3) echo 'N&atilde;o h&aacute; contrapartida'; ?>
+                <?php } ?>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> Ocorreu aplicaç&atilde;o de recursos em outra finalidade que n&atilde;o a do objeto pactuado?</td>
+            <td>
+                <?php if (isset($relatorio->stAplicacaoRecursosFinalidade))
+                        $selected = $relatorio->stAplicacaoRecursosFinalidade; ?>
+                <?php if ($selected == null)
+                        echo '--' ?>
+                <?php if ($selected == 1)
+                        echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                        echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                        echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <?php if($dtInicioFiscalizacao > $dtDeCorte){ //Campo novo. Só aparece se o mesmo foi feito após a data de corte. ?>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> Os recursos captados est&atilde;o sendo aplicados em conformidade com a legisla&ccedil;&atilde;o vigente?</td>
+            <td>
+                <?php if (isset($relatorio->stRecursosCaptados))
+                        $selected = $relatorio->stRecursosCaptados; ?>
+                <?php if ($selected == null)
+                        echo '--' ?>
+                <?php if ($selected == 1)
+                        echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                        echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                        echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <?php } ?>
+        
+        <?php if($dtInicioFiscalizacao < $dtDeCorte){ ?>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> Ocorreu saldo após o encerramento do projeto?</td>
+            <td>
+                <?php if (isset($relatorio->stSaldoAposEncerramento))
+                        $selected = $relatorio->stSaldoAposEncerramento; ?>
+                <?php if ($selected == null)
+                        echo '--' ?>
+                <?php if ($selected == 1)
+                        echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                        echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                        echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> O saldo verificado foi recolhido ao FNC?</td>
+            <td>
+                <?php if (isset($relatorio->stSaldoVerificacaoFNC))
+                        $selected = $relatorio->stSaldoVerificacaoFNC; ?>
+                <?php if ($selected == null)
+                        echo '--' ?>
+                <?php if ($selected == 1)
+                        echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                     echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                     echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <?php } ?>
+        <tr>
+            <td colspan="3" class="destacar"><b>Comprovantes Fiscais de Despesa</b></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <?php echo $y++.'.'; ?>
+                <?php if($dtInicioFiscalizacao < $dtDeCorte){ ?>
+                    O processo est&aacute; bem documentado?
+                <?php } else { ?>
+                    O proponente/convenente tem mantido a documenta&ccedil;&atilde;o relativa ao projeto em arquivo pr&oacute;prio?
+                <?php } ?>
+            </td>
+            <td>
+                <?php if (isset($relatorio->stProcessoDocumentado))
+                        $selected = $relatorio->stProcessoDocumentado; ?>
+                <?php if ($selected == null)
+                        echo '--' ?>
+                <?php if ($selected == 1)
+                        echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                        echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                        echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <?php if($dtInicioFiscalizacao < $dtDeCorte){ ?>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> A documentaç&atilde;o est&aacute; completa e arquivada?</td>
+            <td>
+                <?php if (isset($relatorio->stDocumentacaoCompleta))
+                        $selected = $relatorio->stDocumentacaoCompleta; ?>
+                <?php if ($selected == null)
+                        echo '--' ?>
+                <?php if ($selected == 1)
+                        echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                        echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                        echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <?php } ?>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> Guardam conformidade entre o executado e o aprovado?</td>
+            <td>
+                <?php if (isset($relatorio->stConformidadeExecucao))
+                        $selected = $relatorio->stConformidadeExecucao; ?>
+                <?php if ($selected == null)
+                        echo '--' ?>
+                <?php if ($selected == 1)
+                        echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                        echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                        echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <?php echo $y++.'.'; ?>
+                <?php if($dtInicioFiscalizacao < $dtDeCorte){ ?>
+                    Identificam o nome do projeto e o n&uacute;mero do conv&ecirc;nio?
+                <?php } else { ?>
+                    Identificam o projeto com o n&uacute;mero do Pronac/Conv&ecirc;nio?
+                <?php } ?>
+            </td>
+            <td>
+                <?php if (isset($relatorio->stIdentificaProjeto))
+                        $selected = $relatorio->stIdentificaProjeto; ?>
+                <?php if ($selected == null)
+                        echo '--' ?>
+                <?php if ($selected == 1)
+                        echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                        echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                        echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> Existem despesas anteriores ao prazo de vig&ecirc;ncia?</td>
+            <td>
+                    <?php if (isset($relatorio->stDespesaAnterior))
+                            $selected = $relatorio->stDespesaAnterior; ?>
+                    <?php if ($selected == null)
+                            echo '--' ?>
+                    <?php if ($selected == 1)
+                        echo 'Sim'; ?>
+                    <?php if ($selected == 2)
+                        echo 'N&atilde;o'; ?>
+                    <?php if ($selected == 3)
+                        echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <?php if($dtInicioFiscalizacao < $dtDeCorte){ ?>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> Existem despesas posteriores ao prazo de vig&ecirc;ncia?</td>
+            <td>
+                <?php if (isset($relatorio->stDespesaPosterior))
+                        $selected = $relatorio->stDespesaPosterior; ?>
+                <?php if ($selected == null)
+                        echo '--' ?>
+                <?php if ($selected == 1)
+                        echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                        echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                        echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <?php } ?>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> As despesas coincidem com as informadas na relaç&atilde;o de pagamentos?</td>
+            <td>
+                <?php if (isset($relatorio->stDespesaCoincidem))
+                        $selected = $relatorio->stDespesaCoincidem; ?>
+                <?php if ($selected == null)
+                        echo '--' ?>
+                <?php if ($selected == 1)
+                        echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                        echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                        echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> As despesas est&atilde;o devidamente relacionadas no extrato banc&aacute;rio?</td>
+            <td>
+                <?php if (isset($relatorio->stDespesaRelacionada))
+                    $selected = $relatorio->stDespesaRelacionada; ?>
+                <?php if ($selected == null)
+                    echo '--' ?>
+                <?php if ($selected == 1)
+                    echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                    echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                    echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> Os comprovantes fiscais est&atilde;o com o atesto do recebimento?</td>
+            <td>
+                <?php if (isset($relatorio->stComprovanteFiscal))
+                        $selected = $relatorio->stComprovanteFiscal; ?>
+                <?php if ($selected == null)
+                        echo '--' ?>
+                <?php if ($selected == 1)
+                        echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                        echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                        echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <tr>
+            <td class="destacar" colspan="3" align="center"><b>Divulga&ccedil;&atilde;o</b></td>
+        </tr>
+        <?php if($dtInicioFiscalizacao < $dtDeCorte){ ?>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> Ci&ecirc;ncia ao Poder legislativo?</td>
+            <td>
+                <?php if (isset($relatorio->stCienciaLegislativo))
+                        $selected = $relatorio->stCienciaLegislativo; ?>
+                <?php if ($selected == null)
+                        echo '--' ?>
+                <?php if ($selected == 1)
+                        echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                        echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                        echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <?php } ?>
+
+        <?php if($dtInicioFiscalizacao < $dtDeCorte){ ?>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> Contemplou as exig&ecirc;ncias legais?</td>
+            <td>
+                <?php if (isset($relatorio->stExigenciaLegal))
+                        $selected = $relatorio->stExigenciaLegal; ?>
+                <?php if ($selected == null)
+                        echo '--' ?>
+                <?php if ($selected == 1)
+                        echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                        echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                        echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> H&aacute; material informativo do Projeto?</td>
+            <td>
+                <?php if (isset($relatorio->stMaterialInformativo))
+                    $selected = $relatorio->stMaterialInformativo; ?>
+                <?php if ($selected == null)
+                        echo '--' ?>
+                <?php if ($selected == 1)
+                        echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                        echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                        echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <?php } else { ?>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> H&aacute; material informativo do Projeto?</td>
+            <td>
+                <?php if (isset($relatorio->stMaterialInformativo))
+                    $selected = $relatorio->stMaterialInformativo; ?>
+                <?php if ($selected == null)
+                        echo '--' ?>
+                <?php if ($selected == 1)
+                        echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                        echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                        echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> Contemplou as exig&ecirc;ncias legais?</td>
+            <td>
+                <?php if (isset($relatorio->stExigenciaLegal))
+                        $selected = $relatorio->stExigenciaLegal; ?>
+                <?php if ($selected == null)
+                        echo '--' ?>
+                <?php if ($selected == 1)
+                        echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                        echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                        echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <?php } ?>
+        <tr>
+            <td class="destacar" colspan="3" align="center"><b>Execu&ccedil;&atilde;o</b></td>
+        </tr>
+        <?php if($dtInicioFiscalizacao < $dtDeCorte){ ?>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> Alcançou a finalidade esperada?</td>
+            <td>
+                <?php if (isset($relatorio->stFinalidadeEsperada))
+                        $selected = $relatorio->stFinalidadeEsperada; ?>
+                <?php if ($selected == null)
+                        echo '--' ?>
+                <?php if ($selected == 1)
+                        echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                        echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                        echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><?php echo $y++.'.'; ?> As metas/etapas do Plano de Trabalho foram executadas integralmente?</td>
+            <td>
+                <?php if (isset($relatorio->stPlanoTrabalho))
+                        $selected = $relatorio->stPlanoTrabalho; ?>
+                <?php if ($selected == null)
+                        echo '--' ?>
+                <?php if ($selected == 1)
+                        echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                        echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                        echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <?php } ?>
+        <tr>
+            <td colspan="2">
+                <?php echo $y++.'.'; ?>
+                <?php if($dtInicioFiscalizacao < $dtDeCorte){ ?>
+                    A execuç&atilde;o respeitou o aprovado?
+                <?php } else { ?>
+                    O projeto est&aacute; sendo executado de acordo com o aprovado?
+                <?php } ?>
+            </td>
+            <td>
+                <?php if (isset($relatorio->stExecucaoAprovado))
+                        $selected = $relatorio->stExecucaoAprovado; ?>
+                <?php if ($selected == null)
+                        echo '--' ?>
+                <?php if ($selected == 1)
+                         echo 'Sim'; ?>
+                <?php if ($selected == 2)
+                        echo 'N&atilde;o'; ?>
+                <?php if ($selected == 3)
+                        echo 'N&atilde;o se aplica'; ?>
+            </td>
+        </tr>
+        <?php if($dtInicioFiscalizacao > $dtDeCorte){ //Campo novo. Só aparece se o mesmo foi feito após a data de corte. ?>
+        <tr>
+            <td colspan="3"><?php echo $y++.'.'; ?> Observa&ccedil;&otilde;es</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <?php echo $relatorio->dsObservacao; ?>
+            </td>
+        </tr>
+        <?php } ?>
+        <tr>
+            <td class="destacar" colspan="3" align="center"><b>Empregos gerados em decorr&ecirc;ncia do projeto</b></td>
+        </tr>
+        <tr>
+            <td><?php echo $y++.'.'; ?> Diretos: <?php if (isset($relatorio->qtEmpregoDireto))
+                echo $relatorio->qtEmpregoDireto; ?>
+            </td>
+            <td><?php echo $y++.'.'; ?> Indiretos: <?php if (isset($relatorio->qtEmpregoIndireto))
+                 echo $relatorio->qtEmpregoIndireto; ?>
+            </td>
+            <td><?php echo $y++.'.'; ?> Total:
+                <?php
+                if (isset($relatorio->qtEmpregoDireto)) {
+                    if (isset($relatorio->qtEmpregoIndireto)) {
+                        echo $relatorio->qtEmpregoDireto + $relatorio->qtEmpregoIndireto;
+                    } else {
+                        echo $relatorio->qtEmpregoDireto;
+                    }
+                } else {
+                    if (isset($relatorio->qtEmpregoDireto)) {
+                        echo $relatorio->qtEmpregoDireto;
+                    } else {
+                        echo "--";
+                    }
+                }?>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <fieldset>
+                    <legend><?php echo $y++.'.'; ?> Evid&ecirc;ncias</legend>
+                    <table class="tabela"><tr><td>
+                        <?php if (isset($relatorio->dsEvidencia))
+                        echo !empty($relatorio->dsEvidencia) ? $relatorio->dsEvidencia : 'Não informado'; ?>
+                    </td></tr></table>
+                </fieldset>
+                <fieldset>
+                    <legend><?php echo $y++.'.'; ?> Recomendaç&otilde;es da Equipe</legend>
+                    <table class="tabela"><tr><td>
+                        <?php if (isset($relatorio->dsRecomendacaoEquipe))
+                        echo !empty($relatorio->dsRecomendacaoEquipe) ? $relatorio->dsRecomendacaoEquipe : 'Não informado'; ?>
+                    </td></tr></table>
+                </fieldset>
+                <?php if($dtInicioFiscalizacao < $dtDeCorte){ ?>
+                <fieldset>
+                    <legend><?php echo $y++.'.'; ?> Conclus&atilde;o da Equipe</legend>
+                    <table class="tabela"><tr><td>
+                        <?php if (isset($relatorio->dsConclusaoEquipe))
+                        echo !empty($relatorio->dsConclusaoEquipe) ? $relatorio->dsConclusaoEquipe : 'Não informado'; ?>
+                    </td></tr></table>
+                </fieldset>
+                <?php } ?>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <fieldset>
+                    <legend><?php echo $y++.'.'; ?> Parecer da Fiscalização</legend>
+                    <table class="tabela"><tr><td>
+                        <?php if (isset($relatorio->dsParecerTecnico))
+                        echo !empty($relatorio->dsParecerTecnico) ? $relatorio->dsParecerTecnico : 'Não informado'; ?>
+                    </td></tr></table>
+                </fieldset>
+                  <fieldset>
+                      <legend><?php echo $y++.'.'; ?> Parecer do Coordenador</legend>
+                      <table class="tabela"><tr><td>
+                            <?php if (isset($relatorio->dsParecer))
+                            echo !empty($relatorio->dsParecer) ? $relatorio->dsParecer : 'Não informado'; ?>
+                      </td></tr></table>
+                   </fieldset>
+                </td>
+            </tr>
+    </table>
+        
+    <?php } else { ?>
+    <div align="center">
+        <table class="tabela">
+            <tr>
+                <td>Aguardando Fiscaliza&ccedil;&atilde;o</td>
+            </tr>
+        </table>
+    </div>
+    <?php } ?>
+        
+    <br clear="all"/>
+    <!-- =======================   FIM DOS DADOS DA FISCALIZAÇ?O ===================================>-->
+
+    <table class="tabela" >
+        <tr>
+            <td colspan="2" class="destacar" align="center"><b>Anexos</b></td>
+        </tr>
+        <?php
+            /* LISTA DE  ANEXOS */
+            if (count($this->arquivos)) {
+                foreach ($this->arquivos as $arquivo) { ?>
+                    <tr>
+                        <td style="width: 25%; padding-left: 5%; text-decoration: underline;" colspan="2"><a href="<?php echo $this->url(array("controller" => "upload", "action" => "abrir")) ?>?id=<?php echo  $arquivo->idArquivo ?>"><?php echo $arquivo->nmArquivo;?></a></td>
+                    </tr>
+           <?php } } else { ?>
+                <tr><td style="color:red;" colspan="2">Não há arquivos anexados!</td></tr>
+            <?php
+            }
+       }//FIM - RELATORIO FISCALIZACAO
+     ?>
+    </table>
+</div>

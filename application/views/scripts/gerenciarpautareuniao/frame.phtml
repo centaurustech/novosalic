@@ -1,0 +1,162 @@
+<?php
+/**
+ * Parecer Consolidado
+ * @author Equipe RUP - Politec
+ * @since 12/05/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.realizaranaliseprojeto
+ * @copyright � 2010 - Minist�rio da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+<script>
+    $(document).ready(function(){
+
+        //ATUALIZA QTDE. DE PROJETOS SUBMETIDOS A PLENARIA
+        window.parent.$("#qtdeProjPlenaria").html("<?php echo $this->qtdplenario;?>");
+        
+        $(".carregando").dialog({
+            resizable: false,
+            width:300,
+            height:160,
+            modal: true,
+            autoOpen:false
+        });
+<?php if ($this->stPlenaria != 'A') { ?>
+                    $(".acaocoordenador").removeClass('sumir');
+<?php } ?>
+<?php if ($this->stPlenaria == 'A') { ?>
+                    $(".acao").removeClass('sumir');
+<?php } ?>
+            
+                $(".statusvotacao").click(function(){
+                    var idpronac = $(this).attr('idpronac');
+                    var pronac   = $(this).attr('pronac');
+                    var acao = $(this).attr('acao');
+                    var validar = '<?php echo $this->pronacvotacaoatual ? 'true' : 'false' ?>';
+                    if(validar == 'true' && acao=='iniciar'){
+                        $('#alert').html('J&aacute; existe uma vota&ccedil;&atildeo em aberto.Favor aguardar o fim ou cancelar a vota&ccedil;&atildeo atual');
+                        alerta(function(){$("#alert").dialog('close')})
+                        $("#alert").dialog('open');
+                        return false;
+                    }
+                    $.ajax({
+                        async: true,
+                        type: "post",
+                        url: "../gerenciarpautareuniao/votacao",
+                        data:{
+                            idpronac:idpronac,
+                            acao : acao
+                        },
+                        beforeSend: function(){
+                            $("#load").dialog('open');
+                        },
+                        complete: function(){
+                            $("#load").dialog('close');
+                        },
+                        success: function(data)
+                        {
+                            if(!data.error){
+                                if(acao == 'iniciar'){
+                                    $("#alert").html('Vota&ccedil;&atilde;o do projeto n&ordm; '+ pronac + ' foi iniciada!');
+                                }
+                                else{
+                                    $("#alert").html('Vota&ccedil;&atilde;o do projeto n&ordm; '+ pronac + ' foi cancelada!');
+                                }
+                                alerta(
+                                function(){
+                                    $("#alert").dialog('close');
+                                }
+                            )
+                                $('.ui-dialog-titlebar-close').remove();
+                                $("#alert").dialog('open');
+                                jqAjaxLink('<?php echo $this->Url(array('controller' => 'gerenciarpautareuniao', 'action' => 'listaprojetoscnic', 'stenvioplenaria' => 'S')) ?>', '', 'pautaplenaria')
+                            }
+                        }
+                        , dataType : 'json'
+                    });
+                });
+        
+                $(".retornar").click(function(){
+                    var pronac = $(this).attr('pronac');
+                    $("#alert").html("O projeto ser&aacute; reencaminhado para o componente respons&aacute;vel e o seu parecer ser&aacute; apagado. Deseja Continuar?").css('text-align','justify');
+                    perguntar(function(){
+                        $.ajax({
+                            async: true,
+                            type: "post",
+                            url: "../gerenciarpautareuniao/gerenciaradministrativo",
+                            data:{
+                                pronac:pronac,
+                                retorna : 1
+                            },
+                            success: function()
+                            {
+                                clearInterval(votacao);
+                                clearInterval(telavotacao);
+                                window.location.reload();
+                            }
+                        });
+                    },
+                    function(){
+                        $("#alert").dialog("close");
+                    })
+                    $("#alert").dialog("open");
+                })
+        
+                $.tablesorter.addWidget({
+                    id: "apagardivs",
+                    format: function() {
+                        $(".divdadosprojeto").remove();
+                    }
+                });
+                $("table").tablesorter({
+                    widgets: ['apagardivs']
+                });
+            })
+</script>
+<table class="tabela tablesorter">
+    <thead>
+        <tr class="titulo_tabela">
+            <th>N&uacute;mero</th>
+            <th>Pronac</th>
+            <th>Nome do Projeto</th>
+            <th>&Aacute;rea do Projeto</th>
+            <th>Segmento Cultural</th>
+            <th>Parecer Favor&aacute;vel</th>
+            <th>Data da an&aacute;lise</th>
+            <th>Componente da Comiss&atilde;o</th>
+            <?php if ($this->grupoativo == '119') { ?>
+                <th class="acao sumir">A&ccedil;&atilde;o</th>
+            <?php } ?>
+            <?php if ($this->grupoativo == '120') { ?>
+                <th class="acaocoordenador sumir">Retornar</th>
+            <?php } ?>
+        </tr>
+    </thead>
+    <?php
+    $a = 0;
+    foreach ($this->projetosplenaria as $plenario) {
+        $tipoagente = '';
+        $tipoagente = $this->grupoativo == '120' ? 'cc' : '';
+        ?>
+        <tr class="tradd" id="<?php echo $a; ?>" aberto="false">
+            <td class="centro"><a style="text-decoration:underline;cursor:pointer;" onClick="abrirdados('<?php echo $a; ?>', <?php echo $plenario['IdPRONAC']; ?>, '<?php echo $tipoagente; ?>','s')" title="An&aacute;lise do Projeto"><?php echo $plenario['numero'] ?></a></td>
+            <td><a id="consultarprojetos" href="<?php echo $this->url(array('controller' => 'dadosprojeto', 'action' => 'index', 'idpronac' => $plenario['IdPRONAC']), '', true); ?>" target="_new" title="Ir para Consultar Projetos"><?php echo $plenario['pronac'] ?></a></td>
+            <td><?php echo $plenario['nomeprojeto'] ?></td>
+            <td><?php echo $plenario['area'] ?></td>
+            <td><?php echo $plenario['segmento'] ?></td>
+            <td><?php echo $plenario['parecerfavoravel'] ?></td>
+            <td><?php echo $plenario['datarecebimento'] ?></td>
+            <td><?php echo $plenario['componente'] ?></td>
+            <?php if ($this->grupoativo == '119') { ?>
+                <td class="acao sumir"><img class="statusvotacao" style="cursor:pointer;" idpronac ="<?php echo $plenario['IdPRONAC']; ?>" pronac ="<?php echo $plenario['pronac']; ?>" src='<?php echo $this->pronacvotacaoatual == $plenario['IdPRONAC'] ? $this->baseUrl() . "/public/img/stop.gif' acao='parar'" : $this->baseUrl() . "/public/img/play.png' acao='iniciar'"; ?>'/></td>
+            <?php } ?>
+            <?php if ($this->grupoativo == '120') { ?>
+                <td class="acaocoordenador centro sumir"><img class="retornar" pronac="<?php echo $plenario['pronac'] ?>" src="<?php echo $this->baseUrl() ?>/public/img/btn_npublicar.gif" title="Retornar para componente"/></td>
+                <?php } ?>
+        </tr>
+        <?php $a++;
+    } ?>
+</table>

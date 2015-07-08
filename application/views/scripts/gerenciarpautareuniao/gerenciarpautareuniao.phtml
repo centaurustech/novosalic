@@ -1,0 +1,464 @@
+<?php
+include_once 'inc/menu.inc.php';
+$verificar = $this->VerificarReuniao;
+$idpronacatual = isset($verificar[0]->idPRONAC) ? $verificar[0]->idPRONAC : '';
+?>
+<script src="<?php echo $this->baseUrl(); ?>/public/js/gerenciarpautareuniao.js"></script>
+<script>
+    $(document).ready(function(){
+        
+        //realiza refresh na pagina a cada 5min
+        setTimeout(function(){
+            window.location.reload();
+        }, '500000');
+        
+        /**** PROJETOS SUBMETIDOS A PLENARIA ******/
+        <?php if($this->plenaria == "true"): ?>
+            jqAjaxLink('<?php echo $this->Url(array('controller' => 'gerenciarpautareuniao', 'action' => 'listaprojetoscnic', 'stenvioplenaria' => 'S', 'readequacao' => $this->readequacao, 'plenaria' => $this->plenaria)) ?>', '', 'pautaPlenaria');
+
+            setTimeout(function(){
+                jqAjaxLink('<?php echo $this->Url(array('controller' => 'gerenciarpautareuniao', 'action' => 'listaprojetoscnic', 'stenvioplenaria' => 'S', 'grid' => 'planoanual', 'readequacao' => $this->readequacao, 'plenaria' => $this->plenaria)) ?>', '', 'pautaPlenariaPlanoAnual');
+            }, '1000');
+            
+            setTimeout(function(){
+                jqAjaxLink('<?php echo $this->Url(array('controller' => 'gerenciarpautareuniao', 'action' => 'listaprojetoscnic', 'stenvioplenaria' => 'S', 'grid' => 'recurso', 'readequacao' => $this->readequacao, 'plenaria' => $this->plenaria)) ?>', '', 'pautaPlenariaRecurso');
+            }, '2000');
+            
+            setTimeout(function(){
+                jqAjaxLink('<?php echo $this->Url(array('controller' => 'gerenciarpautareuniao', 'action' => 'listaprojetoscnic', 'stenvioplenaria' => 'S', 'grid' => 'readequacao', 'readequacao' => $this->readequacao, 'plenaria' => $this->plenaria)) ?>', '', 'pautaPlenariaReadequacao');
+            }, '3000');
+
+//            setTimeout(function(){
+//                jqAjaxLink('<?php //echo $this->Url(array('controller' => 'gerenciarpautareuniao', 'action' => 'listaprojetoscnic', 'stenvioplenaria' => 'S', 'grid' => 'votado', 'readequacao' => $this->readequacao, 'plenaria' => $this->plenaria)) ?>', '', 'pautaPlenariaVotados');
+//            }, '3000');
+        /**** PROJETOS NAO SUBMETIDOS A PLENARIA ******/
+        <?php else:?>
+            jqAjaxLink('<?php echo $this->Url(array('controller' => 'gerenciarpautareuniao', 'action' => 'listaprojetoscnic', 'stenvioplenaria' => 'S', 'grid' => 'pautaNaoPlenaria', 'readequacao' => $this->readequacao, 'plenaria' => $this->plenaria)) ?>', '', 'pautaNaoPlenaria');
+
+            setTimeout(function(){
+                jqAjaxLink('<?php echo $this->Url(array('controller' => 'gerenciarpautareuniao', 'action' => 'listaprojetoscnic', 'stenvioplenaria' => 'S', 'grid' => 'naoPauta', 'readequacao' => $this->readequacao, 'plenaria' => $this->plenaria)) ?>', '', 'naoPauta');
+            }, '1000');
+        <?php endif;?>
+        
+        $("#tela").dialog({
+            resizable: false,
+            width:1024,
+            height:600,
+            modal: true,
+            autoOpen:false
+        });
+        $("#abrir_fechar_analisados").click(function(){
+            $('#pautaplenaria').toggle('slow');
+        });
+        $("#abrir_fechar_naoanalisados").click(function(){
+            $('#naoanalisados').toggle('slow');
+        });
+        $("#alert").dialog({
+            resizable: true,
+            width:450,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            closeOnEscape : false,
+            title : 'Alerta',
+            buttons: {
+                'OK': function() {
+                    $(this).dialog('close');
+                }
+            }
+        });
+        $("#tela").dialog({
+            title: 'Projeto em an&aacute;lise',
+            resizable: true,
+            width:1200,
+            height:600,
+            modal: true,
+            autoOpen:false,
+            resizable :false,
+            draggable: false 
+        });
+
+    });
+    function dadosprojetos(idpronac, e){
+        var idpronac = idpronac;
+        var view = $(e).attr('view');
+        var idprojeto = $(e).attr('idprojeto');
+        var aberto = $("#"+idprojeto).attr('aberto');
+        if($.trim($("#"+idprojeto).html()) != ''){
+            if(aberto == 'true'){
+                $("#"+idprojeto).addClass('sumir');
+                $("#"+idprojeto).attr('aberto','false');
+                $(e).addClass('btn_adicionar');
+                $(e).removeClass('btn_remover');
+                return false;
+            }
+            else{
+                $("#"+idprojeto).removeClass('sumir');
+                $("#"+idprojeto).attr('aberto','true');
+                $(e).addClass('btn_remover');
+                $(e).removeClass('btn_adicionar');
+                return false;
+            }
+        }else{
+            $(e).addClass('btn_remover');
+            $(e).removeClass('btn_adicionar');
+            $("#"+idprojeto).html('<center>Carregando dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br>');
+        }
+        $.ajax({
+            async: true,
+            type: "post",
+            //url: "../gerenciarpautareuniao/"+view,
+            url: '<?php echo $this->baseUrl() ?>' + '/gerenciarpautareuniao/' + view,
+            data:{
+                idpronac:idpronac
+            },
+            beforeSend: function(){
+                $('.ui-dialog-titlebar-close').remove();
+            },
+            success: function(data)
+            {
+                valor = "<fieldset>";
+                valor += data;
+                valor += "</fieldset>";
+                $("#"+idprojeto).html(valor);
+                $("#"+idprojeto).attr('aberto','true');
+            }
+        });
+    }
+
+    var votacao =  setInterval(function(){verificainiciocnic()}, '5000');
+    
+    var telavotacao =  null;
+    var bln_verificarvotacao =  true;
+    
+    setaIntervaloVerificaVotacao();
+    
+    function setaIntervaloVerificaVotacao(){
+        telavotacao = setInterval(function(){
+            if($("#statusreuniao").val() == 'aberto' && $('#cronometro #minu').html()*1 == 0 && $('#cronometro #seg').html()*1 ==0){
+                verificavotacao()
+            }
+        }, '5000');
+    }
+    
+    var idPronac = null;
+    var tpVoto = null;
+    var ct = 0;
+    function verificavotacao(){
+        var verificarjanela = $("#reuniaoaberta").val();
+        $.ajax({
+            async: true,
+            type: "post",
+            //url: "../gerenciarpautareuniao/verificavotacao",
+            url: "<?php echo $this->url(array('controller' => 'gerenciarpautareuniao', 'action' => 'verificavotacao')); ?>",
+            success: function(data)
+            {
+                idPronac = data.idpronac;
+                if(data.tpvoto){tpVoto = data.tpvoto;}else{tpVoto = null} //verifica e seta o voto do componente
+                if(!data.error){
+                    //if(data.status == 'aberta' && verificarjanela != 'true'){
+                        
+                        //MONTA E ESCREVE BOTOES
+                        if(bln_verificarvotacao){
+                            if(data.bln_liberarvoto){ //verifica se o agente esta cadastrado como votante nessa reuniao
+                                var botoesvoto = JSMontaBotoes(tpVoto,idPronac);
+                                $("#botoesvoto_"+idPronac).html(botoesvoto);
+                                if(ct == 0){
+                                    ct++;
+                                    $('html, body').animate({
+                                        scrollTop: $("#botoesvoto_"+idPronac).offset().top
+                                    }, 1000);
+                                }
+                            }
+                        }
+                        
+                        //DEFINE ACAO DOS BOTOES
+                        $("#btnaprovar_"+idPronac).click(function(){
+                            //clearTimeout(telavotacao);
+                            clearInterval(telavotacao); //para execucao do metodo verificavotacao
+                            bln_verificarvotacao = false; //seta falso para deixar que apenas o metodo JSSalvarVoto dispare novamente o metodo verificavotacao
+                            if(tpVoto != "A"){ JSSalvarVoto('A',idPronac); }
+                        });
+                        $("#btnindeferir_"+idPronac).click(function(){
+                            clearInterval(telavotacao); //para execucao do metodo verificavotacao
+                            bln_verificarvotacao = false; //seta falso para deixar que apenas o metodo JSSalvarVoto dispare novamente o metodo verificavotacao
+                            if(tpVoto != "I"){ JSSalvarVoto('I',idPronac); }
+                        });
+                        $("#btnabster_"+idPronac).click(function(){
+                            clearInterval(telavotacao); //para execucao do metodo verificavotacao
+                            bln_verificarvotacao = false; //seta falso para deixar que apenas o metodo JSSalvarVoto dispare novamente o metodo verificavotacao
+                            if(tpVoto != "B"){ JSSalvarVoto('B',idPronac); }
+                        });
+                        
+                        if(!data.stvoto){
+                            $("#reuniaoaberta").val("true");
+                            //$.post('../votarprojetocultural/votacao',{idpronac:data.idpronac},function(data){
+                                //$("#tela").html('');
+                                //$("#tela").html(data);
+                                //$(".ui-dialog-titlebar-close").remove();
+                            //});
+                            //$('html').css('overflow', 'hidden');
+                            //$("#tela").dialog('open');
+                        }
+                        else{
+                            $("#reuniaoaberta").val("true");
+                            //$("#tela").dialog('close');
+                        }
+                    //}
+                }
+                if(data.status == 'naoiniciada' && verificarjanela == 'true'){
+                    $("#reuniaoaberta").val("false");
+                    
+                    var qtdeVotacoesConsolidadas = $("#qtdeVotacoesConsolidadas").val();
+                        qtdeVotacoesConsolidadas = parseInt(qtdeVotacoesConsolidadas)+1;
+                    $("#qtdeVotacoesConsolidadas").val(qtdeVotacoesConsolidadas);
+
+                    if(qtdeVotacoesConsolidadas == 3){
+                        $("#qtdeVotacoesConsolidadas").val('0');
+                        setTimeout(function(){
+                            window.location.reload();
+                        }, '1000');
+                    }else{
+                        jqAjaxLink('<?php echo $this->Url(array('controller' => 'gerenciarpautareuniao', 'action' => 'listaprojetoscnic', 'stenvioplenaria' => 'S', 'readequacao' => $this->readequacao, 'plenaria' => $this->plenaria)) ?>', '', 'pautaPlenaria');
+                        setTimeout(function(){
+                            jqAjaxLink('<?php echo $this->Url(array('controller' => 'gerenciarpautareuniao', 'action' => 'listaprojetoscnic', 'stenvioplenaria' => 'S', 'grid' => 'planoanual', 'readequacao' => $this->readequacao, 'plenaria' => $this->plenaria)) ?>', '', 'pautaPlenariaPlanoAnual');
+                        }, '1000');
+                        setTimeout(function(){
+                            jqAjaxLink('<?php echo $this->Url(array('controller' => 'gerenciarpautareuniao', 'action' => 'listaprojetoscnic', 'stenvioplenaria' => 'S', 'grid' => 'recurso', 'readequacao' => $this->readequacao, 'plenaria' => $this->plenaria)) ?>', '', 'pautaPlenariaRecurso');
+                        }, '2000');
+                        setTimeout(function(){
+                            jqAjaxLink('<?php echo $this->Url(array('controller' => 'gerenciarpautareuniao', 'action' => 'listaprojetoscnic', 'stenvioplenaria' => 'S', 'grid' => 'readequacao', 'readequacao' => $this->readequacao, 'plenaria' => $this->plenaria)) ?>', '', 'pautaPlenariaReadequacao');
+                        }, '3000');
+//                        setTimeout(function(){
+//                            jqAjaxLink('<?php //echo $this->Url(array('controller' => 'gerenciarpautareuniao', 'action' => 'listaprojetoscnic', 'stenvioplenaria' => 'S', 'grid' => 'votado', 'readequacao' => $this->readequacao, 'plenaria' => $this->plenaria)) ?>', '', 'pautaPlenariaVotados');
+//                        }, '4000');
+                    }
+                    $('#novas_mensagens').html('');
+                }
+            },
+            complete: function(){
+                
+            },
+            dataType : 'json'
+        });
+    }
+    function verificainiciocnic(){
+        $.ajax({
+            async: true,
+            type: "post",
+            url: "<?php echo $this->url(array('controller' => 'gerenciarpautareuniao', 'action' => 'verificarcnic')); ?>",
+            data:{
+                verificacnic : true,
+                stPlenaria : '<?php echo $this->Plenaria['stPlenaria'] ?>'
+            },
+            success: function(data)
+            {
+                if(data){
+                    if(!data.error){
+                        if(data.acao == 'reload'){
+                            //seta intervalo para dar reload na pagina
+                            var qtdeVerificacoesInicioPlenaria = $("#qtdeVerificacoesInicioPlenaria").val();
+                                qtdeVerificacoesInicioPlenaria = parseInt(qtdeVerificacoesInicioPlenaria)+1;
+                            $("#qtdeVerificacoesInicioPlenaria").val(qtdeVerificacoesInicioPlenaria);
+                            
+                            if(qtdeVerificacoesInicioPlenaria == 10){
+                                clearInterval(votacao);
+                                $("#qtdeVerificacoesInicioPlenaria").val('0');
+                                window.location.reload();
+                            }
+                        }
+                        else{
+                            if(data.real > 0){
+                                if(data.status == 'A'){
+                                    $("#statusreuniao").val('aberto')
+                                    var hora = data.cronometro;
+                                    var dadoscronometro = hora.split(':');
+
+                                    var min = dadoscronometro['0'];
+                                    var seg = dadoscronometro['1'];
+                                    $("#minu").html(min);
+                                    $("#seg").html(seg);
+                                    $("#cronometro").removeClass('sumir')
+                                    clearInterval(votacao);
+                                    var contador;
+                                    cronometrouso(
+                                    function(){
+                                        window.location.reload()
+                                    });
+                                }
+                            }
+                            else{
+                                if(data.status == 'A'){
+                                    $("#statusreuniao").val('aberto')
+                                    $(".linkpronac").removeAttr('onClick').removeAttr('style');
+                                    $("#cronometro").addClass('sumir');
+                                }
+                                else if(data.status != '<?php echo $this->Plenaria['stPlenaria'] ?>'){
+                                    window.location.reload();
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        if(data.status != '<?php echo $this->Plenaria['stPlenaria'] ?>'){
+                           window.location.reload();
+                        }
+                    }
+                }
+            }
+            ,dataType : 'json'
+        });
+    }
+    
+    function JSMostraOcultaElemento(elemento)
+    {
+        $('.' + elemento).toggle();
+
+        if ($('#' + elemento).hasClass('btn_adicionar'))
+        {
+                $('#' + elemento).addClass('btn_remover');
+                $('#' + elemento).removeClass('btn_adicionar');
+        }
+        else
+        {
+                $('#' + elemento).addClass('btn_adicionar');
+                $('#' + elemento).removeClass('btn_remover');
+        }
+    }
+    
+    function JSSalvarVoto(voto,idPronac)
+    {
+        $("#botoesvoto_"+idPronac).html('<center>Aguarde, registrando voto ...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center>');
+        setTimeout(function(){
+            var botoesvoto = JSMontaBotoes(voto,idPronac);
+            $("#botoesvoto_"+idPronac).html(botoesvoto);
+            $("#botoesvoto_"+idPronac).append('<span id="processando"><center>processando voto ...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center></span>');
+        }, '1000');
+        
+        $.ajax({
+            async: true,
+            type: "post",
+            url: "<?php echo $this->baseUrl(); ?>/votarprojetocultural/votacao",
+            data:{
+                idpronac:idPronac,
+                voto : voto
+                //dsjustificativa : dsjustificativa
+            },
+            success: function(data)
+            {   
+                //MONTA E ESCREVE BOTOES
+                //var botoesvoto = JSMontaBotoes(voto,idPronac);
+                //$("#botoesvoto_"+idPronac).html(botoesvoto);
+                
+                if(!data.error){
+                    message('Voto registrado com sucesso', 'CONFIRM');
+                }else{
+                    var botoesvoto = JSMontaBotoes('',idPronac);
+                    $("#botoesvoto_"+idPronac).html(botoesvoto);
+                    message('Ocorreu um erro ao tentar salvar os dados. O seu voto não foi registrado. '+data.descricao, 'ERROR');
+                }
+                $("#processando").html('');
+                //direciona o usuario ate a mensagem na tela
+                $('html, body').animate({
+                    scrollTop: $('#novas_mensagens').offset().top
+                }, 1000);
+            },
+            error: function(data) {
+                var botoesvoto = JSMontaBotoes('',idPronac);
+                $("#botoesvoto_"+idPronac).html(botoesvoto);
+                message('Ocorreu um erro ao tentar salvar os dados. O seu voto não foi registrado. '+data.descricao, 'ERROR');
+                $("#processando").html('');
+            },
+            complete: function(){
+                bln_verificarvotacao = true;
+                clearInterval(telavotacao); //para execucao do metodo verificavotacao
+                setaIntervaloVerificaVotacao();
+            },
+            dataType : 'json'
+        });        
+    }
+    
+    function JSMontaBotoes(tpVoto,idPronac){
+        var botoes = "";
+        if(tpVoto != "" && tpVoto != "null" && tpVoto != null){
+            if(tpVoto == "A"){
+                botoes = "<span style='color: green;' id='btnaprovar_"+idPronac+"'> [ <img src='<?php echo $this->baseUrl(); ?>/public/img/passed.gif' alt='Voto registrado' title='Voto registrado' width='12px' height='12px' align='absmiddle'> Aprovado]</span> ";
+                botoes +="| <span style='color: blue; cursor:pointer;' id='btnindeferir_"+idPronac+"'>[Indeferir]</span> ";
+                botoes +="| <span style='color: blue; cursor:pointer;' id='btnabster_"+idPronac+"'>[Abster]</span> ";
+                
+            }else if(tpVoto == "I"){
+                botoes = "<span style='color: blue; cursor:pointer;' id='btnaprovar_"+idPronac+"'>[Aprovar]</span> ";
+                botoes +="| <span style='color: green;' id='btnindeferir_"+idPronac+"'> [ <img src='<?php echo $this->baseUrl(); ?>/public/img/passed.gif'  alt='Voto registrado' title='Voto registrado' width='12px' height='12px' align='absmiddle'> Indeferido]</span> ";
+                botoes +="| <span style='color: blue; cursor:pointer;' id='btnabster_"+idPronac+"'>[Abster]</span> ";
+                
+            }else if(tpVoto == "B"){
+                botoes = "<span style='color: blue; cursor:pointer;' id='btnaprovar_"+idPronac+"'>[Aprovar]</span> ";
+                botoes +="| <span style='color: blue; cursor:pointer;' id='btnindeferir_"+idPronac+"'>[Indeferir]</span> ";
+                botoes +="| <span style='color: green;' id='btnabster_"+idPronac+"'> [ <img src='<?php echo $this->baseUrl(); ?>/public/img/passed.gif'  alt='Voto registrado' title='Voto registrado' width='12px' height='12px' align='absmiddle'> Abstido]</span> ";
+            }
+        }else{
+            botoes = "<span style='color: blue; cursor:pointer;' id='btnaprovar_"+idPronac+"'>[Aprovar]</span> ";
+            botoes +="| <span style='color: blue; cursor:pointer;' id='btnindeferir_"+idPronac+"'>[Indeferir]</span> ";
+            botoes +="| <span style='color: blue; cursor:pointer;' id='btnabster_"+idPronac+"'>[Abster]</span> ";
+        }
+        return botoes;
+    }
+</script>
+<div id="tela"></div>
+<input id="jafoi" value="false" type="hidden"/>
+<input id="statusreuniao" value="fechado" type="hidden"/>
+<input id="reuniaoaberta" value="false" type="hidden"/>
+<input type="hidden" value="0" name="qtdeVotacoesConsolidadas" id="qtdeVotacoesConsolidadas" class="input_simples"/>
+<input type="hidden" value="0" name="qtdeVerificacoesInicioPlenaria" id="qtdeVerificacoesInicioPlenaria" class="input_simples"/>
+<div id="titulo">
+    <div>Reuni&atilde;o CNIC n&ordm; <?php echo $this->numerocnic; ?> - Status : <?php echo $this->statusplenaria; ?>
+        <span class="voltar"><a href="#" onkeypress="voltar()" onclick="voltar();">Voltar</a></span>
+    </div>
+</div>
+<div id="conteudo">
+    <div id="load" class="carregando sumir" style="width:100%; height:100%;" title="Carregando..."><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" alt="carregando"><br/><br/>Carregando...<br>Por Favor, aguarde!!</div>
+    <div id="cronometro" style="font-size: 2em; margin-top: 0.5em; text-align: center; color: red;" class="sumir">
+        Tempo restante para in&iacute;cio da Plen&aacute;ria = <span id="minu" ></span>' : <span id="seg" ></span>
+    </div>
+    <div id="miolo">
+        <?php if($this->plenaria == "true"): ?>
+        <!-- INICIO - PROJETO SUBMETIDOS A PLENARIA -->
+        <div id="pautaPlenaria"></div>
+        <!-- FIM - PROJETO SUBMETIDOS A PLENARIA -->
+        <br>
+        <!-- INICIO - PROJETO SUBMETIDOS A PLENARIA - PLANO ANUAL-->
+        <div id="pautaPlenariaPlanoAnual"></div>
+        <!-- FIM - PROJETO SUBMETIDOS A PLENARIA - PLANO ANUAL-->
+        <br>
+        <!-- INICIO - PROJETOS SUBMETIDOS A PLENARIA - RECURSO -->
+        <div id="pautaPlenariaRecurso"></div>
+        <!-- FIM - PROJETO SUBMETIDOS A PLENARIA - RECURSO -->
+        <br>
+        <!-- INICIO - PROJETOS SUBMETIDOS A PLENARIA - READEQUACAO -->
+        <div id="pautaPlenariaReadequacao"></div>
+        <!-- FIM - PROJETO SUBMETIDOS A PLENARIA - READEQUACAO -->
+        <br>
+        <!-- INICIO - PROJETO VOTADOS -->
+        <!--<div id="pautaPlenariaVotados"></div>-->
+        <!-- FIM - PROJETO VOTADOS -->
+        <?php endif; ?>
+        
+        <?php if($this->plenaria != "true"): ?>
+        <!-- INICIO - PROJETO NAO SUBMETIDOS A PLENARIA -->
+        <div id="pautaNaoPlenaria"></div>
+        <!-- FIM - PROJETO NAO SUBMETIDOS A PLENARIA -->
+        <br>
+        <!-- INICIO - PROJETO AINDA NAO ANALISADOS PELO COMPONENTE -->
+        <div id="naoPauta"></div>
+        <!-- FIM - PROJETO AINDA NAO ANALISADOS PELO COMPONENTE -->
+        <?php endif; ?>
+    </div>
+
+</div><!-- final: conte?do principal #conteudo -->
+
+<!-- inicio: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+
+<br clear="all" />

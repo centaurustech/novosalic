@@ -1,0 +1,54 @@
+<?php 
+	if ($this->gerar == 'html') { 
+		echo '<div id="div_g1_1" class="miolo_grid_01 sumir">';
+	}
+?>
+    <div class="conteudoImprimivel" style="display:none">
+		<?php if(count($this->projetos['valores']) != 0): ?>    
+			<table class="tabela" border="1" cellspacing="0" cellpadding="0" width="100%">
+			    <tbody><tr>
+			        <th valign="middle" align="left" bgcolor="#D0D0D0">C&oacute;digo</th>
+			        <th valign="middle" align="left" bgcolor="#D0D0D0">Situa&ccedil;&atilde;o</th>
+			        <th valign="middle" align="left" bgcolor="#D0D0D0">Qtde</th>
+			    </tr>
+			    <?php foreach($this->projetos['valores'] as $item):?>
+			    <tr>
+			        <td rowspan="1" valign="top" align="center" bgcolor="#ffffff"><?php echo $item->Situacao?></td>
+			        <td rowspan="1" valign="top" align="left" bgcolor="#ffffff"><?php echo $item->SituacaoNome?></td>
+			        <td rowspan="1" valign="top" align="left" bgcolor="#ffffff"><?php echo $item->Qtde?></td>
+			    </tr>
+			    <?php endforeach; ?>
+			</tbody>
+			</table>
+			<?php else: ?>
+			<table class="tabela">
+				<tr>
+					<td align="center">Nenhum registro encontrado!</td>
+				</tr>
+			</table>
+		<?php endif; ?>
+	</div>
+<?php 
+if ($this->gerar == 'html') { 
+	echo '</div>';
+}
+?>
+<?php if ($this->gerar == 'html') { ?>
+	 <form method="POST" id="formGerarPdf" name="formGerarPdf" action="<?php echo $this->url(array('controller' => 'relatorio', 'action' => 'html2-pdf')); ?>" style="display:none">
+        <textarea name="html" id="conteudoImprimir"></textarea>
+    </form>
+	<script>
+		$("#conteudoImprimir").val($(".conteudoImprimivel").html());
+		$("#formGerarPdf").submit();
+	</script>
+<?php } ?>
+<?php if ($this->gerar == 'xls') { ?>
+	 <form method="POST" id="formGerarXLS" name="formGerarXLS" action="<?php echo $this->url(array('controller' => 'relatorio', 'action' => 'gerar-xls')); ?>" style="display:none">
+        <textarea name="html" id="conteudoImprimir"></textarea>
+    </form>
+	<script>
+		$("#conteudoImprimir").val($(".conteudoImprimivel").html());
+		$("#formGerarXLS").submit();
+	</script>
+<?php } ?>
+	

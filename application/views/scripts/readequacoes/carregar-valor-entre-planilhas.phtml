@@ -1,0 +1,2 @@
+<?php header('Content-Type: text/plain; charset=ISO-8859-1'); ?>
+<span class="bold <?php echo ($this->statusPlanilha != 'neutro') ? ($this->statusPlanilha == 'positivo') ? 'red' : 'blue' : ''; ?>"><?php echo $this->vlDiferencaPlanilhas; ?></span> ( <?php echo ($this->statusPlanilha) != 'neutro' ? ($this->statusPlanilha) == 'positivo' ? 'Redução' : 'Complementação' : 'Remanejamento' ?> )

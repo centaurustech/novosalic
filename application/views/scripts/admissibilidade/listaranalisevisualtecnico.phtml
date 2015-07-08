@@ -1,0 +1,579 @@
+<?php include_once 'scripts/admissibilidade/inc/menu.inc.php';     ?>
+<!--<div id="breadcrumb">
+    <ul>
+        <li class="first"> <a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'prototipos', 'action' => 'projetos')); ?>" title="Ir para Projetos">Projetos</a></li>
+        <li class="last">Listar Propostas</li>
+    </ul>
+</div>-->
+<div id="titulo">
+    <div>Admissibilidade de propostas - Lista de análise visual por técnico <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<style type="text/css">
+<!--
+.mensagem {
+    padding: 8px;
+    border: darkgreen;
+    background: #e3e3c7;
+}
+-->
+</style>
+<script type="text/javascript">
+<!--
+/*
+ * Função responsável pela exibição ou ocultamento de conteúdo,
+ * mudando a imagem.
+ **/
+function abrirDinamico(elemento, obj) {
+    if($(elemento).css('display') == 'none') {
+        $(elemento).fadeIn('fast', function() {
+            $('img', $(obj)).attr('src','<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png');
+        });
+    } else {
+        $(elemento).fadeOut('fast', function() {
+            $('img', $(obj)).attr('src','<?php echo $this->baseUrl(); ?>/public/img/navigation-baixo.PNG');
+        });
+    }
+}
+function toogleAjax(id, url){
+    if(!url) {
+        $('#'+id).toggle('slow');
+    } else {
+        elemento = '#'+id;
+        if($(elemento).css('display') == 'none') {
+            $(elemento).html('<img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /> ');
+            $(elemento).fadeIn('fast');
+            $.ajax({
+                type: "POST",
+                data: {
+                    teste: 'testando'
+                },
+                url: url,
+                success: function(data) {
+                    $(elemento).html(data);
+                }
+            });
+        } else {
+            $(elemento).fadeOut('fast');
+        }
+    }
+};
+//-->
+</script>
+<div id="conteudo">
+    <table class="tabela">
+        <tr>
+            <th>
+                Análise Visual por técnico
+            </th>
+        </tr>
+        <tr onclick="abrirDinamico('#reavaliacao', $(this))" style="cursor:pointer">
+            <td align="center">
+                <img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png" id="imgDinamica" align="left"/>
+                Avaliação: Reavaliação
+            </td>
+        </tr>
+        <tr id="reavaliacao">
+            <td align="center">
+                <table class="tabela">
+                    <tr onclick="abrirDinamico('#analista1', $(this))" style="cursor:pointer">
+                        <td align="center">
+                            <img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png" id="imgDinamica" align="left"/>
+                            Analista : Eliene C. Santos
+                        </td>
+                    </tr>
+                    <tr id="analista1">
+                        <td>
+                            <table class="tabela">
+                                <tr>
+                                    <th>
+                                        Nr. Proposta
+                                    </th>
+                                    <th>
+                                        Nome da Proposta
+                                    </th>
+                                    <th>
+                                        Data
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        6.063
+                                    </td>
+                                    <td align="center">
+                                        Projeto de Inclusão Cultural - Du Coq à L art - Rio de Janeiro
+                                    </td>
+                                    <td align="center">
+                                        03/03/2010
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        9.124
+                                    </td>
+                                    <td align="center">
+                                        Corinthians Minha Vida, Minha História, Meu Amor
+                                    </td>
+                                    <td align="center">
+                                        17/08/2010
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        6.063
+                                    </td>
+                                    <td align="center">
+                                        Projeto de Inclusão Cultural - Du Coq à L art - Rio de Janeiro
+                                    </td>
+                                    <td align="center">
+                                        03/03/2010
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        9.124
+                                    </td>
+                                    <td align="center">
+                                        Corinthians Minha Vida, Minha História, Meu Amor
+                                    </td>
+                                    <td align="center">
+                                        17/08/2010
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr onclick="abrirDinamico('#analista2', $(this))" style="cursor:pointer">
+                        <td align="center">
+                            <img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png" id="imgDinamica" align="left"/>
+                            Analista: Luiz C.P.A.Junior
+                        </td>
+                    </tr>
+                    <tr id="analista2">
+                        <td>
+                            <table class="tabela">
+                                <tr>
+                                    <th>
+                                        Nr. Proposta
+                                    </th>
+                                    <th>
+                                        Nome da Proposta
+                                    </th>
+                                    <th>
+                                        Data
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        6.063
+                                    </td>
+                                    <td align="center">
+                                        Projeto de Inclusão Cultural - Du Coq à L art - Rio de Janeiro
+                                    </td>
+                                    <td align="center">
+                                        03/03/2010
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        9.124
+                                    </td>
+                                    <td align="center">
+                                        Corinthians Minha Vida, Minha História, Meu Amor
+                                    </td>
+                                    <td align="center">
+                                        17/08/2010
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        6.063
+                                    </td>
+                                    <td align="center">
+                                        Projeto de Inclusão Cultural - Du Coq à L art - Rio de Janeiro
+                                    </td>
+                                    <td align="center">
+                                        03/03/2010
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        9.124
+                                    </td>
+                                    <td align="center">
+                                        Corinthians Minha Vida, Minha História, Meu Amor
+                                    </td>
+                                    <td align="center">
+                                        17/08/2010
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr onclick="abrirDinamico('#analista3', $(this))" style="cursor:pointer">
+                        <td align="center">
+                            <img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png" id="imgDinamica" align="left"/>
+                            Analista : Maria N. A. Oliveira
+                        </td>
+                    </tr>
+                    <tr id="analista3">
+                        <td>
+                            <table class="tabela">
+                                <tr>
+                                    <th>
+                                        Nr. Proposta
+                                    </th>
+                                    <th>
+                                        Nome da Proposta
+                                    </th>
+                                    <th>
+                                        Data
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        6.063
+                                    </td>
+                                    <td align="center">
+                                        Projeto de Inclusão Cultural - Du Coq à L art - Rio de Janeiro
+                                    </td>
+                                    <td align="center">
+                                        03/03/2010
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        9.124
+                                    </td>
+                                    <td align="center">
+                                        Corinthians Minha Vida, Minha História, Meu Amor
+                                    </td>
+                                    <td align="center">
+                                        17/08/2010
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        6.063
+                                    </td>
+                                    <td align="center">
+                                        Projeto de Inclusão Cultural - Du Coq à L art - Rio de Janeiro
+                                    </td>
+                                    <td align="center">
+                                        03/03/2010
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        9.124
+                                    </td>
+                                    <td align="center">
+                                        Corinthians Minha Vida, Minha História, Meu Amor
+                                    </td>
+                                    <td align="center">
+                                        17/08/2010
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr onclick="abrirDinamico('#analista4', $(this))" style="cursor:pointer">
+                        <td align="center">
+                            <img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png" id="imgDinamica" align="left"/>
+                            Analista : Pabulo A. Silva
+                        </td>
+                    </tr>
+                    <tr id="analista4">
+                        <td>
+                            <table class="tabela">
+                                <tr>
+                                    <th>
+                                        Nr. Proposta
+                                    </th>
+                                    <th>
+                                        Nome da Proposta
+                                    </th>
+                                    <th>
+                                        Data
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        6.063
+                                    </td>
+                                    <td align="center">
+                                        Projeto de Inclusão Cultural - Du Coq à L art - Rio de Janeiro
+                                    </td>
+                                    <td align="center">
+                                        03/03/2010
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        9.124
+                                    </td>
+                                    <td align="center">
+                                        Corinthians Minha Vida, Minha História, Meu Amor
+                                    </td>
+                                    <td align="center">
+                                        17/08/2010
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        6.063
+                                    </td>
+                                    <td align="center">
+                                        Projeto de Inclusão Cultural - Du Coq à L art - Rio de Janeiro
+                                    </td>
+                                    <td align="center">
+                                        03/03/2010
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        9.124
+                                    </td>
+                                    <td align="center">
+                                        Corinthians Minha Vida, Minha História, Meu Amor
+                                    </td>
+                                    <td align="center">
+                                        17/08/2010
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr onclick="abrirDinamico('#avaliacaoInicial', $(this))" style="cursor:pointer">
+            <td align="center">
+                <img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png" id="imgDinamica" align="left"/>
+                Avaliação: Inicial
+            </td>
+        </tr>
+        <tr id="avaliacaoInicial">
+            <td align="center">
+                <table class="tabela">
+                    <tr onclick="abrirDinamico('#analistaI1', $(this))" style="cursor:pointer">
+                        <td align="center">
+                            <img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png" id="imgDinamica" align="left"/>
+                            Analista : Eliene C. Santos
+                        </td>
+                    </tr>
+                    <tr id="analistaI1">
+                        <td>
+                            <table class="tabela">
+                                <tr>
+                                    <th>
+                                        Nr. Proposta
+                                    </th>
+                                    <th>
+                                        Nome da Proposta
+                                    </th>
+                                    <th>
+                                        Data
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        6.063
+                                    </td>
+                                    <td align="center">
+                                        Projeto de Inclusão Cultural - Du Coq à L art - Rio de Janeiro
+                                    </td>
+                                    <td align="center">
+                                        03/03/2010
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        9.124
+                                    </td>
+                                    <td align="center">
+                                        Corinthians Minha Vida, Minha História, Meu Amor
+                                    </td>
+                                    <td align="center">
+                                        17/08/2010
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        6.063
+                                    </td>
+                                    <td align="center">
+                                        Projeto de Inclusão Cultural - Du Coq à L art - Rio de Janeiro
+                                    </td>
+                                    <td align="center">
+                                        03/03/2010
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        9.124
+                                    </td>
+                                    <td align="center">
+                                        Corinthians Minha Vida, Minha História, Meu Amor
+                                    </td>
+                                    <td align="center">
+                                        17/08/2010
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr onclick="abrirDinamico('#analistaI2', $(this))" style="cursor:pointer">
+                        <td align="center">
+                            <img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png" id="imgDinamica" align="left"/>
+                            Analista : Maria N. A. Oliveira
+                        </td>
+                    </tr>
+                    <tr id="analistaI2">
+                        <td>
+                            <table class="tabela">
+                                <tr>
+                                    <th>
+                                        Nr. Proposta
+                                    </th>
+                                    <th>
+                                        Nome da Proposta
+                                    </th>
+                                    <th>
+                                        Data
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        6.063
+                                    </td>
+                                    <td align="center">
+                                        Projeto de Inclusão Cultural - Du Coq à L art - Rio de Janeiro
+                                    </td>
+                                    <td align="center">
+                                        03/03/2010
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        9.124
+                                    </td>
+                                    <td align="center">
+                                        Corinthians Minha Vida, Minha História, Meu Amor
+                                    </td>
+                                    <td align="center">
+                                        17/08/2010
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        6.063
+                                    </td>
+                                    <td align="center">
+                                        Projeto de Inclusão Cultural - Du Coq à L art - Rio de Janeiro
+                                    </td>
+                                    <td align="center">
+                                        03/03/2010
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        9.124
+                                    </td>
+                                    <td align="center">
+                                        Corinthians Minha Vida, Minha História, Meu Amor
+                                    </td>
+                                    <td align="center">
+                                        17/08/2010
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr onclick="abrirDinamico('#analistaI3', $(this))" style="cursor:pointer">
+                        <td align="center">
+                            <img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png" id="imgDinamica" align="left"/>
+                            Analista : Pabulo A. Silva
+                        </td>
+                    </tr>
+                    <tr id="analistaI3">
+                        <td>
+                            <table class="tabela">
+                                <tr>
+                                    <th>
+                                        Nr. Proposta
+                                    </th>
+                                    <th>
+                                        Nome da Proposta
+                                    </th>
+                                    <th>
+                                        Data
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        6.063
+                                    </td>
+                                    <td align="center">
+                                        Projeto de Inclusão Cultural - Du Coq à L art - Rio de Janeiro
+                                    </td>
+                                    <td align="center">
+                                        03/03/2010
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        9.124
+                                    </td>
+                                    <td align="center">
+                                        Corinthians Minha Vida, Minha História, Meu Amor
+                                    </td>
+                                    <td align="center">
+                                        17/08/2010
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        6.063
+                                    </td>
+                                    <td align="center">
+                                        Projeto de Inclusão Cultural - Du Coq à L art - Rio de Janeiro
+                                    </td>
+                                    <td align="center">
+                                        03/03/2010
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        9.124
+                                    </td>
+                                    <td align="center">
+                                        Corinthians Minha Vida, Minha História, Meu Amor
+                                    </td>
+                                    <td align="center">
+                                        17/08/2010
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <table class="tabela">
+    <tr>
+    <td class="centro">
+    	<input type="button" class="btn_pdf" title="Gerar PDF" value=" " />
+    	<input type="button" class="btn_xls" title="Gerar arquivo do excel" value=" " />
+    	<input type="button" class="btn_imprimir" title="Imprimir" value=" " onclick="imprimir();" />
+    	<input type="button" class="btn_resumo" title="Resumo" value=" " />
+    </td>
+   	</tr>
+    </table>
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

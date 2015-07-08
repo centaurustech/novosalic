@@ -1,0 +1,106 @@
+<?php
+/**
+ * Solicitar REcurso da Decisão 
+ * @author Equipe RUP - Politec
+ * @since 21/07/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.solicitarrecursodedecisao
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+
+
+				
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+	<div id="breadcrumb">
+		<ul>
+			<li class="last">Solicitar Recurso da Decisão </li>
+		</ul>
+	</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+				
+				
+				
+				
+<!-- ========== INÍCIO TÍTULO ========== -->
+	<div id="titulo">
+		<div>Projeto não Aprovado <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+	</div>
+<!-- ========== FIM TÍTULO ========== -->
+				
+				
+				
+				
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+	<div id="conteudo">
+				
+<table class="tabela">
+			<tr>
+			  	<th>Proponente</th>
+			  	<th>Pronac</th>
+			  	<th>Nome do Projeto</th>
+        	</tr>
+
+        	<?php foreach($this->projetonaoaprovado as $buscaprojetonaoaprovado): ?>
+         	<tr>
+				<td><?php echo $this->escape($buscaprojetonaoaprovado->nrpronac);?>asdf</td>
+			    <td><?php echo $this->escape($buscaprojetonaoaprovado->nmproponente);?>adf</td>
+			    <td><?php echo $this->escape($buscaprojetonaoaprovado->nmprojeto);?>af</td>
+       		</tr>
+        	<?php endforeach;?>
+
+		
+			<tr>
+				<td colspan="3">&nbsp;</td>
+			</tr>
+			<tr>
+				<th colspan="3">Recurso</th>
+			</tr>
+			<tr>
+				<td colspan="3">&nbsp;</td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<!-- ========== EDITOR ========== -->
+					<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/ckeditor.js"></script>
+					<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.js"></script>
+					<link type="text/css" rel="stylesheet" href="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.css" />
+
+					<textarea cols="80" id="recurso" name="recurso" rows="10">&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;&lt;p&gt;Digite seu texto aqui...&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</textarea>
+					<script type="text/javascript">
+					//<![CDATA[
+						CKEDITOR.replace('recurso', { fullPage : true });
+					//]]>
+					</script>
+				</td>
+			</tr>
+         	<!-- ========== BOTÕES ========== -->
+			<tr>
+				<td  colspan="3" align="right">
+
+					<input type="submit" title=" Enviar " tabindex="7" class="btn_enviar" value=" " disabled="disabled" />&nbsp;&nbsp;&nbsp;
+					<input type="reset" title=" Cancelar " tabindex="8" class="btn_cancelar" value=" " disabled="disabled" />
+				</td>
+			</tr>
+		</table>		
+				
+				
+
+
+
+
+
+		
+				
+	</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+				
+				
+				
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+	<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

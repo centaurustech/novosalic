@@ -1,0 +1,144 @@
+<?php require_once "inc/menu.inc.php"; ?>
+
+<script type="text/javascript">
+    function carregarSegmento(){
+        $('#segmento').html('<option value=""> - Carregando - </option>');
+        $.ajax({
+            type: 'POST',
+            url: '<?php echo $this->url(array('controller' => 'segmento', 'action' => 'combo')); ?>',
+            data: {
+                id: $('#area').val()
+            },
+            success: function(dados) {
+                $('#segmento').find('option').remove();
+                $('#segmento').append(dados);
+            }
+        });
+    }
+
+    function selecionarSegmento(){
+        $('#segmento').val('<?php echo (count($this->AreaCadastrada) > 0 && $this->AreaCadastrada[0]->cdSegmento > 0) ? $this->AreaCadastrada[0]->cdSegmento : 0; ?>')
+        $("#alerta").dialog("destroy");
+    }
+
+    $(document).ready(function(){
+
+        if($('#area').val() != ''){
+            carregarSegmento();
+            $("#alerta").dialog("destroy");
+            $("#alerta").html('<br /><div align="center"><img src="<?php echo $this->baseUrl().'/public/img/ajax.gif'; ?>"></div>');
+            $("#alerta").dialog({
+                resizable: false,
+                width:320,
+                height:120,
+                modal: true,
+                title: 'Carregando..'
+            });
+            $('.ui-dialog-titlebar-close').remove();
+            setTimeout("selecionarSegmento()", 2000);
+        }
+
+        $('#area').change(function() {
+            carregarSegmento();
+        });
+
+        $("#btnsalvar").click(function(){
+            var i = 0;
+            $('.obrigatorio').each(function(){
+                if($.trim($(this).val()) == '')
+                    i++;
+            });
+
+            if(i > 0) {
+                $("#camposObrigatorios").dialog("destroy");
+                $("#camposObrigatorios").html("Favor preencher os dados obrig&aacute;torios!");
+                $("#camposObrigatorios").dialog({
+                    resizable: false,
+                    title: 'Alerta!',
+                    width:320,
+                    height:160,
+                    modal: true,
+                    buttons : {
+                        'OK' : function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+                $('.ui-dialog-titlebar-close').remove();
+
+            } else {
+                $('#formAreaCultural').submit();
+            }
+        });
+
+    });
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="alerta"></div>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="#" title="Ir para Início">Início</a></li>
+        <li>Manter Agentes</li>
+        <li class="last">Área Cultural</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Área Cultural <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<div class="sumir" id="camposObrigatorios"></div>
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+    <?php //require_once "inc/cabecalho.php";?>
+    <div id="formNovo">
+        <form id="formAreaCultural" action="<?php echo $this->url(array('controller' => 'agentes', 'action' => 'salvar-area-cultural'));?>" method="post">
+            <table class="tabela">
+                <input type="hidden" name="agente" id="agente" value="<?php echo $this->id; ?>" />
+                <th colspan="2">Dados do Proponente</th>
+                <tr>
+                    <td class="destacar bold" align="right" width="150px" nowrap>Área<span style="color: red;">*</span></td>
+                    <td>
+                        <select name="area" id="area" class="select_simples obrigatorio">
+                            <option value="">- Selecione -</option>
+                            <?php foreach ($this->Areas as $areas) { ?>
+                            <option value="<?php echo $areas->Codigo; ?>" <?php echo (count($this->AreaCadastrada) > 0 && $this->AreaCadastrada[0]->cdArea == $areas->Codigo) ? 'selected="selected"' : ''; ?>><?php echo $areas->Descricao; ?></option>
+                            <?php } ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="destacar bold" align="right" width="150px" nowrap>Segmento</td>
+                    <td>
+                        <select name="segmento" id="segmento" class="select_simples">
+                            <option value="0">- Selecione -</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+
+            <div style="width: 100%; margin: 15px 0;" align="center">
+                <input type="button" class="btn_salvar" id="btnsalvar" />
+            </div>
+
+        </form>
+    </div>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

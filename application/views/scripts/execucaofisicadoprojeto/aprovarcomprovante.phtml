@@ -1,0 +1,217 @@
+<?php
+/**
+ * Aprovação de comprovantes (Acesso: COORDENADORES)
+ * @author Equipe RUP - Politec
+ * @since 28/04/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.views.scripts.execucaofisicadoprojeto
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="last">Comprovação de Execução Física do Projeto</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Comprovação de Execução Física do Projeto <span class="voltar"><a href="#" onclick="redirecionar('<?php echo $this->url(array('controller' => 'execucaofisicadoprojeto', 'action' => 'comprovantesemaprovacao')); ?>?pronac=<?php echo $_GET['pronac']; ?>');">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+
+
+	<!-- ========== INÍCIO FORMULÁRIO APROVAÇÃO ========== -->
+	<form name="formAlterar" id="formAlterar" method="post" 
+		action="<?php echo $this->url(array('controller' => 'execucaofisicadoprojeto', 'action' => 'aprovarcomprovante')); ?>?pronac=<?php echo $_GET['pronac']; ?>&doc=<?php echo $_GET['doc']; ?>">
+	
+	<table class="tabela" colspan="2" class="titulo_tabela">
+
+		<?php foreach ($this->buscarPronac as $p): ?>
+		<tr class="titulo_tabela">
+			<th class="centro" colspan="2">
+				<p><strong>PRONAC: <?php echo $p->pronac; ?></strong></p>
+				<p><strong>PROJETO: <?php echo $p->NomeProjeto; ?></strong></p>
+			</th>
+		</tr>
+		<?php endforeach; ?>
+
+
+
+		<?php foreach ($this->buscarDoc as $d): ?>
+
+		<?php
+		// CASO TENHA COMPROVANTES SUBSTITUÍDOS (HISTÓRICO)
+		if ($this->buscarComprovanteSubstituido)
+		{
+		?>
+
+			<tr>
+				<td colspan="2">
+
+					<!-- ========== DOCUMENTO ATUAL ========== -->
+					<table style="width:48%; float:right;">
+						<?php foreach ($this->buscarComprovanteSubstituido as $s): ?>
+						<tr class="titulo_tabela center">
+							<th colspan="2">DOCUMENTO ATUAL - <?php echo $s->dtJustificativaCoordenador; ?></th>
+						</tr>
+						<tr>
+							<th width="20%">TIPO DE DOCUMENTO</th>
+							<td><?php echo $s->dsTipoDocumento; ?></td>
+						</tr>
+						<tr>
+							<th>TÍTULO</th>
+							<td><?php echo $s->nmComprovante; ?></td>
+						</tr>
+						<tr>
+							<th>DESCRIÇÃO</th>
+							<td><?php echo $s->dsComprovante; ?></td>
+						</tr>
+						<tr>
+							<th>ARQUIVO</th>
+							<td><a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id=<?php echo $s->idArquivo; ?>"><?php echo $s->nmArquivo; ?></a></td>
+						</tr>
+						<?php endforeach; ?>
+					</table>
+
+					<!-- ========== SOLICITAÇÃO DE ALTERAÇÃO ========== -->
+					<table style="width:48%; float:left;">
+						<tr class="titulo_tabela centro">
+							<th colspan="2">SOLICITAÇÃO DE ALTERAÇÃO - <?php echo $d->dtEnvioComprovante; ?></th>
+						</tr>
+						<tr>
+							<th width="20%">TIPO DE DOCUMENTO</th>
+							<td <?php if ($d->dsTipoDocumento != $s->dsTipoDocumento) echo "class=\"red\""; ?>><?php echo $d->dsTipoDocumento; ?></td>
+						</tr>
+						<tr>
+							<th>TÍTULO</th>
+							<td <?php if ($d->nmComprovante != $s->nmComprovante) echo "class=\"red\""; ?>><?php echo $d->nmComprovante; ?></td>
+						</tr>
+						<tr>
+							<th>DESCRIÇÃO</th>
+							<td <?php if ($d->dsComprovante != $s->dsComprovante) echo "class=\"red\""; ?>><?php echo $d->dsComprovante; ?></td>
+						</tr>
+						<tr>
+							<th>ARQUIVO</th>
+							<td><a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id=<?php echo $d->idArquivo; ?>"><span <?php if ($d->nmArquivo != $s->nmArquivo) echo "class=\"red\""; ?> ><?php echo $d->nmArquivo; ?></span></td>
+						</tr>
+						<tr>
+							<th>JUSTIFICATIVA</th>
+							<td><?php echo $d->dsJustificativaAlteracao; ?></td>
+						</tr>
+					</table>
+
+				</td>
+			</tr>
+
+		<?php
+		} // fecha if
+		// SEM COMPROVANTE SUBSTITUÍDO (HISTÓTICO)
+		else
+		{
+		?>
+
+			<tr>
+				<th width="20%">TIPO DE DOCUMENTO</th>
+				<td><?php echo $d->dsTipoDocumento; ?></td>
+			</tr>
+			<tr>
+				<th>TÍTULO</th>
+				<td><?php echo $d->nmComprovante; ?></td>
+			</tr>
+			<tr>
+				<th>DESCRIÇÃO</th>
+				<td><?php echo $d->dsComprovante; ?></td>
+			</tr>
+			<tr>
+				<th>ARQUIVO</th>
+				<td><a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id=<?php echo $d->idArquivo; ?>"><?php echo $d->nmArquivo; ?></a></td>
+			</tr>
+
+		<?php
+		} // fecha else
+		?>
+	
+		<tr>
+			<td colspan="2" style="border:none; background:#ffc;" class="centro">
+				<p>Autor do Parecer: João da Silva - Analista MinC</p>
+				<br />
+				<p><?php echo $d->dsParecerComprovante; ?></p>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" style="border:none;" class="centro">
+				<input type="radio" name="status" id="AD" value="AD" class="checkradio" <?php if ($this->status == 'AD') echo "checked=\"checked\""; ?> /> <label for="AD">Deferir Comprovante</label>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" style="border:none;" class="centro">
+				<input type="radio" name="status" id="AI" value="AI" class="checkradio" <?php if ($this->status == 'AI' || !isset($this->status)) echo "checked=\"checked\""; ?> /> <label for="AI">Indeferir Comprovante</label>
+			</td>
+		</tr>
+		<tr>
+			<th style="border:none;" class="centro"><label for="descricao">JUSTIFICATIVA</label></th>
+			<td style="border:none;">
+				<input type="hidden" name="idPronac" id="idPronac" value="<?php echo $d->idPRONAC; ?>" />
+				<input type="hidden" name="pronac" id="pronac" value="<?php echo $d->pronac; ?>" />
+				<input type="hidden" name="doc" id="doc" value="<?php echo $d->idComprovante; ?>" />
+				<input type="hidden" name="idComprovanteAnterior" id="idComprovanteAnterior" value="<?php echo $d->idComprovanteAnterior; ?>" />
+				<textarea class="textarea_simples w600" type="text" name="parecer" id="descricao" cols="60" rows="4" <?php echo $this->contadorTextarea('form.descricao', 'form.exibirContadorTextarea', 500); ?> 
+					onclick="limpar_campo(this, 'Digite a justificativa...');" onmousedown=" " onkeypress=" " 
+					onblur="restaurar_campo(this, 'Digite a justificativa...');"><?php echo isset($this->parecer) ? $this->parecer : 'Digite a justificativa...'; ?></textarea>
+				<?php echo $this->exibirContadorTextarea('exibirContadorTextarea', 3, 500, strlen($this->parecer)); ?>
+			</td>
+		</tr>
+
+		<?php endforeach; ?>
+
+
+
+	</table>
+
+
+
+	<!-- ========== BOTÕES VOLTAR E ETC ========== -->
+	<table class="tabela">
+		<tr>
+			<td>
+				<div class="float_left">
+					<input type="button" class="btn_voltar" title=" Página Anterior "
+						onkeypress=" " 
+						onclick="redirecionar('<?php echo $this->url(array('controller' => 'execucaofisicadoprojeto', 'action' => 'comprovantesemaprovacao')); ?>?pronac=<?php echo $_GET['pronac']; ?>');" />
+				</div>
+				<div class="float_right">
+					<input type="submit" class="btn_salvar" value=" " />
+				</div>
+			</td>
+		</tr>
+	</table>
+
+	</form>
+	<!-- ========== FIM FORMULÁRIO APROVAÇÃO ========== -->
+
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

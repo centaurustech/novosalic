@@ -1,0 +1,78 @@
+<?php header('Content-Type: text/plain; charset=ISO-8859-1'); ?>
+
+<table class="tabela">
+    <tr>
+        <th colspan="2">Valores aprovados X Valores captados</th>
+    </tr>
+    <tr>
+        <td class='destacarAAA' width="40%" nowrap><b>Valor total aprovado</b>:</td>
+        <td width="60%" id="pronac"><?php echo $this->formatarReal($this->totalAprovado ? $this->totalAprovado : 0);?></td>
+    </tr>
+    <tr>
+        <td class='destacarAAA' nowrap><b>Valor total já captado</b>:</td>
+        <td id="projeto"><?php echo $this->formatarReal($this->totalCaptado ? $this->totalCaptado : 0);?></td>
+    </tr>
+    <tr>
+        <td class='destacarAAA'><b>Valor captado nesse lote</b>:</td>
+        <td id="cpfcnpj"><?php echo $this->formatarReal($this->totalCaptadoNoLote ? $this->totalCaptadoNoLote :  0);?></td>
+    </tr>
+    <tr>
+        <td class='destacarAAA'><b>Valor excedente de captação</b>:</td>
+        <td id="cpfcnpj"><?php echo $this->formatarReal($this->vlExcedenteCaptado ? $this->vlExcedenteCaptado : 0);?></td>
+    </tr>
+</table>
+
+<form action="<?php echo $this->url(array('controller' => 'movimentacaodeconta', 'action' => 'remanejar-valor-captado')); ?>" method="post" name="formRemanejamentoCaptacao" id="formRemanejamentoCaptacao">
+    <table class="tabela">
+        <input type="hidden" name="idTmpCaptacao" id="formIdTmpCaptacao" value="<?php echo $this->idTmpCaptacao; ?>">
+        <tr>
+            <th colspan="2">Destino do valor excedente</th>
+        </tr>
+        <tr>
+            <td class="destacar" width="50%"><label for="captacao">Captação</label></td>
+            <td class="destacar" width="50%"><label for="devolucao">Devolução</label></td>
+        </tr>
+        <tr>
+            <td style="padding: 0">
+                <table class="tabela" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td width="20%"><b>Valor:</b></td>
+                        <td width="80%">
+                            <?php echo $this->formatarReal($this->vlAutorizadoCaptacao ? $this->vlAutorizadoCaptacao : 0); ?>
+                            <input type="hidden" name="vlrCaptacao" id="formVlrCaptacao" value="<?php echo $this->vlAutorizadoCaptacao; ?>">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td nowrap><b>Tipo de apoio: <span class="red bold">*</span></b></td>
+                        <td>
+                            <select name="tpApoio" id="formTpApoio" class="input_simples">
+                                <option value=""> - Selecione - </option>
+                                <option value="1">Patrocínio</option>
+                                <option value="2">Doação</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <table class="tabela" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td width="20%"><b>Valor:</b></td>
+                        <td width="80%">
+                            <?php echo $this->formatarReal($this->vlExcedenteCaptado ? $this->vlExcedenteCaptado : 0); ?>
+                            <input type="hidden" name="vlrDevolucao" id="formVlrDevolucao" value="<?php echo $this->vlExcedenteCaptado; ?>">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td nowrap><b>Tipo de devolução: <span class="red bold">*</span></b></td>
+                        <td>
+                            <select name="tpDevolucao" id="formTpDevolucao" class="input_simples">
+                                <option value="350">Devolução FNC</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</form>

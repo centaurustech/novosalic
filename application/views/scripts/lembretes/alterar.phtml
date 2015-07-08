@@ -1,0 +1,69 @@
+<?php require_once "inc/menu.inc.php"; // menu ?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para Início">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'areadetrabalho', 'action' => 'index')); ?>" title="Ir para Visualizar Área de Trabalho">Visualizar Área de Trabalho</a></li>
+		<li class="last">Análise de Cortes Sugeridos</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Análise de Cortes Sugeridos <span>ID #23A</span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+	<form name="form" action="/Salic/lembretes/alterar" method="post">
+		<table class="tabela" style="margin:10px auto; ">
+			<tr>
+			    <th><div align="center" class="titulo_tabela">Data</div></th>
+			    <th><div align="center" class="titulo_tabela">Lembrete</div></th>
+			</tr>
+			<?php foreach($this->lembretes as $tblembretes): ?>
+				<tr>
+		       		<td>
+		       			<?php echo $this->escape($tblembretes->dtlembrete);?>
+	       				<div id="analisarProjeto<?php echo $tblembretes->Contador; ?>" style="display:none; height:auto;">
+								<table class="tabela" style="width:600px; margin:0 auto;">
+									<tr class="titulo_tabela">
+										<th colspan="6"><div id="titleDesativar">Alteração de Lembrete</div></th>
+									</tr>
+								</table>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="6">
+						<label for="descricao"><strong>Lembrete</strong></label><br />
+						<textarea name="descricao" id="descricao" cols="70" rows="10" style="width:580px;"><?php echo $this->escape($tblembretes->lembrete);?></textarea>
+					</td>
+				</tr>
+			<?php endforeach; ?>
+		</table>
+		<div class="center">
+			<input type="hidden" name="pronac" value="<?php echo $_GET['pronac'];?>" />
+			<input type="hidden" name="Contador" value="<?php echo $tblembretes->Contador;?>" />
+			<br />
+			<input type="submit" class="btn_salvar " value=" " title=" Salvar " />
+			<input type="submit" class="btn_sair Close" value=" " title=" Sair " />
+		</div>
+	</form>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

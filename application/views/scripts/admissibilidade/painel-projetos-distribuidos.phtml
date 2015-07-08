@@ -1,0 +1,76 @@
+<?php include_once 'scripts/admissibilidade/inc/menu.inc.php'; ?>
+<script type="text/javascript">
+    $(document).ready(function(){
+
+        $('#pronac').focus();
+        
+        $('.btn_localizar').click(function(){
+            $('#formulario').submit();
+        });
+
+        $("#nrProposta").keypress(function(event) {
+            $('.msgCONFIRM').remove();
+            if ( event.which == 13 ) {
+                $('.btn_localizar').click();
+                return false;
+            } else {
+                $('#desarquivarProposta tr.respostaAjax').remove();
+            }
+        });
+
+    });
+</script>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"> <a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li>Admissibilidade</li>
+        <li><a href="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'listar-propostas')); ?>" title="Ir para In&iacute;cio">Avalia&ccedil;&atilde;o</a></li>
+        <li class="last">Projetos Distribuídos por Órgãos</li>
+    </ul>
+</div>
+
+<div id="titulo">
+    <div>Projetos Distribuídos por Órgãos <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+
+<div id="conteudo">
+    <form action="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'lista-projetos-distribuidos')); ?>" method="get" name="fomulario" id="formulario">
+        <table class="tabela" id="desarquivarProposta">
+            <tr>
+                <td class="destacar bold w100" align="right">PRONAC</td>
+                <td>
+                    <input type="text" class="input_simples" id="pronac" name="pronac" onkeypress="mascara(this, format_num);">
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold w100" align="right">Órgão</td>
+                <td>
+                    <select class="select_simples" id="orgao" name="orgao">
+                        <option value=""> - Selecione - </option>
+                        <?php foreach ($this->orgaos as $orgao) { ?>
+                        <option value="<?php echo $orgao->Codigo; ?>"><?php echo $orgao->Sigla; ?></option>
+                        <?php } ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold w100" align="right">Estado</td>
+                <td>
+                    <select class="select_simples" id="estado" name="estado">
+                        <option value=""> - Selecione - </option>
+                        <option value="1">Em análise</option>
+                        <option value="2">Concluída</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+    </form>
+    <p align="center"><input type="button" class="btn_localizar" /></p>
+    <br clear="all">
+</div>
+
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

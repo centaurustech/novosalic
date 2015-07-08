@@ -1,0 +1,81 @@
+<img id="btnValidarProponenteIncentivadorIguais-<?php echo $this->captacao->idTmpCaptacao; ?>" src="<?php echo $this->baseUrl(); ?>/public/img/ok_16x16.png" class="corrigir" style="cursor: pointer"
+    onclick="JSCadastarIncentivador('<?php echo $this->captacao->nrCpfCnpjProponente; ?>', this, event)"
+/>
+
+<script>
+    $(document).ready(function() {
+        $(document).bind('agenteJaCadastrado', resolverInconsistencia);
+        $(document).bind('agenteCadastrar_POST', resolverInconsistencia);
+    });
+
+    var resolverInconsistencia = function (event) {
+        $.ajax({
+            url: '<?php echo $this->url(array('controller' => 'resolver-inconsistencia', 'action' => 'incentivador-proponente-iguais', 'idInconsistencia' => $this->captacao->idTmpCaptacao)); ?>',
+            data: {cnpjcpf: event.detail.CNPJCPF},
+            success: function (data) {
+                if (0 == $("#carregando").length) {
+                    $('#divDinamicaAgentes').html('<div id="carregando">\n\
+                        <table class="tabela">\n\
+                            <tr>\n\
+                                <td align="center" style="font-size: 18px;">\n\
+                                    <p>Agente cadastrado com sucesso.</p>\n\
+                                </td>\n\
+                            </tr>\n\
+                        </table>\n\
+                    </div>');
+                }
+                $("#carregando table tbody tr td").append(
+                    $('<p>Inconsistência resolvida com sucesso.</p>')
+                );
+                $('#conteudo table:last tbody tr:eq(0) td:eq(3)').html( format_cnpj(event.detail.CNPJCPF) );
+                $('#btnValidarProponenteIncentivadorIguais-<?php echo $this->captacao->idTmpCaptacao; ?>').closest('td').html("<font color='green'>[Correção enviada]</font>");
+            },
+            error: function (data) {
+                $("#carregando table tbody tr td").append(
+                    $('<p>' + data.response + '</p>')
+                );
+            },
+            complete: function () {
+                $("#resultadoFinalizar").html("");
+            },
+            type: 'post'
+        });
+    }
+
+function JSCadastarIncentivador(cpfCnpj, element) {
+    $('html').css('overflow', 'hidden');
+    $("body").append("<div id='divDinamicaAgentes'></div>");
+    $("#divDinamicaAgentes").html("");
+    $('#divDinamicaAgentes').html("<br><br><center>Carregando dados...</center>");
+    $.ajax({
+        url : '<?php echo $this->url(array('controller' => 'agentes', 'action' => 'incluiragente')); ?>',
+        data : {cpf : '', caminho: "", modal : "s", modulo : "movimentacaobancaria"},
+        success: function(data){
+            $('#divDinamicaAgentes').html(data.error ? data.msg : data);
+        },
+        complete: function() {$("#resultadoFinalizar").html("");},
+        type : 'post'
+    });
+    $("#divDinamicaAgentes").dialog({
+        resizable: true,
+        width:$(window).width() - 100,
+        height:$(window).height() - 100,
+        modal: true,
+        autoOpen:true,
+        draggable:false,
+        title: 'Cadastrar Proponente',
+        buttons: {
+            'Fechar': function() {
+                $("#divDinamicaAgentes").remove();
+                $(this).dialog('close');
+                $('html').css('overflow', 'auto');
+            }
+        },
+        close: function() {
+            $("#divDinamicaAgentes").remove();
+            $(this).dialog('close');
+            $('html').css('overflow', 'auto');
+        }
+    });
+}
+</script>

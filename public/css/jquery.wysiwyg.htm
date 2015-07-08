@@ -1,0 +1,59 @@
+<div class="de77_toolbar">
+	<img src="/NovoSalic/public/img/ico/bold.png" onclick="action(this,'bold')" title="Negrito" alt="Negrito" />
+	<img src="/NovoSalic/public/img/ico/italic.png" onclick="action(this,'italic')" title="Itálico" alt="Itálico" />
+	<img src="/NovoSalic/public/img/ico/underline.png" onclick="action(this,'underline')" title="Sublinhando" alt="Sublinhando" />
+	<img src="/NovoSalic/public/img/ico/link.png" onclick="action(this,'createLink',prompt('URL?'))" title="link" alt="link" />
+	<img src="/NovoSalic/public/img/ico/unlink.png" onclick="action(this,'unlink')" title="unlink" alt="unlink" />	
+
+	<img src="/NovoSalic/public/img/ico/paragraph.png" onclick="action(this,'insertparagraph')" title="Parágrafo" alt="Parágrafo" />
+	
+	<img src="/NovoSalic/public/img/ico/image.png" onclick="action(this,'insertimage',prompt('URL?'))" title="image" alt="image" />
+	
+	<img src="/NovoSalic/public/img/ico/hr.png" onclick="action(this,'inserthorizontalrule')" title="hr" alt="hr" />
+	<img src="/NovoSalic/public/img/ico/undo.png" onclick="action(this,'undo')" title="Desfazer" alt="Desfazer" />
+	<img src="/NovoSalic/public/img/ico/redo.png" onclick="action(this,'redo')" title="Refazer" alt="Refazer" />
+	
+	<img src="/NovoSalic/public/img/ico/backcolor.png" onclick="action(this,'backcolor',prompt('Color?'))" title="backcolor" alt="backcolor" />
+	<img src="/NovoSalic/public/img/ico/fontcolor.png" onclick="action(this,'forecolor',prompt('Color?'))" title="fontcolor" alt="fontcolor" />
+	<img src="/NovoSalic/public/img/ico/hilightcolor.png" onclick="action(this,'hilitecolor',prompt('Color?'))" title="hilightcolor" alt="hilightcolor" />
+	<img src="/NovoSalic/public/img/ico/increase.png" onclick="action(this,'increasefontsize')" title="Crescente" alt="Crescente" />
+	<img src="/NovoSalic/public/img/ico/decrease.png" onclick="action(this,'decreasefontsize')" title="Decrescente" alt="Decrescente" />
+	
+	<select onchange="action(this,'fontname', this.value)">
+		<option style="font-family:Courier New">Courier New</option>
+		<option style="font-familyTimes New Roman">Times New Roman</option>
+		<option style="font-family:Tahoma">Tahoma</option>
+		<option style="font-family:Verdana">Verdana</option>
+		<option style="font-family:Georgia">Georgia</option>
+		<option style="font-family:Impact">Impact</option>
+	</select>
+	<select onchange="action(this,'FontSize', this.value)">
+		<option value="1">10</option>
+		<option value="2">13</option>
+		<option value="3">16</option>
+		<option value="4">18</option>
+		<option value="5">24</option>
+		<option value="6">32</option>
+		<option value="7">48</option>
+	</select>
+	
+	<img src="/NovoSalic/public/img/ico/paste.png" onclick="action(this,'paste')" title="colar" alt="colar" />
+	<img src="/NovoSalic/public/img/ico/cut.png" onclick="action(this,'cut')" title="recortar" alt="recortar" />
+	<img src="/NovoSalic/public/img/ico/copy.gif" onclick="action(this,'copy')" title="copia" alt="copia" />
+	
+	<img src="/NovoSalic/public/img/ico/left.png" onclick="action(this,'justifyleft')" title="Alinhar texto a Esquerda" alt="Alinhar texto a Esquerda" />
+	<img src="/NovoSalic/public/img/ico/right.png" onclick="action(this,'justifyright')" title="Alinhar texto a Direita" alt="Alinhar texto a Direita" />
+	<img src="/NovoSalic/public/img/ico/center.png" onclick="action(this,'justifycenter')" title="Centralizar" alt="Centralizar" />
+	<img src="/NovoSalic/public/img/ico/justify.png" onclick="action(this,'justifyfull')" title="Justificar" alt="Justificar" />
+	
+	<img src="/NovoSalic/public/img/ico/ol.png" onclick="action(this,'insertorderedlist')" title="Numeração" alt="Numeração" />
+	<img src="/NovoSalic/public/img/ico/ul.png" onclick="action(this,'insertunorderedlist')" title="Marcadores" alt="Marcadores" />
+	
+	
+	
+	<img src="/NovoSalic/public/img/ico/indent.png" onclick="action(this,'indent')" title="Aumentar recuo" alt="Aumentar recuo" />
+	<img src="/NovoSalic/public/img/ico/outdent.png" onclick="action(this,'outdent')" title="Diminuir recuo" alt="Diminuir recuo" />
+	
+	<img src="/NovoSalic/public/img/ico/delete.png" onclick="action(this,'delete')" title="Delete" alt="Delete" />
+
+	</div>

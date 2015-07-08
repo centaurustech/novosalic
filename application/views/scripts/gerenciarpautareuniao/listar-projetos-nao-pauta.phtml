@@ -1,0 +1,76 @@
+<?php
+/**
+ * Parecer Consolidado
+ * @author Equipe RUP - Politec
+ * @since 12/05/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.realizaranaliseprojeto
+ * @copyright ï¿½ 2010 - Ministï¿½rio da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+<script>
+    $(document).ready(function(){
+        
+        $(".carregando").dialog({
+            resizable: false,
+            width:300,
+            height:160,
+            modal: true,
+            autoOpen:false
+        });
+        
+    });//$(document).ready
+
+</script>
+
+<table class="tabela">
+    <tr>
+        <td><input type="button" id="projetoNaoAnalisados" class="btn_remover" onclick="JSMostraOcultaElemento('projetoNaoAnalisados');" /><b>Projetos não analisados (<?php echo ($this->readequacao=='true') ? 'readequação' : 'análise inicial';?>) <div style="float: right">Quantidade: (<span id="qtdeProjPlenaria"><?php echo $this->qtdNaoAnalisado; ?></span>)</div></b></td>
+    </tr>
+</table>
+<table class="tabela tablesorter projetoNaoAnalisados">
+    <tr class="titulo_tabela">
+        <th width="5%">N&uacute;mero</th>
+        <th width="10%">Análise do Projeto</th>
+        <th width="5%">PRONAC</th>
+        <th width="35%">Nome do Projeto</th>
+        <?php if ($this->grupoativo == '119') { //presidente CNIC ?>
+            <th width="10%">Área do Projeto</th>
+            <th width="10%">Segmento</th>
+        <?php } ?>
+        <!--<th width="5%"><a href="#naoPauta" class="orderByNaoPauta" valorOrdenacaoNaoPauta="9">Parecer Favor&aacute;vel</a></th>-->
+        <th width="15%">Componente da Comiss&atilde;o</th>
+    </tr>
+    <?php
+    $a = 1;
+     if(count($this->projetosplenarianaoanalisado)){
+        foreach ($this->projetosplenarianaoanalisado as $plenario) {
+            $tipoagente = '';
+            $tipoagente = $this->grupoativo == '120' ? 'cc' : '';
+            ?>
+            <tr class="tradd" id="<?php echo $a."_".$plenario['idPronac']; ?>" aberto="false">
+                <td class="centro"><?php echo $a ?></td>
+                <td class="centro"><a style="text-decoration:underline;cursor:pointer;" onClick="abrirdados('<?php echo $a."_".$plenario['idPronac']; ?>', <?php echo $plenario['idPronac']; ?>, '<?php echo $tipoagente; ?>')" title="An&aacute;lise do Projeto"><img src="<?php echo $this->baseUrl();?>/public/img/ico/kdict.png" title="Dados da Análise do Projeto" alt="Dados da Análise do Projeto" width="20px"/></a></td>
+                <!--<td class="centro"><a id="consultarprojetos" href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'), '', true); ?>?idPronac=<?php echo $plenario['idPronac'];?>" target="_new" title="Ir para Consultar Projetos"><?php echo $plenario['Pronac'] ?></a></td>-->
+                <td class="centro"><a id="consultarprojetos" href="<?php echo $this->url(array('controller' => 'dadosprojeto', 'action' => 'index', 'idpronac'=>$plenario['idPronac']),'',true); ?>" target="_new" title="Ir para Consultar Projetos"><?php echo $plenario['Pronac'] ?></a></td>
+                <td><?php echo $plenario['NomeProjeto'] ?></td>
+                <?php if ($this->grupoativo == '119') { //presidente CNIC ?>
+                    <td><?php echo $plenario['DescArea'] ?></td>
+                    <td><?php echo $plenario['DescSegmento'] ?></td>
+                <?php } ?>
+                <!--<td class="centro"><?php //if($plenario['stAnalise'] != "") echo $plenario['stAnalise'] == 'IC' ? 'N&atilde;o' : 'Sim' ?></td>-->
+                <td><?php echo $plenario['Componente'] ?></td>
+            </tr>
+            <?php $a++;
+        } 
+      }else{ ?>
+        <tr>
+            <td colspan="8" class="centro">
+                <em><b>Não há Projetos não analisados</b></em>
+            </td>
+        </tr>
+<?php } ?>
+</table>

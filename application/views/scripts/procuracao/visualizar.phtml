@@ -1,0 +1,136 @@
+<?php include_once 'inc/menu.inc.php'; ?>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+
+        $('.visualizarTextoModal').click(function(){
+            var justificativa = $(this).attr('justificativa');
+            $("#visualizarTextoModal").html(justificativa);
+            $("#visualizarTextoModal").dialog("destroy");
+            $("#visualizarTextoModal").dialog({
+                resizable: true,
+                title:'Justificativa',
+                modal: true,
+                autoOpen:true,
+                EscClose:false
+//                width:350
+            });
+            $("#visualizarTextoModal").dialog('open');
+        });
+
+        $('.btn_desvincular').click(function(){
+            var btn = $(this);
+            $("#msgAlerta").dialog("destroy");
+            $("#msgAlerta").html("Deseja realmente desvincular o projeto?");
+            $("#msgAlerta").dialog({
+                resizable: false,
+                title: 'Alerta!',
+                width:340,
+                height:160,
+                modal: true,
+                buttons : {
+                    'Não' : function(){
+                        $(this).dialog('close');
+                    },
+                    'Sim' : function(){
+                        var idProcProj = btn.attr('idProcProj'),
+                            idProc = btn.attr('idProc');
+                        $.ajax({
+                            type: 'POST',
+                            url: '<?php echo $this->url(array('controller' => 'procuracao', 'action' => 'desvincluar-projeto-procuracao')); ?>',
+                            data: {
+                                idProcProj: idProcProj,
+                                idProc: idProc
+                            },
+                            success: function(data){
+//                                if(data.resposta){
+                                    btn.remove();
+                                    $('#situacao'+idProcProj).html('Desvinculado');
+//                                }
+                            },
+                            beforeSend : function(){
+                                $("#msgAlerta").dialog('close');
+                                $("#msgAlerta").dialog("destroy");
+                                $("#msgAlerta").html("Carregando...");
+                                $("#msgAlerta").dialog({
+                                    resizable: false,
+                                    title: 'Alerta!',
+                                    width:340,
+                                    height:120,
+                                    modal: true
+                                });
+                                $('.ui-dialog-titlebar-close').remove();
+                            },
+                            complete : function(){
+                                $("#msgAlerta").dialog('close');
+                            },
+                            dataType : 'json'
+                        });
+                        $("#msgAlerta").dialog('close');
+                    }
+                }
+            });
+            $('.ui-dialog-titlebar-close').remove();
+
+        });
+    });
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="visualizarTextoModal"></div>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principalproponente', 'action' => 'index')); ?>" title="Ir para Início">In&iacute;cio</a></li>
+        <li class="">Procura&ccedil;&atilde;o</li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'procuracao', 'action' => 'index')); ?>" title="Ir para Início">Procura&ccedil;&otilde;es cadastradas</a></li>
+        <li class="last">Visualizar procura&ccedil;&atilde;o</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Visualizar procura&ccedil;&atilde;o<span class="voltar"><a href="<?php echo $this->url(array('controller' => 'procuracao', 'action' => 'index'), null, true); ?>">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <table class="tabela">
+        <tr>
+            <th colspan="7">Procura&ccedil;&atilde;o n&ordm; <?php echo $this->procuracao[0]->idDocumento; ?> </th>
+        </tr>
+        <tr>
+            <td class="destacar bold" width="70">Pronac</td>
+            <td class="destacar bold">Nome do Projeto</td>
+            <td class="destacar bold">Proponente</td>
+            <td class="destacar bold">Procurador</td>
+            <td class="destacar bold" width="120">Situa&ccedil;&atilde;o</td>
+            <td class="destacar bold" width="1">Justificativa</td>
+            <td class="destacar bold" width="120">Desvincular</td>
+        </tr>
+        <?php foreach($this->procuracao as $p):?>
+        <tr>
+            <!--<td><a target="_blank" href="<?php echo $this->baseUrl(); ?>/consultardadosprojeto/index?idPronac=<?php echo Seguranca::encrypt($p->IdPRONAC); ?>"><?php echo $p->Pronac; ?></a></td>-->
+            <td><?php echo $p->Pronac; ?></td>
+            <td><?php echo $p->NomeProjeto; ?></td>
+            <td><?php echo $p->Proponente; ?></td>
+            <td><?php echo $p->Procurador; ?></td>
+            <td><span id="situacao<?php echo $p->idProcuradorProjeto; ?>"><?php echo $p->stEstado; ?></span></td>
+            <td align="center">
+                <img src="<?php echo $this->baseUrl(); ?>/public/img/table_multiple.png" style="cursor:pointer;" class="visualizarTextoModal" justificativa="<?php echo $p->dsObservacao; ?>" alt="Visualizar Justificativa" />
+            </td>
+            <td align="center"><?php echo ($p->status==2) ? '<input type="button" value=" " idProcProj="'.$p->idProcuradorProjeto.'" idProc="'.$p->idProcuracao.'" class="btn_desvincular" style="width: 87px;"' : ''; ?></td>
+        </tr>
+        <?php endforeach;?>
+    </table>
+
+</div>
+
+<div id="msgAlerta" class="sumir"></div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

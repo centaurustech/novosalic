@@ -1,0 +1,146 @@
+<?php
+$incluirHref =  $this->url(array('controller' => 'comprovarexecucaofinanceira', 'action' => 'inserirfornecedor')).'?idusuario='.$this->idusuario;
+?>
+<div id="miolo">
+    <fieldset>
+            <form id="formfornecedores">
+                <input type="hidden" name="idlicitacao" value="<?php echo $this->idlicitacao;?>"/>
+                <div style="float: left;width: 100%;margin-top: 5px; margin-left: 20px;">
+                    <div style="float: left;width: 200px;">Tipo de Fornecedor</div>
+                    <div style="float: left;margin-right: 40px;">
+                        <input type="radio" id="cnpj" name="tipoFornecedor" value="CNPJ" checked="checked" />CNPJ
+                    </div>
+                    <div style="float: left;">
+                        <input type="radio" id="cpf" name="tipoFornecedor" value="CPF"/>CPF
+                    </div>
+                </div>
+                <div style="float: left;width: 100%;margin-top: 5px; margin-left: 20px; margin-bottom: 5px;">
+                    <div style="float: left;width: 200px;">CNPJ/CPF</div>
+                    <div style="float: left;margin-right: 40px;">
+                        <input type="text" name="cnpjInput" id="cnpjInput" />
+                        <input type="text" name="cpfInput"  id="cpfInput" style="display: none" />
+                    </div>
+                </div>
+                <div class="divNomeFornecedor" style="float: left;width: 100%; margin-left: 20px; margin-bottom: 5px;display: none">
+                    <div style="float: left;width: 200px;">Nome Fornecedor:</div>
+                    <div style="float: left;margin-right: 40px;">
+                        <input type="text" name="nomeFornecedor" id="nomeFornecedor" />
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <img border="0" title="Incluir" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/incluir.gif" id="btIncluir" style="cursor: pointer"/>
+                </div>
+            </form>
+                <table class="tabela">
+                    <tr>
+                        <th>Fornecedores</th>
+                    </tr>
+                </table>
+
+            <table style="text-align: left; margin-left: auto; margin-right: auto;" class="tabelaRegistros">
+                    <tr>
+                        <th>
+                            CNPJ/CPF
+                        </th>
+                        <th>
+                            Nome Fornecedor
+                        </th>
+                        <th>
+                            Excluir
+                        </th>
+                    </tr>
+                    <tr class="modelo" style="display: none">
+                        <td class="cnpjCpf"></td>
+                        <td class="nomeFornecedor"></td>
+                        <td class="acao" style="text-align: center;"><img border="0" title="Excluir" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/cancelar-p.gif"></td>
+                    </tr>
+                    <tr>
+                        <td>111.111.111-11
+                        </td>
+                        <td>Jo&atilde;o Oliveira
+                        </td>
+                        <td style="text-align: center;">
+                            <a href="<?php echo $Excluir; ?>" idincluircotacao="<?php echo $linha['idincluircotacao']; ?>" ><img border="0" title="Excluir" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/cancelar-p.gif"></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>222.222.222-22
+                        </td>
+                        <td>Pereira da Paz
+                        </td>
+                        <td style="text-align: center;">
+                            <a href="<?php echo $Excluir; ?>" idincluircotacao="<?php echo $linha['idincluircotacao']; ?>" ><img border="0" title="Excluir" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/cancelar-p.gif"></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>333.333.333-33
+                        </td>
+                        <td>Carlos Paulo
+                        </td>
+                        <td style="text-align: center;">
+                            <a href="<?php echo $Excluir; ?>" idincluircotacao="<?php echo $linha['idincluircotacao']; ?>" ><img border="0" title="Excluir" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/cancelar-p.gif"></a>
+                        </td>
+                    </tr>
+                </table>
+                <img border="0" id="btVoltarIncFornecedores" title="Voltar" src="<?php echo $this->baseUrl(); ?>/public/img/buttons/voltar.gif" style="cursor: pointer">
+    </fieldset>
+    <div id="teste"></div>
+</div>
+<script type="text/javascript">
+    $("#btVoltarIncFornecedores").click(function() {
+        nomeJanelaAux.fecharJanela();
+    });
+    $('#cpfInput').mask('999.999.999-99');
+    $('#cnpjInput').mask('99.999.999/9999-99');
+    $("#cnpj").click(function() {
+        $('#cpfInput').fadeOut('fast');
+        $('#cnpjInput').val('');
+        $('#cpfInput').val('');
+        $('#cnpjInput').fadeIn('fast');
+    });
+    $("#cpf").click(function() {
+        $('#cnpjInput').fadeOut('fast');
+        $('#cpfInput').val('');
+        $('#cnpjInput').val('');
+        $('#cpfInput').fadeIn('fast');
+    });
+
+    $('#btIncluir').click(function(){
+        if($("#cnpj").attr('checked') == true || $("#cpf").attr('checked') == true) {
+            var valor = null;
+            if($("#cnpjInput").val() != '') {
+                valor = $("#cnpjInput").val();
+            }
+            if($("#cpfInput").val() != '') {
+                valor = $("#cpfInput").val();
+            }
+            if(!valor) {
+                alert('Informe o CNPJ/CPF');
+                return false;
+            } else {
+                $.post('<?php echo $incluirHref; ?>',
+                       $('#formfornecedores').serializeArray(),
+                       function(data) {
+                        //$('#teste').html(data);return false;
+                        $("#nomeFornecedor").val('');
+                        if(data.cnpjCpf) {
+                            $(".divNomeFornecedor").fadeOut('fast');
+                            var novaLinha = $(".modelo").clone();
+                            $('.cnpjCpf',        $(novaLinha)).html(data.cnpjCpf);
+                            $('.nomeFornecedor', $(novaLinha)).html(data.nomeFornecedor);
+                            $(novaLinha).removeClass('modelo');
+                            $('.tabelaRegistros').append($(novaLinha));
+                            $(novaLinha).fadeIn('fast');
+                        } else {
+                            $(".divNomeFornecedor").fadeIn('fast');
+                        }
+                }
+                , 'json'
+                );
+            }
+        } else {
+            alert("Selecione o campo Tipo de Fornecedor.");
+            return false;
+        }
+    });
+</script>

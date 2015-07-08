@@ -1,0 +1,196 @@
+<?php
+//require_once "scripts/diligenciar/inc/menu.inc.php"; // menu de manter proposta por incentivo fiscal
+$visualizarDiligenciaHref = $this->url(array('controller' => 'diligenciar', 'action' => 'visualizardiligencia'));
+$cadastrarDiligenciaHref  = $this->url(array('controller' => 'diligenciar', 'action' => 'cadastrardiligencia'));
+$alterarDiligenciaHref      = $this->url(array('controller' => 'diligenciar', 'action' => 'cadastrarrespostadiligencia'));
+$qtdia = 40;
+?>
+<div id="titulo">
+    <div>Listagem das Dilig&ecirc;ncias</div>
+</div>
+<div id="conteudo">
+    <form id="frImprimir" action="<?php echo $this->url(array('controller'=>'diligenciar', 'action'=>'imprimir')); ?>" method="post" >
+        <input type="hidden" name="idPronac"        value="<?php echo $this->idPronac;?>"/>
+        <input type="hidden" name="idPreProjeto"    value="<?php echo $this->idPreProjeto;?>" />
+        <input type="hidden" name="idProduto"       value="<?php echo $this->idProduto;?>" />
+        <input type="hidden" name="situacao"        value="<?php echo $this->situacao;?>" />
+        <input type="hidden" name="tpDiligencia"    value="<?php echo $this->tpDiligencia;?>" />
+
+        <?php if ($this->diligenciasProposta) : ?>
+            <table class="tabela">
+                <tr>
+                    <td><input type="button" name="grid1" id="g1_1" class="btn_remover" title="Expandir" />Dilig&ecirc;ncia Proposta</td>
+                </tr>
+            </table>
+
+            <div id="div_g1_1" class="miolo_grid_01">
+                <table class="tabela">
+                    <tr>
+                        <th>IMPRIMIR</th>
+                        <th>Visualizar</th>
+                        <th>NR PROPOSTA</th>
+                        <th>NOME DA PROPOSTA</th>
+                        <th>DATA DA SOLICITA&Ccedil;&Atilde;O</th>
+                        <th>PRAZO DA RESPOSTA</th>
+                        <th>PRORROGADO</th>
+                    </tr>
+                    <?php foreach ($this->diligenciasProposta as $value) : ?>
+                        <tr>
+                            <td style="text-align: center;">
+                                <input type="checkbox" name="idAvaliacaoProposta[]" class="idDiligencia" value="<?php echo $value->idDiligencia;?>" />
+                            </td>
+                            <td style="text-align: center;">
+                                <img src="<?php echo $this->baseUrl(); ?>/public/img/ico/kdict.png" class="visualizarProposta" 
+                                    idAvaliacaoProposta="<?php echo $value->idDiligencia;?>" width="20" style="cursor: pointer;"/>
+                            </td>
+                            <td><?php echo $value->pronac;?></td>
+                            <td><?php echo $value->nomeProjeto;?></td>
+                            <td><?php echo date('d/m/Y',strtotime($value->dataSolicitacao));?></td>
+                            <td><?php echo date('d/m/Y',strtotime($value->dataSolicitacao.' +'.$qtdia.' day')); ?></td>
+                            <td>Prorrogado</td>
+                        </tr>
+                    <?php endforeach; ?>
+                </table>
+            </div>
+        <?php
+           endif;
+           if ($this->diligencias) :
+        ?>
+            <table class="tabela">
+                <tr>
+                    <td><input type="button" name="grid1" id="g1_2" class="btn_remover" title="Expandir" />Dilig&ecirc;ncia Projeto</td>
+                </tr>
+            </table>
+
+            <div id="div_g1_2" class="miolo_grid_01">
+                <table class="tabela">
+                    <tr>
+                        <th>IMPRIMIR</th>
+                        <th>Visualizar</th>
+                        <th nowrap>Editar</th>
+                        <th>PRONAC</th>
+                        <th>NOME DO PROJETO</th>
+                        <th>PRODUTO</th>
+                        <th>TIPO DA DILIG&Ecirc;NCIA</th>
+                        <th>DATA DA SOLICITA&Ccedil;&Atilde;O</th>
+                        <th>DATA DA RESPOSTA</th>
+                        <th>PRAZO DA RESPOSTA</th>
+                        <th>PRORROGADO</th>
+                    </tr>
+                    <?php foreach ($this->diligencias as $value) : ?>
+                        <tr>
+                            <td style="text-align: center;">
+                                <input type="checkbox" name="idDiligencia[]" class="idDiligencia" value="<?php echo $value->idDiligencia;?>" />
+                            </td>
+                            <td style="text-align: center;">
+                                <a href="<?php 
+                                    echo $this->url(
+                                        array(
+                                            'controller' => 'diligenciar',
+                                            'action' => 'visualizardiligencia',
+                                            'idPronac' => $this->idPronac,
+                                            'idDiligencia' => $value->idDiligencia,
+                                        )
+                                    );
+                                   ?>">
+                                   <img class="visualizar" src="<?php echo $this->baseUrl(); ?>/public/img/ico/kdict.png" width="20"/>
+                                </a>
+                            </td>
+                            <td class="centro">
+                            <?php if ($value->stEnviado == 'N' && empty($value->dataResposta)) { ?>
+                                <img class="alterar" idDiligencia="<?php echo $value->idDiligencia; ?>" src="<?php echo $this->baseUrl(); ?>/public/img/ico/edit.png" width="20" style="cursor: pointer;"/>
+                            <?php
+                                } else {
+                                    echo '-';
+                                }
+                            ?>
+                            </td>
+                            <td><?php echo $value->pronac;?></td>
+                            <td><?php echo $value->nomeProjeto;?></td>
+                            <td align="center"><?php $value->produto ? $value->produto : '-'; ?></td>
+                            <td><?php echo $value->tipoDiligencia;?></td>
+                            <td><?php echo date('d/m/Y',strtotime($value->dataSolicitacao));?></td>
+                            <td><?php if($value->stEnviado == 'S' && !empty($value->dataResposta)) echo date('d/m/Y',strtotime($value->dataResposta));?></td>
+                            <td align="center"><?php echo date('d/m/Y',strtotime($value->dataSolicitacao.' +'.$qtdia.' day')); ?></td>
+                            <td>Prorrogado</td>
+                        </tr>
+                    <?php endforeach; ?>
+                </table>
+            </div>
+        <?php endif; ?>
+                <?php if ($this->situacao && $this->tpDiligencia) : ?>
+                    <table class="tabela">
+                        <tr>
+                            <td >
+                                <div style="float: left; width: 55%; text-align: right;">
+                                    <input type="button" class="btn_novo">
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                <?php endif;?>
+        <table class="tabela">
+            <tr>
+                <td >
+                    <div style="float: left; width: 55%; text-align: right;">
+                        <input type="submit" class="btn_imprimir" value="" />
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div><!-- final: conteúdo principal #conteudo -->
+<div id="rodapeConteudo" ><span></span></div>
+<br clear="all" />
+<form id="encaminhar" method="post">
+    <input type="hidden" name="idPronac"        value="<?php echo $this->idPronac;?>"/>
+    <input type="hidden" name="idPreProjeto"    value="<?php echo $this->idPreProjeto;?>" />
+    <input type="hidden" name="idProduto"       value="<?php echo $this->idProduto;?>" />
+    <input type="hidden" name="situacao"        value="<?php echo $this->situacao;?>" />
+    <input type="hidden" name="tpDiligencia"    value="<?php echo $this->tpDiligencia;?>" />
+    <input type="hidden" name="idDiligencia"    value="" id="idDiligencia" />
+    <input type="hidden" name="idAvaliacaoProposta"    value="" id="idAvaliacaoProposta" />
+</form>
+<script>
+    $('#frImprimir').submit(function(){
+        var validar = false;
+        $(this).find('.idDiligencia').each(function(){
+           if($(this).attr('checked'))
+               validar = true;
+        });
+        if(!validar){
+            janelaAlerta('Selecione uma diligencia para imprimir!');
+        }
+        return validar;
+    });
+    /** /
+    $(".visualizar").click(function (){
+        $('#encaminhar').attr('action','<?php echo $visualizarDiligenciaHref;?>');
+        $('#encaminhar').find('#idDiligencia').val($(this).attr('idDiligencia'));
+        $('#encaminhar').submit();
+    });
+    /**/
+    $(".visualizarProposta").click(function (){
+        $('#encaminhar').attr('action','<?php echo $visualizarDiligenciaHref;?>');
+        $('#encaminhar').find('#idAvaliacaoProposta').val($(this).attr('idAvaliacaoProposta'));
+        $('#encaminhar').submit();
+    });
+    $(".btn_novo").click(function (){
+        $('#encaminhar').attr('action','<?php echo $cadastrarDiligenciaHref;?>');
+        $('#encaminhar').submit();
+    });
+    $(".btn_voltar").click(function (){
+        //history.go(-1);
+    });
+    $(".alterar").click(function(){
+        $('#encaminhar').attr('action','<?php echo $cadastrarDiligenciaHref;?>');
+        $('#encaminhar').find('#idDiligencia').val($(this).attr('idDiligencia'));
+        $('#encaminhar').submit();
+    });
+
+    $(".alterarProposta").click(function(){
+        $('#encaminhar').attr('action','<?php echo $cadastrarDiligenciaHref;?>');
+        $('#encaminhar').find('#idAvaliacaoProposta').val($(this).attr('idAvaliacaoProposta'));
+        $('#encaminhar').submit();
+    });
+</script>

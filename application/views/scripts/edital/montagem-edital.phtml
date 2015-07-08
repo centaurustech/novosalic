@@ -1,0 +1,123 @@
+<?php include_once 'inc/menu-montagem.php'; ?>
+<div id="alerta" class="sumir"></div>
+<div id="breadcrumb">
+    <ul>
+        <li class="first">Início</li>
+        <li class=""><a href="index-cadastrar-edital.htm">Criar Edital - Passo 1</a></li>
+        <li class=""><a href="form-informacoes-basicas.htm">Criar Edital - Passo 2</a></li>
+        <li class=""><a href="form-modulos-edital.htm">Criar Edital - Passo 3</a></li>
+        <li class="last">Criar Edital - Passo Final</li>
+    </ul>
+</div>
+<div id="titulo" style="width: 1333px;">
+    <div>Criar Edital<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<div id="conteudo" style="width: 1347px;">
+    <br />
+    <div id="msg" class="msgALERT sumir" style="margin: 0px 20px 0px 20px">
+        <div class="float_right"><input type="button" class="btn_close" title="Fechar mensagem" id="msgALERT" onclick="$('.msgALERT').hide();" onkeypress="$('.msgALERT').hide();"/></div>
+        <div id="info" style="line-height: 25px;"></div>
+    </div>
+    <fieldset>
+        <legend> Passo Final - Montagem do Edital</legend>
+        <table class="tabela" id="sortable">
+            <thead>
+                <tr>
+                    <td colspan="2" class="titulo_tabela">Textos adicionados</td>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($this->editalmontado as $em): ?>
+                <tr id="textoId_<?php echo $em['idTextoEdital'];?>" style="cursor: move;" title="Arraste para ordenar!">
+                    <td style="vertical-align: top;">
+                        <div class="expander">
+                            <?php echo $em['dsTexto']; ?>
+                        </div>
+                    </td>
+                    <td nowrap class="centro">
+                        <input type="button" class="btn_editar" onclick="editarTexto('<?php echo $em['idTextoEdital']; ?>');" />
+                        <input type="button" class="btn_exclusao" onclick="excluirTexto('<?php echo $em['idTextoEdital']; ?>');" />
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </fieldset>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<br clear="all" />
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+
+        $('#btsalvar').click(function() {
+            $('#frmCadQuestao').submit();
+        });
+        
+        $('.expander').expander({
+            slicePoint: 200,
+            expandText: 'Ver mais',
+            userCollapseText: 'Esconder'
+        });
+
+        $("#sortable tbody").sortable({
+            update: function() {
+                var order   = $('#sortable tbody').sortable('serialize');
+                $("#info").load("<?php echo $this->url(array('controller' => 'edital', 'action' => 'atualiza-lista-textos'));?>/textoId/"+order);
+                $('#msg').show();
+            }
+        }).disableSelection();
+        
+        //editor para o cadastro de anexo de edital
+        CKEDITOR.replace('txtConteudoAnexo', {
+            toolbar: [[
+                    'Bold', 'Italic', 'Underline', 'Scayt',
+                    '-',
+                    'Cut', 'Copy', 'PasteText', 'PasteFromWord',
+                    '-',
+                    'Undo', 'Redo',
+                    '-',
+                    'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock',
+                    '-',
+                    'Outdent', 'Indent', 'NumberedList', 'BulletedList', 'BidiLtr', 'BidiRtl',
+                    '-',
+                    'FontSize', 'Maximize',
+                ]]
+        });
+
+    });
+
+    function excluirTexto(id) {
+    
+        var idEdital = '<?php echo $this->idEdital; ?>';
+
+        $("#alerta").dialog("destroy");
+        $("#alerta").html("Tem certeza que deseja excluir o texto do edital?");
+        $("#alerta").dialog({
+            resizable: false,
+            title: 'Alerta!',
+            width: 340,
+            height: 170,
+            modal: true,
+            buttons: {
+                'Não': function() {
+                    $(this).dialog('close');
+                },
+                'Sim': function() {
+                    window.location = '<?php echo $this->url(array('controller' => 'edital', 'action' => 'deletar-texto-edital'), '', true); ?>/idTextoEdital/' + id + '/idEdital/' + idEdital;
+                }
+            }
+        });
+        
+        $('.ui-dialog-titlebar-close').remove();
+        
+    }
+    
+    function editarTexto(id) {
+        var idEdital = '<?php echo $this->idEdital; ?>';
+        window.location = '<?php echo $this->url(array('controller' => 'edital', 'action' => 'editar-texto-edital'), '', true); ?>/idTextoEdital/' + id + '/idEdital/' + idEdital;
+    }
+
+</script>

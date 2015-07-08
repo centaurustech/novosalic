@@ -1,0 +1,152 @@
+<script> 
+    $(document).ready(function(){
+        $(".vincular").click(function(){
+            var res = $(this).attr('res');
+            var idvinculoproposta = $(this).attr('idvinculoproposta');
+            $.ajax({
+                async: true,
+                dataType:'json',
+                type: "post",
+                url: "../vincularresponsavel/vinculo",
+                data:{
+                    stVinculoProposta : res,
+                    idVinculoProposta : idvinculoproposta,
+                    aceitevinculo : 1
+                },
+                success: function(data)
+                {
+                    $("#confirm").dialog({
+                        resizable: true,
+                        width:450,
+                        height:150,
+                        modal: true,
+                        autoOpen:false,
+                        closeOnEscape : false,
+                        title : 'Alerta',
+                        buttons: {
+                            'OK': function(){
+                                window.location.reload();
+                            }
+                        }
+                    });
+                    if(!data.error){
+                        $("#confirm").html('Solicita&ccedil;&atilde;o salva com sucesso!')
+                    }
+                    else{
+                     $("#confirm").html('Falha na recupera&ccedil;&atilde;o dos dados!')
+                    }
+                    
+                    $("#confirm").dialog('open');
+                }
+            });
+        });
+        $(".desvincular").click(function(){
+            var idvinculoproposta = $(this).attr('idvinculoproposta');
+            $.ajax({
+                async: true,
+                dataType:'json',
+                type: "post",
+                url: "../vincularresponsavel/vinculo",
+                data:{
+                    idVinculoProposta : idvinculoproposta,
+                    desvincular : 1
+                },
+                success: function(data)
+                {
+                    $("#confirm").dialog({
+                        resizable: true,
+                        width:450,
+                        height:150,
+                        modal: true,
+                        autoOpen:false,
+                        closeOnEscape : false,
+                        title : 'Alerta',
+                        buttons: {
+                            'OK': function(){
+                                window.location.reload();
+                            }
+                        }
+                    });
+                    if(!data.error){
+                        $("#confirm").html('Solicita&ccedil;&atilde;o salva com sucesso!')
+                    }
+                    else{
+                     $("#confirm").html('Falha na recupera&ccedil;&atilde;o dos dados!')
+                    }
+                    
+                    $("#confirm").dialog('open');
+                }
+            });
+        });
+    })
+</script>
+<?php include 'inc/menu.inc.php'; ?>
+<!-- ========== INï¿½CIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para Início">Início</a></li>
+        <li class="last">Vincular Respons&aacute;vel</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+<!-- ========== INï¿½CIO Tï¿½TULO ========== -->
+<div id="titulo">
+    <div>Vincular Respons&aacute;vel<span>ID #23A</span> <span class="voltar"><a href="#" onclick="voltar();"></a></span></div>
+</div>
+<div id="conteudo">
+    <div id="confirm"></div>
+    <fieldset>
+        <legend>Vincular Respons&aacute;vel</legend>
+        <table class="tabela">
+            <tr>
+                <th>proposta/pronac</th>
+                <th>cpf/cnpj</th>
+                <th>nome</th>
+                <th>vincular</th>
+                <th>recusar</th>
+            </tr>
+            <?php if(count($this->vinculo) > 0) {
+                foreach ($this->vinculo as $vinculo) { ?>
+                <tr class="centro">
+                    <td><?php echo $vinculo->idPreProjeto; ?></td>
+                    <td><?php echo Validacao::mascaraCPFCNPJ($vinculo->CNPJCPF); ?></td>
+                    <td><?php echo $vinculo->NomeAgente; ?></td>
+                    <td><img style="cursor: pointer;"class="vincular" res="2" idVinculoProposta="<?php echo $vinculo->idVinculoProposta; ?>" src="<?php echo $this->baseUrl(); ?>/public/img/passed.gif"/></td>
+                    <td><img style="cursor: pointer;"class="vincular" res="1" idVinculoProposta="<?php echo $vinculo->idVinculoProposta; ?>" src="<?php echo $this->baseUrl(); ?>/public/img/btn_excluir.gif"/></td>
+                </tr>
+            <?php }
+            }
+            else{ echo "<tr class='centro'><td colspan='5'>N&atilde;o existe respons&aacute;veis a serem vinculados!</td></tr>";}
+            ?>
+        </table>
+    </fieldset>
+    <fieldset>
+        <legend>Respons&aacute;vel Vinculado</legend>
+        <table class="tabela">
+            <tr>
+                <th>proposta/pronac</th>
+                <th>cpf/cnpj</th>
+                <th>nome</th>
+                <th>Desvincular</th>
+            </tr>
+            <?php
+            if (count($this->vinculado) > 0) {
+                foreach ($this->vinculado as $vinculado) {
+                    ?>
+                    <tr class="centro">
+                        <td><?php echo !empty($vinculado->pronac) ? $vinculado->idPreProjeto.' / '.$vinculado->pronac  : $vinculado->idPreProjeto.'/ - ';  ?></td>
+                        <td><?php echo Validacao::mascaraCPFCNPJ($vinculado->CNPJCPF); ?></td>
+                        <td><?php echo $vinculado->NomeAgente; ?></td>
+                        <td><img style="cursor: pointer;" idVinculoProposta="<?php echo $vinculado->idVinculoProposta; ?>" class="desvincular" src="<?php echo $this->baseUrl(); ?>/public/img/passed.gif"/></td>
+                    </tr>
+                <?php } ?>
+                <?php
+            } else {
+                echo "<tr><td colspan='4' class='centro' style='color:red; font-weigth:600;'>N&atilde;o existem respons&aacute;veis j&aacute; vinculados cadastrados!</td></tr>";
+            }
+            ?>
+        </table>
+    </fieldset>
+</div>
+<div id="rodapeConteudo"><span></span></div>
+<br clear="all" />

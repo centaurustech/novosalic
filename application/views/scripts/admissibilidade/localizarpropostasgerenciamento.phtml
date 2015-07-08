@@ -1,0 +1,150 @@
+<?php //include_once 'scripts/admissibilidade/inc/menu.inc.php'; ?>
+
+<script type="text/javascript">
+<!--
+$(document).ready(function(){
+    $("#tipodata").change(function(){
+        if($("#spanDtFinal").css("display")=="none" && $(this).val() == "entre"){
+            $("#spanDtFinal").show();
+        }else{
+            $("#spanDtFinal").hide();
+        }
+        //$("#spanDtFinal").toggle();
+    });
+});
+
+$(function()
+{
+    $.datepicker.regional['pt-BR'] = {
+        closeText: 'Fechar',
+        prevText: '&#x3c;Anterior',
+        nextText: 'Pr&oacute;ximo&#x3e;',
+        currentText: 'Hoje',
+        monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+        monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+        dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+        dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+        dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+        weekHeader: 'Sm',
+        dateFormat: 'dd/mm/yy',
+        firstDay: 0,
+        isRTL: false,
+        showMonthAfterYear: false,
+        yearSuffix: ''};
+    $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+    $("#dataPropostaInicial").datepicker($.datepicker.regional['pt-BR']);
+    $("#dataPropostaFinal").datepicker($.datepicker.regional['pt-BR']);
+});
+//-->
+</script>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second">Admissibilidade</li>
+        <li class="last">Localizar propostas</li>
+    </ul>
+</div>
+<div id="titulo">
+    <div>Localizar propostas <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+
+<div id="conteudo">
+    <form action="<?php echo $this->urlAcao; ?>" method="post">
+    <table class="tabela" width="50%">
+        <tr>
+            <th colspan="2">Localizar Propostas</th>
+        </tr>
+        <tr>
+            <td>
+                <label for="numeroProposta">Nr. Proposta:</label><br>
+                Exatamente igual
+            </td>
+            <td>
+                <input name="numeroProposta" id="numeroProposta" value="" class="input_simples"/>
+            </td>
+        </tr>
+        <tr>
+            <td nowrap>
+                <label for="tiponome">Nome da proposta:</label>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<select name="tiponome" id="tiponome" class="select_simples">
+                    <option value="contendo">Que contenha</option>
+                    <option value="inicioIgual">Início Igual</option>
+                </select>
+            </td>
+            <td>
+                <input name="nomeProposta" id="nomeProposta" value="" class="input_simples w500" />
+            </td>
+        </tr>
+        <tr>
+            <td nowrap>
+                <label for="tipocpf">CPF/CNPJ Proponente:</label>
+                <select name="tipocpf" id="tipocpf" class="select_simples">
+                    <option value="contendo">Que contenha</option>
+                    <option value="igual">Exatamente Igual</option>
+                    <option value="inicioIgual">Início Igual</option>
+                    <option value="diferente">Diferente</option>
+                </select>
+            </td>
+            <td>
+                <input name="cpfCnpj" id="cpfCnpj" value="" class="input_simples" maxlength="18" onkeyup="mascaraCnpjCpf(this);"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="tiponome">Analista:</label><br>
+                <!--<select name="tiponome" id="tiponome" class="select_simples">
+                    <option value="contendo">Que contenha</option>
+                    <option value="igual">Exatamente Igual</option>
+                </select>-->
+            </td>
+            <td>
+                <select class="select_simples" name="analista" id="analista">
+                    <option value="0">Todos</option>
+                    <?php
+                    foreach ($this->novosAnalistas as $analista) {
+                        echo "<option value='{$analista->usu_cod}'>{$analista->usu_nome}</option>";
+                    } ?>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td nowrap>
+                <label for="tipodata">Admissibilidade:</label>
+                <select name="tipodata" id="tipodata" class="select_simples" onchange="if($(this).val()=='OT' || $(this).val()=='U7' || $(this).val()=='SP' || $(this).val()=='MM' || $(this).val()=='UM'){$('#camposData').css('display','none');}else{$('#camposData').css('display','');}">
+                    <OPTGROUP LABEL="Normais">
+                        <option value="igual">Exatamente Igual</option>
+                        <option value="entre">Entre dois valores</option>
+                        <option value="maior">Maior ou igual a </option>
+                        <option value="menor">Menor ou igual a</option>
+                    </OPTGROUP>
+                    <OPTGROUP LABEL="Especiais">
+                       <option value="OT">Ontem</option>
+                       <option value="U7">&Uacute;ltimos 7 dias</option>
+                       <option value="SP">Semana Passada (seg-dom)</option>
+                       <option value="MM">Este m&ecirc;s</option>
+                       <option value="UM">&Uacute;ltimo m&ecirc;s</option>
+                    </OPTGROUP>
+                </select>
+            </td>
+            <td nowrap>
+                <span id="camposData">
+                    <input name="dataPropostaInicial" id="dataPropostaInicial" value="" class="input_simples"/> (dd/mm/aaaa)
+                    <span id="spanDtFinal" style="display: none;">&nbsp;e&nbsp;<input name="dataPropostaFinal" id="dataPropostaFinal" value="" class="input_simples"/></span>
+                </span>
+            </td>
+        </tr>
+    </table>
+    <table class="tabela" width="50%">
+        <tr>
+            <td class="centro"><input type="submit" class="btn_localizar" title="Localizar" value=" " /></td>
+        </tr>
+    </table>
+    </form>
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

@@ -1,0 +1,49 @@
+<?php
+include_once 'scripts/cadastraredital/inc/funcoes.inc.php';
+include_once 'scripts/manterpropostaedital/inc/menu.inc.php';
+?>
+<style>
+    #questionario div{
+        border: 0px #000 solid;
+    }
+    #questionario .botoesGrandes{
+        margin-top: 30px;
+    }
+</style>
+<div id="titulo">
+    <div>Questionário<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<div id="conteudo">
+    
+    <script type="text/javascript">
+        $(document).ready(function() {
+            /*$( "#tabs" ).tabs({
+                ajaxOptions: {
+                    error: function( xhr, status, index, anchor ) {
+                        $( anchor.hash ).html(
+                        "Couldn't load this tab. We'll try to fix this as soon as possible. " +
+                            "If this wouldn't be a demo." );
+                    }
+                }
+            });*/
+            $('#questionario').html("   Carregando...")
+            url = '<?php echo $this->url(array('controller' => 'cadastraredital', 'action' => 'visualizarguia')); ?>?idEdital=<?php echo $this->dados->idEdital; ?>&idPreProjeto=<?php echo $this->dados->idPreProjeto; ?>';
+            jqAjaxLinkSemLoading(url, "", "questionario");
+        });
+        /*function mostrar_aba(item) {
+            $('#identificacao, #objetivos, #justificativa, #acessibilidade, #democratizacao, #etapas, #fichatecnica, #detalheproposta').hide();
+            $('#' + item).show();
+            CKEDITOR.replaceAll();
+        }*/
+    </script>
+    <div id="questionario" style="padding: 15px;"></div>
+    <!--iframe src="/Quiz/QuestionarioCustomizacaoEdital/views/respostaQuestionarioEdital.php?idUsuario=<?php echo $this->idUsuario; ?>&nrFormDocumento=<?php echo $this->dados->nrFormDocumento; ?>&nrVersaoDocumento=<?php echo $this->dados->nrVersaoDocumento; ?>&idpreprojeto=<?php echo $this->dados->idPreProjeto; ?>&idEdital=<?php echo $this->dados->idEdital; ?>" style="width: 98%; height: 530px; padding-bottom: 40px; margin-left: 10px; margin-top: 5px; overflow: hidden;" >
+    </iframe-->
+</div>
+<script type="text/javascript">
+    //mostrar_aba('identificacao');
+</script>
+<br/>
+<br clear="all" />
+<div id="rodapeConteudo"><span></span></div>
+<br clear="all" />

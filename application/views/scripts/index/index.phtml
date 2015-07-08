@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-br">
+    <head>
+        <title>Sistema de Apoio &agrave;s Leis de Incentivo &agrave; Cultura</title>
+        
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+        <meta name="title" content="Sistema Salic" />
+        <meta name="author" content="Jefferson Alessandro Santos - Rômulo Menhô Barbosa" />
+        <meta name="description" content="Sistema de Apoio ï¿½s Leis de Incentivo ï¿½ Cultura" />
+        <link type="image/x-icon" rel="shortcut icon" href="<?php echo $this->baseUrl(); ?>/public/img/favicon.ico" />
+        <link type="text/css" rel="stylesheet" media="all" href="<?php echo $this->baseUrl(); ?>/public/css/geral.css" />
+        <link type="text/css" rel="stylesheet" media="all" href="<?php echo $this->baseUrl(); ?>/public/css/chrome.css" />
+        <link type="text/css" rel="stylesheet" media="all" href="<?php echo $this->baseUrl(); ?>/public/css/barra.css" />
+        <link type="text/css" rel="stylesheet" media="screen" href="<?php echo $this->baseUrl(); ?>/public/css/recursos/importar.css" />
+        <link type="text/css" rel="stylesheet" media="all" href="<?php echo $this->baseUrl(); ?>/public/css/ajustes.css" />
+        <link type="text/css" rel="stylesheet" media="all" href="<?php echo $this->baseUrl(); ?>/public/css/botoes.css" />
+        <!--[if IE]>
+        <link type="text/css" rel="stylesheet" media="all" href="<?php echo $this->baseUrl(); ?>/public/css/ie.css" />
+        <style type="text/css">img,a,ul,li { behavior: url("<?php echo $this->baseUrl(); ?>/public/scripts/iepngfix.htc"); }</style>
+        <![endif]-->
+        <!--[if gte IE 8]>
+        <link type="text/css" rel="stylesheet" media="all" href="<?php echo $this->baseUrl(); ?>/public/css/ie8.css" />
+        <![endif]-->
+        <!--[if IE 7]>
+        <link type="text/css" rel="stylesheet" media="all" href="<?php echo $this->baseUrl(); ?>/public/css/ie7.css"/>
+        <![endif]-->
+        <script language="javascript" type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/jquery-1.4.2.min.js"></script>
+        <script language="javascript" type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/scripts/script_sem_menu.js"></script>
+        <script language="javascript" type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/scripts.js"></script>
+        <noscript>
+            <link type="text/css" rel="stylesheet" media="all" href="<?php echo $this->baseUrl(); ?>/public/css/noscript.css" />
+        </noscript>
+        <!-- Jquery -->
+        <link type="text/css" href="<?php echo $this->baseUrl(); ?>/public/css/custom-theme/jquery-ui-1.8.2.custom.css" rel="stylesheet" />
+        <script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/jquery-ui-1.8.2.custom.min.js"></script>
+        <style type="text/css">
+            /*demo page css*/
+            .demoHeaders { margin-top: 2em; }
+            #dialog_link {padding: .4em 1em .4em 20px;text-decoration: none;position: relative;}
+            #dialog_link span.ui-icon {margin: 0 5px 0 0;position: absolute;left: .2em;top: 50%;margin-top: -8px;}
+            ul#icons {margin: 0; padding: 0;}
+            ul#icons li {margin: 2px; position: relative; padding: 4px 0; cursor: pointer; float: left;  list-style: none;}
+            ul#icons span.ui-icon {float: left; margin: 0 4px;}
+        </style>
+    </head>
+
+
+
+    <body>
+
+        <!-- ========== INï¿½CIO TOPO ========== -->
+        <div id="topo">
+            <div class="barra_governo">
+                <div class="fl"></div>
+
+                <div class="fr">
+                    <p><img alt="Logotipo do Governo do Brasil" src="<?php echo $this->baseUrl(); ?>/public/images/brasil.png"/></p>
+                </div>
+            </div>
+            <div id="logo">
+                <h1><a href="#">Salic</a></h1>
+                <span>Sistema de Apoio &agrave;s Leis de Incentivo &agrave; Cultura</span>
+            </div>
+        </div>
+        <!-- ========== FIM TOPO ========== -->
+
+
+
+        <!-- ========== MENSAGENS (ERROS, CONFIRMAï¿½ï¿½ES E ETC) ========== -->
+        <?php if (isset($this->message)) : ?>
+            <div class="msg<?php echo $this->message_type; ?>">
+                <div class="float_right"><input type="button" class="btn_close" title="Fechar mensagem" id="msg<?php echo $this->message_type; ?>" onclick="$('.msg<?php echo $this->message_type; ?>').hide();" onkeypress="$('.msg<?php echo $this->message_type; ?>').hide();" /></div>
+                <div><?php echo $this->message; ?></div>
+            </div>
+        <?php endif; ?>
+
+
+
+            <script type="text/javascript">
+                <!--
+                $(function()
+                {
+                    $('#formLogin').submit(function()
+                    {
+                        $("#dialog").dialog("destroy");
+
+                        if ($('#Login').val() == "")
+                        {
+                            $("#dialog-message-login").dialog
+                            ({
+                                modal: true,
+                                title: 'Campo obrigat&oacute;rio n&atilde;o informado!',
+                                buttons:
+                                    {
+                                    Ok:function()
+                                    {
+                                        $(this).dialog('close');
+                                        $('#Login').focus();
+                                    }
+                                }
+                            });
+                            return false;
+                        }
+                        else if ($('#Senha').val() == "")
+                        {
+                            $("#dialog-message-senha").dialog
+                            ({
+                                modal: true,
+                                title: 'Campo obrigat&oacute;rio n&atilde;o informado!',
+                                buttons:
+                                    {
+                                    Ok:function()
+                                    {
+                                        $(this).dialog('close');
+                                        $('#Senha').focus();
+                                    }
+                                }
+                            });
+                            return false;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    });
+                });
+
+                function cpf()
+                {
+                    document.getElementById('Login').value     = "";
+                    document.getElementById('Login').maxLength = "14";
+                    document.getElementById('Login').onkeyup   = function() { mascara(document.formLogin.Login, format_cpf); };
+                    document.getElementById('Login').focus();
+                }
+                function cnpj()
+                {
+                    document.getElementById('Login').value     = "";
+                    document.getElementById('Login').maxLength = "18";
+                    document.getElementById('Login').onkeyup   = function() { mascara(document.formLogin.Login, format_cnpj); };
+                    document.getElementById('Login').focus();
+                }
+                //-->
+            </script>
+
+            <div id="dialog-message-login" class="sumir">Por favor, informe o Login!</div>
+            <div id="dialog-message-senha" class="sumir">Por favor, informe a Senha!</div>
+
+
+
+            <!-- inï¿½cio: #titulo -->
+            <br/><br/>
+            <div id="titulo">
+                <div>Minist&eacute;rio da Cultura</div>
+            </div>
+            <!-- final: #titulo -->
+
+            <!-- inï¿½cio: área principal #conteudo -->
+            <div id="conteudo">
+                <div id="miolo">
+                    <form name="formLogin" id="formLogin" class="form" method="post" action="<?php echo $this->url(array('controller' => 'index', 'action' => 'login')); ?>">
+                    <fieldset>
+                        <legend>Login</legend>
+                        <table class="tabela">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <table class="tabela_busca w300" style="border:none;background:none;">
+                                            <tr>
+                                                <td style="background:none;">&nbsp;</td>
+                                                <td style="background:none;">
+                                                    <input type="radio" name="Tipo" id="0" value="0" checked="checked" onclick="cpf();" onkeypress="cpf();" /> <label for="0">CPF</label> &nbsp;&nbsp;&nbsp;
+                                                    <input type="radio" name="Tipo" id="1" value="1" onclick="cnpj();" onkeypress="cnpj();" /> <label for="1">CNPJ</label>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="background:none;"><label for="Login">* Login</label></td>
+                                                <td style="background:none;">
+                                                    <div class="left"></div>
+                                                    <input class="input" type="text" name="Login" id="Login" maxlength="14" onkeyup="mascara(this, format_cpf)" />
+                                                    <div class="right"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="background:none;"><label for="Senha">* Senha</label></td>
+                                                <td style="background:none;">
+                                                    <div class="left"></div>
+                                                    <input class="input" type="password" name="Senha" id="Senha" maxlength="15" />
+                                                    <div class="right"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="background:none;">&nbsp;</td>
+                                                <td style="background:none;" align="center"><input type="submit" value="Entrar" onkeypress="return verifica();" onclick="return verifica();" class="btn" /></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br />
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+        <!-- final: conteï¿½do principal #conteudo -->
+
+        <!-- inï¿½cio: detalhe final da div conteudo #rodapeConteudo -->
+        <div id="rodapeConteudo"><span></span></div>
+        <!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+        <br clear="all" />
+
+        <!-- inicio: rodapï¿½ #rodape -->
+        <div id="rodape">
+            <div><strong>Salic - Sistema de Apoio &agrave; Leis de Incentivo &agrave; Cultura</strong> - Central de Atendimento: (61) 2134-3454 - <a href="mailto:suporte@salic.com.br?Subject=Suporte%20Salic" title="Enviar e-mail para suporte@salic.com.br">suporte@salic.com.br</a></div>
+        </div>
+        <!-- final: rodapï¿½ #rodape -->
+
+    </body>
+</html>

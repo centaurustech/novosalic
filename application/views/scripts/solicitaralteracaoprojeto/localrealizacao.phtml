@@ -1,0 +1,116 @@
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->baseUrl(); ?>" title="Início">Início</a></li>
+        <li class="last">Local de Realização</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Local de Realização<span>ID #23A</span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+<table class="tabela"  >
+
+            <tr>
+            	<td class="titulo_tabela">Projeto Cultural</td>
+            </tr>
+            <tr align="center">
+            	<th>Local de Realização</th>
+            </tr>
+            
+</table>
+ <table class="tabela"  >
+            <tr>
+                <td class="titulo_tabela">Identificação</td>
+                                
+            </tr>
+            
+</table>
+ <table class="tabela"> 
+            <?php foreach ($this->resposta as $resposta) {?>
+            <tr>
+                <td><strong>Pronac:</strong> <br>         <?php echo $this->escape($resposta->idPronac); ?></td>
+                <td><strong>Nome do Projeto:</strong> <br><?php echo $this->escape($resposta->NomeProjeto); ?></td>
+            </tr>
+            
+                     
+           <tr>
+                <td><strong>CNPJ / CPF:</strong> <br>
+                <?php 
+                	$arr2 = str_split($this->escape($resposta->CgcCpf), 3); 
+                	echo $arr2["0"].".".$arr2["1"].".".$arr2["2"]."-".$arr2["3"]; 
+                ?>
+                </td>
+                <td><strong>Proponente:</strong> <br><?php echo $this->escape($resposta->Nome); ?></td>
+           </tr>
+           <?php } ?>
+</table>
+<table class="tabela"  >
+
+
+            <tr>
+            	<td class="titulo_tabela">Alteração do Local de Realização - Dados Atuais</td>
+            </tr>
+            <tr align="center">
+               
+</table>
+
+<table class="tabela"  >
+	            <tr>
+	            	
+	            	<?php foreach ($this->resposta as $resposta) {?>
+	            	<td colspan="5"><a href="<?php echo $this->baseUrl(); ?>/solicitaralteracaoprojeto/incluirlocalrealizacao?prop=<?php echo $this->escape($resposta->CgcCpf); ?>&pron=<?php echo $this->escape($resposta->idPronac); ?>">+ Incluir Novo</a></td>
+	            	<?php } ?>	            	
+	            </tr>
+	           
+	            <tr>
+	            	<td>País</td>
+	            	<td>UF</td>
+	            	<td>Cidade</td>
+	            	<td>Editar</td>
+	            	<td>Excluir</td>
+	            </tr>
+	            <tr>
+	            	<td>Brasil</td>
+	            	<td>DF</td>
+	            	<td>Brasilia</td>
+	            	<td><a href="<?php echo $this->baseUrl(); ?>/solicitaralteracaoprojeto/alterarlocalrealizacao?prop=<?php echo $this->escape($resposta->CgcCpf); ?>&pron=<?php echo $this->escape($resposta->idPronac); ?>">Editar</a></td>
+	            	<td><a href="<?php echo $this->baseUrl(); ?>/solicitaralteracaoprojeto/alterarlocalrealizacao?prop=<?php echo $this->escape($resposta->CgcCpf); ?>&pron=<?php echo $this->escape($resposta->idPronac); ?>">Excluir</a></td>
+	            </tr>	
+	            <tr>
+	            	<td>Brasil</td>
+	            	<td>RS</td>
+	            	<td>Bagé</td>
+	            	<td>Editar</td>
+	            	<td>Excluir</td>
+	            </tr>	
+	            <tr>
+	            	<td>França</td>
+	            	<td></td>
+	            	<td></td>
+	            	<td>Editar</td>
+	            	<td>Excluir</td>
+	            </tr>	            
+</table>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

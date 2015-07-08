@@ -1,0 +1,203 @@
+<?php
+/**
+ * Alterar habilitar projeto
+ * @author Equipe RUP - Politec
+ * @since 15/01/2011
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.alterarprojeto
+ * @copyright (c) 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+
+include_once 'scripts/alterarprojeto/inc/menu.inc.php';
+?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para p&aacute;gina inicial">Início</a></li>
+        <li><!--a href="<?php echo $this->baseUrl(); ?>" title="Início"-->Manuten&ccedil;&atilde;o<!--/a--></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'alterarprojeto', 'action' => 'consultarprojeto')); ?>" title="Ir para alterar projeto">Alterar projeto</a></li>
+        <li class="last">Habilitar projeto</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== BUTTON VOLTAR ========== -->
+<div id="titulo">
+    <div>Habilitar projeto <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== GRID NOME DA PROPOSTA ========== -->
+<script type="text/javascript">
+    $(document).ready( function() {
+        $('.checkbox').change(function(){
+            if($(this).val() == 'N'){
+                $('#tdCombo').removeClass('sumir');
+                $('#penalidade').addClass('obrigatorio');
+            } else {
+                $('#tdCombo').addClass('sumir');
+                $('#penalidade').removeClass('obrigatorio');
+            }
+        })
+
+        $('#btn_salvar').click(function(){
+            var preenchimento = true,
+                selectCombo = false;
+            $('.obrigatorio').each(function(){
+                if($.trim($(this).val()) == '')
+                    preenchimento = false;
+            });
+
+            $('.checkbox').each(function(){
+                if($(this).attr('checked'))
+                    selectCombo = true;
+            });
+
+            if(!preenchimento || !selectCombo) {
+                $("#camposObrigatorios").dialog("destroy");
+                $("#camposObrigatorios").html("Favor preencher os dados obrig&aacute;torios!");
+                $("#camposObrigatorios").dialog({
+                    resizable: false,
+                    title: 'Alerta!',
+                    width:320,
+                    height:160,
+                    modal: true,
+                    buttons : {
+                        'OK' : function(){
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+                $('.ui-dialog-titlebar-close').remove();
+
+            } else {
+                $('#formularioAtualiza').submit();
+            }
+        });
+    });
+
+    function abrir_fechar(id_div){
+        $('#'+id_div).slideToggle(400);
+        $('#maiss'+id_div).toggle().focus();
+        $('#menoss'+id_div).toggle().focus();
+    }
+</script>
+
+<div id="camposObrigatorios" class="sumir"></div>
+<div id="conteudo">
+    <form name="formularioAtualiza" id="formularioAtualiza" method="post" action="<?php echo $this->url(array('controller' => 'alterarprojeto', 'action' => 'salvaalterarprojeto')); ?>">
+        <input type="hidden" name="pronac" value="<?php echo $this->parecer->pronac ?>" />
+        <input type="hidden" name="pagina" value="habilitarprojeto" />
+        <table class="tabela">
+            <tr>
+                <th colspan="2" class="centro">Identifica&ccedil;&atilde;o</th>
+            </tr>
+            <tr class="destacar centro bold">
+                <td style="width: 30%">PRONAC</td>
+                <td>Nome do Projeto</td>
+            </tr>
+            <tr>
+                <td align="center"><?php echo $this->parecer->pronac; ?></td>
+                <td align="center"><?php echo $this->parecer->NomeProjeto; ?></td>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <td width="100px" class="destacar bold" align="right">A&ccedil;&atilde;o <span style="color: red;">*</span></td>
+                <td>
+                    <input type="radio" name="habilitado" value="S" id="S" class="checkbox" <?php echo ($this->parecer->Habilitado == "S") ? 'checked="checked"' : ''; ?> /> <label for="S">Habilitar Projeto</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type="radio" name="habilitado" value="N" id="N" class="checkbox" <?php echo ($this->parecer->Habilitado == "N") ? 'checked="checked"' : ''; ?> /> <label for="N">Inabilitar Projeto</label>
+                </td>
+            </tr>
+            <tr id="tdCombo" <?php echo ($this->parecer->Habilitado == "N") ? '' : 'class="sumir"'; ?>>
+                <td width="100px" class="destacar bold" align="right">Penalidade <span style="color: red;">*</span></td>
+                <td>
+                    <select class="select_simples <?php echo ($this->parecer->Habilitado == "N") ? 'obrigatorio' : ''; ?>" name="penalidade" id="penalidade">
+                        <option value=""> - Selecione - </option>
+                        <?php foreach ($this->combo as $combo) { ?>
+                        <option value="<?php echo $combo->idTipoInabilitado; ?>" <?php echo ($combo->idTipoInabilitado == $this->parecer->idTipoInabilitado) ? 'selected="selected"' : ''; ?>><?php echo $combo->dsTipoInabilitado; ?></option>
+                        <?php }?>
+                        <?php if($this->parecer->idTipoInabilitado == 8){ ?>
+                        <option value="8" selected="selected">Inabilitado pelo sistema</option>
+                        <?php } ?>
+                    </select>
+                </td>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <th>Justificativa <span style="color: red;">*</span></th>
+            </tr>
+            <tr>
+                <td align="center">
+                    <textarea class="textarea_simples h100 obrigatorio" style="width:99%" id="justificativa" name="justificativa"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td class="centro">
+
+                    <table class="tabela">
+                        <tr>
+                            <td class="esquerda"><input type="button" class="btn_adicionar" title="Expandir" value=" " onclick="return abrir_fechar('lista')" onkeypress="return abrir_fechar('lista')" /> Anexar Documentos</td>
+                        </tr>
+                    </table>
+
+                    <div id="lista">
+                        <input type="hidden" name="excuir[]" id="excuir" value="" />
+                        <table class="tabela">
+                            <tbody id="tabelaArquivos">
+                                <tr class="titulo_tabela">
+                                    <th>Tipo Documento</th>
+                                    <th>Data</th>
+                                    <th>Classifica&ccedil;&atilde;o</th>
+                                    <th>Documento</th>
+                                    <!--<th>A&ccedil;&atilde;o</th>-->
+                                </tr>
+                                <?php foreach($this->documentos as $doc) { ?>
+                                <tr>
+                                    <td><?php echo !empty($doc->AgenteDoc) ? 'Proponente' : 'Projeto' ?></td>
+                                    <td><?php echo date("d/m/Y H:i:s",strtotime($doc->dtHistoricoAlteracaoProjeto)) ?></td>
+                                    <td><?php echo $doc->Descricao ?></td>
+                                    <td><a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir')); ?>?id=<?php echo $doc->idArquivo; ?>" title="Abrir arquivo"><?php echo $doc->nmArquivo ?></a></td>
+                                    <!--<td>&nbsp;</td>-->
+                                </tr>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+
+                        <table class="tabela">
+                            <tr>
+                                <td class="direita">
+                                    <input class="btn_incluir" id="btn_incluir" value=" " title="Incluir" type="button" onclick="EnviarArquivo()" />
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <table class="tabela">
+            <tr>
+                <td class="centro">
+                    <input class="btn_salvar" id="btn_salvar" value=" " type="button" title="Salvar" />
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />
+<iframe name="enviar_arquivo" id="enviar_arquivo" style="height: 20px; display: none;"></iframe>

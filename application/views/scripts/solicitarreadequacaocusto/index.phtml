@@ -1,0 +1,126 @@
+
+<?php require_once "inc/menu.inc.php"; // menu ?>
+<!-- início: navegação local #qm0 -->
+
+<!-- início: #breadcrumb -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'principalproponente', 'action' => 'index')); ?>" title="Ir para p&aacute;gina inicial">In&iacute;cio</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index')); ?>?idPronac=<?php echo $_GET['idpronac'] ?>" title="Ir para consultar dados do projeto">Consultar dados do projeto</a></li>
+        <li class="last">Readequa&ccedil;&atilde;o de custo</li>
+    </ul>
+</div>
+<!-- final: #breadcrumb -->
+
+<!-- início: #titulo -->
+<div id="titulo">
+    <div>Readequa&ccedil;&atilde;o de custo <span class="voltar"><a href="javascript:voltar();" >Voltar</a></span></div>
+</div>
+<!-- final: #titulo -->
+
+<!-- início: área principal #conteudo -->
+<div id="conteudo">
+
+        <?php $resultado = $this->buscaprojeto;
+            $i = 1;
+        ?>
+
+        <table class="tabela">
+            <thead>
+                <tr>
+                    <th align="center" width="50%">N&ordm; PRONAC</th>
+                    <th align="center" width="50%">Nome do Projeto</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="linha">
+                    <td align="center"><?php echo $this->escape($resultado['nrpronac']); ?></td>
+                    <td align="center"><?php echo $this->escape($resultado['NomeProjeto']); ?></td>
+                </tr>
+            </tbody>
+            <tr>
+                <th align="center">CNPJ/CPF</th>
+                <th align="center">Proponente</th>
+            </tr>
+            <tbody>
+                <tr class="linha">
+                    <td align="center">
+                        <?php $valor = $this->escape($resultado['CgcCpf']);
+                            echo Validacao::mascaraCPFCNPJ($valor);
+                        ?>
+                    </td>
+                    <td align="center"><?php echo $this->escape($resultado['Nome']);?></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <?php $i = 1; ?>
+        <div id="div_produto" style="display:none">
+            <table class="tabela">
+                <tr>
+                    <th align="center" colspan="2">Custo por Produto</th>
+                </tr>
+                <tr>
+                    <td colspan="2">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td align="center" colspan="2" class="destacar bold">NOME DO PRODUTO</td>
+                </tr>
+                <?php
+                    foreach ($this->produtosxitens as $resultadoprodutos) {
+                ?>
+                <tr class="linha">
+                    <td align="center" width="1%"><?php echo $i; ?></td>
+                    <td style="padding: 13px;"><a style="cursor: pointer; padding: 5px; text-decoration: none; font-size: 14px; font-family:sans-serif;" class="input_simples" href="<?php echo $this->url(array('controller' => 'solicitarreadequacaocusto', 'action' => 'incluirproduto'));?>?idpronac=<?php echo $resultadoprodutos["produto"]->IdPRONAC;?>&idProduto=<?php echo $resultadoprodutos["produto"]->idProduto;?>&idAgente=<?php echo $resultadoprodutos["produto"]->idAgente;?>&idPessoa=<?php echo $resultadoprodutos["produto"]->TipoPessoa;?>"><?php echo $this->escape($resultadoprodutos["produto"]->produto); ?></a>
+                    <?php if(empty($resultadoprodutos["itens"])){ echo ' - <span style="color:red;">Cadastrar Planilha de Custo</span>';} ?>
+                    </td>
+                </tr>
+                <?php $i++; } ?>
+            </table>
+        </div>
+        <?php $i = 1; ?>
+
+        <div id="div_adm" style="display:none">
+            <table class="tabela">
+                <tr>
+                    <th align="center" colspan="2">Custo Administrativo</th>
+                </tr>
+                <tr>
+                    <td colspan="2">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td align="center" colspan="2" class="destacar bold">NOME DO PRODUTO</td>
+                </tr>
+                <?php foreach ($this->produtosxitens as $resultadoprodutos) { ?>
+                <tr class="linha">
+                    <td align="center" width="1%"><?php echo $i; ?></td>
+                    <td style="padding: 13px;"><a style="cursor: pointer; padding: 5px; text-decoration: none; font-size: 14px; font-family:sans-serif;" class="input_simples" href="<?php echo $this->url(array('controller' => 'solicitarreadequacaocusto', 'action' => 'incluirproduto'));?>?idpronac=<?php echo $resultadoprodutos["produto"]->IdPRONAC;?>&idProduto=<?php echo $resultadoprodutos["produto"]->idProduto;?>&idAgente=<?php echo $resultadoprodutos["produto"]->idAgente;?>&idPessoa=<?php echo $resultadoprodutos["produto"]->TipoPessoa;?>"><?php echo $this->escape($resultadoprodutos["produto"]->produto); ?></a>
+                    <?php if(empty($resultadoprodutos["itens"])){ echo ' - <span style="color:red;">Cadastrar Planilha de Custo</span>';} ?>
+                    </td>
+                </tr>
+                <?php $i++; } ?>
+            </table>
+        </div>
+
+<script type="text/javascript">
+    $('#abrir_produto').click(function(){
+        $('#div_produto').toggle('slow');
+    });
+
+    <?php
+    if (isset($_GET['ativar_menu_produto'])) {
+    ?>
+        $('#div_produto').toggle('slow');
+    <?php
+        }
+    ?>
+</script>
+
+
+</div><!-- final: conteúdo principal #conteudo -->
+
+<!-- início: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+<br clear="all" />

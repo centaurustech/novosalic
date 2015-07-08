@@ -1,0 +1,172 @@
+<script type="text/javascript">
+    $(document).ready(function() {
+        $( 'textarea').each( function() {
+            CKEDITOR.replace( $(this).attr('id'), { toolbar: [] } );
+        });
+    });
+
+    function tipo(tipo, count){
+        if(tipo =='1'){
+            $('#parecerista'+count).show();
+            $('#entidades'+count).hide();
+        } else {
+            $('#parecerista'+count).hide();
+            $('#entidades'+count).show();
+        }
+    }
+
+    function infoparecerista(idAgente){
+        var idpronac = $("#idpronac").val();
+        if(idAgente != 0){
+            $("#infoparecerista").hide();
+            $("#infopareceristal").show();
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                data: {
+                    idAgente: idAgente,
+                    idpronac: idpronac
+                },
+                url: '<?php echo $this->url(array("controller"=>"gerenciarparecer", "action"=>"infoparecerista")); ?>',
+                success: function (data){
+                    $("#infoparecerista").show();
+                    $("#infopareceristal").hide();
+                    $("#infoparecerista").html(data[0].situacaoTexto);
+                    if (data[0].situacao == '1'){
+                        $("#btnenviar").show();
+                    } else if (data[0].situacao == '0') {
+                        $("#btnenviar").hide();
+                    }
+                },
+                error: function (data){
+                    $("#infoparecerista").html("Falha na recuperação dos dados.\nNão foi possível carregar agente!");
+                }
+            });
+        } else {
+            $("#infoparecerista").hide();
+            $("#infopareceristal").hide();
+            $("#btnenviar").hide();
+        }
+    }
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'index'),'',true); ?>" title="Ir para Início">Início</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'listaprojetos'),'',true); ?>" title="Localizar Parecer">Gerenciar Pareceres</a></li>
+        <li class="last">Distribuir por produto</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Distribuir por produto <span class="voltar"><a href="javascript:voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<div id="confirma"></div>
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <table class="tabela">
+        <tr>
+            <th colspan="3" style="font-family: sans-serif; font-size: 13px;">Dados do Projeto</th>
+        </tr>
+        <tr>
+            <td class="destacar bold">PRONAC</td>
+            <td class="destacar bold" colspan="2">Nome do Projeto</td>
+        </tr>
+        <tr>
+            <td><?php echo $this->dadosProjeto[0]->NrProjeto; ?></td>
+            <td colspan="2"><?php echo $this->dadosProjeto[0]->NomeProjeto; ?></td>
+        </tr>
+        <tr>
+            <td class="destacar bold">&Aacute;rea Cultural</td>
+            <td class="destacar bold">Segmento Cultural</td>
+            <td class="destacar bold">Valor do Produto</td>
+        </tr>
+        <tr>
+            <td><?php echo $this->dadosProjeto[0]->Area; ?></td>
+            <td><?php echo $this->dadosProjeto[0]->Segmento; ?></td>
+            <td><?php echo $this->formatarReal($this->dadosProjeto[0]->Valor); ?></td>
+        </tr>
+    </table>
+
+    <?php $count = 1; ?>
+    <?php foreach($this->dadosProjeto as $dp){ ?>
+
+        <script type="text/javascript">editor(<?php echo $count; ?>);</script>
+        <form name="form<?php echo $count; ?>" action="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'encaminhou')); ?>" method="POST">
+            <input name="idpronac"    type="hidden" value="<?php echo $dp->IdPRONAC; ?>" />
+            <input name="idproduto"   type="hidden" value="<?php echo $dp->idProduto; ?>" />
+            <input name="tipoanalise" type="hidden" value="<?php echo $dp->TipoAnalise; ?>" />
+            <input name="idDistribuirParecer" type="hidden" value="<?php echo $dp->idDistribuirParecer; ?>" />
+            <table class="tabela">
+                <tr>
+                    <th colspan="3" style="font-family: sans-serif; font-size: 13px;">PRODUTO <?php echo $dp->stPrincipal == 1 ? 'PRINCIPAL' : 'SECUNDÁRIO'; ?>: <?php echo $dp->Produto; ?></th>
+                </tr>
+                <tr>
+                    <td width="250" align="center" class="destacar bold">
+                        <input type="radio" value="1" name="tipodistribuir" id="distribuir<?php echo $count; ?>" checked="checked" onclick="tipo(1, <?php echo $count; ?>);" />
+                        <label for="distribuir<?php echo $count; ?>">Distribuir</label>
+                        <b style="margin-left: 15px; margin-right: 15px;">|</b>
+                        <input type="radio" value="2" name="tipodistribuir" id="encaminhar<?php echo $count; ?>"  onclick="tipo(2 , <?php echo $count; ?>);" />
+                        <label for="encaminhar<?php echo $count; ?>">Encaminhar</label>
+                    </td>
+                    <td width="320">
+                        <div id="entidades<?php echo $count; ?>" class="sumir">Destino <span style="color: red;">*</span>
+                            <br />
+                            <select name="orgao" class="input_simples">
+                                <?php foreach($this->orgaos as $p){ ?>
+                                <option value="<?php echo $p->Codigo; ?>"><?php echo $p->Sigla; ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div id="parecerista<?php echo $count; ?>" >Parecerista <span style="color: red;">*</span>
+                            <br />
+                            <select name="idAgenteParecerista" class="input_simples" onchange="infoparecerista(this.value);">
+                                <option value="0" selected="selected"> - Selecione - </option>
+                                    <?php foreach ($this->pareceristas as $p){ ?>
+                                    <option value="<?php echo $p->idParecerista; ?>"><?php echo $p->Nome; ?></option>
+                                    <?php } ?>
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <span id="infopareceristal" class="sumir">Carregando...<br /><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></span>
+                        <span id="infoparecerista" class="sumir" style="font-weight:bold;"></span>
+                    </td>
+                </tr>
+            </table>
+
+            <table class="tabela">
+                <tr>
+                    <th style="font-family: sans-serif; font-size: 13px;">Observa&ccedil;&atilde;o <span style="color: red;">*</span></th>
+                </tr>
+                <tr>
+                    <td>
+                        <textarea id="<?php echo $count; ?>" name="obs" rows="5" cols="100" class="input_simples editor"></textarea>
+                    </td>
+                </tr>
+            </table>
+
+            <table class="tabela">
+                <tr>
+                    <td align="center"><input type="submit" value=" " id="btnenviar" class="btn_enviar" /></td>
+                </tr>
+            </table>
+        </form>
+        <?php $count++; ?>
+    <?php } ?>
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

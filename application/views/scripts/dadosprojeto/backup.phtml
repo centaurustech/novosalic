@@ -1,0 +1,819 @@
+<?php require_once "inc/menu.inc.php"; // menu ?>
+
+
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para Início">Início</a></li>
+		<li><a href="<?php echo $this->url(array('controller' => 'areadetrabalho', 'action' => 'index')); ?>" title="Ir para Análise do Membro da Comissão">Análise do Membro da Comissão</a></li>
+		<li class="last">Dados do Projeto</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Dados do Projeto <span>ID #23A</span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+
+<?php require_once "inc/menu_abas.inc.php"; // menu  ?>
+
+<table class="tabela">
+  <tr class="titulo_tabela">
+    <td class="titulo_tabela"><div align="center">Projeto Cultural</div></td>
+  </tr>
+</table>
+<br>
+
+
+<!----------------------------------Bloco de Informações: Identificação---------------------------------------------->
+<table class="tabela">
+  			<tr class="titulo_tabela">
+					<th colspan="6">Identificação</th>
+			</tr>
+
+  			<tr>
+    				<th>PRONAC</th>
+    				<th colspan="2">Nome do Projeto</th>
+    				<th>CNPJ/CPF</th>
+    				<th colspan="2">Proponente</th>
+			</tr>
+ 	<?php foreach($this->dadosprojeto as $tbdadosprojeto): ?>
+			<tr>
+					<td><?php echo $this->escape($tbdadosprojeto->pronac);?></td>
+					<td colspan="2"><?php echo $this->escape($tbdadosprojeto->NomeProjeto);?></td>
+					<td><?php echo $this->escape($tbdadosprojeto->CgcCpf);?></td>
+					<td colspan="2"><?php echo $this->escape($tbdadosprojeto->nmProponente);?></td>		
+			</tr>
+	<?php endforeach;?>
+	</table>
+<!----------------------------------Bloco de Informações: UF / Mecanismo / Área / Segmento / Processo---------------------------------------------->	
+<table class="tabela">	
+	<tr class="titulo_tabela">
+					<th colspan="6">UF / Mecanismo / Área / Segmento / Processo</th>
+			</tr>
+			<tr>
+    				<th>UF</th>
+    				<th>Mecanismo</th>
+    				<th>Área Cultural</th>
+    				<th>Segmento</th>
+    				<th >Processo</th>
+    				<th >Enquadramento</th>
+
+  			</tr>
+	<?php foreach($this->dadosprojeto as $tbdadosprojeto): ?>
+			<tr>	
+					<td><?php echo $this->escape($tbdadosprojeto->UfProjeto);?></td>
+					<td><?php echo $this->escape($tbdadosprojeto->dsMecanismo);?></td>	
+					<td><?php echo $this->escape($tbdadosprojeto->dsArea);?></td>
+					<td><?php echo $this->escape($tbdadosprojeto->dsSegmento);?></td>
+					<td><?php echo $this->escape($tbdadosprojeto->Processo);?></td>
+					<td><?php echo $this->escape($tbdadosprojeto->Enquadramento);?></td>
+			</tr>
+	<?php endforeach;?>
+
+<!----------------------------------Bloco de Informações: Situação-------------------------------------------------------- -->
+<table class="tabela">
+   <tr class="titulo_tabela">
+					<th colspan="4">Situação</th>
+	</tr>
+  	<tr>
+    				<th>Dt Situação</th>
+    				<th>Situação</th>
+    				<th>Providência Tomada</th>
+  	</tr>
+     <?php foreach($this->dadosprojeto as $tbdadosprojeto): ?>
+	<tr>
+					<td> <?php	echo $this->escape($tbdadosprojeto->DtSituacao);?></td>
+					<td><?php echo $this->escape($tbdadosprojeto->dsSituacao);?></td>
+					<td colspan="2"><?php echo $this->escape($tbdadosprojeto->ProvidenciaTomada);?></td>
+	</tr>
+	<?php endforeach;?>
+	</table>
+<!----------------------------------Bloco de Informações: Valores-------------------------------------------------------- -->
+<table class="tabela">
+	<tr class="titulo_tabela">
+					<th colspan="6" align="center">Valores</th>
+	</tr>
+  	<tr>
+    				<th>Solicitado (A)</th>
+    				<th>Outras Fontes (B)</th>
+    				<th>Vl. Proposta (C = A+B)</th>
+    				<th>Aprovado (D)</th>
+    				<th>Vl. Projeto (E = B + D)</th>
+    				<th>Captação/Convênio (E)</th>
+  	</tr>
+	<?php foreach($this->dadosprojeto as $tbdadosprojeto): ?>
+	<tr>
+					<td><?php echo $this->escape($tbdadosprojeto->ValorAprovado);?></td>
+					<td><?php echo $this->escape($tbdadosprojeto->SolicitadoReal);?></td>
+					<td><?php echo $this->escape($tbdadosprojeto->OutrasFontes);?></td>
+					<td><?php echo $this->escape($tbdadosprojeto->ValorProposta);?></td>
+					<td><?php echo $this->escape($tbdadosprojeto->ValorProjeto);?></td>
+					<td><?php echo $this->escape($tbdadosprojeto->ValorCaptado);?></td>	
+	
+	</tr>
+	<?php endforeach;?>
+</table>
+
+<!----------------------------------Bloco de Informações: Síntese do Projeto-------------------------------------------------------- -->
+
+<table class="tabela">
+	
+	<th colspan="6">Síntese do Projeto</th>
+	<?php foreach($this->dadosprojeto as $tbdadosprojeto): ?>
+	<tr>
+					<td colspan="6"><?php echo $this->escape($tbdadosprojeto->ResumoProjeto);?></td>
+	</tr>
+	<?php endforeach;?>
+	
+	
+</table>
+<!----------------------------------Bloco de Informações: Objetos-------------------------------------------------------- -->
+
+<table class="tabela">
+	
+	<th colspan="6">Objetos</th>
+	<?php foreach($this->dadosprojeto as $tbdadosprojeto): ?>
+	<tr>
+					<td colspan="6"></td>
+	</tr>
+	<?php endforeach;?>
+	
+	
+</table>
+<!----------------------------------Bloco de Informações: Justificativa-------------------------------------------------------- -->
+
+<table class="tabela">
+	
+	<th colspan="6">Justificativa</th>
+	<?php foreach($this->dadosprojeto as $tbdadosprojeto): ?>
+	<tr>
+					<td colspan="6"></td>
+	</tr>
+	<?php endforeach;?>
+	
+	
+</table>
+<!----------------------------------Bloco de Informações: Acessibilidade-------------------------------------------------------- -->
+
+<table class="tabela">
+	
+	<th colspan="6">Acessibilidade</th>
+	<?php foreach($this->dadosprojeto as $tbdadosprojeto): ?>
+	<tr>
+					<td colspan="6"></td>
+	</tr>
+	<?php endforeach;?>
+	
+	
+</table>
+<!----------------------------------Bloco de Informações: Democratização de Acesso-------------------------------------------------------- -->
+
+<table class="tabela">
+	
+	<th colspan="6">Democratização de Acesso</th>
+	<?php foreach($this->dadosprojeto as $tbdadosprojeto): ?>
+	<tr>
+					<td colspan="6"></td>
+	</tr>
+	<?php endforeach;?>
+	
+	
+</table>
+<!----------------------------------Bloco de Informações: Etapa de Trabalho---------------------------------------------------------->
+
+<table class="tabela">
+	
+	<th colspan="6">Etapa de Trabalho</th>
+	<?php foreach($this->dadosprojeto as $tbdadosprojeto): ?>
+	<tr>
+					<td colspan="6"></td>
+	</tr>
+	<?php endforeach;?>
+	
+	
+</table>
+
+<!----------------------------------Bloco de Informações: Ficha Técnica-------------------------------------------------------- -->
+
+<table class="tabela">
+	
+	<th colspan="6">Ficha Técnica</th>
+	<?php foreach($this->dadosprojeto as $tbdadosprojeto): ?>
+	<tr>
+					<<td colspan="6"></td>
+	</tr>
+	<?php endforeach;?>
+	
+	
+</table>
+<!----------------------------------Bloco de Informações: Sinopse da Obra-------------------------------------------------------- -->
+
+<table class="tabela">
+	
+	<th colspan="6">Sinopse da Obra</th>
+	<?php foreach($this->dadosprojeto as $tbdadosprojeto): ?>
+	<tr>
+					<td colspan="6"></td>
+	</tr>
+	<?php endforeach;?>
+	
+	
+</table>
+<!----------------------------------Bloco de Informações: Impacto Ambiental-------------------------------------------------------- -->
+
+<table class="tabela">
+	
+	<th colspan="6">Impacto Ambiental</th>
+	<?php foreach($this->dadosprojeto as $tbdadosprojeto): ?>
+	<tr>
+					<td colspan="6"></td>
+	</tr>
+	<?php endforeach;?>
+	
+	
+</table>
+<!----------------------------------Bloco de Informações: Estratégia de Execução-------------------------------------------------------- -->
+
+<table class="tabela">
+	
+	<th colspan="6">Estratégia de Execução</th>
+	<?php foreach($this->dadosprojeto as $tbdadosprojeto): ?>
+	<tr>
+					<td colspan="6"></td>
+	</tr>
+	<?php endforeach;?>
+	
+	
+</table>
+<!----------------------------------Bloco de Informações: Especificação Técnica-------------------------------------------------------- -->
+
+<table class="tabela">
+	
+	<th colspan="6">Especificação Técnica</th>
+	<?php foreach($this->dadosprojeto as $tbdadosprojeto): ?>
+	<tr>
+					<td colspan="6"></td>
+	</tr>
+	<?php endforeach;?>
+	
+	
+</table>
+
+<!----------------------------------Bloco de Informações: Local de Realização---------------------------------------------->	
+<table class="tabela">	
+	<tr class="titulo_tabela">
+					<th colspan="6">Local de Realização</th>
+			</tr>
+			<tr>
+    				<th>País</th>
+    				<th>Unidade da Federação</th>
+    				<th>Cidade</th>
+    				<th>Dt.Início</th>
+    				<th >Dt.Final</th>
+    				
+
+  			</tr>
+	<?php foreach($this->dadosprojeto as $tbdadosprojeto): ?>
+			<tr>	
+					<td></td>
+					<td></td>	
+					<td></td>
+					<td></td>
+					<td></td>				
+			</tr>
+	<?php endforeach;?>
+
+<!----------------------------------Bloco de Informações: Deslocamento---------------------------------------------->	
+<table class="tabela">	
+	<tr class="titulo_tabela">
+					<th colspan="7">Deslocamento</th>
+			</tr>
+			<tr>
+    				<th>País de Origem</th>
+    				<th>UF de Origem</th>
+    				<th>Cidade de Origem</th>
+    				<th>País de Destino</th>
+    				<th >UF de Destino</th>
+    				<th >Cidade de Destino</th>
+    				<th >Quantidade</th>
+    				
+
+  			</tr>
+	<?php foreach($this->dadosprojeto as $tbdadosprojeto): ?>
+			<tr>	
+					<td></td>
+					<td></td>	
+					<td></td>
+					<td></td>
+					<td></td>	
+					<td></td>
+					<td></td>			
+			</tr>
+	<?php endforeach;?>
+	<!----------------------------------Bloco de Informações: Divulgação---------------------------------------------->	
+<table class="tabela">	
+	<tr class="titulo_tabela">
+					<th colspan="4">Divulgação</th>
+			</tr>
+			<tr>
+			  		<th>Peça</th>
+    				<th>Veículo</th>
+			
+			
+			<!-- <tr>
+			  		<th>País de Origem</th>
+    				<th>UF de Origem</th>    			
+    				<th>Cidade de Origem</th>
+    				<th>País de Destino</th>
+    				<th >UF de Destino</th>
+    				<th >Cidade de Destino</th>
+    				<th >Quantidade</th> -->
+    				
+
+  			</tr>
+	<?php foreach($this->dadosprojeto as $tbdadosprojeto): ?>
+	         <tr>	
+					<td>Banner/faixa adesiva/faixa de lona/ saia de palco/testeria/pórtico</td>
+					<td>Impressos</td>	
+			</tr>
+			<tr>	
+					<td>Convite</td>
+					<td>Impressos</td>	
+			</tr>
+			<tr>	
+					<td>Convite</td>
+					<td>Impressos</td>	
+			</tr>
+			<tr>	
+					<td>Convite Eletrônico / Folder Eletrônico</td>
+					<td>Internet</td>	
+			</tr>
+			
+	<?php endforeach;?>
+
+<!----------------------------------Bloco de Informações: Plano de Distribuição de Produtos de Projeto Cultural---------------------------------------------->
+<table class="tabela">	
+	<tr class="titulo_tabela">
+					<th colspan="3">Plano de Distribuição de Produtos de Projeto Cultural</th>
+			</tr>
+			<tr >
+			  		<th>Produto</th>
+    				<th colspan="2">Logomarca</th>
+    		</tr>
+    		
+			<?php foreach($this->dadosprojeto as $tbdadosprojeto): ?>
+			<tr>	
+					<td></td>
+					<td colspan="2"></td>								
+			</tr>
+			<?php endforeach;?>
+
+			<tr>
+				<td	colspan="8"  align= "center">
+					
+					<table class="tabela" style="margin:0">	
+						<tr class="titulo_tabela">		
+			    				<th>Distribuição Gratuíta (Qtde)</th>
+			    				<th>Total para Venda (Qtde)</th>
+			    				<th>Preço Unitário (R$)</th>
+			    			
+						</tr>
+			 			<?php foreach($this->dadosprojeto as $tbdadosprojeto): ?>
+						
+						<tr>
+						  	<td >
+								<table class="tabela">
+										<tr>
+											<th>Divulgação</th>
+											<th>Patrocinador</th>
+											<th>Beneficiários</th>
+											<th>Produzida</th>
+										</tr>
+										      <tr>
+												<td></td>
+												<td></td>
+												<td></td>
+												<td></td>
+											  </tr>
+									</table>
+								</td>
+								
+								<td>
+									<table class="tabela">
+										<tr>
+											<th>Normal</th>
+											<th>Promocional</th>
+										</tr>
+										
+										<tr>
+											<td></td>
+											<td></td>
+										</tr>
+										
+									</table>
+								</td>
+								<td>
+									<table class="tabela">
+										<tr>
+											<th>Normal</th>
+											<th>Promocional</th>
+										</tr>
+										<tr>
+											<td></td>
+											<td></td>
+										</tr>
+									</table>
+								</td>
+						</tr>
+						<?php endforeach;?>
+					</table>
+				</td>
+			</tr>
+			
+			<tr>
+				<th>Receita Prevista (R$)</th>
+				<th colspan="2">Total Receita Prevista (R$)</th>
+			</tr>
+			<tr>
+				<td >
+					<table class="tabela">
+						<tr>
+							<th>Normal</th>
+							<th>Promocional</th>
+							<th>Prevista</th>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+						
+		    		</table>
+
+				</td>	
+				
+				<td>
+					<table class="tabela" >
+						<tr>
+							<th>Total</th>							
+						</tr>
+						<tr>
+							<td></td>
+						</tr>
+						
+		    		</table>
+                </td>
+			</tr>		
+</table>
+
+<!----------------------------------Bloco de Informações: Orçamento Solicitado -------------------------------------------------------- -->	
+	
+
+
+
+
+
+
+<!-- ========== INICIO PLANILHA ========== -->
+	<table class="tabela">
+		<tr>
+			<th colspan="12" class="center">Orçamento Solicitado</th>
+		</tr>
+
+
+
+		<!-- ========== INCENTIVO FISCAL FEDERAL ========== -->
+		<tr>
+			<td colspan="12">&nbsp;</td>
+		</tr>
+		<tr>
+			<td colspan="12">
+				<strong>
+					<div id="icn_maisIFF" class="sumir"><a href="#" onclick="$('#icn_menosIFF, .IFF').show(); $('#icn_maisIFF').hide();" onkeypress=" "><div class="icn_mais" style="width:90%"><span class="red del_link">INCENTIVO FISCAL FEDERAL</span></div></a></div>
+					<div id="icn_menosIFF"><a href="#" onclick="$('#icn_maisIFF').show(); $('#icn_menosIFF, .IFF').hide();" onkeypress=" "><div class="icn_menos" style="width:90%"><span class="red del_link">INCENTIVO FISCAL FEDERAL</span></div></a></div>
+				</strong>
+			</td>
+		</tr>
+		<tr class="IFF">
+			<td colspan="12">&nbsp;</td>
+		</tr>
+
+
+
+		<!-- ========== INÍCIO BUSCA POR PRODUTO ========== -->
+		<?php $item = 1; // contador para os itens ?>
+		<?php foreach ($this->buscarProd as $buscarProd) : ?>
+		<tr class="IFF">
+			<td colspan="12">
+				<strong>
+					<div id="icn_maisIFF_PRODUTO<?php echo $item; ?>" class="sumir"><a href="#" onclick="$('#icn_menosIFF_PRODUTO<?php echo $item; ?>, .IFF_PRODUTO<?php echo $item; ?>').show(); $('#icn_maisIFF_PRODUTO<?php echo $item; ?>').hide();" onkeypress=" "><div class="icn_mais" style="width:90%; margin-left:2%;"><span class="green del_link"><?php echo $buscarProd->Produto; ?></span></div></a></div>
+					<div id="icn_menosIFF_PRODUTO<?php echo $item; ?>"><a href="#" onclick="$('#icn_maisIFF_PRODUTO<?php echo $item; ?>').show(); $('#icn_menosIFF_PRODUTO<?php echo $item; ?>, .IFF_PRODUTO<?php echo $item; ?>').hide();" onkeypress=" "><div class="icn_menos" style="width:90%; margin-left:2%;"><span class="green del_link"><?php echo $buscarProd->Produto; ?></span></div></a></div>
+				</strong>
+			</td>
+		</tr>
+
+
+
+			<!-- ========== INÍCIO BUSCA POR ETAPA ========== -->
+			<?php
+			// inicializa valor total por etapa
+			$totalVal_01_Etapa = (float) 0;
+			$totalVal_02_Etapa = (float) 0;
+			$totalVal_03_Etapa = (float) 0;
+
+			foreach (RealizarAnaliseProjetoDAO::analiseDeCustosBuscarEtapa($buscarProd->IdPRONAC, $buscarProd->idProduto, true) as $buscarEtapa) :
+			?>
+
+			<tr class="IFF IFF_PRODUTO<?php echo $item; ?>">
+				<td colspan="12">
+					<strong style="margin-left:2%;">
+						<?php foreach ($this->planilhaEtapa as $etapa) : // Nome ou Descrição da Etapa ?>
+							<?php if ($buscarEtapa->idEtapa == $etapa->idPlanilhaEtapa) : ?>
+								<div id="icn_maisIFF_ETAPA<?php echo $item . $totalItens_Etapa; ?>" class="sumir"><a href="#" onclick="$('#icn_menosIFF_ETAPA<?php echo $item . $totalItens_Etapa; ?>, .IFF_ETAPA<?php echo $item . $totalItens_Etapa; ?>').show(); $('#icn_maisIFF_ETAPA<?php echo $item . $totalItens_Etapa; ?>').hide();" onkeypress=" "><div class="icn_mais" style="width:90%; margin-left:4%;"><span class="orange del_link"><?php echo $buscarEtapa->idEtapa; ?> - <?php echo $etapa->Descricao; ?></span></div></a></div>
+								<div id="icn_menosIFF_ETAPA<?php echo $item . $totalItens_Etapa; ?>"><a href="#" onclick="$('#icn_maisIFF_ETAPA<?php echo $item . $totalItens_Etapa; ?>').show(); $('#icn_menosIFF_ETAPA<?php echo $item . $totalItens_Etapa; ?>, .IFF_ETAPA<?php echo $item . $totalItens_Etapa; ?>').hide();" onkeypress=" "><div class="icn_menos" style="width:90%; margin-left:4%;"><span class="orange del_link"><?php echo $buscarEtapa->idEtapa; ?> - <?php echo $etapa->Descricao; ?></span></div></a></div>
+							<?php endif; ?>
+						<?php endforeach; ?>
+					</strong>
+				</td>
+			</tr>
+
+
+
+				<!-- ========== INÍCIO BUSCA POR UF ========== -->
+				<?php
+				// inicializa valor total por uf
+				$totalVal_01_UF = (float) 0;
+				$totalVal_02_UF = (float) 0;
+				$totalVal_03_UF = (float) 0;
+
+				foreach (RealizarAnaliseProjetoDAO::analiseDeCustosBuscarUF($buscarEtapa->IdPRONAC, $buscarEtapa->idProduto, $buscarEtapa->idEtapa, true) as $buscarUF) :
+				?>
+
+				<tr class="IFF IFF_PRODUTO<?php echo $item; ?> IFF_ETAPA<?php echo $item . $totalItens_Etapa; ?>">
+					<td colspan="12">
+						<strong style="margin-left:3%;">
+							<?php
+							$uf     = EstadoDAO::buscar($buscarUF->idUFDespesa); // nome da UF
+							$cidade = CidadeDAO::buscar($buscarUF->idUFDespesa, $buscarUF->idMunicipioDespesa); // nome da cidade
+							?>
+							<div id="icn_maisIFF_UF<?php echo $item . $totalItens_UF; ?>" class="sumir"><a href="#" onclick="$('#icn_menosIFF_UF<?php echo $item . $totalItens_UF; ?>, .IFF_UF<?php echo $item . $totalItens_UF; ?>').show(); $('#icn_maisIFF_UF<?php echo $item . $totalItens_UF; ?>').hide();" onkeypress=" "><div class="icn_mais" style="width:90%; margin-left:6%"><span class="black del_link"><?php echo $uf[0]->descricao; ?> - <?php echo $cidade[0]->descricao; ?></span></div></a></div>
+							<div id="icn_menosIFF_UF<?php echo $item . $totalItens_UF; ?>"><a href="#" onclick="$('#icn_maisIFF_UF<?php echo $item . $totalItens_UF; ?>').show(); $('#icn_menosIFF_UF<?php echo $item . $totalItens_UF; ?>, .IFF_UF<?php echo $item . $totalItens_UF; ?>').hide();" onkeypress=" "><div class="icn_menos" style="width:90%; margin-left:6%"><span class="black del_link"><?php echo $uf[0]->descricao; ?> - <?php echo $cidade[0]->descricao; ?></span></div></a></div>
+						</strong>
+					</td>
+				</tr>
+
+
+
+					<!-- ========== INÍCIO ÍTENS ========== -->
+				    <tr class="IFF IFF_PRODUTO<?php echo $item; ?> IFF_ETAPA<?php echo $item . $totalItens_Etapa; ?> IFF_UF<?php echo $item . $totalItens_UF; ?>">
+						<th>&nbsp;</th>
+				        <th>Item</th>
+						<th>Dias</th>
+						<th>Unidade</th>
+						<th>Qtde</th>
+						<th>Ocor.</th>
+				        <th width="12%">Vl. Unitário</th>
+				        <th width="12%">Vl. Solicitado</th>
+				    </tr>
+
+					<?php
+					// caso tenha projetos
+					$totalItens = 0;
+					if (count(RealizarAnaliseProjetoDAO::analiseDeConta($buscarUF->IdPRONAC, $buscarUF->idProduto, $buscarUF->idEtapa, $buscarUF->idUFDespesa, true)) > 0)
+					{
+						// inicializa valor total de ítens
+						$totalVal_01 = (float) 0;
+						$totalVal_02 = (float) 0;
+						$totalVal_03 = (float) 0;
+
+						foreach (RealizarAnaliseProjetoDAO::analiseDeConta($buscarUF->IdPRONAC, $buscarUF->idProduto, $buscarUF->idEtapa, $buscarUF->idUFDespesa, true) as $resposta) :
+							$i = $resposta->idPlanilhaAprovacao; // criará id únido
+
+							// ===== CALCULA TOTAL ITENS =====
+							$totalVal_01 += (float) $resposta->VlSolicitado;
+							$totalVal_02 += (float) $resposta->VlSugeridoParecerista;
+							$totalVal_03 += (float) $resposta->VlSugeridoConselheiro;
+					?>
+
+				    <tr onmouseover="over_tr(this);" onfocus="over_tr(this);" onmouseout="out_tr(this);" onblur="out_tr(this);" onclick="click_tr(this);" onkeypress="click_tr(this);" 
+				    	class="IFF IFF_PRODUTO<?php echo $item; ?> IFF_ETAPA<?php echo $item . $totalItens_Etapa; ?> IFF_UF<?php echo $item . $totalItens_UF; ?> 
+				    		<?php
+				    		if ($i == $_GET['Ativo'])
+				    		{
+				    			echo "fundo_linha4";
+				    		}
+				    		else
+				    		{
+				    			echo $this->corLinha($totalItens);
+				    		}
+				      		if ($resposta->VlSugeridoParecerista != $resposta->VlSugeridoConselheiro)
+				    		{
+				    			echo " red";
+				    		}
+				    		$totalItens--;
+				    		?>">
+				        <td><?php echo $item; ?></td>
+				        <td>
+							<?php echo $this->escape($resposta->Item); ?>
+				        </td>
+				        <td class="direita"><?php echo $this->escape($resposta->dias_con); ?></td>
+				        <td class="centro">
+							<?php foreach ($this->planilhaUnidade as $unidade) : ?>
+							<?php if ($unidade->idUnidade == $resposta->idUnidade) echo $this->escape($unidade->Descricao); ?>
+							<?php endforeach; ?>
+				        </td>
+				        <td class="direita"><?php echo $this->escape($resposta->quantidade_con); ?></td>
+				        <td class="direita"><?php echo $this->escape($resposta->ocorrencia_con); ?></td>
+				        <td class="direita"><?php echo $this->formatarReal($this->escape($resposta->valorUnitario_con)); ?></td>
+				        <td class="direita<?php if ($resposta->VlSugeridoParecerista == $resposta->VlSugeridoConselheiro) echo " blue"; ?>"><?php echo $this->formatarReal($this->escape($resposta->VlSolicitado)); ?></td>
+					</tr>
+
+
+
+					<?php
+							$item++; // incrementa o contador de itens
+						endforeach; // fecha foreach itens		
+					} // fecha if (caso tenha projetos)
+
+
+
+					// ===== CALCULA TOTAL UF =====
+					$totalVal_01_UF += (float) $totalVal_01;
+					$totalVal_02_UF += (float) $totalVal_02;
+					$totalVal_03_UF += (float) $totalVal_03;
+					?>
+					<!-- ========== FIM ÍTENS ========== -->
+
+
+
+				<?php endforeach; ?>
+				<!-- ========== FIM BUSCA POR UF ========== -->
+
+
+
+				<!-- EXIBE TOTAL UF -->
+				<tr class="IFF IFF_PRODUTO<?php echo $item; ?> IFF_ETAPA<?php echo $item . $totalItens_Etapa; ?> IFF_UF<?php echo $item . $totalItens_UF; ?>">
+					<td colspan="7"><strong>Total de UF</strong></td>
+					<td class="direita"><strong><?php echo $this->formatarReal($totalVal_01_UF); ?></strong></td>
+				</tr>
+
+
+
+			<?php
+				// ===== CALCULA TOTAL ETAPA =====
+				$totalVal_01_Etapa += (float) $totalVal_01_UF;
+				$totalVal_02_Etapa += (float) $totalVal_01_UF;
+				$totalVal_03_Etapa += (float) $totalVal_02_UF;
+
+
+
+			endforeach;
+			?>
+			<!-- ========== FIM BUSCA POR ETAPA ========== -->
+
+
+
+			<!-- EXIBE TOTAL ETAPA -->
+			<tr class="IFF IFF_PRODUTO<?php echo $item; ?> IFF_ETAPA<?php echo $item . $totalItens_Etapa; ?> IFF_UF<?php echo $item . $totalItens_UF; ?>">
+				<td colspan="7" class="orange"><strong>Total da Etapa</strong></td>
+				<td class="direita orange"><strong><?php echo $this->formatarReal($totalVal_01_Etapa); ?></strong></td>
+			</tr>
+			<tr class="IFF">
+				<td colspan="12">&nbsp;</td>
+			</tr>
+
+
+
+		<?php endforeach; ?>
+		<!-- ========== FIM BUSCA POR PRODUTO ========== -->
+
+
+
+
+
+		<!-- ========== INICIO TOTAL GERAL ========== -->
+		<tr class="IFF">
+			<td colspan="7" class="red"><strong>Total por mecanismo de incentivo</strong></td>
+			<td class="direita red"><strong><?php echo $this->formatarReal($this->totVal01); ?></strong></td>
+		</tr>
+		<tr>
+			<th class="left" colspan="7"><strong>Total Geral</strong></th>
+			<th class="direita red"><strong><?php echo $this->formatarReal($this->totVal01); ?></strong></th>
+		</tr>
+		<!-- ========== FIM TOTAL GERAL ========== -->
+
+	</table>
+<!-- ========== FIM PLANILHA ========== -->
+
+
+
+
+<!----------------------------------Bloco de Informações: Documentos Anexados---------------------------------------------->	
+<table class="tabela">	
+	<tr class="titulo_tabela">
+					<th colspan="6">Documentos Anexados</th>
+			</tr>
+			<tr>
+    				<th>Documento</th>
+    				<th>Arquivo</th>
+    				<th>Data</th>
+    				
+    				
+
+  			</tr>
+	<?php foreach($this->dadosprojeto as $tbdadosprojeto): ?>
+			<tr>	
+					<td></td>
+					<td></td>	
+					<td></td>
+								
+			</tr>
+	<?php endforeach;?>
+
+	
+
+<!----------------------------------Bloco de Informações: Ultima Tramitação-------------------------------------------------------- -->
+
+
+<table class="tabela">
+	<tr class="titulo_tabela">
+					<th colspan="6">Última Tramitação</th>
+	</tr>
+  	<tr>
+    				<th>Emissor</th>
+    				<th>Data de Envio</th>
+    				<th>Estado</th>
+    				<th>Destino</th>
+    				<th>Receptor</th>
+    				<th>Dt. Recebimento</th>
+	</tr>
+    <?php foreach($this->dadosprojeto as $tbdadosprojeto): ?>
+	<tr>
+					<td><?php echo $this->escape($tbdadosprojeto->Emissor);?></td>
+					<td><?php echo $this->escape($tbdadosprojeto->DtTramitacaoRecebida);?></td>
+					<td><?php echo $this->escape($tbdadosprojeto->Situacao);?></td>
+					<td><?php echo $this->escape($tbdadosprojeto->Destino);?></td>
+					<td><?php echo $this->escape($tbdadosprojeto->Receptor);?></td>
+					<td><?php echo $this->escape($tbdadosprojeto->DtTramitacaoRecebida);?></td>
+	</tr>
+	<?php endforeach;?>
+	 <tr>
+				    <th colspan="6" >Localização Atual do Projeto</th>
+  	</tr>
+  	<?php
+		foreach($this->dadosprojeto as $tbdadosprojeto): ?>
+	<tr>
+					<td colspan="6"><?php if($tbdadosprojeto->Localizacao != " "){echo  $this->escape($tbdadosprojeto->Localizacao);}
+										  else {echo $this->escape('Dados não informados!'); }?></td>
+																										
+	</tr>
+	<?php endforeach;?>
+	
+	
+</table>
+<br>
+
+<table class="tabela">
+  <tr>
+				    <th>Despacho</th>
+  </tr>
+   <?php foreach($this->dadosprojeto as $tbdadosprojeto): ?>
+	<tr>
+					<td><?php if($tbdadosprojeto->meDespacho != null){
+									echo $this->escape($tbdadosprojeto->meDespacho);
+							  } else {echo "Dados não informados!";}
+							  		?></td>
+		
+	</tr>
+	<?php endforeach;?>
+  </table>
+<br>
+
+<table class="tabela">
+	<td class="center"> 	<a href="javascript:window.print()"><img src="<?php echo $this->baseUrl(); ?>/public/img/imprimir.gif" alt="Imprimir"/> </a></td>	
+</table>
+
+
+
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

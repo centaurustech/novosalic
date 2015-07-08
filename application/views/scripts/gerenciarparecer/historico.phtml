@@ -1,0 +1,55 @@
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'index'),'',true); ?>" title="Ir para Início">Início</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'gerenciarparecer', 'action' => 'listaprojetos'),'',true); ?>" title="Localizar Parecer">Gerenciar Pareceres</a></li>
+        <li class="last">Hist&oacute;rico</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Hist&oacute;rico <span class="voltar"><a href="javascript:voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<div id="conteudo">
+    <table class="tabela">
+        <?php
+        $primeiro = 0;
+        if(isset($this->Pareceres['pareceres'])) {
+            $Pareceres = $this->Pareceres['pareceres'];
+//        xd($Pareceres);
+            if(count($Pareceres) > 0) {
+                foreach ($Pareceres as $key=>$val) {
+                    $titulo     =   "<tr>";
+                    $conteudo   =   "<tr>";
+                    foreach ($val as $t=>$c) {
+                        $titulo     .=  "<th>{$t}</th>";
+                        $conteudo   .=  "<td>{$c}</td>";
+                    }
+                    $titulo     .=  "</tr>";
+                    $conteudo   .=  "</tr>";
+                    if($primeiro==0) {
+                        echo $titulo;
+                    }
+                    echo $conteudo;
+                    $primeiro++;
+                }
+            }
+        } else {
+            echo '<th>Nenhum Resultado</th>';
+        }
+    ?>
+    </table>
+    <br clear="all" />
+</div>
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

@@ -1,0 +1,86 @@
+<?php include_once 'scripts/admissibilidade/inc/menu.inc.php'; ?>
+<div id="titulo">
+    <div>Admissibilidade de propostas - Redistribuir análise <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<style type="text/css">
+<!--
+.mensagem {
+    padding: 8px;
+    border: darkgreen;
+    background: #e3e3c7;
+}
+-->
+</style>
+<script type="text/javascript">
+<!--
+$(document).ready(function() {
+    $(".btArmazenar").click(function() {
+        $('#frmRedistAnalise').submit();
+    });
+});
+//-->
+</script>
+<div id="conteudo">
+    <?php
+    if($this->mensagem) {
+        echo "<div class='mensagem' align=center>{$this->mensagem}</div>";
+    }
+    ?>
+    <form id="frmRedistAnalise" method="post" action="<?php echo $this->baseUrl(); ?>/admissibilidade/redistribuiranaliseitem?fase=<?php echo $this->analista->Tipo; ?>" >
+        <table class="tabela">
+            <tr>
+                <th colspan="2">
+                    Propostas distribuidas para análise
+                </th>
+            </tr>
+            <tr>
+                <td align="right">
+                    <b>Nr. Proposta</b>
+                    <br />
+                    <input type="hidden" name="idProjeto" value="<?php echo $this->analista->idProjeto; ?>" />
+                    <?php echo $this->analista->idProjeto; ?>
+                </td>
+                <td align="left">
+                    <b>Nome da Proposta</b>
+                    <br />
+                    <?php echo $this->analista->NomeProjeto; ?>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">
+                    <b>Analista Atual</b>
+                    <br />
+                    <?php echo $this->analista->Tecnico; ?>
+                    <input type="hidden" name="tecnicoAtual" value="<?php echo $this->analista->Tecnico; ?>" />
+                </td>
+                <td align="left">
+                    <b>Tipo</b>
+                    <br />
+                    <?php echo $this->analista->Tipo; ?>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">
+                    <b>Novo Analista *</b>
+                </td>
+                <td align="left">
+                    <select class="select_simples" name="usu_cod">
+                        <?php
+                        foreach ($this->novosAnalistas as $analista) {
+                            echo "<option value='{$analista->usu_cod}'>{$analista->usu_nome}</option>";
+                        } ?>
+                    </select>
+                </td>
+            </tr>
+        </table>
+    </form>
+    <table class="tabela">
+    <tr>
+    <td class="centro">
+		<input type="button" class="btn_confirmar btArmazenar" title="Confirmar" value=" " />
+	</td>
+	</tr>
+    </table>
+</div>
+<div id="rodapeConteudo"><span></span></div>
+<br clear="all" />

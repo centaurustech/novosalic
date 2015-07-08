@@ -1,0 +1,226 @@
+<script type="text/javascript">
+ 
+    function confirmaracao(){
+
+        $(".opcaovinculacao").each(function(indice, elemento) {
+            if($(elemento).attr('checked')) {
+                if($(elemento).val() == "0"){
+                    $("#confirmartroca").html("Deseja vincular o responsável à proposta?");
+                } else {
+                    $("#confirmartroca").html("Deseja desvincular o responsável da proposta?");
+                }
+            }
+        });
+
+        $("#confirmartroca").dialog({
+            resizable: true,
+            width:450,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            closeOnEscape : false,
+            title : 'Alerta',
+            buttons: {
+                'Não': function(){
+                    $(this).dialog('close');
+                },
+                'Sim': function(){
+                    $("#formvincularproposta").submit();
+                }
+            }
+        });
+        $("#confirmartroca").dialog('open');
+    }
+
+    function mostraresponsavel(mostra){
+        if(mostra){
+//            $(".mostraresponsavel").show();
+            $(".propostasdesvinculadas").hide();
+            $(".propostasvinculadas").show();
+        } else {
+//            $(".mostraresponsavel").hide();
+            $(".propostasdesvinculadas").show();
+            $(".propostasvinculadas").hide();
+        }
+    }
+
+
+    function validaform(){
+        var checado = false;
+        $('.propostas').each(function(indice, elemento) {
+            if($(elemento).attr('checked')) {
+                checado = true;
+            }
+        });
+        if(!checado) {
+            $("#confirma").html('Favor selecionar uma proposta!');
+            $("#confirma").dialog({
+                resizable: false,
+                width:320,
+                height:150,
+                modal: true,
+                autoOpen:false,
+                closeOnEscape : false,
+                title : 'Alerta',
+                buttons: {
+                    'OK': function(){
+                        $(this).dialog('close');
+                    }
+                }
+            });
+            $("#confirma").dialog('open');
+            return false;
+        }
+
+        if($('#responsavel').val() == ''){
+            $("#confirma").html('Favor selecionar um responsável!');
+            $("#confirma").dialog({
+                resizable: false,
+                width:320,
+                height:150,
+                modal: true,
+                autoOpen:false,
+                closeOnEscape : false,
+                title : 'Alerta',
+                buttons: {
+                    'OK': function(){
+                        $(this).dialog('close');
+                    }
+                }
+            });
+            $("#confirma").dialog('open');
+            return false;
+        }
+
+        confirmaracao();
+    }
+</script>
+
+<?php require_once "inc/menu_responsavel.inc.php"; // menu ?>
+
+<!-- ========== INï¿½CIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para Início">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'manterpropostaincentivofiscal', 'action' => 'listar-propostas')); ?>" title="Ir para  Lista propostas">Lista propostas</a></li>
+        <li class="last">Vincular Propostas </li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+<!-- ========== INï¿½CIO Tï¿½TULO ========== -->
+<div id="titulo">
+    <div>Vincular Propostas <span class="voltar"><a href="#" onclick="voltar();"></a></span></div>
+</div>
+<!-- ========== FIM Tï¿½TULO ========== -->
+
+<div id="conteudo">
+    <div id="confirmartroca"></div>
+    <div id="confirma"></div>
+    <form id="formvincularproposta" action="<?php echo $this->url(array('controller' => 'vincularresponsavel', 'action' => 'vincularpropostas')); ?>" method="post">
+
+        <?php if((count($this->propostas) > 0) || (count($this->propostasD) > 0)):?>
+        <table class="tabela">
+            <tr>
+                <td align="center" colspan="2">
+                    <input type="radio" value="0" name="opcaovinculacao" class="opcaovinculacao" id="vincular" onclick="mostraresponsavel(true);" checked="checked" /> &nbsp; <label for="vincular" style="margin-right: 20px">Vincular</label>
+                    <input type="radio" value="1" name="opcaovinculacao" class="opcaovinculacao" id="desvincular" onclick="mostraresponsavel(false);" /> &nbsp; <label for="desvincular">Desvincular</label>
+                </td>
+            </tr>
+        </table>
+
+        <table class="tabela mostraresponsavel">
+            <tr>
+                <th colspan="2">Selecione um Respons&aacute;vel</th>
+            </tr>
+            <tr>
+                <td width="120">Respons&aacute;vel:</td>
+                <td>
+                    <select name="responsavel" id="responsavel" class="input_simples" style="width: 350px;">
+                        <option value="">- Selecione -</option>
+                        <?php foreach ($this->responsaveis as $v){ ?>
+                        <option value="<?php echo $v['idVinculo'];?>:<?php echo $v['idResponsavel'];?>"><?php echo $v['NomeResponsavel'];?></option>
+                        <?php } ?>
+                    </select>&nbsp;<span id="msgValidaResponsavel"></span>&nbsp;&nbsp;&nbsp;
+                </td>
+            </tr>
+        </table>
+
+        <?php if(count($this->propostas) > 0):?>
+        <table class="tabela propostasvinculadas">
+            <tr>
+                <th width="120">N&uacute;mero da Proposta</th>
+                <th>Nome da Proposta</th>
+                <th width="130">CPF do Respons&aacute;vel</th>
+                <th>Respons&aacute;vel</th>
+                <th></th>
+            </tr>
+            <?php foreach ($this->propostas as $p){ ?>
+            <tr>
+                <td align="center"><?php echo $p->idPreProjeto;?></td>
+                <td><?php echo $p->NomeProjeto;?></td>
+                <td><?php echo Mascara::addMaskCPF($p->Cpf); ?></td>
+                <td><?php echo $p->Nome;?></td>
+                <td align="center"><input type="radio" name="propostas" class="propostas" value="<?php echo $p->idPreProjeto;?>" /></td>
+            </tr>
+            <?php } ?>
+            <tr>
+                <td align="center" colspan="5">
+                    <input type="button" value=" " class="btn_vincular" id="btnvincular" style="width:87px;" onclick="validaform();" />
+                </td>
+            </tr>
+        </table>
+        <?php else:?>
+        <table class="tabela propostasvinculadas">
+            <tr>
+                <td align="center"></td>
+            </tr>
+        </table>
+        <?php endif;?>
+
+        <?php if(count($this->propostasD) > 0):?>
+        <table class="tabela propostasdesvinculadas sumir">
+            <tr>
+                <th width="120">N&uacute;mero da Proposta</th>
+                <th>Nome da Proposta</th>
+                <th width="130">CPF do Respons&aacute;vel</th>
+                <th>Respons&aacute;vel</th>
+                <th></th>
+            </tr>
+            <?php foreach ($this->propostasD as $pd):?>
+            <tr>
+                <td align="center"><?php echo $pd->idPreProjeto;?></td>
+                <td><?php echo $pd->NomeProjeto;?></td>
+                <td><?php echo Mascara::addMaskCPF($pd->Cpf); ?></td>
+                <td><?php echo $pd->Nome;?></td>
+                <td align="center"><input type="radio" name="propostas" class="propostas" value="<?php echo $pd->idPreProjeto;?>" /></td>
+            </tr>
+            <?php endforeach; ?>
+            <tr>
+                <td align="center" colspan="5">
+                    <input type="button" value=" " class="btn_desvincular" id="btndesvincular" style="width:87px;" onclick="validaform();" />
+                </td>
+            </tr>
+        </table>
+        <?php else:?>
+        <table class="tabela propostasdesvinculadas sumir">
+            <tr>
+                <td align="center">Todas as suas Propostas est&atilde;o em sua responsabilidade!</td>
+            </tr>
+        </table>
+        <?php endif;?>
+
+        <?php else:?>
+        <table class="tabela">
+            <tr>
+                <td align="center">Nenhuma Proposta cadastrada!</td>
+            </tr>
+        </table>
+        <?php endif;?>
+
+    </form>
+</div>
+<!-- ========== INï¿½CIO RODAPï¿½ DO CONTEï¿½DO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPï¿½ DO CONTEï¿½DO ========== -->
+<br clear="all" />

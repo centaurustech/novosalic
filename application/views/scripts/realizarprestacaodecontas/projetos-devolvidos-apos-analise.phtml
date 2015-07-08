@@ -1,0 +1,288 @@
+
+<?php
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+<script>
+    $(document).ready(function(){
+        $(".orderByDA").click(function(){
+            var campo = $(this).attr("valorOrdenacaoDA");
+
+            if("ASC" == $("#tipoOrdenacaoDA").val()){
+                tipo = "DESC";
+            }else{
+                tipo = "ASC";
+            }
+
+            ordenarDA(campo, tipo);
+        });
+
+        $(".orderByDA").each(function(){
+            if($("#ordenacaoDA").val() == $(this).attr("valorOrdenacaoDA")){
+                if($("#tipoOrdenacaoDA").val() == "ASC"){
+                    $(this).after('<span style="padding-left:4px;"><img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-baixo.PNG" align="absmiddle"></span>');
+                }else{
+                    $(this).after('<span style="padding-left:4px;"><img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-cima.PNG" align="absmiddle"></span>');
+                }
+            }
+        });
+    });
+
+    function ordenarDA(campo, tipo){
+        $("#ordenacaoDA").val(campo);
+        $("#tipoOrdenacaoDA").val(tipo);
+        paginarDevolvidosAposAnalise(1);
+    }
+
+    function paginarDevolvidosAposAnalise(pag){
+        $("#pagDA").val(pag);
+        jqAjaxForm(document.getElementById("frmDevolvidosAposAnalise"), "devolvidosaposanalise_resultado");
+        $("#devolvidosaposanalise_resultado").html("");
+        $('#devolvidosaposanalise_resultado').html('<br><center>Aguarde, carregando dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br>');
+    }
+
+    function JSEncaminharParaConsultoria(idPronac,idOrgaoDestino)
+    {
+
+        $('html').css('overflow', 'hidden');
+        $("body").append("<div id='divDinamica'></div>");
+        $("#divDinamica").html("");
+        $('#divDinamica').html("<br><br><center>Carregando dados...</center>");
+        $.ajax({
+            url : '<?php echo $this->url ( array ('controller' => 'realizarprestacaodecontas', 'action' => 'encaminharprestacaodecontas' ));?>',
+            data :
+                {
+                idPronac : idPronac,
+                idOrgaoDestino : idOrgaoDestino,
+                idSituacaoPrestContas : 1,
+                pag : <?php echo $this->pagDA;?>
+            },
+            success: function(data){
+                $('#divDinamica').html(data);
+            },
+            type : 'post'
+
+        });
+
+        var title = '';
+        if(idOrgaoDestino == 177){
+            title = 'Consultoria - AECI';
+        }else if(idOrgaoDestino == 12){
+            title = 'Consultoria - CONJUR';
+        }else{
+            title = 'Encaminhar Projeto para Análise';
+        }
+        //jqAjaxLink("<?php echo $this->baseUrl()?>/operacional/resultado-projetos-por-situacao?situacao=" + situacao, null, "divDinamica");
+        $("#divDinamica").dialog({
+            resizable: true,
+            width:750,
+            height:550,
+            modal: true,
+            autoOpen:true,
+            draggable:false,
+            title: title,
+            buttons: {
+                'Cancelar': function() {
+                    $("#divDinamica").remove();
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');
+                }
+            },
+            close: function() {
+                    $("#divDinamica").remove();
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');
+                }
+        });
+    }
+
+    function JShistoricoEncaminhamentoDA(idPronac)
+    {
+        $("body").append("<div id='divDinamicaHistorico'></div>");
+        $("#divDinamicaHistorico").html("");
+        $('#divDinamicaHistorico').html("<br><br><center>Carregando dados...</center>");
+        $.ajax({
+            url : '<?php echo $this->url ( array ('controller' => 'realizarprestacaodecontas', 'action' => 'historicoencaminhamento' ));?>?idPronac='+idPronac,
+            data :
+            {
+                idPronac : idPronac
+            },
+            success: function(data){
+                $('#divDinamicaHistorico').html(data);
+            },
+            type : 'post'
+
+        });
+        $('html').css('overflow', 'hidden');
+        $("#divDinamicaHistorico").dialog({
+            resizable: true,
+            width:750,
+            height:600,
+            modal: true,
+            autoOpen:true,
+            draggable:false,
+            title: 'Hist&oacute;rico de Encaminhamento do Projeto',
+            buttons: {
+                'OK': function() {
+                    $("#divDinamicaHistorico").remove();
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');
+                }
+            },
+            close: function() {
+                    $("#divDinamicaHistorico").remove();
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');
+                }
+        });
+    }
+</script>
+
+
+<div id="resultadoConsultaDevolvidoAposAnalise">
+<!-- ===================================================================== -->
+<!-- ================= DEVOLVIDOS APOS ANALISE ================================ -->
+<!-- ===================================================================== -->
+
+    <?php $idPronac = null; if (is_object($this->registrosDA) &&  $this->registrosDA->count() > 0){ ?>
+        <table class="tabela">
+            <thead>
+                <tr class="titulo_tabela">
+                        <th width="50">Número</th>
+                        <th width="50"><a href="#resultadoConsultaDevolvidoAposAnalise" class="orderByDA" valorOrdenacaoDA="1">Pronac</a></th>
+                        <th width="150"><a href="#resultadoConsultaDevolvidoAposAnalise" class="orderByDA" valorOrdenacaoDA="5">Nome do Projeto</a></th>
+                        <th width="220"><a href="#resultadoConsultaDevolvidoAposAnalise" class="orderByDA" valorOrdenacaoDA="10">Área / Segmento</a></th>
+                        <th width="60" nowrap><a href="#resultadoConsultaDevolvidoAposAnalise" class="orderByDA" valorOrdenacaoDA="14">Data de In&iacute;cio</a></th>
+                        <th width="60" nowrap><a href="#resultadoConsultaDevolvidoAposAnalise" class="orderByDA" valorOrdenacaoDA="15">Data Fim</a></th>
+                        <th width="130"><a href="#resultadoConsultaDevolvidoAposAnalise" class="orderByDA" valorOrdenacaoDA="12">Mecanismo</a></th>
+                        <th width="130">Analisar Prestação de Contas</th>
+                        <th width="60">Consultoria AECI</th>
+                        <th width="60">Consultoria CONJUR</th>
+                        <th width="60">Visualizar Hist&oacute;rico</th>
+                        <th width="60">Dilig&ecirc;ncia</th>
+                    </tr>
+            </thead>
+           <?php
+                $i = 0;
+                foreach ( $this->registrosDA as $chave => $prescontas ) : ?>
+                        <tr>
+                            <td align="center"><?php echo ++$i;?></td>
+                            <td class="centro">
+                                <!--<a target="_blank"  href="<?php echo $this->url ( array ('controller' => 'realizarprestacaodecontas', 'action' => 'dadosprojeto' ) ) . '?idPronac=' . $prescontas->IdPRONAC. '&pronac='. $prescontas->AnoProjeto . '' . $prescontas->Sequencial; ?>" class="itenspronac" style="text-decoration: underline; cursor: pointer;">
+                                    <?php echo $prescontas->AnoProjeto . '' . $prescontas->Sequencial;?>
+                                </a>-->
+                                <a target="_blank" href="<?php echo $this->url ( array ('controller' => 'consultardadosprojeto', 'action' => '' ) ) . '?idPronac=' . $prescontas->IdPRONAC; ?>" class="itenspronac" style="text-decoration: underline; cursor: pointer;">
+                                    <?php echo $prescontas->AnoProjeto . '' . $prescontas->Sequencial;?>
+                                </a>
+                            </td>
+                            <td align="left"><?php echo $prescontas->NomeProjeto;?></td>
+                            <td align="left"><?php echo $prescontas->Area . ' / ' . $prescontas->Segmento;?></td>
+                            <td class="centro"><?php echo Data::tratarDataZend($prescontas->dtInicioEncaminhamento, 'brasileira'); ?></td>
+                            <td class="centro"><?php echo Data::tratarDataZend($prescontas->dtFimEncaminhamento, 'brasileira'); ?></td>
+                            <td class="centro"><?php $mecanismo = $prescontas->Mecanismo;if ($mecanismo == 'Mecenato'){echo "Incentivo Fiscal";}else{echo $prescontas->Mecanismo;}?></td>
+                            <td align="center"><img style="cursor: pointer;" src="../public/img/table_multiple.png" onclick="window.location='<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'laudofinal') ) . '?idPronac=' . $prescontas->IdPRONAC; ?>'" alt="Analisar" /></td>
+                            <td align="center"><img style="cursor: pointer;" src="../public/img/user_gray.png" onclick="return JSEncaminharParaConsultoria('<?php echo $prescontas->IdPRONAC;?>','177')" alt="Encaminhar" /></td>
+                            <td align="center"><img style="cursor: pointer;" src="../public/img/user_gray.png" onclick="return JSEncaminharParaConsultoria('<?php echo $prescontas->IdPRONAC;?>','12')" alt="Encaminhar" /></td>
+                            <td align="center"><img style="cursor: pointer;" src="../public/img/btn_busca.jpg" onclick="return JShistoricoEncaminhamentoDA('<?php echo $prescontas->IdPRONAC; ?>')" alt="Encaminhar" /></td>
+                            <td background="" align="center">
+                                <?php
+                                    $tempoFimDiligencia = NULL;
+                                    $diligenciado = null;
+
+                                    if($prescontas->stEnviado == 'N'){
+                                        $tempoFimDiligencia = '20';
+                                    }else{
+                                        $tempoFimDiligencia = '40';
+                                    }
+
+                                    /* Diligencia */
+                                    if ($prescontas->DtSolicitacao && $prescontas->DtResposta == NULL)
+                                    {
+                                        $diligencia = 1;
+
+                                        $diligenciado = "notice.png";
+                                        $Titlediligenciado = "Diligenciado";
+                                    }
+                                    else if ($prescontas->DtSolicitacao && $prescontas->DtResposta != NULL)
+                                    {
+                                        $diligencia = 2;
+
+                                        $diligenciado = "notice3.png";
+                                        $Titlediligenciado = "Diligencia respondida";
+                                    }
+                                    //else if ($prescontas->DtSolicitacao && round(data::CompararDatas($prescontas->DtDistribuicao)) > $tempoFimDiligencia)
+                                    else if ($prescontas->DtSolicitacao && round(data::CompararDatas($prescontas->DtSolicitacao)) > $tempoFimDiligencia)
+                                    {
+                                        $diligencia = 3;
+
+                                        $diligenciado = "notice2.png";
+                                        $Titlediligenciado = "Diligência não respondida";
+                                    }
+                                    else
+                                    {
+                                        $diligencia = 0;
+
+                                        $diligenciado = "notice1.png";
+                                        $Titlediligenciado = "A Diligenciar";
+                                    }
+                                    ?>
+
+                                    <a target="_blank" href="<?php echo $this->url(array('controller' => 'diligenciar', 'action' =>'listardiligenciaanalista')).'?idPronac=' . $prescontas->IdPRONAC.'&situacao=E17&tpDiligencia=174';?>" ><img src="<?php echo $this->baseUrl(); ?>/public/img/<?php echo $diligenciado; ?>" title="<?php echo $Titlediligenciado; ?>" width="30px"/></a>
+                                    
+                            </td>
+                        </tr>
+            <?php endforeach; ?>
+        </table>
+    <?php } else { ?>
+            <table class="tabela">
+                <tr>
+                    <td align="center"><em>Não foram encontrados projetos de acordo com os parâmetros de pesquisa.</em></td>
+                </tr>
+            </table>
+            <script>$('#paginacaoDA').hide();</script>
+    <?php } ?>
+    <form action="<?php echo $this->url(array('controller' => 'realizarprestacaodecontas', 'action' => 'projetos-devolvidos-apos-analise')); ?>" method="post" name="frmDevolvidosAposAnalise" id="frmDevolvidosAposAnalise">
+        <input type="hidden" class="input_simples" name="idPronac" id="idPronac" value="<?php echo $this->idPronac; ?>"/>
+    <?php if(!empty($this->parametrosBuscaDA)) foreach($this->parametrosBuscaDA as $name=>$value):?>
+        <?php if(!is_array($value)): ?>
+        <input type="hidden" name="<?php echo $name?>" id="<?php echo $name?>" value="<?php echo utf8_decode($value)?>"/>
+        <?php else: ?>
+            <?php foreach($value as $valor):?>
+                <input type="hidden" name="<?php echo $name?>[]" id="<?php echo $name?>" value="<?php echo utf8_decode($valor)?>"/>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    <?php endforeach; ?>
+        <?php if(empty($this->parametrosBuscaDA["pagDA"])):?>
+        <input type="hidden" name="pagDA" id="pagDA" value="<?php echo $this->pagDA; ?>"/>
+        <?php endif; ?>
+        <?php if(empty($this->parametrosBuscaDA["ordenacaoDA"])):?>
+        <input type="hidden" name="ordenacaoDA" id="ordenacaoDA" value="<?php echo (!empty($this->parametrosBuscaDA["ordenacaoDA"]))?$this->parametrosBuscaDA["ordenacaoDA"]:""; ?>"/>
+        <?php endif; ?>
+        <?php if(empty($this->parametrosBuscaDA["tipoOrdenacaoDA"])):?>
+        <input type="hidden" name="tipoOrdenacaoDA" id="tipoOrdenacaoDA" value="<?php echo (!empty($this->parametrosBuscaDA["tipoOrdenacaoDA"]))?$this->parametrosBuscaDA["tipoOrdenacaoDA"]:""; ?>"/>
+        <?php endif; ?>
+    </form>
+    <table class="tabela" id="paginacaoDA">
+        <tr>
+            <td align="center">
+                Exibindo de <b><?php echo $this->inicioDA; ?></b> a <b><?php echo $this->fimDA; ?></b> de um total de <b><?php echo $this->totalDA; ?></b><br>
+                <?php if($this->pagDA<=1): ?>
+                <input type="button" style="width: 88px" class="btn_p_anterior-off" id="btn_p_anterior">
+                <?php else: ?>
+                <input type="button" style="width: 88px" class="btn_inicio" id="btn_inicio" onclick="paginarDevolvidosAposAnalise('1')"/>
+                <input type="button" style="width: 88px" class="btn_p_anterior" id="btn_p_anterior" onclick="paginarDevolvidosAposAnalise('<?php echo ($this->pagDA > 1)?$this->pagDA-1:1; ?>')"/>
+                <?php endif; ?>
+                <select name="pagina" id="pagina" class="input_simples" onchange="paginarDevolvidosAposAnalise(this.value)">
+                    <?php for($i=1; $i<$this->totalPagDA+1; $i++): ?>
+                    <option value="<?php echo $i; ?>" <?php if($i == $this->pagDA){ echo " selected='selected' "; } ?>><?php echo $i; ?></option>
+                    <?php endfor; ?>
+                </select>
+                <?php if($this->pagDA+1 > $this->totalPagDA): ?>
+                <input type="button" style="width: 88px" class="btn_p_proximo-off" id="btn_p_proximo"/>
+                <?php else: ?>
+                <input type="button" style="width: 88px" class="btn_p_proximo" id="btn_p_proximo" onclick="paginarDevolvidosAposAnalise('<?php echo ($this->pagDA < $this->totalPagDA)?$this->pagDA+1:$this->totalPagDA; ?>')"/>
+                <input type="button" style="width: 88px" class="btn_ultimo" id="btn_ultimo" onclick="paginarDevolvidosAposAnalise('<?php echo $this->totalPagDA; ?>')"/>
+                <?php endif; ?>
+            </td>
+        </tr>
+    </table>
+</div>

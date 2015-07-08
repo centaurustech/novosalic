@@ -1,0 +1,481 @@
+<?php include_once 'inc/menu-modulo.php'; ?>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first">Início</li>
+        <li class=""><a href="index">Criar Edital - Passo 1</a></li>
+        <li class=""><a href="informacaogeral">Criar Edital - Passo 2</a></li>
+        <li class="last">Criar Edital - Passo 3</li>
+    </ul>
+</div>
+<div id="titulo">
+    <div>Criar Edital</div>
+</div>
+<div id="conteudo">
+    <fieldset>
+        <legend> Passo 3 - Definição dos módulos do Edital</legend>
+
+        <?php if($this->qtdModulos != 0): ?>
+        <div style="width: 100%; text-align: center;">
+            <a href="<?php echo $this->url(array('controller' => 'edital', 'action' => 'montagem-edital')); ?>">
+                <img src="<?php echo $this->baseUrl(); ?>/public/img/montar-edital.gif" style="cursor: pointer;"><br /><br />
+            </a>   
+        </div>
+        <?php endif; ?>
+        
+    </fieldset>
+</div>
+
+
+<!-- inicio: navegacao local  -->
+<script type="text/javascript">
+            
+    function num(dom){
+        dom.value=dom.value.replace(/\D/g,'');
+    }
+          
+    
+            
+    $('#selectItemOrcamentario').change(function(){
+        if($(this).val() == 999){
+            $(this).closest('table tr td').append($('<br /><br />Outro:&nbsp;&nbsp;<input maxlength="3" size="85" type="text" name="dsOutro" id="dsOutro" class="input_simples">'));  
+        } else {
+            $(this).closest('table').remove($('#dsOutro'));
+        }
+    });
+            
+    $('#tabs').tabs();
+
+    /* ================== FUNCOES - QUESTIONARIO ============================ */
+    function abrirDinamico(elemento, obj) {
+        if ($(elemento).css('display') == 'none') {
+            $(elemento).fadeIn('fast', function() {
+                $('img', $(obj)).attr('src', '<?php echo $this->baseUrl(); ?>/public/img/navigation-baixo.PNG');
+            });
+        } else {
+            $(elemento).fadeOut('fast', function() {
+                $('img', $(obj)).attr('src', '<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png');
+            });
+        }
+    }
+    
+    
+
+    function excluirFormaPagamento(id){
+       var idEdital = $('#idEdital').val();
+       window.location = '<?php echo $this->url(array('controller' => 'edital', 'action' => 'deletar-forma-pagamento'),'',true); ?>/idFormaPagamento/'+id+'/idEdital/'+idEdital;
+    }
+
+    function excluirItemOrcamentario(id){
+       var idEdital = $('#idEdital').val();
+       window.location = '<?php echo $this->url(array('controller' => 'edital', 'action' => 'deletar-item-orcamentario'),'',true); ?>/idFormaPagamento/'+id+'/idEdital/'+idEdital;
+    }
+
+    function editarFormaPagamento(id){
+
+    $('#msgAjax').html('Aguarde, carregando os dados...');
+        $.ajax({
+            type: "POST",
+            url: '<?php echo $this->url(array('controller' => 'edital', 'action' => 'busca-forma-pagamento-ajax'),'',true); ?>',
+            data: {idFormaPagamento: id},
+            dataType: 'json',
+            success: function(data) {
+                if(data.error != ''){
+                    $('#msgAjax').html(data.error);
+                }else{
+                    $('#divBtnIncluirCriterio').hide();
+                    $('#divBtnAlterarCriterio').show();
+                    // Preenche os dados
+                    $('#idFormaPagamento').val(data.dados.idFormaPagamento);
+                    $('#dsFormaPagamento').val(data.dados.dsFormaPagamento);
+                    $('#vlrApoio').val(data.dados.vlrApoio);
+                    $('#qtParcelas').val(data.dados.qtParcelas);
+                    $('#qtPremiados').val(data.dados.qtPremiados);
+                    $('#msgAjax').html('');
+                }
+            },error: function(data) {
+                $('#msgAjax').html(data.error);
+            }
+        });
+    }
+
+    function excluirItemOrcamentario(idPlanilhaItem, idPlanilhaEtapa){
+       var idEdital = $('#idEdital').val();
+       window.location = '<?php echo $this->url(array('controller' => 'edital', 'action' => 'deletar-forma-pagamento'),'',true); ?>/idPlanilhaItem/'+idPlanilhaItem+'/idPlanilhaEtapa/'+idPlanilhaEtapa+'/idEdital/'+idEdital;
+    }
+
+    function editarItemOrcamentario(id){
+
+        $('#msgAjax').html('Aguarde, carregando os dados...');
+            $.ajax({
+                type: "POST",
+                url: '<?php echo $this->url(array('controller' => 'edital', 'action' => 'busca-forma-pagamento-ajax'),'',true); ?>',
+                data: {idPlanilhaItem: idPlanilhaItem, idPlanilhaEtapa: idPlanilhaEtapa},
+                dataType: 'json',
+                success: function(data) {
+                    if(data.error != ''){
+                        $('#msgAjax').html(data.error);
+                    }else{
+                        $('#divBtnIncluirCriterio').hide();
+                        $('#divBtnAlterarCriterio').show();
+                        // Preenche os dados
+                        $('#idFormaPagamento').val(data.dados.idFormaPagamento);
+                        $('#dsFormaPagamento').val(data.dados.dsFormaPagamento);
+                        $('#vlrApoio').val(data.dados.vlrApoio);
+                        $('#qtParcelas').val(data.dados.qtParcelas);
+                        $('#qtPremiados').val(data.dados.qtPremiados);
+                        $('#msgAjax').html('');
+                    }
+                },error: function(data) {
+                    $('#msgAjax').html(data.error);
+                }
+        });
+    }
+
+    GuiaPesquisar = function(guia) {
+        var url = $('#formularioGuia').attr('action') + '?format=json';
+            url = url.replace('cadastrar', 'pesquisar/'+guia);
+        $.ajax({
+            type: "GET",
+            url: url,
+            data: 'guia='+guia,
+            dataType: 'json',
+            success: function(response) {
+                $('#formularioGuia input:reset').click();
+                $('#formularioGuia .btn_incluir').hide();
+                $('#formularioGuia .btn_editar').show();
+                $('#formularioGuia #guia').val(response.guia[0].idGuia);
+                $('#formularioGuia #categoria').val(response.guia[0].idCategoria);
+                $('#formularioGuia #nomeGuia').val(response.guia[0].nmGuia);
+                $('#formularioGuia #txtGuia').val(response.guia[0].txAuxilio);
+            }
+        });
+    };
+
+    GuiaFormResetar = function () {
+        $('#formularioGuia #guia').val('');
+        $('#formularioGuia #categoria').val('');
+        $('#formularioGuia .btn_incluir').show();
+        $('#formularioGuia .btn_editar').hide();
+        $('#formularioGuia input:reset').click();
+    };
+
+    GuiaCadastrar = function() {
+        $.ajax({
+            type: "POST",
+            url: $('#formularioGuia').attr('action') + '?format=json',
+            data: $('#formularioGuia').serialize(),
+            dataType: 'json',
+            success: function(response) {
+                $('#formularioGuia input:reset').click();
+                GuiaListaAdicionar(response.guia);
+                GuiaComboOptionAdicionar(response.guia);
+                GuiaTabAdicionar(response.guia);
+            }
+        });
+    };
+
+    GuiaAtualizar = function() {
+        var url = $('#formularioGuia').attr('action') + '?format=json';
+            url = url.replace('cadastrar', 'atualizar/'+$('#formularioGuia .btn_editar').closest('form').children('#guia').val());
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: $('#formularioGuia').serialize(),
+            dataType: 'json',
+            success: function(response) {
+                GuiaListaAtualizar(response.guia);
+                GuiaComboOptionAtualizar(response.guia);
+                GuiaTabAtualizar(response.guia);
+                GuiaFormResetar();
+            }
+        });
+    };
+
+    GuiaDeletar = function(guia) {
+        var url = $('#formularioGuia').attr('action') + '?format=json';
+            url = url.replace('cadastrar', 'deletar/guia/'+guia);
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: $('#formularioGuia').serialize(),
+            dataType: 'json',
+            success: function() {
+                GuiaListaDeletar(guia);
+                GuiaComboOptionDeletar(guia);
+                GuiaTabDeletar(guia);
+            }
+        });
+    };
+
+    GuiaListaAdicionar = function(guia) {
+        $('#tblGuiaAdicionada tbody #trGuia_zero').remove();
+        $('#tblGuiaAdicionada tbody').append(
+            '<tr id="guia_' + guia.guia + '"><td>' + guia.nome + '</td><td>' + guia.descricao + '</td>' +
+            '<td>' +
+            '<input type="button" class="btn_editar" data-guia="' + guia.guia + '" />' +
+            '<input type="button" class="btn_exclusao" data-guia="' + guia.guia + '" />' +
+            '</td>' +
+            '</tr>'
+        );
+        addGuiaEvents();
+    };
+
+    GuiaListaAtualizar = function(guia) {
+        $('#tblGuiaAdicionada tbody #guia_'+guia.guia+' td:first').html(guia.nome);
+        $('#tblGuiaAdicionada tbody #guia_'+guia.guia+' td:first').next().html(guia.descricao);
+    };
+
+    GuiaListaDeletar = function(guia) {
+        $('#tblGuiaAdicionada tbody #guia_'+guia).remove();
+    };
+
+    GuiaComboOptionAdicionar = function(guia) {
+        $('#guiaQuestao').append('<option value=' + guia.guia +'>' + guia.nome + '</option>');
+    };
+
+    GuiaComboOptionAtualizar = function(guia) {
+        $('#guiaQuestao option[value="' + guia.guia +'"]').html(guia.nome);
+    };
+
+    GuiaComboOptionDeletar = function(guia) {
+        $('#guiaQuestao option[value="' + guia +'"]').remove();
+    };
+
+    GuiaTabAdicionar = function(guia) {
+        $('#tabs ul').append('<li style="width: 15%;" class="ui-state-default ui-corner-top"><a href="#Guia_' + guia.guia +'">' + guia.nome + '</a></li>');
+        $('#tabs').append(
+            '<div id="Guia_' + guia.guia +'" align="left" class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide">' +
+            '<table class="tabela" id="tblQuestaoAdicionada" style="margin-top: 0px !important; padding-top: 0px !important; border-top: 1px #fff solid !important; ">' +
+            '<thead>' +
+                '<tr nodrag="true">' +
+                    '<td colspan="4" class="destacar centro bold">QUESTÕS ADICIONADAS - ' + guia.nome + '</td>' +
+                '</tr>' +
+                '<tr nodrag="true">' +
+                    '<td class="destacar bold" style="width: 35%">Texto da Questão</td>' +
+                    '<td class="destacar bold " style="width: 35%">Texto de ajuda da Questão</td>' +
+                    '<td class="destacar bold " style="width: 15%">Tipo Resposta</td>' +
+                    '<td class="destacar bold centro" style="width: 15%">Ações</td>' +
+                '</tr>' +
+            '</thead>' +
+            '<tbody>' +
+                '<tr id="trQuestao_zero" style="cursor: move;">' +
+                    '<td colspan="4" class="centro"><em>Nenhuma questão adicionada</em></td>' +
+                '</tr>' +
+            '</tbody>' +
+            '</table>' +
+            '</div>'
+        );
+    };
+
+    GuiaTabAtualizar = function(guia) {
+        $('#tabs ul li a[href=#Guia_' + guia.guia +']').text(guia.nome);
+    };
+
+    GuiaTabDeletar = function(guia) {
+        $('#tabs ul li a[href=#Guia_' + guia +']').parent().remove();
+    };
+
+    QuestaoPesquisar = function(questao) {
+        var url = $('#frmCadQuestao').attr('action') + '?format=json';
+            url = url.replace('cadastrar', 'pesquisar/'+questao);
+        $.ajax({
+            type: "GET",
+            url: url,
+            data: 'questao='+questao,
+            dataType: 'json',
+            success: function(response) {
+                $('#frmCadQuestao input:reset').click();
+                $('#frmCadQuestao .btn_incluir').hide();
+                $('#frmCadQuestao .btn_editar').show();
+                $('#frmCadQuestao #questao').val(response.questao[0].idQuestao);
+                $('#frmCadQuestao #guiaQuestao option[value='+response.questao[0].idGuia+']').attr("selected", "selected");
+                $('#frmCadQuestao #textoQuestao').val(response.questao[0].dsQuestao);
+                /*$('#frmCadQuestao #textoAjudaQuestao').val(response.guia[0].txAuxilio);*/
+                $('#frmCadQuestao #slcTipoRespostaQuestionario option[value='+response.questao[0].respostas[0].idTpResposta+']').attr("selected", "selected");
+                // exibe as respostas
+                if (ARRAY_TIPO_RESPOSTA_LISTA.indexOf(parseInt(response.questao[0].respostas[0].idTpResposta)) != -1) {
+                    $('#frmCadQuestao #trRespostasQuestionario').show();
+                    JSTipoRespostaQuestionario(response.questao[0].respostas[0].idTpResposta);
+                    $(response.questao[0].respostas).each(function() {
+                        JSAdicionaOpcaoRespostaQuestionario($(this).get(0));
+                    });
+                }
+            }
+        });
+    };
+
+    QuestaoFormResetar = function () {
+        $('#frmCadQuestao #questao').val('');
+        $('#frmCadQuestao #trRespostasQuestionario tbody tr').each(function(){ $(this).remove(); });
+        $('#frmCadQuestao #trRespostasQuestionario').hide();
+        $('#frmCadQuestao #divBtnIncluirCriterio .btn_incluir').show();
+        $('#frmCadQuestao #divBtnIncluirCriterio .btn_editar').hide();
+        $('#frmCadQuestao input:reset').click();
+    };
+
+    QuestaoCadastrar = function() {
+        $.ajax({
+            type: "POST",
+            url: $('#frmCadQuestao').attr('action') + '?format=json',
+            data: $('#frmCadQuestao').serialize(),
+            dataType: 'json',
+            success: function(response) {
+                QuestaoListaAdicionar(response.questao);
+                $('#trRespostasQuestionario').hide();
+                $('#frmCadQuestao input:reset').click();
+            }
+        });
+    };
+
+    QuestaoAtualizar = function() {
+        var url = $('#frmCadQuestao').attr('action') + '?format=json';
+            url = url.replace('cadastrar', 'atualizar/'+$('#frmCadQuestao .btn_editar').closest('form').children('#questao').val());
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: $('#frmCadQuestao').serialize(),
+            dataType: 'json',
+            success: function(response) {
+                QuestaoListaAtualizar(response.questao);
+                QuestaoFormResetar();
+            }
+        });
+    };
+
+    QuestaoDeletar = function(questao) {
+        var url = $('#frmCadQuestao').attr('action') + '?format=json';
+            url = url.replace('cadastrar', 'deletar/questao/'+questao);
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: $('#frmCadQuestao').serialize(),
+            dataType: 'json',
+            success: function() {
+                QuestaoListaDeletar(questao);
+            }
+        });
+    };
+
+    QuestaoListaAdicionar = function(questao) {
+        $('#tblQuestaoAdicionada tbody #trQuestao_zero').remove();
+        $('#Guia_'+questao.guia+' #tblQuestaoAdicionada tbody').append(
+            '<tr id="questao_' + questao.questao + '">' +
+            '<td>' + questao.pergunta + '</td>'+
+            '<td>' + questao.texto + '</td>'+
+            '<td>&nbsp;</td>' +
+            '<td>' +
+            "<input type='button' class='btn_editar' data-questao='" + questao.questao + "' />" +
+            "<input type='button' class='btn_exclusao' data-questao='" + questao.questao + "' />" +
+            '</td>' +
+            '</tr>'
+        );
+        addQuestaoEvents();
+    };
+
+    QuestaoListaAtualizar = function(questao) {
+        $('#tblQuestaoAdicionada tbody #questao_'+questao.questao+' td:first').html(questao.pergunta);
+        /*$('#tblQuestaoAdicionada tbody #questao_'+questao.questao+' td:first').next().html(questao.descricao);*/
+    };
+
+    QuestaoListaDeletar = function(guia) {
+        $('#tblQuestaoAdicionada tbody #questao_'+guia).remove();
+    };
+
+    JSTipoRespostaQuestionario = function(tipoResposta) {
+        var tipoResposta = parseInt(tipoResposta);
+        if (ARRAY_TIPO_RESPOSTA_LISTA.indexOf(tipoResposta) == -1) {
+            $('#trRespostasQuestionario').hide();
+        } else {
+            $('#trRespostasQuestionario').show();
+            if (RADIO == $('#slcTipoRespostaQuestionario').val()) {
+                $('#tblOpcaoRespostaQuestionario input:checkbox').each(function(){
+                    $(this).get(0).type = 'radio';
+                });
+            } else if (CHECKBOX == $('#slcTipoRespostaQuestionario').val()) {
+                $('#tblOpcaoRespostaQuestionario input:radio').each(function(){
+                    $(this).get(0).type = 'checkbox';
+                });
+            }
+        }
+    };
+
+    JSAdicionaOpcaoRespostaQuestionario = function(resposta) {
+        if (undefined == resposta) {
+            var resposta = {idResposta: '', dsResposta: ''};
+        }
+        $('#tblOpcaoRespostaQuestionario tbody').append(
+            '<tr>' +
+            '<td><input type="checkbox" /></td>' +
+            '<td><input type="text" name="respostaNome[]" class="input_simples" size="45" value="' + resposta.dsResposta + '"></td>' +
+            '<td class="centro"><input type="text" class="btn_excluir" data-resposta="' + resposta.idResposta + '" onclick="JSRemoverOpcaoRespostaQuestionario(this);"></td>' +
+            '</tr>'
+        );
+        JSTipoRespostaQuestionario($('#slcTipoRespostaQuestionario').val());
+    };
+
+    JSRemoverOpcaoRespostaQuestionario = function(resposta) {
+        RespostaDeletar($(resposta).attr('data-resposta'));
+        $(resposta).closest('tr').remove();
+    };
+
+    RespostaDeletar = function(resposta) {
+        var url = $('#frmCadQuestao').attr('action') + '?format=json';
+            url = url.replace('questao', 'resposta');
+            url = url.replace('cadastrar', 'deletar/resposta/'+resposta);
+        $.ajax({
+            type: "POST",
+            url: url,
+            dataType: 'json',
+        });
+    };
+
+    if ('questionario' == window.location.hash.substring(1)) {
+        mostrarBoxQuestionario(<?php echo $this->categoria; ?>);
+    }
+
+
+    // Constantes
+    var RADIO = 6;
+    var CHECKBOX = 7;
+    var ARRAY_TIPO_RESPOSTA_LISTA = [RADIO, CHECKBOX];
+    // Adiciona eventos
+    addGuiaEvents = function () {
+        $('#tblGuiaAdicionada tbody tr input').each(function() {
+            if ('btn_editar' == $(this).attr('class')) {
+                $(this).unbind('click').click(function() {
+                    GuiaPesquisar($(this).attr('data-guia')); 
+                });
+            };
+            if ('btn_exclusao' == $(this).attr('class')) {
+                $(this).unbind('click').click(function() {
+                    GuiaDeletar($(this).attr('data-guia')); 
+                });
+            };
+        });
+    };
+
+    addQuestaoEvents = function () {
+        $('#tblQuestaoAdicionada tbody tr input').each(function() {
+            if ('btn_editar' == $(this).attr('class')) {
+                $(this).unbind('click').click(function() {
+                    QuestaoPesquisar($(this).attr('data-questao')); 
+                });
+            };
+            if ('btn_exclusao' == $(this).attr('class')) {
+                $(this).unbind('click').click(function() {
+                    QuestaoDeletar($(this).attr('data-questao')); 
+                });
+            };
+        });
+    };
+
+    addGuiaEvents();
+    addQuestaoEvents();
+        
+</script>
+
+        
+<br clear="all" />
+
+

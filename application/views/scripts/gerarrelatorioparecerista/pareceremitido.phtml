@@ -1,0 +1,151 @@
+<?php
+$pareceremitidoHref             =   $this->url(array('controller' => 'gerarrelatorioparecerista', 'action' => 'pareceremitido'));
+$parecerconsolidadoHref         =   $this->url(array('controller' => 'gerarrelatorioparecerista', 'action' => 'parecerconsolidado'));
+include_once 'inc/funcoes.inc.php';
+?>
+<div id="menu">
+    <!-- início: conteúdo principal #container -->
+    <div id="container">
+        <?php include_once 'inc/menu.inc.php';?>
+        <!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+        <div id="breadcrumb">
+            <ul>
+                <li class="first"><a href="index.phtml" title="Ir para Início">Início</a></li>
+
+                <li class="last">Principal</li>
+            </ul>
+        </div>
+        <!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+        <!-- ========== BUTTON VOLTAR ========== -->
+        <div id="titulo">
+            <div>Projetos com parecer técnico emitido<span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+        </div>
+        <!-- ========== FIM TÍTULO ========== -->
+        <!-- ========== GRID NOME DA PROPOSTA ========== -->
+        <div id="conteudo" align="center">
+            <table class="tabela">
+                <tr>
+                    <td align="center"><input type="button" class="btn_pdf" style="width: 40px;" /> <input type="button" class="btn_xls" style="width: 40px;" /></td>
+                </tr>
+            </table>
+            <table class="tabela">
+                <tr>
+                    <td align="center">
+                        Status do parecer:
+                        <select class="select_simples" id="parecer">
+                            <option value="0">Emitido</option>
+                            <option value="1">Consolidado</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <?php
+            if(is_array($this->projetos) and count($this->projetos)>0){
+            ?>
+                <table class="tabela">
+                    <tr>
+                        <th width="20"></th>
+                        <th>PRONAC</th>
+                        <th>Nome do Projeto</th>
+                        <th>&Oacute;rg&atilde;o</th>
+                        <th width="150">Dt de Envio a vinculada</th>
+                        <th width="120">Dt Retorno ao MINC</th>
+                        <th>Qtde dias at&eacute; o retorno</th>
+                        <th>Status do parecer</th>
+                    </tr>
+                    <?php
+                    foreach ($this->projetos as $key=>$projeto) {
+                        ?>
+                        <tr>
+                            <td align="left">
+                                <input type="button" class="btn_adicionar" idtoggle="produtos_<?php echo $key;?>" style="width: 50px;" />
+                            </td>
+                            <td align="center"><a target="_blank" href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => 'index'))."?idPronac=".$projeto['idPronac'];?>"><?php echo $projeto['pronac'];?></a></td>
+                            <td><?php echo $projeto['nmProjeto'];?></td>
+                            <td align="center"><?php echo $projeto['nmOrgao'];?></td>
+                            <td align="center"><?php echo $projeto['dtEnvio'];?></td>
+                            <td align="center"><?php echo $projeto['dtRetorno'];?></td>
+                            <td align="center"><?php echo $projeto['qtDias'];?></td>
+                            <td><?php echo $projeto['stParecer'];?></td>
+                        </tr>
+                        <tr id="produtos_<?php echo $key;?>" class="sumir">
+                            <td></td>
+                            <td colspan="7">
+                                <table class="tabela">
+                                    <tr>
+                                        <th width="100">&Oacute;rg&atilde;o				</th>
+                                        <th>Nome do Produto</th>
+                                        <th>PRODUTO PRINCIPAL</th>
+                                        <th width="100">Dt. do fechamento da análise técnica</th>
+                                        <th width="150">&Aacute;rea				</th>
+                                        <th width="150">Segmento Cultural	</th>
+                                    </tr>
+                                    <?php
+                                    
+                                    foreach ($projeto['Orgaos'] as $Orgao) {
+                                        $cProduto = 1;
+                                        foreach ($Orgao['Produtos'] as $produto){
+                                            ?>
+                                            <tr>
+                                                <td><?php if($cProduto==1) echo $Orgao['nmOrgao'];?></td>
+                                                <td><?php echo $produto['nmProduto'];?></td>
+                                                <td align="center"><?php if($produto['prodPrincipal']=='sim')echo '<img src="'.$this->baseUrl().'/public/img/ok_16x16.png"/>';?></td>
+                                                <td><?php echo $produto['dtFechamento'];?></td>
+                                                <td><?php echo $produto['area'];?></td>
+                                                <td><?php echo $produto['segmento'];?></td>
+                                            </tr>
+                                            <?php
+                                            $cProduto++;
+                                        }
+                                    }
+                                    ?>
+                                </table>
+
+                            </td>
+                        </tr>
+                        <?php
+                    }
+                    ?>
+                    <?php include_once 'inc/paginacao.inc.php';?>
+                </table>
+            <?php
+            }
+            else{
+                ?>
+                <table class="tabela">
+                    <tr>
+                        <th align="center">
+                            Dados n&atilde;o localizados!
+                        </th>
+                    </tr>
+                </table>
+                <?php
+            }
+            ?>
+        </div>
+        <!-- ========== FIM CONTEÚDO ========== -->
+        <!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+        <div id="rodapeConteudo"><span></span></div>
+        <!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+        <br clear="all" />
+    </div>
+</div>
+<?php
+include_once 'inc/geraranexo.inc.php';
+?>
+<script>
+    $(function(){
+        $('.btn_adicionar').click(function(){
+            if($(this).attr('idtoggle') != undefined && $(this).attr('idtoggle') != ''){
+                $('#'+$(this).attr('idtoggle')).toggle();
+            }
+        });
+        $("#parecer").change(function(){
+            if($(this).val() == 1)
+                window.location.href = "<?php echo $parecerconsolidadoHref;?>";
+            if($(this).val() == 0)
+                window.location.href = "<?php echo $pareceremitidoHref;?>";
+        });
+    });
+</script>

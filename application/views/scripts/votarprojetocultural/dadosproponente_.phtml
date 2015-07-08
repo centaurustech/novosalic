@@ -1,0 +1,349 @@
+<?php
+/**
+ * Dados proponente
+ * @author Equipe RUP - Politec
+ * @since 07/06/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.controller.realizaranaliseprojeto
+ * @link http://www.cultura.gov.br
+ * @copyright ï¿½ 2010 - Ministï¿½rio da Cultura - Todos os direitos reservados.
+ */
+header('Content-Type: text/plain; charset=ISO-8859-1');
+?>
+    <!-- ========== INICIO CONTEUDO ========== -->
+    <table class="tabela">
+        <tr>
+            <td colspan="5" class="titulo_tabela">Identifica&ccedil;&atilde;o</td>
+        </tr>
+        <tr>
+            <th>CNPJ/CPF</th>
+            <th>Proponente</th>
+            <th>Tipo de Pessoa</th>
+        </tr>
+        <?php foreach ($this->dados as $tbdados): ?>
+            <tr>
+                <td align="center"><?php echo $this->escape(empty($tbdados->CgcCpf) ? 'Dados n&atilde;o informados!' : Validacao::mascaraCPFCNPJ($tbdados->CgcCpf)); ?></td>
+                <td align="center"><?php echo (empty($tbdados->Nome) ? 'Dados n&atilde;o informados!' : $tbdados->Nome); ?></td>
+                <td colspan="2"><?php if(strlen($tbdados->CgcCpf)==11){echo "Pessoa F&iacute;sica";}else{echo "Pessoa Jur&iacute;dica";}?></td>
+        </tr>
+        <?php endforeach; ?>
+    </table>
+    <table class="tabela">
+        <tr>
+            <th>Respons&aacute;vel</th>
+        </tr>
+            <?php foreach ($this->dados as $tbdados): ?>
+            <tr>
+                <td align="center"><?php echo (empty($tbdados->Responsavel) ? 'Dados n&atilde;o informados!' : $tbdados->Responsavel); ?></td>
+            </tr>
+            <?php endforeach; ?>
+    </table>
+    <table class="tabela">
+            <tr class="titulo_tabela">
+                <th colspan="5">Endere&ccedil;o</th>
+            </tr>
+                <?php foreach ($this->dados as $tbdados): ?>
+                <tr>
+                    <td align="center"><?php echo (empty($tbdados->Endereco) ? 'Dados n&atilde;o informados!' : $tbdados->Endereco); ?></td>
+
+                </tr>
+                <?php endforeach; ?>
+    </table>
+    <table class="tabela">
+        <tr class="titulo_tabela">
+            <th colspan="5">Unidade da Federa&ccedil;&atilde;o / Municipio</th>
+        </tr>
+        <tr>
+            <th>Cidade</th>
+            <th>UF</th>
+            <th>CEP</th>
+        </tr>
+        <?php foreach ($this->dados as $tbdados): ?>
+                    <tr>
+                        <td align="center"><?php echo (empty($tbdados->Cidade) ? 'Dados n&atilde;o informados!' : $tbdados->Cidade); ?></td>
+                        <td align="center"><?php echo $this->escape(empty($tbdados->Uf) ? 'Dados n&atilde;o informados!' : $tbdados->Uf); ?></td>
+                        <td align="center"><?php echo $this->escape(empty($tbdados->Cep) ? 'Dados n&atilde;o informados!' : Mascara::addMaskCEP($tbdados->Cep)); ?></td>
+                    </tr>
+        <?php endforeach; ?>
+    </table>
+    <table class="tabela">
+        <tr class="titulo_tabela">
+            <th colspan="4">Natureza</th>
+        </tr>
+        <tr>
+            <th>Natureza</th>
+            <th>Esfera</th>
+            <th>Administra&ccedil;&atilde;o</th>
+            <th>Fins Lucrativos</th>
+        </tr>
+        <?php foreach ($this->dados as $tbdados): ?>
+        <?php if (!empty($tbdados->Direito) || !empty($tbdados->Esfera) || !empty($tbdados->Administracao) || !empty($tbdados->Utilidade)) { ?>
+        <tr>
+            <td align="center">
+            <?php
+                            if ($tbdados->Direito == 1)
+                                echo "P&uacute;blico";
+                            else if ($tbdados->Direito == 2 || $tbdados->Direito == 35)
+                                echo "Privado";
+                            else
+                                echo "<em>Dados n&atilde;o informados!</em>";
+            ?>
+            </td>
+
+            <td align="center">
+            <?php
+                            if ($tbdados->Esfera == 3)
+                                echo "Municipal";
+                            else if ($tbdados->Esfera == 4)
+                                echo "Estadual";
+                            else if ($tbdados->Esfera == 5)
+                                echo "Federal";
+                            else
+                                echo "<em>Dados n&atilde;o informados!</em>";
+            ?>
+            </td>
+
+            <td align="center">
+            <?php
+                            if ($tbdados->Administracao == 11)
+                                echo "Direta";
+                            else if ($tbdados->Administracao == 12)
+                                echo "Indireta";
+                            else
+                                echo "<em>Dados n&atilde;o informados!</em>";
+            ?>
+            </td>
+            <td align="center">
+            <?php
+                            if ($tbdados->Utilidade == 1)
+                                echo 'Fins Lucrativos';
+                            else if ($tbdados->Utilidade == 2)
+                                echo 'Sem Fins Lucrativos';
+                            else
+                                echo 'Dados n&atilde;o informados!';
+            ?>
+            </td>
+        </tr>
+        <?php } else { ?>
+                            <tr>
+                                <td align="center"><em>Dados n&atilde;o informados!</em></td>
+                                <td align="center"><em>Dados n&atilde;o informados!</em></td>
+                                <td align="center"><em>Dados n&atilde;o informados!</em></td>
+                                <td align="center"><em>Dados n&atilde;o informados!</em></td>
+                            </tr>
+        <?php } ?>
+        <?php endforeach; ?>
+
+      </table>
+     <table class="tabela">
+            <tr><th colspan="2" tabindex="31">Dirigentes</th></tr>
+            <?php if ($this->dirigentes) { ?>
+                <tr>
+                    <th>CPF</th>
+                    <th>Nome</th>
+                </tr>
+            <?php foreach ($this->dirigentes as $tbdirigentes): ?>
+                <tr>
+                    <td align="center"><?php echo $this->escape(empty($tbdados->CPFCNPJ) ? 'Dados não informados!' : $tbdados->CPFCNPJ); ?>
+                    <td align="center"><?php echo $this->escape($tbdirigentes->Descricao); ?></td>
+                </tr>
+            <?php endforeach; ?>
+            <?php } else { ?>
+                <tr>
+                    <td colspan="2" align="center"><em>N&atilde;o existem Dirigentes cadastrados!</em></td>
+                </tr>
+            <?php } ?>
+       </table>
+
+       <table class="tabela">
+            <tr class="titulo_tabela">
+                <th colspan="5">Email</th>
+            </tr>
+            <tr>
+                <th>Tipo</th>
+                <th>Email</th>
+            </tr>
+            <?php foreach ($this->email as $email): ?>
+                    <tr>
+                        <td align="center"><?php echo $this->escape(empty($email->TipoInternet) ? 'Dados n&atilde;o informados!' : $email->TipoInternet); ?></td>
+                        <td align="center"><?php echo $this->escape(empty($email->Email) ? 'Dados n&atilde;o informados!' : $email->Email); ?></td>
+
+                    </tr>
+            <?php endforeach; ?>
+         </table>
+
+         <table class="tabela">
+                <tr class="titulo_tabela">
+                    <th colspan="5">Telefones</th>
+                </tr>
+            <?php if ($this->telefone) { ?>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>UF</th>
+                        <th>DDD</th>
+                        <th>N&uacute;mero</th>
+                        <th>Divulgar</th>
+
+                    </tr>
+                <?php foreach ($this->telefone as $tbtelefone): ?>
+                        <tr>
+                            <td align="center">
+                            <?php echo $this->escape($tbtelefone->TipoTelefone); ?>
+                            </td>
+                            <td align="center"><?php echo $this->escape($tbtelefone->UF); ?></td>
+                            <td align="center"><?php echo $this->escape($tbtelefone->DDDTelefone); ?></td>
+                            <td align="center"><?php echo $this->escape(Mascara::addMaskFone($tbtelefone->NumeroTelefone)); ?></td>
+                            <td align="center"><?php echo $this->escape($tbtelefone->Divulgar); ?></td>
+                        </tr>
+                <?php endforeach; ?>
+            <?php } else { ?>
+                <tr>
+                    <td colspan="5" align="center"><em>N&atilde;o existem telefones cadastrados!</em></td>
+                </tr>
+            <?php } ?>
+            </table>
+
+            <table class="tabela">
+                <tr><td class="titulo_tabela">Hist&oacute;rico</td></tr>
+            </table>
+            <table class="tabela">
+                <tr><td>
+                        <input type="button"id="abrir_fechar"class="btn_adicionar" />Projetos Arquivados
+                     </td>
+                </tr>
+            </table>
+
+            <div id="div_teste" style="display:none;" >
+            <table class="tabela">
+                <tr class="titulo_tabela">
+                    <th>Pronac</th>
+                    <th>Nome do Projeto</th>
+                    <th>&Aacute;rea</th>
+                    <th>Segmento</th>
+                    <th>Solicitado</th>
+                    <th>Aprovado</th>
+                    <th>Captado</th>
+                </tr>
+            <?php if(count($this->arquivados) > 0  ){
+                        foreach ($this->arquivados as $tbarquivados): ?>
+                        <tr class="fundo_<?php echo $fundo; ?>">
+                            <td align="center"><input type="hidden"  name="Pronac" value="<?php echo $this->escape($tbarquivados->pronac); ?>" /><input type="submit" value="<?php echo $this->escape($tbarquivados->pronac); ?>"/></td>
+                            <td align="center"><?php echo $this->escape($tbarquivados->NomeProjeto); ?></td>
+                            <td align="center"><?php echo $this->escape($tbarquivados->dsArea); ?></td>
+                            <td align="center"><?php echo $this->escape($tbarquivados->dsSegmento); ?></td>
+                            <td align="center"><?php echo $this->escape($tbarquivados->SolicitadoReal); ?></td>
+                            <td align="center"><?php echo $this->escape($tbarquivados->ValorAprovado); ?></td>
+                            <td align="center"><?php echo $this->escape($tbarquivados->ValorCaptado); ?></td>
+                        </tr>
+            <?php       endforeach;
+                    }else{ ?>
+                    <tr>
+                        <td colspan="7" class="centro">
+                            <em>N&atilde;o existe projetos arquivados</em>
+                        </td>
+                    </tr>
+            <?php } ?>
+            </table>
+            </div>
+            <table class="tabela">
+                <tr><td tabindex="67">
+                        <input type="button"id="abrir_fechar1"class="btn_adicionar" />Projetos Ativos
+                    </td>
+                </tr>
+            </table>
+            <div id="div_teste1" style="display:none;" >
+                <table class="tabela">
+                    <tr>
+                        <th>Pronac</th>
+                        <th>Nome do Projeto</th>
+                        <th>&Aacute;rea</th>
+                        <th>Segmento</th>
+                        <th>Solicitado</th>
+                        <th>Aprovado</th>
+                        <th>Captado</th>
+                    </tr>
+             <?php if(count($this->ativos) > 0  ){
+                        foreach ($this->ativos as $tbativos): ?>
+                        <tr class="fundo_<?php echo $fundo; ?>">
+                            <td align="center">
+                                <?php echo $this->escape($tbativos->pronac); ?>
+                             </td>
+                            <td align="center"><?php echo $this->escape($tbativos->NomeProjeto); ?></td>
+                            <td align="center"><?php echo $this->escape($tbativos->dsArea); ?></td>
+                            <td align="center"><?php echo $this->escape($tbativos->dsSegmento); ?></td>
+                            <td align="center"><?php echo $this->escape($this->formatarReal($tbativos->SolicitadoReal)); ?></td>
+                            <td align="center"><?php echo $this->escape($this->formatarReal($tbativos->ValorAprovado)); ?></td>
+                            <td tabindex="81" align="center"><?php echo $this->escape($this->formatarReal($tbativos->ValorCaptado) ); ?></td>
+                        </tr>
+
+            <?php       endforeach;
+                    }else{ ?>
+                        <tr>
+                            <td colspan="7" class="centro">
+                                <em>N&atilde;o existe projetos Ativos</em>
+                            </td>
+                        </tr>
+            <?php } ?>
+                </table>
+            </div>
+
+            <table class="tabela">
+                    <tr>
+                        <td>
+                            <input type="button"id="abrir_fechar2"class="btn_adicionar" />Projetos Inativos
+                        </td>
+                    </tr>
+            </table>
+            <div id="div_teste2" style="display:none;" >
+                <table class="tabela">
+                    <tr>
+                        <th>Pronac</th>
+                        <th>Nome do Projeto</th>
+                        <th>&Aacute;rea</th>
+                        <th>Segmento</th>
+                        <th>Solicitado</th>
+                        <th>Aprovado</th>
+                        <th>Captado</th>
+
+                    </tr>
+            <?php if(count($this->inativos) > 0  ){
+                        foreach ($this->inativos as $tbinativos): ?>
+                            <tr class="fundo_<?php echo $fundo; ?>">
+                                <td align="center"><input type="hidden"  name="Pronac" value="<?php echo $this->escape($tbinativos->pronac); ?>" /><input type="submit" value="<?php echo $this->escape($tbinativos->pronac); ?>"/></td>
+                                <td align="center"><?php echo $this->escape($tbinativos->NomeProjeto); ?></td>
+                                <td align="center"><?php echo $this->escape($tbinativos->dsArea); ?></td>
+                                <td align="center"><?php echo $this->escape($tbinativos->dsSegmento); ?></td>
+                                <td align="center"><?php echo $this->escape($this->formatarReal($tbinativos->SolicitadoReal) ); ?></td>
+                                <td align="center"><?php echo $this->escape($this->formatarReal($tbinativos->ValorAprovado) ); ?></td>
+                                <td align="center"><?php echo $this->escape($this->formatarReal($tbinativos->ValorCaptado) ); ?></td>
+                            </tr>
+            <?php       endforeach;
+                    } else{ ?>
+                <tr>
+                    <td colspan="7" class="centro">
+                        <em>N&atilde;o existe projetos Inativos</em>
+                    </td>
+                </tr>
+            <?php } ?>
+                  </table>
+            </div>
+             
+<script>
+
+    $('#abrir_fechar').click(function(){
+
+        $('#div_teste').toggle('slow');
+    });
+</script>
+<script>
+
+    $('#abrir_fechar1').click(function(){
+        $('#div_teste1').toggle('slow');
+    });
+</script>
+<script>
+    $('#abrir_fechar2').click(function(){
+        $('#div_teste2').toggle('slow');
+    });
+</script>

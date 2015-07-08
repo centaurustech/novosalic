@@ -1,0 +1,76 @@
+<?php
+/**
+ * Busca os Dados do Agente
+ * @author Equipe RUP - Politec
+ * @since 07/06/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.desvincularagentes
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'),'',true);?>" title="Ir para Início">Início</a></li>
+        <li class="last">Agentes Vinculados</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Pesquisa de Agentes Vinculados</div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <!-- ========== FORMULÁRIO PARA BUSCAR OS DADOS DOS AGENTES ========== -->
+    <form id="formBuscar" name="formBuscar" method="post" action="<?php echo $this->url(array('controller' => 'desvincularagentes', 'action' => 'buscaragentesvinculados')); ?>">
+        <table class="tabela" style="margin:1% auto; width:50%;" summary="Esta tabela contém o campo para pesquisa de Agentes Vinculados a Instituição. Para que a pesquisa tenha efeito é necessário que seja feita através do CNPJ ou o nome da Instituição que consta nos campos abaixo">
+            <th colspan="2" tabindex="1">PESQUISAR AGENTES</th>
+            <tr>
+                <td class="destacar bold" align="right" width="10%" tabindex="2">CNPJ/CPF:</td>
+                <td>
+                    <input type="text" name="cnpjcpf" id="cnpjcpf" maxlength="18"  tabindex="3" onkeyup="mascaraCnpjCpf(this);"
+                           onmouseup=" "
+                           onclick="limpar_campo(this, 'Numero do CNPJ/CPF');" value=" "
+                           onkeypress=" "
+                           onblur="restaurar_campo(this, 'Numero do CNPJ/CPF');"
+                           onmouseout="restaurar_campo(this, 'Numero do CNPJ/CPF');"
+                           class="input input_simples"
+                    />
+                </td>
+            </tr>
+            <tr>
+                <td class="destacar bold" align="right" width="20%" tabindex="4">NOME:</td>
+                <td>
+                    <input type="text" name="nome" id="nome" tabindex="5" maxlength="70"
+                           onclick="limpar_campo(this, 'Nome da Instiuição');" value=" "
+                           onkeypress=" "
+                           onblur="restaurar_campo(this, 'Nome da Instiuição');"
+                           onmouseout="restaurar_campo(this, 'Nome da Instiuição');"
+                           class="input w300 input_simples"
+                       />
+                </td>
+            </tr>
+        </table>
+        <p align="center" style="letter-spacing: 5px;">
+            <input type="submit" title=" Pesquisar " tabindex="6" class="btn_pesquisar" value=" " />
+            <input type="reset" title=" Cancelar " tabindex="7" class="btn_cancelar" value=" " />
+        <p>
+    </form>
+    <!-- ========== FIM FORMULÁRIO DE BUSCA DOS DADOS DOS AGENTES========== -->
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

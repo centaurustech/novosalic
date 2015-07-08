@@ -1,0 +1,187 @@
+<script>
+
+    $(document).ready( function() {
+	$("#cadastraUsuario").validate({
+		// Define as regras
+		rules:{
+                        cpf:{
+				// campoNome será obrigatório (required) e terá tamanho mínimo (minLength)
+				required: true, minlength: 2
+			},
+			nome:{
+				// campoNome será obrigatório (required) e terá tamanho mínimo (minLength)
+				required: true, minlength: 2
+			},
+			email:{
+				// campoEmail será obrigatório (required) e precisará ser um e-mail válido (email)
+				required: true, email: true
+			},
+                        emailConf:{
+				// campoEmail será obrigatório (required) e precisará ser um e-mail válido (email)
+				required: true, email: true
+			},
+			dataNasc:{
+				// campoMensagem será obrigatório (required) e terá tamanho mínimo (minLength)
+				required: true, minlength: 2
+			}
+
+		},
+		// Define as mensagens de erro para cada regra
+		messages:{
+                        cpf:{
+				required: "Digite o seu cpf",
+				minLength: "O seu nome deve conter, no mínimo, 11 caracteres"
+			},
+			nome:{
+				required: "Digite o seu nome",
+				minLength: "O seu nome deve conter, no mínimo, 2 caracteres"
+			},
+			email:{
+				required: "Digite o seu e-mail",
+				email: "Digite um e-mail válido"
+			},
+			emailConf:{
+				required: "Confirme seu email",
+				minLength: "A sua mensagem deve conter, no mínimo, 2 caracteres"
+			},
+                        dataNasc:{
+				required: "Digite a data do seu Nascimento",
+				minLength: "A sua mensagem deve conter, no mínimo, 2 caracteres"
+			}
+		}
+	});
+});
+
+
+
+
+function valida_email(email) // validação de e-mail
+{
+    if (email == "" || email == "undefined")
+    {
+        $("#confirm").dialog({
+            title :'Erro',
+            resizable: false,
+            width:400,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'OK': function() {
+                    $(this).dialog('close');
+                }
+            }
+        });
+        $('#confirm').dialog('open');
+    }
+    else if ((email.indexOf("@") < 1) || (email.lastIndexOf(".") <= email.indexOf("@")) || (email.indexOf("@") == email.length))
+    {
+    $("#confirmInforma").dialog({
+            title :'Erro',
+            resizable: false,
+            width:400,
+            height:150,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'OK': function() {
+                    $(this).dialog('close');
+                }
+            }
+        });
+        $('#confirmInforma').dialog('open');
+    }
+}
+
+</script>
+<!-- ========== INï¿½CIO BREADCRUMB (LINKS TOPO) ========== -->
+<div style="display:none" id="confirm">Por favor, informe seu email!</div>
+<div style="display:none" id="dialog-alert2"></div>
+<div style="display:none" id="confirmInforma">Por favor, digite seu email corretamente!</div>
+<div id="breadcrumb">
+
+<ul>
+<li class="first"><a href="/exemplo/cadastrarusuario/index">In&iacute;cio</a></li>
+<li class="last">Cadastrar Usuário</li>
+</ul>
+
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INï¿½CIO Tï¿½TULO ========== -->
+
+<div id="titulo">
+<div>Cadastrar Usuário<span></span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+
+</div>
+<!-- ========== FIM Tï¿½TULO ========== -->
+
+
+
+<!-- ========== INï¿½CIO CONTEï¿½DO ========== -->
+
+	<div id="conteudo">
+<fieldset><legend>Informações</legend>
+
+            <form method="POST" action="/NovoSalic/manterlogin/cadastrarusuario" name="cadastraUsuario" id="cadastraUsuario">
+
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th colspan="2">Cadastro de Usuário</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>CPF *</td>
+                            <td><input onkeydown="mascaraCnpjCpf(this);" onkeypress="mascaraCnpjCpf(this);" onkeyup="mascaraCnpjCpf(this);" maxlength="14" class="input_simples" type="text" name="cpf" id="cpf"  /> </td>
+                        </tr>
+                        <tr>
+                            <td>Nome Completo *</td>
+                            <td><input maxlength="200" class="input_simples" type="text" name="nome" id="nome"  /> </td>
+                        </tr>
+                        <tr>
+                            <td>Data de Nascimento *</td>
+                            <td><input onblur="validaData(this)" onkeyup="mascara(this, format_data);" onkeydown="mascara(this, format_data);" onkeypress ="mascara(this, format_data);" maxlength="10" class="input_simples" type="text" name="dataNasc" id="dataNasc"  /> </td>
+                        </tr>
+                        <tr>
+                            <td>E-mail *</td>
+                            <td><input maxlength="200" onblur="valida_email(this.value)" class="input_simples" type="text" name="email" id="email"  /> </td>
+                        </tr>
+                        <tr>
+                            <td>Confirme o e-mail *</td>
+                            <td><input maxlength="200" onblur="valida_email(this.value)" class="input_simples" type="text" name="emailConf" id="emailConf"  /> </td>
+                        </tr>
+                        <tr>
+                            <td align="center" colspan="2">
+                            <input id='btIncluir' type='submit' value='' class='btn_salvar enviar' tipoacao="I"/>
+                            <input id='btLimpar' type='reset' value='' class='btn_limpar enviar' tipoacao="A"  />
+                            <input id='btCancelar' type='button' value='' class='btn_cancelar enviar' onClick="history.go(-1)" onkeypress=" " />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+
+            </form>
+</fieldset>
+
+        </div>
+
+
+<!-- ========== FIM CONTEï¿½DO ========== -->
+
+
+
+<!-- ========== INï¿½CIO RODAPï¿½ DO CONTEï¿½DO ========== -->
+	<div id="rodapeConteudo"><span></span></div>
+
+<!-- ========== FIM RODAPï¿½ DO CONTEï¿½DO ========== -->
+			<br clear="all" />
+
+
+
+
+</body>
+</html>

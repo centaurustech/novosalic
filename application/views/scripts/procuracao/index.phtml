@@ -1,0 +1,62 @@
+<?php include_once 'inc/menu.inc.php'; ?>
+
+<!-- ========== INï¿½CIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principalproponente', 'action' => 'index')); ?>" title="Ir para Início">In&iacute;cio</a></li>
+        <li class="">Procura&ccedil;&atilde;o</li>
+        <li class="last">Procura&ccedil;&otilde;es cadastradas</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+<!-- ========== INï¿½CIO Tï¿½TULO ========== -->
+<div id="titulo">
+    <div>Procura&ccedil;&otilde;es cadastradas <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM Tï¿½TULO ========== -->
+
+<!-- ========== INï¿½CIO CONTEï¿½DO ========== -->
+<div id="conteudo">
+    <table class="tabela">
+        <?php if(count($this->buscarprocuracao) > 0){ ?>
+        <tr>
+            <th>Proponente</th>
+            <th>Procurador</th>
+            <th>N&ordm; da Procura&ccedil;&atilde;o</th>
+            <th>Data de Cadastro</th>
+            <th>Procura&ccedil;&atilde;o</th>
+            <th>Situa&ccedil;&atilde;o</th>
+            <th>Visualizar</th>
+        </tr>
+        <?php foreach($this->buscarprocuracao as $procuracao){ ?>
+        <tr>
+            <td><?php echo $procuracao->Proponente;?></td>
+            <td><?php echo $procuracao->Procurador;?></td>
+            <td><?php echo $procuracao->idDocumento;?></td>
+            <td nowrap><?php echo Data::tratarDataZend($procuracao->dtEnvio, 'brasileiro', true);?></td>
+            <td><a href="<?php echo $this->url(array('controller' => 'upload', 'action' => 'abrir'),'',true); ?>?id=<?php echo $procuracao->idArquivo; ?>"><?php echo $procuracao->nmArquivo; ?></a></td>
+            <td>
+                <?php if($procuracao->siProcuracao == 0){
+                    echo 'Pendente de Valida&ccedil;&atilde;o';
+                } else if($procuracao->siProcuracao == 1){
+                    echo 'Aceita';
+                } else if($procuracao->siProcuracao == 2){
+                    echo 'Rejeitada';
+                }
+                ?>
+            </td>
+            <td class="centro"><a href="<?php echo $this->url(array('controller'=>'procuracao', 'action'=>'visualizar', 'idDocumento' => $procuracao->idDocumento) );?>" ><img src="<?php echo $this->baseUrl();?>/public/img/btn_busca.jpg"/></a></td>
+        </tr>
+        <?php } } else { ?>
+        <tr>
+            <td colspan="5" style="text-align: center; font-weight: 600; font-size: 14pt;">Nenhum registro encontrado.</td>
+        </tr>
+        <?php } ?>
+    </table>
+</div>
+<!-- ========== FIM CONTEï¿½DO ========== -->
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />

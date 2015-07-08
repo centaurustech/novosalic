@@ -1,0 +1,66 @@
+<script type="text/javascript">
+<!--
+$(document).ready(function(){
+    
+});
+//-->
+</script>
+
+<?php include_once 'scripts/admissibilidade/inc/menu.inc.php'; ?>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second">Admissibilidade</li>
+        <li class="second"><a href="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'gerenciamentodepropostas')); ?>">Admissibilidade de Propostas - Gerenciamento de Propostas</a></li>
+        <li class="last">Resumo: Admissibilidade de propostas - Gerenciamento de propostas</li>
+    </ul>
+</div>
+<form method="POST" id="formGerarPdf" name="formGerarPdf" action="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'gerarpdf')); ?>" style="display:none">
+    <textarea name="html" id="conteudoImprimir"></textarea>
+</form>
+<div id="titulo">
+    <div>Resumo: Gerenciamento de Propostas<span class="voltar"><a href="javascript:voltar();">Voltar</a></span></div>
+</div>
+
+<div id="conteudo">
+    <div class="conteudoImprimivel" id="conteudoImprimivel">
+    <table class="tabela" style="width: 40%;">
+        <tr>
+            <th width="80%">Resumo</th>
+            <th width="20%">Registros</th>
+        </tr>
+        <?php $totalGeral=0; ?>
+        <?php foreach($this->resumo as $resumo=>$valor): ?>
+        <tr>
+            <td align="left"><?php echo str_replace("_", " ", $resumo); ?></td>
+            <td align="right"><?php echo $valor; ?></td>
+        </tr>
+        <?php $totalGeral+=$valor; ?>
+        <?php endforeach; ?>
+        <tr>
+            <th align="left">Total Geral</th>
+            <th align="right"><?php echo $totalGeral; ?></th>
+        </tr>
+    </table>
+    </div><!-- fecha conteudo imprimivel -->
+<form action="<?php echo $this->urlGerarGrafico; ?>" method="post" name="frmGraficoResumo" id="frmGraficoResumo" target="_blank">
+<?php echo Grafico::formConfiguracao($this->baseUrl()) ; ?>
+<?php foreach($this->resumo as $resumo=>$valor): ?>
+    <input type="hidden" name="gVal_<?php echo $resumo; ?>" value="<?php echo $valor; ?>"/>
+<?php endforeach; ?>
+</form>
+    <table class="tabela" style="width: 40%;">
+    <tr>
+    <td class="centro">
+        <input type="button" title="Imprimir" name="imprimir" class="btn_imprimir" onclick='$("#conteudoImprimir").val($(".conteudoImprimivel").html()); $("#formGerarPdf").submit();'>
+        <input type="button" title="Configurar Gr&aacute;fico" class="btn_configurar_grafico" id="btn_configurar_grafico" style="display: ;" onclick="$('#confGrafico').toggle(); $(this).hide();" />
+    </td>
+    </tr>
+    </table>
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

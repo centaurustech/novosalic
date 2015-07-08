@@ -1,0 +1,301 @@
+<?php $buscarAgencia = $this->url(array('controller' => 'Manterpropostaincentivofiscal', 'action' => 'validaagencia')); ?>
+
+<?php
+if ($this->mensagem) {
+    $class = !empty($this->tpmensagem) ? $this->tpmensagem : 'msgALERT';
+    echo '<div class="' . $class . '"><div>' . utf8_encode($this->mensagem) . '</div></div>';
+}
+if (isset($this->idPreProjeto)) {
+    include_once 'scripts/manterpropostaedital/inc/menu.inc.php';
+}
+?>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+
+    $(function()
+    {
+        $.datepicker.regional['pt-BR'] = {
+            closeText: 'Fechar',
+            prevText: '&#x3c;Anterior',
+            nextText: 'Pr&oacute;ximo&#x3e;',
+            currentText: 'Hoje',
+            monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+            dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            weekHeader: 'Sm',
+            dateFormat: 'dd/mm/yy',
+            firstDay: 0,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: ''};
+        $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+        $("#dtIniExec").datepicker($.datepicker.regional['pt-BR']);
+        $("#dtFimExec").datepicker($.datepicker.regional['pt-BR']);
+    });
+
+	$('#agencia').blur(function(){
+		$('#erroragencia').show();
+		$('#erroragencia').html("validando informa&ccedil;&atilde;o...");
+		jqAjaxLinkSemLoading('<?php echo $buscarAgencia; ?>?agencia='+$('#agencia').val(), "", "erroragencia");
+	});
+
+
+<?php if (isset($this->movimentacaoAtual) && $this->movimentacaoAtual != '95'): ?>
+            //DESABILITA ALTERACOES NOS DADOS DO FORMULARIO (INCLUIR/ALTERAR/EXCLUIR)
+            JSBloquearAlteracaoFormulario();
+<?php endif; ?>
+    
+        $("#form__").validate({
+            // Define as regras
+            rules:{
+                nomeProjeto:{
+                    required: true
+                },
+                dtIniExec:{
+                    //dataInicioFim: true,
+                    maxlength: 10
+                },
+                dtFimExec:{
+                    required: true,
+                    maxlength: 10
+
+                },
+                resumoProjeto:{
+                    required: true
+                }
+
+            },
+            // Define as mensagens de erro para cada regra
+            messages:{
+                nomeProjeto:{
+                    required: "Preencha o Nome da Proposta"
+                },
+                dtIniExec:{
+                    //dataInicioFim: ' Data inicial dever&aacute; ser no m&iacute;nimo 90 dias ap&oacute;s a data atual.',
+                    maxlength: ' Formato de data inválida.'
+                }
+                ,
+                dtFimExec:{
+                	required: ' Preencha a data final.',
+                        maxlength: ' Formato de data inválida.'
+                }
+                ,
+                resumoProjeto:{
+                    required: " Preencha o Resumo da Proposta"
+                }
+            }
+           
+        });
+        
+        jQuery.validator.addMethod("dataInicioFim", function(value, element) 
+        {
+            dtInicioExecucao = $("#dtIniExec").val().split("/");
+            var datainicio = new Date(dtInicioExecucao[1]+"/"+dtInicioExecucao[0]+"/"+dtInicioExecucao[2]);
+            var diferenca = verificadata(datainicio, 90);
+            if($("#dtIniExec").val().length == 10){
+                if(diferenca >= 90){
+                    return true; 
+                }
+                else{
+                    return false;
+                }
+                return false;
+            }
+        });
+        
+        $("#form__").submit(function(){
+
+            dtInicioExecucao = $("#dtIniExec").val().split("/");
+            dtFimExecucao = $("#dtFimExec").val().split("/");
+            
+            var dataInicio = new Date(dtInicioExecucao[1]+"/"+dtInicioExecucao[0]+"/"+dtInicioExecucao[2]);
+            var dataFim = new Date(dtFimExecucao[1]+"/"+dtFimExecucao[0]+"/"+dtFimExecucao[2]);
+            
+
+        if (dataInicio.getTime() >= dataFim.getTime()){
+                $('#erroData').html('<b><font color="red">A Data Final deve ser maior que a Data Inicial.</font></b><br />');
+                return false;
+
+        } else {
+                $('#erroData').html('');
+
+                if($.trim($("#agencia").val()).length > 0){
+                    var agencia = $.trim($("#agencia").val());
+                    $.ajax({
+                        async:true,
+                        type: "POST",
+                        url:  "<?php echo $buscarAgencia; ?>",
+                        data: {
+                            agencia : agencia
+                        },
+                        success: function(data)
+                        {
+                            if(!data.error){
+                                $("#erroragencia").addClass('sumir');
+                                return true;
+                            }
+                            else{
+                                $("#erroragencia").removeClass('sumir');
+                                return false;
+                            }
+                        }
+                        , dataType : 'json'
+                    });
+                }
+                else{
+                    $("#erroragencia").removeClass('sumir');
+                    return false;
+                }
+            }
+            
+        });
+    });
+    function verificadata(datainicio, periodo){
+        var datainicio = new Date(datainicio);
+        var dataatual = new Date();
+        
+        var diff = Date.UTC(datainicio.getYear(),datainicio.getMonth(),datainicio.getDate(),0,0,0) - Date.UTC(dataatual.getYear(),dataatual.getMonth(),dataatual.getDate(),0,0,0);
+        diff = diff/86400000;
+        return diff;
+    }
+
+</script>
+<?php
+$controller = "Manterpropostaedital";
+$links = array(
+    array('Lista de Propostas' => array('controller' => 'manterpropostaincentivofiscal', 'action' => 'listar-propostas')),
+    array('Dados da Proposta' => array())
+);
+montaGuiaLinks($controller, $links);
+?>
+
+
+<div id="titulo">
+    <div>
+        DADOS DA PROPOSTA
+        <?php echo montaBotaoVoltar($controller, $links); ?>
+    </div>
+</div>
+<form id="form__" action="<?php echo $this->baseUrl() . '/manterpropostaedital/inserirdadospropostaedital'; ?>" method="post">
+    <div id="conteudo">
+        <?php
+        if ($this->idPreProjeto) {
+            echo '<input type="hidden" id="idPreProjeto" name="idPreProjeto" value="' . $this->idPreProjeto . '" />';
+        }
+        ?>
+        <script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/ckeditor.js"></script>
+        <script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.js"></script>
+        <link type="text/css" rel="stylesheet" href="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.css" />
+        <script type="text/javascript">
+            <!--
+                /**
+                * Funções que são chamadas após a página ser carregada
+                */
+                $(document).ready(function()
+                {
+                    //CKEDITOR.replaceAll('editor');
+                });
+           //-->
+</script>
+        <link type="text/css" rel="stylesheet" href="<?php echo $this->baseUrl(); ?>/public/js/ckeditor/_samples/sample.css" />
+        <table class="tabela" cellpadding="1" cellspacing="1">
+            <tr>
+                <th colspan="4">
+                    Identificação da Proposta
+                </th>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <div style='float: left'>
+                        <b>Proponente:</b> <?php echo $this->nomeAgente; ?>
+                        <input type="hidden" name="idAgente" value="<?php echo $this->idAgente; ?>" />
+                        <input type="hidden" name="idEdital" value="<?php echo $this->idEdital; ?>" />
+                        <br />
+                        <br />
+                        <b>Nome da Proposta *</b>
+                    </div>
+                    <?php
+                    if ($this->idPreProjeto) {
+                        echo "<div style='float: right'>
+                             <b>Proposta</b>
+                             <br />
+                             {$this->idPreProjeto}
+                             </div>";
+                    }
+                    ?>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <span id="ERROnomeProjeto" style="color:#f00; font-weight: bold"></span><input type="text" value="" id="ERROnomeProjetoF" style="width: 1px; height: 1px" style="display:none" />
+                    <input type="text" name="nomeProjeto" id="nomeProjeto" value="<?php
+                    if ($this->nomeProjeto) {
+                        echo strip_tags($this->nomeProjeto);
+                    }
+                    ?>" class="input_simples" style="width: 98%" maxlength="290" />
+                    <!-- ========== EDITOR ========== -->
+                    <!-- textarea cols="80" id="nomeProjeto" name="nomeProjeto" rows="10"><?php
+                           if ($this->nomeProjeto) {
+                               echo $this->nomeProjeto;
+                           }
+                    ?></textarea>
+                    <script type="text/javascript">
+                        //<![CDATA[
+                        CKEDITOR.replace('nomeProjeto', {fullPage : true });
+                        //]]>
+                    </script -->
+                    <div>
+                        <br/>Ag&ecirc;ncia Banc&aacute;ria: * <input type="text" id="agencia" name="agencia" maxlength="5" class="input_simples" value="<?php echo !empty($this->AgenciaBancaria) ? $this->AgenciaBancaria : ''?>"/><br/>
+                        <div id="erroragencia" style="color: red; font-weight: 600" class="sumir">Preencha a ag&ecirc;ncia v&aacute;lida</div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th colspan="4">Per&iacute;odo realiza&ccedil;&atilde;o</th>
+            </tr>
+            <tr>
+                <td>Data de in&iacute;cio:*</td>
+                <td>
+                    <input type="text" name="dtIniExec" id="dtIniExec" maxlength="10" class="input_simples btn_calendario" readonly="readonly" value="<?php echo !empty($this->DtInicioDeExecucao) ? Data::tratarDataZend($this->DtInicioDeExecucao, 'brasileiro') : ''?>"/>
+                   <p> dd/mm/aaaa </p>
+                </td>
+                <td>Data Final:*</td>
+                <td>
+                    <input type="text" name="dtFimExec" id="dtFimExec" maxlength="10" class="input_simples btn_calendario" readonly="readonly" value="<?php echo !empty($this->DtFinalDeExecucao) ? Data::tratarDataZend($this->DtFinalDeExecucao, 'brasileiro') : ''?>"/>
+                    <span id="erroData"></span>dd/mm/aaaa
+                </td>
+            </tr>
+        </table>
+        <table class="tabela" cellpadding="1" cellspacing="1">
+            <tr>
+                <th>Resumo da Proposta</th></tr>
+            <tr>
+                <td>
+                    Explique de forma clara, objetiva e sucinta o que será realizado - máximo de 1000 caracteres. *
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center">
+                    <span id="ERROresumoProjeto" style="color:#f00; font-weight: bold"></span><input type="text" value="" id="ERROresumoProjetoF" style="width: 1px; height: 1px"  style="display:none"/>
+                    <!-- ========== EDITOR ========== -->
+                    <textarea class="editor input_simples" style="width: 99%" id="resumoProjeto" name="resumoProjeto" rows="10"><?php
+	                    if ($this->resumoProjeto) 
+	                    {
+	                        echo strip_tags($this->resumoProjeto);
+	                    }
+	                    ?></textarea>
+                </td>
+            </tr>
+        </table>
+        <center>
+            <input type="submit" class="btn_salvar btSalvar" id="btSalvar" value=" "/>
+            <input type="button" class="btn_exclusao limpar" onclick="confirmaExcluir('<?php echo $this->url(array('controller' => 'manterpropostaedital', 'action' => 'exluirproposta')) ?><?php echo $codProjeto; ?>')" />
+        </center>
+    </div>
+</form>
+<div id="rodapeConteudo"><span></span></div>
+<br clear="all" />

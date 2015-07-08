@@ -1,0 +1,234 @@
+
+<?php require_once "inc/menu.inc.php"; ?>
+
+<script type="text/javascript">
+
+
+$(function()
+{
+    $.datepicker.regional['pt-BR'] = {
+        closeText: 'Fechar',
+        prevText: '&#x3c;Anterior',
+        nextText: 'Pr&oacute;ximo&#x3e;',
+        currentText: 'Hoje',
+        monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+        monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+        dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+        dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+        dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+        weekHeader: 'Sm',
+        dateFormat: 'dd/mm/yy',
+        firstDay: 0,
+        isRTL: false,
+        showMonthAfterYear: false,
+        yearSuffix: ''};
+    $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+    $("#dtentrada").datepicker($.datepicker.regional['pt-BR']);
+    $("#dtsaida").datepicker($.datepicker.regional['pt-BR']);
+    
+});
+
+
+	function validaForm()
+	{
+		var instituicao = $("#instituicao").val();
+		var curso = $("#curso").val();
+		var dtinicio = $("#dtentrada").val();
+		var dtfim = $("#dtsaida").val();
+		
+		
+		  
+		  var dtAtual = $("#dtatual").val();
+		  
+		  var arrAtual = dtAtual.split("/");
+      	  dtAtual = arrAtual[2]+arrAtual[1]+arrAtual[0];
+
+			
+      
+    		if(dtinicio != '')
+	        {
+	            var arrInicio = dtinicio.split("/");    
+	            dtinicio = arrInicio[2]+arrInicio[1]+arrInicio[0];
+	            
+	        }
+	        else
+		    {
+	        	alertar('Informe a data inicial!');
+	        	return false;
+	        }
+
+	        if(dtfim != '')
+	        {
+	            var arrFim = dtfim.split("/");
+	            dtfim = arrFim[2]+arrFim[1]+arrFim[0];
+	        }
+	        else
+		    {
+	        	alertar('Informe a data final!');
+	        	return false;
+	        }
+
+	        if((dtfim < dtinicio) || (dtfim == dtinicio))
+		    {
+				alertar('A data final deve ser maior que a data inicial!');
+		            
+	            return false;
+	        }
+	        else if(dtinicio > dtAtual)
+		    {
+				alertar('O período não pode ser inferior a data de hoje!');
+		            
+	            return false;
+	        }
+	        else if((instituicao == '') || (curso == ''))
+			{
+				alertar("Dados obrigatórios não preenchidos!");
+			}
+	        else
+		    {
+	        	$("#form").submit();
+	        }
+
+	        
+		
+		
+		
+	}
+
+</script>
+
+
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+		<li class="first"><a href="#" title="Ir para Início">Início</a></li>
+		<li><a href="#" title="Tramitação de Documentos">Manter Agentes</a></li>
+		<li class="last">Escolaridade/cursos</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+	<div>Escolaridade / Cursos<span>ID #23A</span> <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+
+		<?php require_once "inc/cabecalho.php";?>	
+	
+	<?php if(($this->grupoativo == "137")): ?>
+	<table class="tabela">
+		<tr>
+			<td>Para adicionar uma nova escolaridade/curso, clique em novo ao lado!</td>
+			<th width="150"><input type="button" class="btn_novo" value=" " onclick="novo();"/></th>
+		</tr>
+	</table>
+	<?php endif; ?>
+
+	<div id="formNovo" class="sumir">
+	
+		<form id="form" action="<?php echo $this->url(array('controller' => 'agentes', 'action' => 'salvaescolaridade'));?>" method="post" enctype="multipart/form-data">
+	
+		<input type="hidden" value="<?php echo date('d/m/Y');?>" id="dtatual" name="dtatual" />
+	
+		<table class="tabela">
+			<tr>
+				<th colspan="4">ESCOLARIDADE</th>
+			</tr>
+			<tr>
+				<td width="200"><span style="color: red; font-weight: bold;">*</span> Tipo escolaridade:</td>
+				<td colspan="3">
+					<select name="tipoEscolaridade" class="input_simples" style="width: 200px;">
+						<?php foreach($this->tipoEscolaridade as $te):?>
+						<option value="<?php echo $te->idTipoEscolaridade; ?>"><?php echo $te->nmEscolaridade; ?></option>
+						<?php endforeach;?>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td><span style="color: red; font-weight: bold;">*</span> Instituição:</td>
+				<td colspan="3"><input type="text" name="instituicao" id="instituicao" value="" class="input_simples" style="width: 190px;" /></td>
+			</tr>
+			<tr>
+				<td><span style="color: red; font-weight: bold;">*</span> Curso:</td>
+				<td colspan="3"><input type="text" name="curso" id="curso" value="" class="input_simples" style="width: 190px;" /></td>
+			</tr>
+			<tr>
+				<td><span style="color: red; font-weight: bold;">*</span> Data inicio:</td>
+				<td width="300"><input type="text" name="dtentrada" id="dtentrada" class="input_simples w100" maxlength="10" value="" onkeyup="mascara(this, format_data);" onclick="limpar_campo(this, '');" ></td>
+				<td width="100"><span style="color: red; font-weight: bold;">*</span> Data fim:</td>
+				<td><input type="text" name="dtsaida" id="dtsaida" class="input_simples w100" maxlength="10" value="" onkeyup="mascara(this, format_data);" onclick="limpar_campo(this, '');" ></td>
+			</tr>
+			<tr>
+				<td><span style="color: red; font-weight: bold;">*</span> País:</td>
+				<td colspan="3">
+					<select name="pais" id="pais" class="input_simples" style="width: 200px;">
+						<?php foreach($this->pais as $p):?>
+						<option value="<?php echo $p->idPais; ?>" <?php if($p->idPais == 31){echo 'selected="selected"';} ?> ><?php echo $p->Descricao; ?></option>
+						<?php endforeach;?>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>Documento/comprovante:</td>
+				<td colspan="3"><input class="input_simples" type="file" id="arquivo" name="arquivo" style="width:350px;" /></td>
+			</tr>
+			<tr>
+				<td colspan="4" align="center">
+					<input type="button" value=" " class="btn_salvar" onclick="validaForm();" />
+					<input type="button" value=" " class="btn_cancelar" onclick="salvo();" />
+				</td>
+			</tr>
+		</table>
+		</form>
+	</div>
+	<?php if(count($this->escolaridades) != 0):?>
+	<table class="tabela" id="salvos">
+		<tr>
+			<th colspan="7">ESCOLARIDADE/CURSOS CADASTRADOS</th>
+		</tr>
+		<tr>
+			<td width="140" align="center"><b>TIPO</b></td>
+			<td width="140" align="center"><b>CURSO</b></td>
+			<td width="170" align="center"><b>INSTITUIÇÃO</b></td>
+			<td width="120" align="center"><b>DATA ENTRADA</b></td>
+			<td width="120" align="center"><b>DATA SAÍDA</b></td>
+			<td width="120" align="center"><b>PAÍS</b></td>
+			<td align="center"><b>DOCUMENTO</b></td>
+		</tr>
+		<?php foreach($this->escolaridades as $es):?>
+		<tr>
+			<td><?php echo $es->nmEscolaridade; ?></td>
+			<td><?php echo $es->nmCurso; ?></td>
+			<td><?php echo $es->nmInstituicao; ?></td>
+			<td align="center"><?php echo $es->dtInicio; ?></td>
+			<td align="center"><?php echo $es->dtFim; ?></td>
+			<td align="center"><?php echo $es->pais; ?></td>
+			<td><a href="<?php echo $this->url(array('controller' => 'agentes', 'action' => 'abrirarquivo','id' => $es->idArquivo)); ?>"><?php echo $es->nmArquivo;?></a></td>
+		</tr>
+		<?php endforeach; ?>
+	</table>
+	<?php endif; ?>
+	
+	
+	
+
+	
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

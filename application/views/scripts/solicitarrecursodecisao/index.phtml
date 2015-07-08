@@ -1,0 +1,83 @@
+<?php
+/**
+ * Solicitar Recurso da Decisão 
+ * @author Equipe RUP - Politec
+ * @since 21/07/2010
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.solicitarrecursodedecisao
+ * @copyright © 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+?>
+
+
+				
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+	<div id="breadcrumb">
+		<ul>
+			<li class="last">Solicitar Recurso da Decisão </li>
+		</ul>
+	</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+				
+				
+				
+				
+<!-- ========== INÍCIO TÍTULO ========== -->
+	<div id="titulo">
+		<div>Pesquisa dos Proponentes <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+	</div>
+<!-- ========== FIM TÍTULO ========== -->
+				
+				
+				
+				
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+	<div id="conteudo">
+				
+			
+				
+<!-- ========== FORMULÁRIO PARA BUSCAR OS DADOS DOS PROPONENTES ========== -->
+		<form id="formBuscar" name="formBuscar" method="post" action="<?php echo $this->url(array('controller' => 'solicitarrecursodedecisao', 'action' => 'index')); ?>">
+				
+				<table class="tabela" style="margin:1% auto; width:40%;" summary="Esta tabela contém o campo para pesquisa de Agentes Vinculados a Instituição. Para que a pesquisa tenha efeito é necessário que seja feita através do CNPJ ou o nome da Instituição que consta nos campos abaixo">
+												<td class="titulo_tabela" tabindex="1">PESQUISAR PROPONENTE</td>
+							<tr>
+										
+										<th class="center" width="50%" tabindex="2"><label for="cpf" >CPF:</label></th>
+												<td>
+														<input type="text" name="cpf" id="cpf" maxlength="18"  tabindex="3" onkeyup="mascara(this, format_cpf);" 
+																onmouseup=" "
+																onclick="limpar_campo(this, 'Numero do CPF');" value=" " 
+																onkeypress=" "
+																onblur="restaurar_campo(this, 'Numero do CPF');"
+																onmouseout="restaurar_campo(this, 'Numero do CPF');"
+																class="input w500" 	/> 
+												</td>
+							</tr>
+							<tr>
+												<td colspan="2" class="centro">
+														<input type="submit" title=" Pesquisar " tabindex="6" class="btn_pesquisar" value=" " />
+																&nbsp;&nbsp;&nbsp;
+														<input type="reset" title=" Cancelar " tabindex="7" class="btn_cancelar" value=" " />
+												</td>
+							</tr>
+											
+				</table>
+				
+		</form>
+<!-- ========== FIM FORMULÁRIO DE BUSCA DOS DADOS DOS PROPONENTES========== -->
+				
+				
+				
+	</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+				
+				
+				
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+	<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

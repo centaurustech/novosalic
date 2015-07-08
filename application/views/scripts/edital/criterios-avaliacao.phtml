@@ -1,0 +1,517 @@
+<?php include_once 'inc/menu.infger.inc.php'; ?>
+<div id="alerta" class="sumir"></div>
+<div id="breadcrumb">
+    <ul>
+        <li class="first">Início</li>
+        <li class=""><a href="edital/index">Criar Edital - Passo 1</a></li>
+        <li class="">Criar Edital - Passo 2</li>
+    </ul>
+</div>
+
+<div id="titulo">
+    <div>Criar Edital<!--span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span--></div>
+</div> 
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <fieldset>
+        <legend> Passo 2 - Definir informações gerais do Edital</legend>
+        <div id="criteriosAvaliacao" class="">
+            <table class="tabela">
+                <tr>
+                    <td class="bold w150 esquerdo">
+                        Reutilizar Critérios de Avalição
+                    </td>
+                    <td>
+                        <img src="<?php echo $this->baseUrl(); ?>/public/img/botaoReutilizar.png" style="cursor: pointer;" onclick="JSReutilizar()"/>&nbsp;&nbsp;</th>  
+                    </td>
+                </tr>
+            </table>
+
+            <div id="msgAjax"></div>
+            <div id="msg" class="msgALERT sumir" style="margin: 0px 20px 0px 20px">
+                <div class="float_right"><input type="button" class="btn_close" title="Fechar mensagem" id="msgALERT" onclick="$('.msgALERT').hide();" onkeypress="$('.msgALERT').hide();"/></div>
+                <div id="txtmsg" style="line-height: 25px;"></div>
+            </div>
+            <form id="formularioCriterio" action="<?php echo $this->url(array('controller' => 'edital', 'action' => 'salvarcriteriodeavaliacao')); ?>" method="post">
+                <input type="hidden" name="idEdital" id="idEdital" value="<?php echo $this->idEdital; ?>" />
+                <input type="hidden" name="idCriterioAvaliacao" id="idCriterioAvaliacao" value="<?php echo $this->idCriterioAvaliacao; ?>" />
+                <table class="tabela" id="tbCriterioAvaliacao">
+                    <tr>
+                        <th colspan="8" style="font-size: 14px">Critérios de Avali&ccedil;&atilde;o</th>
+                    </tr>
+                    <tr>
+                        <td class="destacar bold w150 esquerdo">Critério de Avali&ccedil;&atilde;o <span style="color: red;">*</span></td>
+                        <td colspan="4">
+                            <input maxlength="200" type="text" name="nomeCriterio" id="nmCriterioAvaliacao" class="input_simples w400 required"><br/>
+                            <label id="msgErrorNomeCriterio" class="error"></label>
+                        </td>
+                        <td class="desempatePai" colspan="3">
+                            <input type="checkbox" name="desempate" id="stDesempate" class="desempate"> Desempate
+                        </td>
+                        <td class="destacar bold esquerdo desempateOrdem" style="display: none">
+                            Ordem <span style="color: red;">*</span>
+                        </td>
+                        <td colspan="2" class="desempateOrdem" style="display: none">
+                            <input maxlength="200" type="text" name="ordemDesempate" id="orDesempate" class="input_simples decimal">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="destacar bold w150 esquerdo">Peso <span style="color: red;">*</span></td>
+                        <td>
+                            <input maxlength="3" type="text" name="pesoCriterioAvaliacao" id="nrPeso" class="input_simples decimal required" size="4"><br/>
+                            <label id="msgErrorPesoCriterio" class="error"></label>
+                        </td>
+                        <td class="destacar bold w100 esquerdo">Nota Inicial <span style="color: red;">*</span></td>
+                        <td>
+                            <input maxlength="4" type="text" name="notaInicialCriterioAvaliacao" id="notaInicio" class="input_simples decimal required" size="4"><br/>
+                            <label id="msgErrorNotaInicialCriterio" class="error"></label>
+                        </td>
+                        <td class="destacar bold w100 esquerdo">Nota Final <span style="color: red;">*</span></td>
+                        <td>
+                            <input maxlength="4" type="text" name="notaFinalCriterioAvaliacao" id="notaFim" class="input_simples decimal required" size="4"><br/>
+                            <label id="msgErrorNotaFinalCriterio" class="error"></label>
+                        </td>
+                        <td class="destacar bold w150 esquerdo" nowrap>Varia&ccedil;&atilde;o da Nota <span style="color: red;">*</span></td>
+                        <td>
+                            <input maxlength="4" type="text" name="variacaoNotaCriterioAvaliacao" id="varNota" class="input_simples decimal required" size="4"><br/>
+                            <label id="msgErrorVariacaoNotaCriterio" class="error"></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="destacar bold w150 esquerdo">Texto de ajuda do critério de Avalia&ccedil;&atilde;o (opcional)</td>
+                        <td colspan="7"><textarea style="width: 99%; height: 150px" maxlength="490" name="txtCriterio" id="txCriterioAvaliacao" class="input_simples w400"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td class="destacar centro" colspan="8">
+                            <div id="divBtnIncluirCriterio">
+                                <button type="button" id="incluirCriterio" class="btn_incluir incluirCriterio" style="vertical-align: bottom;" ></button>
+                                <input class="btn_limpar" type="reset" value="" name="limpar" id="limpar" />
+                            </div>
+                            <div id="divBtnAlterarCriterio" class="sumir">
+                                <input type="button" class="btn_alterar incluirCriterio" style="vertical-align: bottom" value=""/>
+                                <input type="button" class="btn_cancelar" onclick="JSCancelaAlteracaoCriterioAvaliacao()" style="vertical-align: bottom"/>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <br />
+                <?php $numerosOrdem = '['; ?>
+                <?php if ($this->qtdCriterioAvaliacao == 0): ?>
+                    <table class="tabela">
+                        <tr>
+                            <td class="centro"><em>Nenhum critério de avaliação cadastrado!</em></td>
+                        </tr>
+                    </table>
+                <?php else: ?>
+                    <table class="tabela">
+                        <tr>
+                            <th colspan="9">Critérios de Avaliaç&Atilde;o adicionados</th>
+                        </tr>
+                        <tr>
+                            <td class="destacar bold">Critério</td>
+                            <td class="destacar bold">Peso</td>
+                            <td class="destacar bold">Nota Inicial</td>
+                            <td class="destacar bold">Nota Final</td>
+                            <td class="destacar bold">Varia&ccedil;&atilde;o da Nota</td>
+                            <td class="destacar bold" style="width: 90px;">Texto de ajuda</td>
+                            <td class="destacar bold">Desempate</td>
+                            <td class="destacar bold">Ordem</td>
+                            <td class="destacar bold centro" style="width: 150px;">A&ccedil;&otilde;es</td>
+                        </tr>
+                        <?php $i = 1; ?>
+                        <?php foreach ($this->criterioavaliacao as $ca): ?>
+                            <tr>
+                                <td style="vertical-align: top;">
+                                    <?php echo $ca['nmCriterioAvaliacao']; ?>
+                                </td>
+                                <td style="vertical-align: top;">
+                                    <?php echo $ca['nrPeso']; ?>
+                                </td>
+                                <td style="vertical-align: top;">
+                                    <?php echo $ca['notaInicio']; ?>
+                                </td>
+                                <td style="vertical-align: top;">
+                                    <?php echo $ca['notaFim']; ?>
+                                </td>
+                                <td style="vertical-align: top;">
+                                    <?php echo $ca['varNota']; ?>
+                                </td>
+                                <td style="vertical-align: top;" class="centro">
+                                    <span class="textoDeAjuda" style="cursor: pointer;" txt="<?php echo $ca['txCriterioAvaliacao']; ?>"><img src="<?php echo $this->baseUrl(); ?>/public/img/table_multiple.png"></span>
+                                </td>  
+                                <td style="vertical-align: top;">
+                                    <?php echo ($ca['stDesempate']) ? 'Sim' : 'Não'; ?>
+                                </td>
+                                <td style="vertical-align: top;">
+                                    <?php 
+                                        if($ca['orDesempate'] != 0){
+                                            $numerosOrdem .= "'".$ca['orDesempate']."'";
+                                            if(count($this->criterioavaliacao) > $i){
+                                                $numerosOrdem .= ',';
+                                            }
+                                        }
+
+                                        $i++;
+                                    ?>
+                                    <?php echo ($ca['orDesempate']) != '0' ? 'Sim' : 'Não'; ?>
+                                </td>
+                                <td nowrap class="centro">
+                                    <input type="button" class="btn_editar" onclick="editarCriterio('<?php echo $ca['idCriterioAvaliacao']; ?>');" />
+                                    <input type="button" class="btn_exclusao" onclick="excluir('<?php echo $ca['idCriterioAvaliacao']; ?>');" />
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </table>    
+                    <?php endif; ?>
+                    <?php $numerosOrdem .= ']'; ?>
+                <br clear="all" />
+                <div style="width: 100%; text-align: center;">
+                    <!--<input class="btn_salvar" type="button" value="" name="salvar" id="salvar" />-->
+                    <input type="button" style="vertical-align: top" class="btn_p_proximo" id="btnProximo" value=" "/>
+                </div>
+            </form>
+        </div>
+    </fieldset>
+    <input type="hidden" id="idarrayordem" value="<?php echo $numerosOrdem; ?>" />
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+<!-- ========== INï¿½CIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="txtdialog" title="Texto de Ajuda" style="display: none;">
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+
+//        $("#nrPeso").numeric(",");
+//        $("#notaInicio").numeric(",");
+//        $("#notaFim").numeric(",");
+//        $("#varNota").numeric(",");
+        
+        $('#stDesempate').click(function() {
+
+            $('#orDesempate').val('');
+
+            if ($(this).is(':checked')) {
+                $('.desempatePai').attr('colspan', '1');
+                $('.desempateOrdem').fadeIn();
+                $('#orDesempate').addClass('required');
+            } else {
+                $('.desempatePai').attr('colspan', '3');
+                $('.desempateOrdem').fadeOut(0);
+                $('#orDesempate').removeClass('required');
+            }
+        });
+
+        $(".textoDeAjuda").click(function() {
+            
+            var txt = $(this).attr('txt');
+        
+            $("#txtdialog").html(txt);
+            
+            $("#txtdialog").dialog({
+                resizable: false,
+                width:520,
+                height:320,
+                modal: true,
+                open: function(event, ui) {
+                    $(".ui-dialog-titlebar-close").hide(); // Hide the [x] button
+                },
+                buttons: {
+                    "Fechar" : function() {
+                        $(this).dialog("close");
+                        $("#txtdialog").html('');
+                    }
+                }
+            });	
+            
+        });
+
+        $(".incluirCriterio").click(function() {
+
+            $('#msg').hide();
+            $('#txtmsg').html('');
+
+            var check = 0;
+            var enviar = 0;
+
+            var nrPeso      = $('#nrPeso').val(),
+                notaInicio  = $('#notaInicio').val(),
+                notaFim     = $('#notaFim').val(),
+                varNota     = $('#varNota').val(),
+                orDesempate = $('#orDesempate').val(),
+                stDesempate = $('#stDesempate'),
+                ordems      = $('#idarrayordem').val();
+                
+            notaInicio  = notaInicio.replace(",",".");
+            notaFim     = notaFim.replace(",",".");
+            nrPeso      = nrPeso.replace(",",".");
+            varNota     = varNota.replace(",",".");
+            
+            $('.required').each(function() {
+                var obj = $(this).val();
+                if (obj == '') {
+                    check = 1;
+                }
+            });
+
+            if ((check == 1)) {
+                $('#txtmsg').html('Verifique os campos obrigatórios!<br />');
+                $('#msg').show();
+                enviar = 1;
+            } else {
+                $('#txtmsg').html('');
+                $('#msg').hide();
+            }
+
+            if(ordems != '[]'){
+                if(in_array(orDesempate, ordems)){
+                    $('#txtmsg').append('Ordem de desempate não pode se repetir!<br />');
+                    $('#msg').show();
+                    enviar = 1;
+                }
+            }
+            
+            if (parseFloat(notaFim) < parseFloat(notaInicio)) {
+                $('#txtmsg').append('A Nota Final não pode ser menor que a Nota Inicial!<br />');
+                $('#msg').show();
+                enviar = 1;
+            }
+
+            if ((nrPeso == '0') || (nrPeso == '00') || (nrPeso == '000')) {
+                $('#txtmsg').append('Peso não pode ser igual a 0<br />');
+                $('#msg').show();
+                enviar = 1;
+            }
+            
+            
+            if ((varNota == '0') || (varNota == '00') || (varNota == '000') || (varNota == '0000')) {
+                $('#txtmsg').append('Variação da Nota não pode ser igual a 0<br />');
+                $('#msg').show();
+                enviar = 1;
+            }
+
+            // Enviar o Form
+            if (enviar == 1) {
+                return false;
+            }else{
+                $('#txtmsg').html('');
+                $('#msg').hide();
+                $("#formularioCriterio").submit();
+            }
+
+        });
+
+
+        $("#btnProximo").click(function() {
+            window.location = "<?php echo $this->url(array('controller' => 'edital', 'action' => 'modulosedital', 'idEdital' => $this->idEdital), '', true); ?>";
+        });
+
+        $("#btnVoltar").click(function() {
+            window.location = "form-criterios-de-participacao.htm";
+        });
+
+        //CALENDARIO - CAMPOS DATA
+        $.datepicker.regional['pt-BR'] =
+                {
+                    closeText: 'Fechar',
+                    prevText: '&#x3c;Anterior',
+                    nextText: 'Pr&oacute;ximo&#x3e;',
+                    currentText: 'Hoje',
+                    monthNames: ['Janeiro', 'Fevereiro', 'Mar&ccedil;o', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                    monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                    dayNames: ['Domingo', 'Segunda-feira', 'Ter&ccedil;a-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'S&aacute;bado'],
+                    dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
+                    dayNamesMin: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
+                    weekHeader: 'Sm',
+                    dateFormat: 'dd-mm-yy',
+                    firstDay: 0,
+                    isRTL: false,
+                    showMonthAfterYear: false,
+                    yearSuffix: ''
+                };
+
+        $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+
+        // classe dos campos que utilizarao o calendario
+        $(".cmpData").datepicker($.datepicker.regional['pt-BR']);
+
+        $('.decimal').live('keypress', function(e) {
+            var key_code_val = (e.keyCode ? e.keyCode : e.which);
+            var valor = String.fromCharCode(key_code_val);
+            var exp = new RegExp(/[0-9,]/);
+            if ((key_code_val == 8) || (key_code_val == 9)) {
+                return true;
+            }
+            return (exp.test(valor));
+        });
+    });
+
+    function in_array(needle, haystack, argStrict) {
+        //  discuss at: http://phpjs.org/functions/in_array/
+        // original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+        // improved by: vlado houba
+        // improved by: Jonas Sciangula Street (Joni2Back)
+        //    input by: Billy
+        // bugfixed by: Brett Zamir (http://brett-zamir.me)
+        //   example 1: in_array('van', ['Kevin', 'van', 'Zonneveld']);
+        //   returns 1: true
+        //   example 2: in_array('vlado', {0: 'Kevin', vlado: 'van', 1: 'Zonneveld'});
+        //   returns 2: false
+        //   example 3: in_array(1, ['1', '2', '3']);
+        //   example 3: in_array(1, ['1', '2', '3'], false);
+        //   returns 3: true
+        //   returns 3: true
+        //   example 4: in_array(1, ['1', '2', '3'], true);
+        //   returns 4: false
+
+        var key = '',
+          strict = !! argStrict;
+
+        //we prevent the double check (strict && arr[key] === ndl) || (!strict && arr[key] == ndl)
+        //in just one for, in order to improve the performance 
+        //deciding wich type of comparation will do before walk array
+        if (strict) {
+          for (key in haystack) {
+            if (haystack[key] === needle) {
+              return true;
+            }
+          }
+        } else {
+          for (key in haystack) {
+            if (haystack[key] == needle) {
+              return true;
+            }
+          }
+        }
+
+        return false;
+      }
+
+
+    function num(dom) {
+        dom.value = dom.value.replace(/\D/g, '');
+    }
+
+    function excluir(id) {
+        $("#alerta").dialog("destroy");
+        $("#alerta").html("Tem certeza que deseja excluir o critério de avaliação?");
+        $("#alerta").dialog({
+            resizable: false,
+            title: 'Alerta!',
+            width: 340,
+            height: 170,
+            modal: true,
+            buttons: {
+                'Não': function() {
+                    $(this).dialog('close');
+                },
+                'Sim': function() {
+                    var idEdital = $('#idEdital').val();
+                    window.location = '<?php echo $this->url(array('controller' => 'edital', 'action' => 'deletar-criterio-avaliacao'), '', true); ?>/id/' + id + '/idEdital/' + idEdital;
+                }
+            }
+        });
+        $('.ui-dialog-titlebar-close').remove();
+    }
+
+    function editarCriterio(id) {
+
+        $('#msgAjax').html('Aguarde, carregando os dados...');
+
+        $.ajax({
+            type: "POST",
+            url: '<?php echo $this->url(array('controller' => 'edital', 'action' => 'busca-criterio-ajax'), '', true); ?>',
+            data: {idCriterio: id},
+            dataType: 'json',
+            success: function(data) {
+
+                if (data.error != '') {
+                    $('#msgAjax').html(data.error);
+                } else {
+
+                    $('#divBtnIncluirCriterio').hide();
+                    $('#divBtnAlterarCriterio').show();
+                    // Preenche os dados
+                    $('#idCriterioAvaliacao').val(data.dados.idCriterioAvaliacao);
+                    $('#nmCriterioAvaliacao').val(data.dados.nmCriterioAvaliacao);
+//                    $('#idEdital').val(data.dados.idEdital);
+                    $('#nrPeso').val(data.dados.nrPeso);
+                    $('#notaInicio').val(data.dados.notaInicio);
+                    $('#notaFim').val(data.dados.notaFim);
+                    $('#varNota').val(data.dados.varNota);
+                    $('#txCriterioAvaliacao').val(data.dados.txCriterioAvaliacao);
+                    if (data.dados.stDesempate == 1) {
+//                        $('#stDesempate').click();
+                        $('#stDesempate').attr('checked', 'checked');
+                        $('.desempatePai').attr('colspan', '1');
+                        $('.desempateOrdem').fadeIn();
+                        $('#orDesempate').addClass('required');
+                    }
+                    $('#orDesempate').val(data.dados.orDesempate);
+                    $('#msgAjax').html('');
+                }
+
+            }, error: function(data) {
+                $('#msgAjax').html(data.error);
+            }
+        });
+
+    }
+
+    function JSCancelaAlteracaoCriterioAvaliacao() {
+        //mostra botao de incluir
+        $('input').val('');
+        $('textarea').val('');
+        $("#divBtnIncluirCriterio").show();
+        //esconde botores de altear e cancelar
+        $("#divBtnAlterarCriterio").hide();
+    }
+
+    function JSRemoverCriterio(idTrCriterio) {
+
+        $('html').css('overflow', 'hidden');
+        $("body").append("<div id='divDinamica'></div>");
+        $('#divDinamica').html("Confirma a exclus&atilde;o do crit&eacute;rio?");
+
+        var title = 'Confirma&ccedil;&atilde;o';
+        $("#divDinamica").dialog({
+            resizable: true,
+            width: 300,
+            height: 150,
+            modal: true,
+            autoOpen: true,
+            title: title,
+            buttons: {
+                'N\u00E3o': function() {
+                    $("#divDinamica").remove();
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');
+                },
+                'Sim': function() {
+
+                }
+            },
+            close: function() {
+                $("#divDinamica").remove();
+                $(this).dialog('close');
+                $('html').css('overflow', 'auto');
+            }
+        });
+    }
+
+    function JSLimparCriterio() {
+        //zera conteudo
+        $("#nomeCriterio").val('');
+        $("#pesoCriterioAvaliacao").val('');
+        $("#notaInicialCriterioAvaliacao").val('');
+        $("#notaFinalCriterioAvaliacao").val('');
+        $("#variacaoNotaCriterioAvaliacao").val('');
+        $("#txtCriterio").val('');
+    }
+
+
+</script>

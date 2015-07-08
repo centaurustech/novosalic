@@ -1,0 +1,174 @@
+<?php include_once 'scripts/admissibilidade/inc/menu.inc.php';     ?>
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="second">Admissibilidade</li>
+        <li class="last">Histórico de análise visual</li>
+    </ul>
+</div>
+<div id="titulo">
+    <div>Histórico de análise visual <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<style type="text/css">
+<!--
+.mensagem {
+    padding: 8px;
+    border: darkgreen;
+    background: #e3e3c7;
+}
+-->
+</style>
+<script type="text/javascript">
+<!--
+$(document).ready(function(){
+$("#tabelaHistorico").tablesorter();
+
+});
+
+/*
+ * Função responsável pela exibição ou ocultamento de conteúdo,
+ * mudando a imagem.
+ **/
+function abrirDinamico(elemento, obj) {
+    if($(elemento).css('display') == 'none') {
+        $(elemento).fadeIn('fast', function() {
+            $('img', $(obj)).attr('src','<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png');
+        });
+    } else {
+        $(elemento).fadeOut('fast', function() {
+            $('img', $(obj)).attr('src','<?php echo $this->baseUrl(); ?>/public/img/navigation-baixo.PNG');
+        });
+    }
+}
+function toogleAjax(id, url){
+    if(!url) {
+        $('#'+id).toggle('slow');
+    } else {
+        elemento = '#'+id;
+        if($(elemento).css('display') == 'none') {
+            $(elemento).html('<img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /> ');
+            $(elemento).fadeIn('fast');
+            $.ajax({
+                type: "POST",
+                data: {
+                    teste: 'testando'
+                },
+                url: url,
+                success: function(data) {
+                    $(elemento).html(data);
+                }
+            });
+        } else {
+            $(elemento).fadeOut('fast');
+        }
+    }
+};
+
+function abreDivAvaliacao(caminho){
+    /*w = largura;
+    h = altura;
+    rol = rolagem;
+    largura = screen.width;
+    altura = screen.height;
+    XX = (largura-w)/2;
+    YY = (altura-h)/2;
+    janela = window.open(caminho,'avaliacao', 'width='+w+', height='+h+', left='+XX+', top='+YY+'menubar=no, toolbar=no,status=no,scrollbars=auto');
+    janela.focus();*/
+
+    $("#resultadoAvaliacao").dialog("destroy");
+    $('#resultadoAvaliacao').html("");
+    $('#resultadoAvaliacao').html(jqAjaxLink(caminho, '', 'resultadoAvaliacao'));
+    $("#resultadoAvaliacao").dialog
+    ({
+        width: 500,
+        height: 500,
+        title: "Avalia&ccedil;&atilde;o",
+        modal: true,
+        draggable: true,
+        resizable: true,
+        closeOnEscape: true
+    });
+
+    //jqAjaxLink(caminho, '', 'resultadoAvaliacao');
+    
+}
+//-->
+</script>
+<form method="POST" id="formGerarPdf" name="formGerarPdf" action="<?php echo $this->url(array('controller' => 'admissibilidade', 'action' => 'gerarpdf')); ?>" style="display:none">
+    <textarea name="html" id="conteudoImprimir"></textarea>
+</form>
+
+<div id="conteudo">
+    <div id="conteudoImprimivel" class="conteudoImprimivel">
+    <form action="<?php echo $this->urlResumo; ?>" method="post" name="frmResumo" id="frmResumo">
+    
+    <table class="tabela">
+        <tr>
+            <th>
+                Histórico da Análise Visual
+            </th>
+        </tr>
+        <?php $ultimoRegistro = null; $ct = 1; ?>
+        <?php if(!empty($this->tecnicosPropostas)): ?>
+        <?php //foreach($this->tecnicos as $idOrgaoGeral=>$tecnico): ?>
+        
+        <?php foreach($this->tecnicosPropostas as $tecnico=>$propostas): ?>
+        <tr onclick="abrirDinamico('#analista_<?php echo $ct; ?>', $(this))" style="cursor:pointer">
+            <td align="center">
+                <img src="<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png" id="imgDinamica" align="left"/>
+                Analista : <?php echo $tecnico ?>
+            </td>
+        </tr>
+        <tr id="analista_<?php echo $ct; ?>" style="display: none;">
+            <td><input type="hidden" name="<?php echo $tecnico; ?>" value="<?php echo count($propostas); ?>"/>
+                <table class="tabela" id="tabelaHistorico">
+                    <thead>
+                    <tr>
+                        <th width="10%">Nr. Proposta</th>
+                        <th width="70%">Nome da Proposta</th>
+                        <th style="cursor:pointer" title="Clique aqui para ordenar" width="15%">Data</th>
+                        <th width="5%">Avaliação</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php $auxIdPreProjeto = 0; foreach($propostas as $proposta): ?>
+                    <tr>
+                        <td align="center" nowrap>
+                            <?php if($proposta->idPreProjeto != $auxIdPreProjeto ): ?>
+                            <a href="<?php echo $this->baseUrl(); ?>/admissibilidade/exibirpropostacultural?idPreProjeto=<?php echo $proposta->idPreProjeto; ?>"><?php echo $proposta->idPreProjeto; ?></a>
+                            <?php else: ?>
+                            --
+                            <?php endif; ?>
+                        </td>
+                        <td align="center"><?php echo $proposta->NomeProjeto; ?></td>
+                        <td><?php echo str_replace(" ", " as ", data::dataBrasileira($proposta->DtAvaliacao)); ?></td>
+                        <td align="center" onclick="abreDivAvaliacao('<?php echo $this->baseUrl(); ?>/admissibilidade/avaliacao-historico-analise-visual?idAvaliacao=<?php echo $proposta->idAvaliacaoProposta; ?>');" style="cursor: pointer;"><img src="<?php echo $this->baseUrl();?>/public/img/btn_busca.gif" /></td>
+                    </tr>
+                    <?php $auxIdPreProjeto = $proposta->idPreProjeto; endforeach; ?>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <?php $ct++; ?>
+        <?php endforeach; ?>
+        
+        <?php //endforeach; ?>
+        <?php endif; ?>
+    </table>
+    </form>
+    </div>
+    <table class="tabela">
+    <tr>
+    <td class="centro">
+        <input type="button" title="Imprimir" name="imprimir" id="imprimir" value="" class="btn_imprimir" onclick='$("#conteudoImprimir").val($(".conteudoImprimivel").html()); $("#formGerarPdf").submit();'/>
+        <input type="button" title="Resumo" style="width: 88px" class="btn_resumo" id="btn_resumo" onclick="$('#frmResumo').submit();" />
+    </td>
+    </tr>
+    </table>
+</div>
+<div id="resultadoAvaliacao"></div>
+<!-- ========== FIM CONTEUDO ========== -->
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

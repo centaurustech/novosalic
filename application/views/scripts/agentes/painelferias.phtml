@@ -1,0 +1,121 @@
+<script type="text/javascript">
+
+    function validarFormPainel(){
+        var texto = CKEDITOR.instances['justificativapainel'].getData().toString().replace(/(<.*?>)|(&nbsp;)|(\s+)/g,'');
+        if (texto.length > 0){
+            $('#justificativapainel').val(CKEDITOR.instances['justificativapainel'].getData());
+        } else {
+            alertar('O Campo justificativa é obrigatório');
+            return false;
+        }
+        $("#form").submit();
+    }
+
+    function cancelarferias(id){
+        $('#modaljustificativa').dialog({
+            title : 'Justificativa do cancelamento de férias',
+            resizable: false,
+            width:920,
+            position: [320,65],
+            draggable:false,
+            modal: true,
+            autoOpen:false,
+            buttons : {
+                'Fechar' : function(){
+                    $(this).dialog('close');
+                },
+                'Cancelar Férias' : function(){
+                    validarFormPainel();
+                }
+            }
+        });
+        $('#modaljustificativa').dialog('open');
+        $('#idferias').val(id);
+        CKEDITOR.replace('justificativapainel');
+    }
+
+    function confirmaferias(url){
+        $('#confirma').dialog({
+            title : 'Alerta',
+            resizable: false,
+            width:340,
+            height:160,
+            modal: true,
+            autoOpen:false,
+            buttons : {
+                'Não' : function(){
+                    $(this).dialog('close');
+                },
+                'Sim' : function(){
+                    window.location = url;
+                }
+            }
+        });
+        $('#confirma').html('Deseja realmente confirmar as férias?');
+        $('#confirma').dialog('open');
+    }
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'),'',true); ?>" title="Ir para Início">Início</a></li>
+        <li class="last">Férias Pareceristas</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Pedidos de férias dos Pareceristas <span class="voltar"><a href="javascript:voltar();" title="Página Anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="confirma" class="sumir"></div>
+<div id="modaljustificativa" class="sumir">
+    <form id="form" action="<?php echo $this->url(array('controller' => 'agentes', 'action' => 'cancelaferias'));?>" method="post">
+        <input type="hidden" name="idferias" id="idferias" class="input_simples" />
+        <table class="tabela">
+            <tr>
+                <td align="center"><textarea id="justificativapainel" name="justificativapainel"></textarea></td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<div id="conteudo">
+    <table class="tabela" id="salvos">
+        <tr>
+            <th colspan="8">Pedidos</th>
+        </tr>
+        <?php $nome = ''; foreach($this->dadosferias as $d){ ?>
+        <tr>
+            <td style="<?php if($nome != $d->Nome); ?>"><b><?php if($nome != $d->Nome) echo $d->Nome; ?></b></td>
+            <td style="<?php if($nome != $d->Nome); ?>" >Quantidade de dias: <span id="qtdDias"><?php echo $d->qtdDias; ?></span></td>
+            <td style="<?php if($nome != $d->Nome); ?>" align="center">Data das férias: </td>
+            <td style="<?php if($nome != $d->Nome); ?>" align="center"><?php echo $d->dtInicio; ?></td>
+            <td style="<?php if($nome != $d->Nome); ?>" width="1" align="center">à</td>
+            <td style="<?php if($nome != $d->Nome); ?>" align="center"><?php echo $d->dtFim; ?></td>
+            <td style="<?php if($nome != $d->Nome); ?>" width="1" align="center">
+                <input type="button" name="btn_aprovar" id="btn_aprovar" class="btn_aprovar" onclick="confirmaferias('<?php echo $this->url(array('controller' => 'agentes', 'action' => 'confirmaferias', 'idferias' => $d->idAusencia),'',true);?>');">
+                <!--<img src="<?php //echo $this->baseUrl(); ?>/public/img/buttons/aprovar.gif" title="Cancelar" border="0" onclick="confirmaferias('<?php //echo $this->url(array('controller' => 'agentes', 'action' => 'confirmaferias', 'idferias' => $d->idAusencia),'',true);?>');"/>-->
+            </td>
+            <td style="<?php if($nome != $d->Nome); ?>" width="1" align="center">
+                <input type="button" name="btn_rejeitar" id="btn_rejeitar" class="btn_rejeitar" onclick="cancelarferias('<?php echo $d->idAusencia; ?>');">
+                <!--<img src="<?php //echo $this->baseUrl(); ?>/public/img/buttons/rejeitar.gif" title="Cancelar" border="0" onclick="cancelarferias('<?php //echo $d->idAusencia; ?>');"/>-->
+            </td>
+        </tr>
+        <?php $nome = $d->Nome; } ?>
+    </table>
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

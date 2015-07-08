@@ -1,0 +1,409 @@
+<?php include_once 'inc/menu-modulo.php'; ?>
+<div id="alerta" class="sumir"></div>
+<div id="breadcrumb">
+    <ul>
+        <li class="first">Início</li>
+        <li class=""><a href="edital/index">Criar Edital - Passo 1</a></li>
+        <li class="">Criar Edital - Passo 2</li>
+    </ul>
+</div>
+
+<div id="titulo">
+    <div>Critério de Participa&ccedil;&atilde;o</div>
+</div> 
+
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+<div id="conteudo">
+    <!-- FOMULARIO PARA CADASTRO DOS CRITERIOS DE PARTICIPACAO -->
+    <div id="boxCriteriosParticipacao">
+        <br />
+        <div id="msg" class="msgALERT sumir" style="margin: 0px 20px 0px 20px">
+            <div class="float_right"><input type="button" class="btn_close" title="Fechar mensagem" id="msgALERT" onclick="$('.msgALERT').hide();" onkeypress="$('.msgALERT').hide();"/></div>
+            <div id="txtmsg" style="line-height: 25px;"></div>
+        </div>
+        
+        <form id="formularioCriteriosParticipacao" action="<?php echo $this->url(array('controller' => 'edital', 'action' => 'salva-criterio-participacao')); ?>" method="post">
+            <input type="hidden" id="idEdital" name="idEdital" value="<?php echo $this->idEdital;?>" />
+            <input type="hidden" id="idModulo" name="idModulo" value="<?php echo $this->idModulo;?>" />
+            <input type="hidden" id="idCategoria" name="idCategoria" value="<?php echo $this->idCategoria;?>" />
+            <table class="tabela" id="tbCriterioParticipacao" style="margin-bottom: 0px !important; padding-bottom: 0px !important;">
+                <tbody>
+                    <tr>
+                        <th colspan="2" style="font-size: 14px">Critério de Participa&ccedil;&atilde;o</th>
+                    </tr>
+                    <tr>
+                        <td class="destacar bold w150 esquerdo">Descrição do crit&eacute;rio <span style="color: red;">*</span></td>
+                        <td>
+                            <input type="text" id="dsCriterioParticipacao" name="dsCriterioParticipacao" size="80" class="input_simples required">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="destacar bold w150 esquerdo">Campo: <span style="color: red;">*</span></td>
+                        <td>
+                            <select class="input_simples required" id="campo" name="regraCampo">
+                                <option value="">- Selecione -</option>
+                                <option value="DN">Idade</option>
+                                <option value="SX">Sexo</option>
+                                <option value="RE">Região</option>
+                                <option value="UF">UF</option>
+                                <option value="CI">Cidade</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr id="uf" class="sumir">
+                        <td class="destacar bold w150 esquerdo">UF: <span style="color: red;">*</span></td>
+                        <td>
+                            <div id="checkUfs">
+                                <?php foreach($this->listaUF as $uf):?>
+                                <div style="float: left; width: 220px; margin: 10px 30px 10px 0px;">
+                                    <input type="checkbox" name="uf[]" id="" value="<?php echo $uf->idUF; ?>" />
+                                    <?php echo $uf->Descricao; ?>
+                                </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr id="cidade" class="sumir">
+                        <td class="destacar bold w150 esquerdo">UF / Cidade: <span style="color: red;">*</span></td>
+                        <td>
+                            <select name="" id="ufMunicipio" class="input_simples" style="width: 300px;">
+                                <option value="">- Selecione -</option>
+                                <option value="0">- Ver Selecionados -</option>
+                                <?php foreach($this->listaUF as $uf):?>
+                                <option value="<?php echo $uf->idUF; ?>"><?php echo $uf->Descricao; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <br />
+                            <br />
+                            <div id="checkboxes">
+                                <?php $controleUF = ''; ?>
+                                <?php foreach($this->listaMunicipios as $mu):?>
+                                <?php if($mu->idUF != $controleUF): ?>
+                                <div style="border-bottom: 1px solid #ccc; margin-top: 30px; clear: both;" class="titulo_<?php echo $mu->idMunicipioIBGE; ?> municipio sumir">
+                                    <b><?php echo $mu->dsUF; ?></b>
+                                </div>
+                                <?php endif; ?>
+                                <div id="div_<?php echo $mu->idMunicipioIBGE; ?>" class="municipio_<?php echo $mu->idUF; ?> municipio sumir" style="float: left; width: 200px; margin: 10px 30px 10px 0px;">
+                                    <input type="checkbox" name="municipio[]" id="" valor="<?php echo $mu->idMunicipioIBGE; ?>" value="<?php echo $mu->idUF.','.$mu->idMunicipioIBGE; ?>" />
+                                    <?php echo $mu->dsMunicipio; ?>
+                                </div>
+                                <?php $controleUF = $mu->idUF; ?>
+                                <?php endforeach; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr id="nascimento" class="sumir">
+                        <td class="destacar bold w150 esquerdo">Data de nascimento: <span style="color: red;">*</span></td>
+                        <td>
+                            <input type="text" name="dsFaixaEtariaInicio" id="dsFaixaEtariaInicio" onkeyup="num(this);" maxlength="3" class="input_simples" />
+                            &nbsp; à &nbsp;
+                            <input type="text" name="dsFaixaEtariaFim" id="dsFaixaEtariaFim" onkeyup="num(this);" maxlength="3" class="input_simples" />
+                        </td>
+                    </tr>
+                    <tr id="sexo" class="sumir">
+                        <td class="destacar bold w150 esquerdo">Sexo: <span style="color: red;">*</span></td>
+                        <td>
+                            <input type="radio" name="dsSexo" id="sexom" value="M" class="input_simples" />
+                            Masculino &nbsp;&nbsp;&nbsp;&nbsp;
+                            <input type="radio" name="dsSexo" id="sexof" value="F" class="input_simples" />
+                            Feminino&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <input type="radio" name="dsSexo" id="sexoa" value="A" class="input_simples" checked="checked" />
+                            Ambos
+                        </td>
+                    </tr>
+                    <tr id="regiao" class="sumir">
+                        <td class="destacar bold w150 esquerdo">Região: <span style="color: red;">*</span></td>
+                        <td>
+                            <div id="checkRegiao">
+                                <div style="float: left; width: 150px; margin: 10px 30px 10px 0px;">
+                                    <input type="checkbox" class="" name="dsRegiao[]" id="" value="N" />
+                                    Norte
+                                </div>
+                                <div style="float: left; width: 150px; margin: 10px 30px 10px 0px;">
+                                    <input type="checkbox" class="" name="dsRegiao[]" id="" value="NO" />
+                                    Nordeste
+                                </div>
+                                <div style="float: left; width: 150px; margin: 10px 30px 10px 0px;">
+                                    <input type="checkbox" class="" name="dsRegiao[]" id="" value="S" />
+                                    Sul
+                                </div>
+                                <div style="float: left; width: 150px; margin: 10px 30px 10px 0px;">
+                                    <input type="checkbox" class="" name="dsRegiao[]" id="" value="SU" />
+                                    Sudeste
+                                </div>
+                                <div style="float: left; width: 150px; margin: 10px 30px 10px 0px;">
+                                    <input type="checkbox" class="" name="dsRegiao[]" id="" value="CO" />
+                                    Centro Oeste
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="destacar bold w150 esquerdo">Resposta Obrigatória</td>
+                        <td>
+                            <input type="checkbox" name="respostaObrigatoria" value="S">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="width: 100%; margin: 0 auto; padding: 8px">
+                <div id="divBtnIncluirCriterio" class="centro">
+                    <button type="submit" id="salvarCriteriosParticipacao" class="btn_incluir" style="vertical-align: bottom"></button>
+                </div>
+                <div id="divBtnAlterarCriterio" class="sumir">
+                    <input type="button" class="btn_alterar" onclick="JSAlteraCriterioAvaliacao()" style="vertical-align: bottom">
+                    <input type="button" class="btn_cancelar" onclick="JSCancelaAlteracaoCriterioAvaliacao()" style="vertical-align: bottom">
+                </div>
+            </div>
+        </form>
+
+        <?php if(count($this->criterioParticipacao) > 0): ?>
+        <table class="tabela" id="tblCriteriosAdicionada" style="margin-top: 0px !important; padding-top: 0px !important; border-top: 1px #fff solid !important; ">
+            <tbody><tr>
+                    <td colspan="4" class="destacar centro bold">CRITÉRIOS ADICIONADOS</td>
+                </tr>
+                <tr>
+                    <td class="destacar bold" style="width: 40%">Descrição do critério</td>
+                    <td class="destacar bold " style="width: 15%">Regra para o campo</td>
+                    <td class="destacar bold centro" style="width: 15%">Ações</td>
+                </tr>
+                <?php foreach ($this->criterioParticipacao as $critP): ?>
+                <tr id="trCriterio_zero">
+                    <td class="centro"><?php echo $critP['dsCriterioParticipacao']; ?></td>
+                    <td class="centro">
+                        <?php 
+                            if($critP['rgCriterioParticipacao'] == 'DN'){
+                                echo 'Idade';
+                            }else if($critP['rgCriterioParticipacao'] == 'SX'){
+                                echo 'Sexo';
+                            }else if($critP['rgCriterioParticipacao'] == 'RE'){
+                                echo 'Região';
+                            }else if($critP['rgCriterioParticipacao'] == 'UF'){
+                                echo 'UF';
+                            }else if($critP['rgCriterioParticipacao'] == 'CI'){
+                                echo 'Cidade';
+                            }
+                        ?>
+                    </td>
+                    <td class="centro">
+                        <!--input type="button" class="btn_editar"     onclick="editarCriterioParticipacao('<?php // echo $critP['idCriterioParticipacao']; ?>');" /-->
+                        <input type="button" class="btn_exclusao"   onclick="excluirCriterioParticipacao('<?php echo $critP['idCriterioParticipacao']; ?>');" />
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+        <?php endif; ?>
+    </div>
+    <br clear="all">
+    <!-- FIM FOMULARIO PARA CADASTRO DOS CRITERIOS DE PARTICIPACAO -->
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+<div id="rodapeConteudo"><span></span></div>
+<br clear="all" />
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+
+        $('#ufMunicipio').change(function(){
+            
+            $('.municipio').hide();
+            
+            var valor = $(this).val();
+            
+            if(valor == '0'){
+                
+                $('div#checkboxes input[type=checkbox]').each(function() {
+
+                    var id = $(this).attr('valor');
+
+                    if($(this).is(":checked")) {
+                        $('#div_'+id).show();
+                        $('.titulo_'+id).show();
+                    }else{
+                        $('#div_'+id).hide();
+                    }
+
+                 });
+                 
+            }
+            
+            $('.municipio_'+valor).show();
+            
+        });
+        
+        
+        $('#campo').change(function(){
+        
+            var item = $(this).val();
+            
+            if(item == 'DN'){
+                $('#nascimento').show();
+                $('#sexo').hide();
+                $('#regiao').hide();
+                $('#uf').hide();
+                $('#cidade').hide();
+            }else if(item == 'SX'){
+                $('#nascimento').hide();
+                $('#sexo').show();
+                $('#regiao').hide();
+                $('#uf').hide();
+                $('#cidade').hide();
+            }else if(item == 'RE'){
+                $('#nascimento').hide();
+                $('#sexo').hide();
+                $('#regiao').show();
+                $('#uf').hide();
+                $('#cidade').hide();
+            }else if(item == 'UF'){
+                $('#nascimento').hide();
+                $('#sexo').hide();
+                $('#regiao').hide();
+                $('#uf').show();
+                $('#cidade').hide();
+            }else if(item == 'CI'){
+                $('#nascimento').hide();
+                $('#sexo').hide();
+                $('#regiao').hide();
+                $('#uf').hide();
+                $('#cidade').show();
+            }
+            
+        
+        });
+        
+        
+        $("#formularioCriteriosParticipacao").submit(function() {
+
+            $('#msg').hide();
+            $('#txtmsg').html('');
+
+            var enviar = 0;
+            var regraCriterio = $('#campo').val();
+
+            if(regraCriterio == 'DN'){
+                
+                var dsFaixaEtariaInicio     = $('#dsFaixaEtariaInicio').val(),
+                    dsFaixaEtariaFim        = $('#dsFaixaEtariaFim').val();
+                    
+                if(dsFaixaEtariaInicio == '' || dsFaixaEtariaFim == ''){
+                    enviar = 1;
+                }
+                
+            }else if(regraCriterio == 'RE'){
+                
+                enviar = 1;
+                $('div#checkRegiao input[type=checkbox]').each(function() {
+                    if($(this).is(":checked")) {
+                        enviar = 0;
+                    }
+                 });
+                
+                
+            }else if(regraCriterio == 'UF'){
+                
+                enviar = 1;
+                $('div#checkUfs input[type=checkbox]').each(function() {
+                    if($(this).is(":checked")) {
+                        enviar = 0;
+                    }
+                 });
+                
+            }else if(regraCriterio == 'CI'){
+                
+                enviar = 1;
+                $('div#checkboxes input[type=checkbox]').each(function() {
+                    if($(this).is(":checked")) {
+                        enviar = 0;
+                    }
+                 });
+            }
+
+            
+            var dsCriterioParticipacao  = $('#dsCriterioParticipacao').val();
+                
+            if(dsCriterioParticipacao == ''){
+                enviar = 1;
+            }
+
+            if ((enviar == 1)) {
+                $('#txtmsg').html('Verifique os campos obrigatórios!<br />');
+                $('#msg').show();
+                return false;
+            }else{
+                $('#txtmsg').html('');
+                $('#msg').hide();
+            }
+
+            $('#txtmsg').html('');
+            $('#msg').hide();
+            $(this).submit();
+
+        });
+
+
+        $("#btnProximo").click(function() {
+            window.location = "<?php echo $this->url(array('controller' => 'edital', 'action' => 'modulosedital', 'idEdital' => $this->idEdital), '', true); ?>";
+        });
+
+        $("#btnVoltar").click(function() {
+            window.location = "form-criterios-de-participacao.htm";
+        });
+
+        //CALENDARIO - CAMPOS DATA
+        $.datepicker.regional['pt-BR'] =
+                {
+                    closeText: 'Fechar',
+                    prevText: '&#x3c;Anterior',
+                    nextText: 'Pr&oacute;ximo&#x3e;',
+                    currentText: 'Hoje',
+                    monthNames: ['Janeiro', 'Fevereiro', 'Mar&ccedil;o', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                    monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                    dayNames: ['Domingo', 'Segunda-feira', 'Ter&ccedil;a-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'S&aacute;bado'],
+                    dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
+                    dayNamesMin: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
+                    weekHeader: 'Sm',
+                    dateFormat: 'dd-mm-yy',
+                    firstDay: 0,
+                    isRTL: false,
+                    showMonthAfterYear: false,
+                    yearSuffix: ''
+                };
+
+        $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+
+        // classe dos campos que utilizarao o calendario
+        $(".cmpData").datepicker($.datepicker.regional['pt-BR']);
+        
+    });
+
+    function num(dom) {
+        dom.value = dom.value.replace(/\D/g, '');
+    }
+
+    function excluirCriterioParticipacao(id){
+        
+        $("#alerta").dialog("destroy");
+        $("#alerta").html("Tem certeza que deseja excluir o critério de participação?");
+        $("#alerta").dialog({
+            resizable: false,
+            title: 'Alerta!',
+            width: 340,
+            height: 170,
+            modal: true,
+            buttons: {
+                'Não': function() {
+                    $(this).dialog('close');
+                },
+                'Sim': function() {
+                   window.location = '<?php echo $this->url(array('controller' => 'edital', 'action' => 'deletar-criterio-participacao', 'idModulo' => $this->idModulo, 'idCategoria' => $this->idCategoria, 'idEdital' => $this->idEdital),'',true); ?>/idCriterioParticipacao/'+id;
+                }
+            }
+        });
+        $('.ui-dialog-titlebar-close').remove();
+    }
+    
+</script>

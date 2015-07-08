@@ -1,0 +1,172 @@
+<?php include_once 'scripts/parecerista/inc/menu-coordenador.inc.php'; ?>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => 'index'),'',true); ?>" title="Ir para Início">Início</a></li>
+        <li class="last">Solicitar Pagamento de Parecerista</li>
+    </ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+ 
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Solicitar Pagamento de Parecerista <span class="voltar"><a href="javascript:voltar();" title="Página Anterior">Voltar</a></span></div>
+</div>
+<!-- ========== INÍCIO CONTEÚDO ========== -->
+
+<div id="conteudo">
+    
+    <?php if(count($this->listaDePagamentos) > 0):?>
+        <table class="tabela">
+            <tr>
+                <th width="100">Despacho</th>
+                <th>Parecerista</th>
+                <th width="110">Valor Total</th>
+                <th width="90"></th>
+                <th width="90"></th>
+                <th width="90"></th>
+                <th width="90"></th>
+            </tr>
+            <?php foreach($this->listaDePagamentos as $pa):?>
+            <form enctype="multipart/form-data" id="form_<?php echo $pa['idGerarPagamentoParecerista']; ?>" action="<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'confirmar-pagamento-parecerista')); ?>" method="POST">
+                <input type="hidden" name="idConfigurarPagamento" value="<?php echo $pa['idConfigurarPagamento']; ?>" />
+                <input type="hidden" name="idGerarPagamentoParecerista" value="<?php echo $pa['idGerarPagamentoParecerista']; ?>" />
+                <input type="hidden" name="idAgente" value="<?php echo $pa['idParecerista']; ?>" />
+            <tr>
+                <td class="centro"><?php echo $pa['nrDespacho']; ?></td>
+                <td><?php echo $pa['nmParecerista']; ?></td>
+                <td><?php echo $this->formatarReal(round($pa['vlTotalPagamento'],1)); ?></td>
+                <td><input type="button" class="btn_cancelar"   value=" " onclick="cancelarPagamento('<?php echo $pa['idGerarPagamentoParecerista']; ?>');" /></td>
+                <td>
+                    <input id="btnAbrir_<?php echo $pa['idGerarPagamentoParecerista']; ?>" type="button" class="btn_resumo" value=" " onclick="visualizarPagamentos('<?php echo $pa['idGerarPagamentoParecerista']; ?>');" />
+                    <input id="btnFechar_<?php echo $pa['idGerarPagamentoParecerista']; ?>" type="button" class="btn_resumo sumir" value=" " onclick="esconderPagamentos('<?php echo $pa['idGerarPagamentoParecerista']; ?>');" />
+                </td>
+                <td>
+                    <a href="<?php echo $this->url(array('controller' => 'parecerista', 'action' => 'imprimir-despacho', 'despacho' => $pa['idGerarPagamentoParecerista']),'',true); ?>" target="_blank">
+                        <input type="button" class="btn_imprimir_despacho" value="" />
+                    </a>
+                </td>
+                <td>
+                    <input id="btnAbrir_<?php echo $pa['idGerarPagamentoParecerista']; ?>" type="button" class="btn_enviar_para_pagamento" value=" " onclick="confirmarPagamento('<?php echo $pa['idGerarPagamentoParecerista']; ?>');" />
+                </td>
+            </tr>
+            <tr id="tr_<?php echo $pa['idGerarPagamentoParecerista']; ?>" class="pagamentos sumir">
+                <td colspan="7">
+                    <table class="tabela">
+                        <tr class="titulo_tabela">
+                            <th width="25">Item</th>
+                            <th width="100">PRONAC</th>
+                            <th width="">PROJETO</th>
+                            <th width="300">Vinculada</th>
+                            <th width="130">Valor a ser Pago</th>
+                        </tr>
+                        <?php $i = 1;?>
+                        <?php foreach($pa['Projetos'] as $pag):?>
+                        <tr>
+                            <td style="text-align: center;"><?php echo $i; ?></td>
+                            <td style="text-align: center;"><a target="_blank" href="<?php echo $this->url(array('controller' => '', 'action' => 'consultardadosprojeto')); ?>?idPronac=<?php echo $pag['idPronac']; ?>"><?php echo $pag['pronac']; ?></a></td>
+                            <td><?php echo $pag['NomeProjeto']; ?></td>
+                            <td><?php echo $pag['UnidadeAnalise']; ?></td>
+                            <td style="text-align: right;"><?php echo $this->formatarReal(round($pag['vlPagamento'],1)); ?></td>
+                        </tr>
+                        <?php $i++; ?>
+                        <?php endforeach; ?>
+                    </table>
+                </td>
+            </tr>
+            </form>
+            <?php endforeach; ?>
+        </table>
+        <!-- ========== PAGINAÇAO ========== -->
+        <?php if($this->qtdDePagamentos > 10){ echo "<p>" . $this->listaDePagamentos . "</p>"; } ?>
+        <!-- ========== FIM PAGINAÇ?O ========== -->
+    <?php else: ?>
+        <table class="tabela">
+            <tr>
+                <td align="center"><b style="color: green">NENHUM REGISTRO ENCONTRADO!</b></td>
+            </tr>
+        </table>
+    <?php endif; ?>
+    
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+<div id="dialog"></div>
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+<br clear="all" />
+
+<script>
+
+    function confirmarPagamento(id){
+        
+        $("#dialog").html('Deseja enviar para pagamento?');
+        
+        $("#dialog").dialog("destroy");
+        $("#dialog").dialog({
+            width: '400px',
+            modal: true,
+            draggable: false,
+            resizable: false,
+            closeOnEscape: false,
+            title: 'Confirmação',
+            buttons: { 
+                Não:function() {
+                    $(this).dialog('close');
+                },
+                Sim:function() {
+                    $('#form_'+id).attr('action','confirmar-pagamento-parecerista');
+                    $('#form_'+id).submit();
+                    $("#dialog").dialog("destroy");
+                }
+            }
+        });
+
+        $('.ui-dialog-titlebar-close').remove();
+        
+        
+    }
+    
+    function cancelarPagamento(id){
+        
+        $("#dialog").html('Deseja cancelar o pagamento?');
+        
+        $("#dialog").dialog("destroy");
+        $("#dialog").dialog({
+            width: '400px',
+            modal: true,
+            draggable: false,
+            resizable: false,
+            closeOnEscape: false,
+            title: 'Confirmação',
+            buttons: { 
+                Não:function() {
+                    $(this).dialog('close');
+                },
+                Sim:function() {
+                    $('#form_'+id).attr('action','cancelar-pagamento-parecerista');
+                    $('#form_'+id).submit();
+                }
+            }
+        });
+
+        $('.ui-dialog-titlebar-close').remove();
+        
+    }
+    
+    function visualizarPagamentos(id){
+        $('.pagamentos').hide();
+        $('#tr_'+id).show();
+        
+        $('#btnAbrir_'+id).hide();
+        $('#btnFechar_'+id).show();
+    }
+
+    function esconderPagamentos(id){
+        $('#tr_'+id).hide();
+        $('#btnAbrir_'+id).show();
+        $('#btnFechar_'+id).hide();
+    }
+
+</script>

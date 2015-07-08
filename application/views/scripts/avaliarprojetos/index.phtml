@@ -1,0 +1,132 @@
+<?php
+/**
+ * Alterar Projeto
+ * @author Equipe RUP - Politec
+ * @since 15/01/2011
+ * @version 1.0
+ * @package application
+ * @subpackage application.view.scripts.alterarprojeto
+ * @copyright ? 2010 - Ministério da Cultura - Todos os direitos reservados.
+ * @link http://www.cultura.gov.br
+ */
+
+//if(isset($this->idPreProjeto)){
+//    include_once 'scripts/alterarprojeto/inc/menu.inc.php';
+//}
+?>
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+	<ul>
+            <li class="first"><a href="index" title="Ir para Início">In&iacute;cio</a></li>
+		<li class="last">Painel do Avaliador</li>
+	</ul>
+</div>
+<!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+
+
+<!-- ========== BUTTON VOLTAR ========== -->
+<div id="titulo">
+	<div>Painel do Avaliador <span class="voltar"><a href="javascript:voltar();">Voltar</a></span>      </div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<!-- ========== GRID NOME DA PROPOSTA ========== -->
+<script>
+
+
+  $(document).ready( function() {
+
+  });
+
+  function avaliar(nrFormDocumento,nrVersaoDocumento,idPreProjeto){
+      location.href = '<?php echo $this->url(array('controller' => 'avaliarprojetos', 'action' => 'avaliar')); ?>?nrFormDocumento='+nrFormDocumento+'&nrVersaoDocumento='+nrVersaoDocumento+'&idPreProjeto='+idPreProjeto;
+  }
+
+  function enviar(idPreProjeto){
+      location.href = '<?php echo $this->url(array('controller' => 'avaliarprojetos', 'action' => 'enviaravaliacao')); ?>?&idPreProjeto='+idPreProjeto;
+  }
+</script>
+
+<div id="conteudo" align="center">
+    <div style="width:80%;">
+        <form name="formularioAtualiza" id="formularioAtualiza" method="post" action="<?php echo $this->url(array('controller' => 'alterarprojeto', 'action' => 'salvaalterarprojeto')); ?>" >
+            <input type="hidden" name="pronac" value="<?php echo $this->parecer->pronac ?>" >
+            <input type="hidden" name="pagina" value="alterarprojeto" >
+                <table class="tabela" border="0" cellpadding="0" cellspacing="1" style="margin-top: 20px;">
+                    <tr>
+                        <th class="centro">Projetos em avalia&ccedil;&atilde;o</th>
+                    </tr>
+                </table>
+                <table class="tabela">
+                    <tr class="destacar">
+                        <td align="center"><b>PRONAC</b></td>
+                        <td align="center"><b>Nome do Projeto</b></td>
+                        <td align="center"><b>N&ordm; do Edital</b></td>
+                        <td align="center"><b>Nome do Edital</b></td>
+                        <td align="center"><b>Data de Envio</b></td>
+                        <td align="center"><b>Nota</b></td>
+                        <td align="center"></td>
+                    </tr>
+                    <?php
+                    //xd($this->listaProjetos);
+                    if(count($this->listaProjetos)>0){
+                    foreach ($this->listaProjetos as $Projeto){
+
+                    if ($Projeto['stAvaliacao'] == 0){
+                    ?>
+                    <tr>
+                        <td align="center"><a href="<?php echo $this->url(array('controller'=>'consultardadosprojeto', 'action'=>'')); ?>?idPronac=<?php echo $Projeto['idPronac']; ?>" title="Consultar dados do projeto"><?php echo $Projeto['AnoProjeto'].$Projeto['Sequencial'];?></a></td>
+                        <td align="center"><?php echo $Projeto['NomeProjeto'];?></td>
+                        <td align="center"><?php echo $Projeto['NrEdital'];?></td>
+                        <td align="center"><?php echo $Projeto['nmFormDocumento'];?></td>
+                        <td align="center"><?php echo date('d/m/Y',strtotime($Projeto['dtEnvio']));?></td>
+                        <td align="center"><?php
+                                        if($Projeto['nrNotaFinal'] != '')
+                                            echo $Projeto['nrNotaFinal'];
+                                        else
+                                            echo '--';
+                                        ?></td>
+                        <td align="center">
+                        	<?php if($Projeto['nrNotaFinal'] != ''){ ?>
+                       		<input type="button" class="btn_avaliar" />
+                        	<?php }else{ ?>
+                            <input type="button" class="btn_avaliar" onclick="avaliar('<?php echo $Projeto['nrFormDocumento'] ?>','<?php echo $Projeto['nrVersaoDocumento'] ?>','<?php echo $Projeto['idPreProjeto'] ?>')" />
+                            <?php } ?>
+                            <?php if($Projeto['nrNotaFinal'] != ''){ ?>
+                            <input type="button" class="btn_enviar" onclick="enviar('<?php echo $Projeto['idPreProjeto'] ?>')" />
+                            <?php }else{ ?>
+                            <input type="button" class="btn_enviar-off" />
+                            <?php } ?>
+                        </td>
+                    </tr>
+                    <?php
+                    }
+                    }
+                 }else{ ?>
+                    <tr>
+                        <td colspan="7" align="center">Nenhum projeto para avalia&ccedil;&atilde;o</td>
+                    </tr>
+                    <?php } ?>
+            </table>
+        </form>
+
+
+
+    </div>
+</div>
+
+
+
+
+
+<!-- in?­cio: detalhe final da div conteudo #rodapeConteudo -->
+<div id="rodapeConteudo"></div>
+<!-- final: detalhe final da div conteudo #rodapeConteudo -->
+
+<br clear="all" />
+
+<iframe name="enviar_arquivo" id="enviar_arquivo" style="height: 20px; display: none;"></iframe>
+</body>
+</html>

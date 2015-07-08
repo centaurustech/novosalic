@@ -1,0 +1,157 @@
+<?php require_once "inc/menu.inc.php"; // menu ?>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.salvarjustificativa').click(function(){
+
+            if($('#justificativa').val()=='Digite a justificativa...'){
+                $("#confirm1").dialog("destroy");
+                $("#confirm1").dialog({
+                    width:350,
+                    height:150,
+                    EscClose:false,
+                    modal:true,
+                    buttons: {
+                        'Ok':function(){
+                            $(this).dialog('close');
+                            return false;
+                        }
+                    }
+                });
+                return false;
+            } else {
+                document.forms["formencaminhar"].submit();
+                return false;
+            }
+        });
+    });
+
+    function desarquivar(idPronac, pronac, nome, idArquivamento, cxInicio, cxFinal){
+        $("#idPro").val(idPronac);
+        $("#Pro").html(pronac);
+        $("#nome").html(nome);
+        $("#idArquivamento").val(idArquivamento);
+        $("#cxInicioDesarquivar").val(cxInicio);
+        $("#cxFinalDesarquivar").val(cxFinal);
+
+        document.getElementById("modalJustificativa").title = "Justificativa para solicitação de desarquivamento";
+
+        // modal com os ddos do dirigente
+        $("#modalJustificativa").dialog("destroy");
+        $("#modalJustificativa").dialog({
+            width:550,
+            height:500,
+            EscClose:false,
+            modal:true,
+            buttons: {
+                'Fechar':function(){
+                    $(this).dialog('close'); // fecha a modal
+                }
+            }
+        });
+        return false;
+    }
+</script>
+
+<!-- ========== INÍCIO BREADCRUMB (LINKS TOPO) ========== -->
+<div id="breadcrumb">
+    <ul>
+        <li class="first"><a href="<?php echo $this->url(array('controller' => 'principal', 'action' => '')); ?>" title="Ir para p&aacute;gina inicial">In&iacute;cio</a></li>
+        <li><a href="<?php echo $this->url(array('controller' => 'tramitarprojetos', 'action' => 'index')); ?>" title="Ir para Tramitar projetos">Tramitar projetos</a></li>
+        <li class="last">Projetos arquivados</li>
+    </ul>
+</div>
+<!-- ========== FIM BRADCRUMB (LINKS TOPO) ========== -->
+
+
+<div id="confirm1" title="Confirma&ccedil;&atilde;o" style="display: none">Dados obrigatórios não informados!</div>
+<div class="sumir" id="modalJustificativa" title="Justificativa de Recusa do Projeto" >
+    <form name="formencaminhar" id="" method="post">
+        <table class="tabela">
+            <tr>
+                <th width="50%">PRONAC</th>
+                <th width="50%">Nome do Projeto</th>
+            </tr>
+            <tr>
+                <td id="Pro"></td>
+                <td id="nome"></td>
+            </tr>
+       	</table>
+
+       	* Por favor informe uma justificativa para a solicitação de desarquivamento:
+       	<br />	<br><label for="justificativa">Justificativa</label><br>
+
+       	<textarea name="justificativa" id="justificativa" rows="6" cols="50" style="width:100%;" onclick="limpar_campo(this, 'Digite a justificativa...');" onkeypress=" "
+              onblur="restaurar_campo(this, 'Digite a justificativa...');">Digite a justificativa...</textarea>
+       	<br />
+       	<br />
+        <br />
+        <table class="tabela">
+            <tr>
+                <td class="esquerda">
+                    <input type="submit"  value=" " class="btn_salvar salvarjustificativa"  value=" " />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type="reset"  value=" " class="btn_limpar" />
+                    <input type="hidden" name="idPro" id="idPro"/>
+                    <input type="hidden" name="idArquivamento" id="idArquivamento"/>
+                    <input type="hidden" name="cxInicioDesarquivar" id="cxInicioDesarquivar"/>
+                    <input type="hidden" name="cxFinalDesarquivar" id="cxFinalDesarquivar"/>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+
+<!-- ========== INÍCIO TÍTULO ========== -->
+<div id="titulo">
+    <div>Projetos arquivados <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+<!-- ========== FIM TÍTULO ========== -->
+
+
+<div id="conteudo" align="center">
+    <!-- ============ PAGINAÇÃO ============ -->
+    <?php if ($this->qtdDocs > 30) {
+    echo $this->Arquivados;
+} ?>
+    <!-- ========== FIM PAGINAÇÃO ========== -->
+    <table class="tabela">
+        <tr>
+            <th width="5%">Pronac</th>
+            <th width="60%">Nome do Projeto</th>
+            <th width="10%">Processo</th>
+            <th width="10%">Dt. Arquivamento</th>
+            <th width="5%">Cx. Inicio</th>
+            <th width="5%">Cx. Final</th>
+            <?php /* if ($this->grupoAtivo != 109) { ?>
+            <th width="25%" align="center" >Solicitar Desarquivamento</th>
+            <?php }*/ ?>
+        </tr>
+        <?php foreach ($this->Arquivados as $arquivados){ ?>
+        <tr class="fundo">
+            <td><a href="<?php echo $this->url(array('controller' => 'consultardadosprojeto', 'action' => '')); ?>?idPronac=<?php echo $arquivados->idPronac; ?>" title="Consultar dados do projeto" target="_blank"><?php echo $arquivados->pronac ?></a></td>
+            <td align="left"><?php echo $arquivados->NomeProjeto ?></td>
+            <td align="center" width="10%"><?php echo $arquivados->Processo ?></td>
+            <td align="center"><?php echo $arquivados->Data ?></td>
+            <td align="right"><?php echo $arquivados->CaixaInicio ?></td>
+            <td align="right"><?php echo $arquivados->CaixaFinal ?></td>
+            <?php /* if ($this->grupoAtivo != 109) { ?>
+            <td align="center"><input type="button" class="btn_desarquivar" onclick="desarquivar('<?php echo $arquivados->idPronac?>', '<?php echo $arquivados->pronac?>', '<?php echo Seguranca::tratarVar($arquivados->NomeProjeto);?>', '<?php echo $arquivados->idArquivamento?>', '<?php echo $arquivados->CaixaInicio ?>', '<?php echo $arquivados->CaixaFinal ?>')" />
+            <?php } */ ?>
+        </tr>
+    <?php } ?>
+    </table>
+    <!-- ============ PAGINAÇÃO ============ -->
+<?php if ($this->qtdDocs > 30) {
+    echo $this->Arquivados;
+} ?>
+    <!-- ========== FIM PAGINAÇÃO ========== -->
+</div>
+<!-- ========== FIM CONTEÚDO ========== -->
+
+
+<!-- ========== INÍCIO RODAPÉ DO CONTEÚDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPÉ DO CONTEÚDO ========== -->
+
+<br clear="all" />

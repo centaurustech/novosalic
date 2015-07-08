@@ -1,0 +1,118 @@
+<?php //include_once 'scripts/admissibilidade/inc/menu.inc.php'; ?>
+
+<script type="text/javascript">
+<!--
+$(document).ready(function(){
+    $("#tipodata").change(function(){
+        $("#spanDtFinal").toggle();
+    });
+});
+
+$(function()
+{
+    $.datepicker.regional['pt-BR'] = {
+        closeText: 'Fechar',
+        prevText: '&#x3c;Anterior',
+        nextText: 'Pr&oacute;ximo&#x3e;',
+        currentText: 'Hoje',
+        monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+        monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+        dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+        dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+        dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+        weekHeader: 'Sm',
+        dateFormat: 'dd/mm/yy',
+        firstDay: 0,
+        isRTL: false,
+        showMonthAfterYear: false,
+        yearSuffix: ''};
+    $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+    $("#dataPropostaInicial").datepicker($.datepicker.regional['pt-BR']);
+    $("#dataPropostaFinal").datepicker($.datepicker.regional['pt-BR']);
+});
+//-->
+</script>
+
+<div id="breadcrumb">
+    <ul>
+        <li class="first"> <a href="/" title="Ir para In&iacute;cio">In&iacute;cio</a></li>
+        <li class="last">Listar Propostas</li>
+    </ul>
+</div>
+
+<div id="titulo">
+    <div>Localizar propostas <span class="voltar"><a href="javascript:voltar();" title="Ir para p&aacute;gina anterior">Voltar</a></span></div>
+</div>
+
+<div id="conteudo">
+    <form action="<?php echo $this->urlAcao; ?>" method="post">
+    <table class="tabela" width="50%">
+        <tr>
+            <th colspan="2">Localizar propostas</th>
+        </tr>
+        <tr>
+            <td>
+                <label for="tipobuscasituacao">Situação:</label><br />
+                <select name="tipobuscasituacao" id="tipobuscasituacao" class="select_simples">
+                    <option value="igual">Exatamente Igual</option>
+                    <option value="diferente">Diferente</option>
+                </select>
+            </td>
+            <td>
+                <select name="situacao" id="situacao" class="select_simples">
+                    <option value="">Selecione</option>
+                    <option value="inicial">Proposta em Análise Inicial</option>
+                    <option value="visual">Proposta em Análise Visual</option>
+                    <option value="documental">Proposta em Análise Documental</option>
+                    <option value="final">Proposta em Análise Final</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="numeroProposta">Número:</label><br />
+                Exatamente igual
+            </td>
+            <td>
+                <input name="numeroProposta" id="numeroProposta" value="" class="input_simples" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="tiponome">Nome:</label><br>
+                <select name="tiponome" id="tiponome" class="select_simples">
+                    <option value="contendo">Que contenha</option>
+                    <option value="igual">Exatamente Igual</option>
+                </select>
+            </td>
+            <td>
+                <input name="nomeProposta" id="nomeProposta" value="" class="input_simples w500" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="tipodata">Data:</label><br />
+                <select name="tipodata" id="tipodata" class="select_simples">
+                    <option value="igual">Exatamente Igual</option>
+                    <option value="entre">Entre dois valores</option>
+                </select>
+            </td>
+            <td nowrap>
+                <input name="dataPropostaInicial" id="dataPropostaInicial" value="" class="input_simples"/>
+                <span id="spanDtFinal" style="display: none;">&nbsp;e&nbsp;<input name="dataPropostaFinal" id="dataPropostaFinal" value="" class="input_simples"/></span>
+            </td>
+        </tr>
+    </table>
+    <table class="tabela" width="50%">
+        <tr>
+            <td class="centro"><input type="submit" class="btn_localizar" value=" " title="Lozalizar" /></td>
+        </tr>
+    </table>
+    </form>
+</div>
+<!-- ========== FIM CONTEUDO ========== -->
+
+<!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+<div id="rodapeConteudo"><span></span></div>
+<!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+<br clear="all" />

@@ -1,0 +1,575 @@
+<?php
+if($this->cabecalho != "false") {
+    require_once "inc/menu.inc.php"; // menu
+}
+?>
+
+<!-- ========== SCRIPT MODAL ========== -->
+<script type="text/javascript">
+    $('document').ready(function(){
+
+        <?php if(!empty($this->msg)): ?>
+                message('<?php echo $this->msg;?>', '<?php echo ($this->error == "true") ? 'ERROR' : 'CONFIRM'; ?>');
+        <?php endif; ?>
+        /*$('#lei9874_N').click(function(){
+            $(".lei8313").each(function(){
+                if($(this).attr('type')=='text' || $(this).attr('type')=='textarea')
+                {
+                    $(this).val('');
+                }
+                if($(this).attr('type')=='select-one')
+                {
+                    $(this).val('0');
+                }
+                if($(this).attr('type')=='radio' || $(this).attr('type')=='checkbox')
+                {
+                    $(this).attr('checked',false);
+                }
+            });
+        });
+        $('#lei9874_S').click(function(){
+            $("#form").each(function(){
+                this.reset();
+            });
+            $('#lei9874_S').attr('checked',true);
+            $('#lei9874_N').attr('checked',false);
+        });
+        $('#Art27_N').click(function(){
+            $('.art27_N').each(function(){
+                $(this).attr('checked', false);
+                $(this).attr('disabled', 'disabled');
+            });
+        });
+        $('#Art27_S').click(function(){
+            $('.art27_N').each(function(){
+                $(this).removeAttr('disabled');
+            });
+        });*/
+        $("#proximaPagina").click(function(){
+            $("#load").dialog({
+                resizable: false,
+                width:300,
+                height:160,
+                modal: true,
+                autoOpen:false
+            });
+            $("#load").dialog('open');
+            $('.ui-dialog-titlebar-close').remove();
+            redirecionar('<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'analisedecustos')); ?>');
+        });
+        
+        //escolherLei_8313(); 
+        
+        //escolherArtigo3();
+        
+        $("#erro").dialog({
+            title: "Erro",
+            resizable: false,
+            width:400,
+            height:180,
+            modal: true,
+            autoOpen:false,
+            buttons: {
+                'OK': function() {
+                    $(this).dialog('close');
+                }
+            }
+        });
+
+    });
+    
+    function JSAlterarConteudo()
+    {
+        //escolherDecreto5761();
+        //var htmlFormAlterar = $("#divFormAlterarAnalise").html();
+        var idPronac   = $("#resultadoPesquisa").find("input:[name='idPronac']").val();
+        var idAnalise  = $("#resultadoPesquisa").find("input:[name='idAnalise']").val();
+        var tpAnalise  = $("#resultadoPesquisa").find("input:[name='tpAnalise']").val();
+        var pag        = $("#frmPaginarRelatorio").find("input:[name='pag']").val();
+        
+        $("#divDinamicaAnalise").remove();
+        $("#divDinamicaAnalise").dialog("destroy");
+                
+        $('html').css('overflow', 'hidden');
+        $("body").append("<div id='divDinamicaAnalise'></div>");
+        $("#divDinamicaAnalise").html("");
+        $('#divDinamicaAnalise').html("<br><br><center>Carregando dados...</center>");
+        $.ajax({
+            url : '<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'form-alterar-analise-de-conteudo')); ?>',
+            data :
+                {
+                idPronac: idPronac,
+                idAnaliseAprovacao : idAnalise,
+                tpAnalise: tpAnalise,
+                pag: pag
+            },
+            success: function(data){
+                $('#divDinamicaAnalise').html(data);
+            },
+            type : 'post'
+        });
+
+        $("#divDinamicaAnalise").dialog({
+            width:800,
+            height:625,
+            resizable:true,
+            EscClose:true,
+            modal:true,
+            autoOpen:true,
+            title: 'Análise de Conteúdo do Produto',
+            buttons: {
+                'Sair': function() {
+                    $(this).dialog('close');
+                    $('html').css('overflow', 'auto');
+                    $("#divDinamicaAnalise").remove();
+                },
+                'Salvar': function() {
+                    
+                    var lei9874 = $("input:radio[name='stLei8313']:checked").val();
+                    //se SIM
+                    if(lei9874 == "1"){
+        
+                        //INCISOS ART. 03 - Tratamento
+                        var valorArt03 = $("#formAlterarConteudo").find("input:radio[name='stArtigo3']:checked").val();
+                        if(valorArt03 != 0){
+                            var i = $("#formAlterarConteudo").find("select:[name='nrIncisoArtigo3']").val();
+                            var a = $.trim($("#formAlterarConteudo").find("input:[name='dsAlineaArt3']").val());
+                            if(i == "" || a == ""){
+                                $("#erro").html("O inciso e a al&iacute;nea do Artigo 3 são obrigatórios!");
+                                $("#erro").dialog('open');
+                                return false;
+                            }
+                        }
+
+                        //INCISOS ART. 18 - Tratamento
+                        var valorArt18 = $("input:radio[name='stArtigo18']:checked").val();
+                        if(valorArt18 != 0){
+                            var a = $.trim($("#formAlterarConteudo").find("input:[name='dsAlineaArtigo18']").val());
+                            if(a == ""){
+                                $("#erro").html("A al&iacute;nea do Artigo 18 é obrigatório!");
+                                $("#erro").dialog('open');
+                                return false;
+                            }
+                        }
+
+                        //INCISOS ART. 27 - Tratamento
+                        var valorArt27 = $("input:radio[name='stArtigo27']:checked").val();
+                        var n = $("#formAlterarConteudo").find("input:checkbox:checked").length;
+                        if(valorArt27 != 0){
+                            if(n <=0 ){
+                                $("#erro").html("Informe o(s) inciso(s) do Artigo 27!");
+                                $("#erro").dialog('open');
+                                return false;
+                            }
+                        }
+
+                        //JUSTIFICATIVA - Tratamento
+                        var justificativa = $("#formAlterarConteudo").find("textarea:[name='dsAvaliacao']").val();
+                        if($.trim(justificativa) == ''){
+                            $("#erro").html("O campo justificativa &eacute; obrigat&oacute;rio!");
+                            $("#erro").dialog('open');
+                            return false;
+                            //msgErro.html('Campo obrigatório não preenchido');
+                        }
+
+                    }
+                      //submete o formulário
+//                    jqAjaxForm(document.getElementById('formAlterarConteudo'), 'resultadoPesquisa');
+                        $('#formAlterarConteudo').submit();
+                        $(this).dialog('close');
+                        $('html').css('overflow', 'auto');
+                        $("#divDinamicaAnalise").remove();
+                }
+            },
+            close: function() {
+                $('html').css('overflow', 'auto');
+                $(this).dialog('close');
+                $("#divDinamicaAnalise").remove();
+            }
+        });
+    }
+
+    function paginar(pag){
+
+        $("#pag").val(pag);
+        jqAjaxForm(document.getElementById("frmPaginarRelatorio"), "resultadoPesquisa");
+        $("#resultadoPesquisa").html("");
+        $('#resultadoPesquisa').html('<br><center>Aguarde, carregando dados...<br><img src="<?php echo $this->baseUrl(); ?>/public/img/ajax.gif" /></center><br>');
+    }
+
+    function abrirDinamico(elemento, obj) {
+        if($(elemento).css('display') == 'none') {
+            $(elemento).fadeIn('fast', function() {
+                $('img', $(obj)).attr('src','<?php echo $this->baseUrl(); ?>/public/img/navigation-baixo.PNG');
+            });
+        } else {
+            $(elemento).fadeOut('fast', function() {
+                $('img', $(obj)).attr('src','<?php echo $this->baseUrl(); ?>/public/img/navigation-right.png');
+            });
+        }
+    }
+    
+</script>
+<?php if($this->cabecalho != "false"): ?>
+    <!-- ========== INICIO BREADCRUMB (LINKS TOPO) ========== -->
+    <div id="breadcrumb">
+        <ul>
+            <li class="first"><a href="<?php echo $this->baseUrl(); ?>" title="Ir para Início">In&iacute;cio</a></li>
+            <li><a href="<?php echo $this->url(array('controller' => 'areadetrabalho', 'action' => 'index')); ?>" title="Ir para A&aacute;álise do Membro da Comiss&atilde;o">An&aacute;lise do Membro da Comiss&atilde;o</a></li>
+            <li class="last">An&aacute;lise de Conte&uacute;do</li>
+        </ul>
+    </div>
+    <!-- ========== FIM BREADCRUMB (LINKS TOPO) ========== -->
+
+    <!-- ========== INICIO TITULO ========== -->
+    <div id="titulo">
+        <div>An&aacute;lise de Conte&uacute;do <span class="voltar"><a href="#" onclick="voltar();">Voltar</a></span></div>
+    </div>
+    <!-- ========== FIM TITULO ========== -->
+
+    <!-- ========== INICIO CONTEUDO ========== -->
+    <div id="conteudo">
+
+    <?php require_once "inc/menu_abas.inc.php"; // menu  ?>
+
+    <fieldset><legend>Produtos</legend>
+        
+<?php endif; //cabelhao = false ?>
+    
+
+
+<div id="resultadoPesquisa">
+    
+    <?php foreach ($this->dados as $p): ?>
+
+        <div id="erro" style="display:none"></div>
+    
+        <input type="hidden" name="idPronac" id="idPronac" value="<?php echo $this->idPronac;?>">
+        <input type="hidden" name="idAnalise" id="idAnalise" value="<?php echo $p->idAnaliseAprovacao;?>">
+        <input type="hidden" name="tpAnalise" id="tpAnalise" value="<?php echo $p->tpAnalise;?>">
+    
+        <!-- =============================================== -->
+        <!-- ========== INICIO TABELA CONSELHEIRO ========== -->
+        <!-- =============================================== -->
+        <table class="tabela">
+            <tr>
+                <th colspan="6">
+                    <p>An&aacute;lise de Conte&uacute;do</p>
+                    <p><strong>Pronac N&ordm; <?php echo $this->dadosprojeto['AnoProjeto'] . $this->dadosprojeto['Sequencial']; ?>  - <?php echo $this->dadosprojeto['NomeProjeto']; ?></strong></p>
+                    <p <?php if ($p->stPrincipal == 1) { echo 'style="color: red"'; } ?> >Produto <?php if ($p->stPrincipal == 1) { echo ' Principal'; } ?>: <?php echo $p->produto; ?></p>
+                </th>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <strong>Tipo Parecer</strong><br />
+                    <?php echo $this->tipoParecer($p->stAvaliacao); ?>
+                </td>
+                <td colspan="3">
+                    <strong>Parecer Favor&aacute;vel??</strong><br />
+                    <?php
+                    if ($p->stAvaliacao == 1) {
+                        echo "Sim";
+                    } else {
+                        echo "N&atilde;o";
+                    }
+                    ?>
+                </td>
+            </tr>
+            <tr>
+                <th colspan="6" class="fundo_linha2 center blue">Lei 8.313/91</th>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <strong>Lei 8.313/91 alterada pela Lei 9.874/1999*</strong><br />
+                    <?php echo ($p->stLei8313 == 1) ? 'Sim' : 'N&atilde;o'; ?>
+                </td>
+            </tr>
+            <tr class="fundo_linha2">
+                <th colspan="3" class="center blue">Artigo 3&ordm;</th>
+                <th colspan="2" class="center blue">Artigo 18</th>
+                <th class="center blue">Artigo 26</th>
+            </tr>
+            <tr>
+                <td><strong>Artigo 3</strong></td>
+                <td><strong>Inciso</strong></td>
+                <td><strong>Alinea</strong></td>
+                <td><strong>Artigo 18</strong></td>
+                <td><strong>Alinea</strong></td>
+                <td><strong>Artigo 26</strong></td>
+            </tr>
+            <tr>
+                <td><?php echo ($p->stArtigo3 == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                <td>
+                    <?php
+                    if ($p->nrIncisoArtigo3 == 1)
+                        echo 'I';
+                    if ($p->nrIncisoArtigo3 == 2)
+                        echo 'II';
+                    if ($p->nrIncisoArtigo3 == 3)
+                        echo 'III';
+                    if ($p->nrIncisoArtigo3 == 4)
+                        echo 'IV';
+                    ?>
+                </td>
+                <td><?php echo $p->dsAlineaArt3; ?></td>
+                <td><?php echo ($p->stArtigo18 == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                <td><?php echo $p->dsAlineaArtigo18; ?></td>
+                <td><?php echo ($p->stArtigo26 == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+            </tr>
+            <tr>
+                <th colspan="6" class="fundo_linha2 center blue">Decreto 5761/2006*</th>
+            </tr>
+            <tr>
+                <td><strong>Lei 5.761</strong></td>
+                <td><strong>Artigo 27</strong></td>
+                <td><strong>Inciso I</strong></td>
+                <td><strong>Inciso II</strong></td>
+                <td><strong>Inciso III</strong></td>
+                <td><strong>Inciso IV</strong></td>
+            </tr>
+            <tr>
+                <td><?php echo ($p->stLei5761 == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                <td><?php echo ($p->stArtigo27 == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                <td><?php echo ($p->stIncisoArtigo27_I == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                <td><?php echo ($p->stIncisoArtigo27_II == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                <td><?php echo ($p->stIncisoArtigo27_III == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                <td><?php echo ($p->stIncisoArtigo27_IV == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+            </tr>
+            <tr>
+                <th colspan="6" class="fundo_linha2 center blue"><strong>Parecer</strong></th>
+            </tr>
+            <tr>
+                <td colspan="6"><?php echo (!empty($p->dsAvaliacao) ? $p->dsAvaliacao : '<em>N&atilde;o informado</em>'); ?></td>
+            </tr>
+        </table>
+
+        <!-- =============================================== -->
+        <!-- ========== FIM TABELA CONSELHEIRO ============= -->
+        <!-- =============================================== -->
+                
+                
+                
+        <?php
+            if ($p->stLei8313           != $p->stLei8313_Antigo ||
+                $p->stArtigo3           != $p->stArtigo3_Antigo ||
+                $p->nrIncisoArtigo3     != $p->nrIncisoArtigo3_Antigo ||
+                $p->dsAlineaArt3        != $p->dsAlineaArt3_Antigo ||
+                $p->stArtigo18          != $p->stArtigo18_Antigo ||
+                $p->stArtigo26          != $p->stArtigo26_Antigo ||
+                $p->stLei5761           != $p->stLei5761_Antigo ||
+                $p->stArtigo27          != $p->stArtigo27_Antigo ||
+                $p->stIncisoArtigo27_I  != $p->stIncisoArtigo27_I_Antigo ||
+                $p->stIncisoArtigo27_II != $p->stIncisoArtigo27_II_Antigo ||
+                $p->stIncisoArtigo27_III!= $p->stIncisoArtigo27_III_Antigo ||
+                $p->stIncisoArtigo27_IV != $p->stIncisoArtigo27_IV_Antigo ||
+                $p->stAvaliacao         != $p->stAvaliacao_Antigo ||
+                $p->dsAvaliacao         != $p->dsAvaliacao_Antigo) : 
+        ?>
+                <p>
+                <table class="tabela">
+                    <tr onclick="abrirDinamico('#parecerista', $(this))" style="cursor:pointer">
+                        <th class="esquerda">
+                            <img src="<?php echo $this->baseUrl();?>/public/img/navigation-right.png" id="imgDinamica" align="left" />
+                            &nbsp;&nbsp;An&aacute;lise de Conte&uacute;do do Parecerista
+                        </th>
+                    </tr>
+                    <!--<tr>
+                        <th class="esquerda">
+                            <div id="icn_mais"><div class="icn_mais" style="width:90%; margin-left:2%;"><span><a href="#icn_menos" onclick="$('#parecerista, #icn_menos').show(); $('#icn_mais').hide();">An&aacute;lise de Conte&uacute;do do Parecerista</a></span></div></div>
+                            <div id="icn_menos" class="sumir"><div class="icn_menos" style="width:90%; margin-left:2%;"><span><a href="#icn_mais" onclick="$('#parecerista, #icn_menos').hide(); $('#icn_mais').show();">An&aacute;lise de Conte&uacute;do do Parecerista</a></span></div></div>
+                        </th>
+                    </tr>-->
+                </table>
+        <?php endif; ?>
+            
+            
+            <!-- =============================================== -->
+            <!-- ========== INICIO TABELA PARECERISTA ========== -->
+            <!-- =============================================== -->
+            <table class="tabela sumir" id="parecerista">
+                <tr>
+                    <td colspan="3">
+                        <strong>Tipo Parecer</strong><br />
+                        <?php echo $this->tipoParecer($p->TipoParecer); ?>
+                    </td>
+                    <td colspan="3">
+                        <strong>Parecer Favor&aacute;vel?</strong><br />
+                        <?php
+                        if ($p->stAvaliacao_Antigo == 1) {
+                            echo "Sim";
+                        } else {
+                            echo "N&atilde;o";
+                        }
+                        ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="6" class="fundo_linha2 center blue">Lei 8.313/91</th>
+                </tr>
+                <tr>
+                    <td colspan="6">
+                        <strong>Lei 8.313/91 alterada pela Lei 9.874/1999*</strong><br />
+                        <?php echo ($p->stLei8313_Antigo == 1) ? 'Sim' : 'N&atilde;o'; ?>
+                    </td>
+                </tr>
+                <tr class="fundo_linha2">
+                    <th colspan="3" class="center blue">Artigo 3</th>
+                    <th colspan="2" class="center blue">Artigo 18</th>
+                    <th class="center blue">Artigo 26</th>
+                </tr>
+                <tr>
+                    <td><strong>Artigo 3</strong></td>
+                    <td><strong>Inciso</strong></td>
+                    <td><strong>Alinea</strong></td>
+                    <td><strong>Artigo 18</strong></td>
+                    <td><strong>Alinea</strong></td>
+                    <td><strong>Artigo 26</strong></td>
+                </tr>
+                <tr>
+                    <td><?php echo ($p->stArtigo3_Antigo == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                    <td>
+                        <?php
+                        if ($p->nrIncisoArtigo3_Antigo == 1)
+                            echo 'I';
+                        if ($p->nrIncisoArtigo3_Antigo == 2)
+                            echo 'II';
+                        if ($p->nrIncisoArtigo3_Antigo == 3)
+                            echo 'III';
+                        if ($p->nrIncisoArtigo3_Antigo == 4)
+                            echo 'IV';
+                        ?>
+                    </td>
+                    <td><?php echo $p->dsAlineaArt3_Antigo; ?></td>
+                    <td><?php echo ($p->stArtigo18_Antigo == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                    <td><?php echo $p->dsAlineaArtigo18_Antigo; ?></td>
+                    <td><?php echo ($p->stArtigo26_Antigo == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                </tr>
+                <tr>
+                    <th colspan="6" class="fundo_linha2 center blue">Decreto 5761/2006*</th>
+                </tr>
+                <tr>
+                    <td><strong>Lei 5.761</strong></td>
+                    <td><strong>Artigo 27</strong></td>
+                    <td><strong>Inciso I</strong></td>
+                    <td><strong>Inciso II</strong></td>
+                    <td><strong>Inciso III</strong></td>
+                    <td><strong>Inciso IV</strong></td>
+                </tr>
+                <tr>
+                    <td><?php echo ($p->stLei5761_Antigo == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                    <td><?php echo ($p->stArtigo27_Antigo == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                    <td><?php echo ($p->stIncisoArtigo27_I_Antigo == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                    <td><?php echo ($p->stIncisoArtigo27_II_Antigo == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                    <td><?php echo ($p->stIncisoArtigo27_III_Antigo == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                    <td><?php echo ($p->stIncisoArtigo27_IV_Antigo == 1) ? 'Sim' : 'N&atilde;o'; ?></td>
+                </tr>
+                <tr>
+                    <th colspan="6" class="fundo_linha2 center blue"><strong>Parecer</strong></th>
+                </tr>
+                <tr>
+                    <td colspan="6"><?php echo (!empty($p->dsAvaliacao_Antigo) ? $p->dsAvaliacao_Antigo : '<em>N&atilde;o informado</em>'); ?></td>
+                </tr>
+            </table>
+            <!-- =============================================== -->
+            <!-- ========== FIM TABELA PARECERISTA ========== -->
+            <!-- =============================================== -->
+
+    <?php endforeach; ?>
+
+
+    <!-- FORMULARIO DE PAGINACAO/ORDENACAO -->
+    <!--<form action="<?php //echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'analisedeconteudo')); ?>" method="post" name="frmPaginarRelatorio" id="frmPaginarRelatorio">
+    <?php /*foreach($this->parametrosBusca as $name=>$value):?>
+        <?php if(!is_array($value)): ?>
+        <input type="hidden" name="<?php echo $name?>" id="<?php echo $name?>" value="<?php echo $value?>"/>
+        <?php else: ?>
+            <?php foreach($value as $valor):?>
+                <input type="hidden" name="<?php echo $name?>[]" id="<?php echo $name?>" value="<?php echo $valor?>"/>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    <?php endforeach; ?>
+    <?php if(empty($this->parametrosBusca["pag"])):?>
+        <input type="hidden" name="pag" id="pag" value="<?php echo $this->pag; ?>"/>
+    <?php endif;*/ ?>
+    <input type="hidden" name="cabecalho" id="cabecalho" value="false">
+    </form>-->
+
+
+    <br />
+    <?php if(count($this->dados)>0){ ?>
+    <!-- ============ PAGINAÇÃO ============ -->
+    <table class="tabela" style="width: 97%;" border="0" cellpadding="0" cellspacing="0">
+        <tbody>
+            <tr>
+                <td align="center">
+                <form name="form1" id="form1" action="<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'analisedeconteudo'));?>" method="get">
+                    <?php if($this->paginacao['pag']>1) { ?>
+                    <input style="width: 88px;" class="btn_inicio" id="btn_inicio" type="button" class="btn_inicio"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'analisedeconteudo')).'?pag=1'."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']; ?>'">
+                    <?php } ?>
+                    <input style="width: 88px;" id="btn_p_anterior" type="button"
+                    <?php if($this->paginacao['pag']<=1) { ?> class="btn_p_anterior-off"
+                    <?php }else { ?>
+                           class="btn_p_anterior"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'analisedeconteudo')).'?pag='.($this->paginacao['pag'] - 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']; ?>'"
+                    <?php } ?>>
+                    <input style="width: 88px;"  id="btn_p_proximo" type="button"
+                           <?php if($this->paginacao['pag']+1 > $this->paginacao['totalPag']) { ?>
+                           class="btn_p_proximo-off"
+                    <?php }else { ?>
+                           class="btn_p_proximo"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'analisedeconteudo')).'?pag='.($this->paginacao['pag'] + 1)."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']; ?>'"
+                    <?php } ?>>
+                    <?php if($this->paginacao['pag'] < $this->paginacao['totalPag']) { ?>
+                    <input style="width: 88px;" class="btn_ultimo" id="btn_ultimo" type="button"
+                           onclick="location.href='<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'analisedeconteudo')).'?pag='.($this->paginacao['totalPag'])."&qtde=".$this->paginacao['qtde'].$this->paginacao['ordenacao']; ?>'">
+                    <?php } ?>
+                    Pág.:<select name="pag" id="pag" onchange="$('#form1').submit()" class="input_simples">
+                        <?php for($i=1; $i<=$this->paginacao['totalPag']; $i++):?>
+                        <option value="<?php echo $i;?>" <?php if($this->paginacao['pag'] == $i) echo "selected";?>><?php echo $i;?>&nbsp;</option>
+                        <?php endfor; ?>
+                    </select>
+                    &nbsp;Registros por página:<input type="text" size="1" name="qtde" id="qtde" class="input_simples" value="<?php echo $this->intTamPag;?>"><input type="submit" class="btn_recarregar" value="">
+                    <input type="hidden" name="campo" value="<?php echo $this->paginacao['campo'];?>">
+                    <input type="hidden" name="ordem" value="<?php echo $this->paginacao['ordem'];?>">
+                    <input type="hidden" name="idpronac" value="<?php echo $this->idPronac;?>">
+                 </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <center>
+        <?php
+            echo $this->paginacao['inicio']." a ";
+            echo ($this->paginacao['pag']-1)*$this->paginacao['Itenspag'] + $this->paginacao['tamanho'];
+            echo " de ". $this->paginacao['total'];
+        ?>
+    </center>
+    <!-- ========== FIM PAGINAÇÃO ========== -->
+    <?php } ?>
+
+</div>
+
+<?php if($this->cabecalho != "false"): ?>
+    </fieldset>
+        
+    <!-- ========== BOTOES ========== -->
+    <br />
+    <p class="centro" style="margin-right:10px;">
+        <input type="button" class="btn_editar" value=" " onclick="JSAlterarConteudo();" onkeypress="JSAlterarConteudo();" />
+        <input type="button" class="btn_p_anterior" value=" " onclick="redirecionar('<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'analisedeconta')); ?>');" onkeypress="redirecionar('<?php echo $this->url(array('controller' => 'realizaranaliseprojeto', 'action' => 'analisedeconta')); ?>');"/>
+        <input type="button" class="btn_p_proximo" id="proximaPagina"/>
+        <input type="button" class="btn_imprimir" value=" " onclick="imprimir();" onkeypress="imprimir();" />
+    </p>
+    <br />
+
+    </div>
+    <!-- ========== FIM CONTEUDO ========== -->
+
+    <!-- ========== INICIO RODAPE DO CONTEUDO ========== -->
+    <div id="rodapeConteudo"><span></span></div>
+    <!-- ========== FIM RODAPE DO CONTEUDO ========== -->
+
+    <br clear="all" />
+    
+<?php endif; //cabecalho = false ?>
