@@ -9,11 +9,10 @@ As diretrizes para a cultura nacional é a promoção, proteção e valorizaçã
 
 O grande destaque da Lei Rouanet é a politica de incentivos fiscais que possibilita as empresas (pessoas jurídicas) e cidadãos (pessoa física) aplicarem uma parte do IR (imposto de renda) devido em ações culturais.
 
-Números:
+## Sobre o Salic
 
-*foram apresentados: 117.000 projetos, no montante de cerca de R$ 92 bilhões.
-*Aprovados cerca de 103.000 projetos, com autorização para captar recursos em de torno de R$ 59
-*bilhões Cerca de 44.000 projetos captaram recursos, somando R$ 13 bilhões de reais, corresponde a 20%
-*dos projetos aprovados
+É um software do Ministério da Cultura que destina-se a controlar todos os fluxos e processos de um projetos culturais que buscam incentivo com base na Lei de Incentivo à Cultura (Lei Rouanet).
 
-## Em construção 
+Controla recursos na ordem de R$ 1.400.000,00 no ano passado e cerca de R$ 14.000.000,00 ao longo da existência da lei.
+
+## Em construção
