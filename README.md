@@ -24,13 +24,25 @@ Controla recursos na ordem de R$ 1.400.000,00 no ano passado e cerca de R$ 14.00
 * Parecerista - perito que acessa o sistema e faz a apreciação dos projetos
 * Conselheiro da CNIC - Comissão Nacional de Incentivo à Cultura - Faz a revalidação dos pareceres e sugere a aprovação ou o indeferimento
 
+## Milestones
+
+* Facilidade na interface
+* Mobilidade
+* Plugins
+* Novos módulos
+* Relatórios personalizados
+* Web Service
+* Federação de Dados
+* Financiamento coletivo
+* Chatterbot
+
 ## TO-DO
 
-[] Subir o mapeamento da estrutura do banco (Diagrama ER)
-[] Criar um script de criação e carga do banco de dados, para ambiente de desenvolvimento
-[] Subir os fluxos dos processos do sistema
-[] Criar o manual de deploy do sistema neste Readme
-[] Escolher o sistema de documentação (sugeriram ReadTheDocs aqui no FISL16)
+-[] Subir o mapeamento da estrutura do banco (Diagrama ER)
+-[] Criar um script de criação e carga do banco de dados, para ambiente de desenvolvimento
+-[] Subir os fluxos dos processos do sistema
+-[] Criar o manual de deploy do sistema neste Readme
+-[] Escolher o sistema de documentação (sugeriram ReadTheDocs aqui no FISL16)
 
 
 
