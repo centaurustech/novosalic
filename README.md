@@ -43,6 +43,8 @@ Controla recursos na ordem de R$ 1.400.000,00 no ano passado e cerca de R$ 14.00
 - [ ] Subir os fluxos dos processos do sistema
 - [ ] Criar o manual de deploy do sistema neste Readme
 - [ ] Escolher o sistema de documentação (sugeriram ReadTheDocs aqui no FISL16)
+- [ ] Implementar acessibilidade no sistema, baseado no [e-MAG](http://www.governoeletronico.gov.br/acoes-e-projetos/e-MAG)
+- [ ] Incluir os links para as informações importantes
 
 
 
