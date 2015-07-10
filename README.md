@@ -15,4 +15,28 @@ O grande destaque da Lei Rouanet é a politica de incentivos fiscais que possibi
 
 Controla recursos na ordem de R$ 1.400.000,00 no ano passado e cerca de R$ 14.000.000,00 ao longo da existência da lei.
 
-## Em construção
+## Stakeholders 
+
+* Proponentes - Principal usuário do sistema, propõe projetos culturais
+* Incentivadores - Patrocinadores, financiadores dos projetos. Há dois tipos: pessoa física e jurídica
+* Fornecedores - Agentes que prestam serviços, materiais e estrutura para os projetos
+* Beneficiários - Após a execução do projeto, o Proponente não pode incorporar o patrimônio adquirido para a implementação do projeto (por exemplo sistemas de som), portanto deve doar para um beneficiário (por exemplo coletivos)
+* Parecerista - perito que acessa o sistema e faz a apreciação dos projetos
+* Conselheiro da CNIC - Comissão Nacional de Incentivo à Cultura - Faz a revalidação dos pareceres e sugere a aprovação ou o indeferimento
+
+## TO-DO
+
+[ ] Subir o mapeamento da estrutura do banco (Diagrama ER)
+[ ] Criar um script de criação e carga do banco de dados, para ambiente de desenvolvimento
+[ ] Subir os fluxos dos processos do sistema
+[ ] Criar o manual de deploy do sistema neste Readme
+[ ] Escolher o sistema de documentação (sugeriram ReadTheDocs aqui no FISL16)
+
+
+
+
+
+
+
+
+
