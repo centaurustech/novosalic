@@ -38,11 +38,11 @@ Controla recursos na ordem de R$ 1.400.000,00 no ano passado e cerca de R$ 14.00
 
 ## TO-DO
 
--[] Subir o mapeamento da estrutura do banco (Diagrama ER)
--[] Criar um script de criação e carga do banco de dados, para ambiente de desenvolvimento
--[] Subir os fluxos dos processos do sistema
--[] Criar o manual de deploy do sistema neste Readme
--[] Escolher o sistema de documentação (sugeriram ReadTheDocs aqui no FISL16)
+- [ ] Subir o mapeamento da estrutura do banco (Diagrama ER)
+- [ ] Criar um script de criação e carga do banco de dados, para ambiente de desenvolvimento
+- [ ] Subir os fluxos dos processos do sistema
+- [ ] Criar o manual de deploy do sistema neste Readme
+- [ ] Escolher o sistema de documentação (sugeriram ReadTheDocs aqui no FISL16)
 
 
 
