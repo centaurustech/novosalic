@@ -3,11 +3,11 @@
 ## Sobre a lei Rouanet
 
 A Lei Federal de Incentivo à Cultura (Lei no 8.313 de 23 de dezembro de 1991) é a lei que
-institui politicas públicas para a cultura nacional.
+institui políticas públicas para a cultura nacional.
 
 As diretrizes para a cultura nacional é a promoção, proteção e valorização das expressões culturais nacionais.
 
-O grande destaque da Lei Rouanet é a politica de incentivos fiscais que possibilita as empresas (pessoas jurídicas) e cidadãos (pessoa física) aplicarem uma parte do IR (imposto de renda) devido em ações culturais.
+O grande destaque da Lei Rouanet é a política de incentivos fiscais que possibilita as empresas (pessoas jurídicas) e cidadãos (pessoa física) aplicarem uma parte do IR (imposto de renda) devido em ações culturais.
 
 ## Sobre o Salic
 
