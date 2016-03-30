@@ -1,5 +1,7 @@
 # Salic - Sistema de Apoio às Leis de Incentivo à Cultura
 
+[![Join the chat at https://gitter.im/culturagovbr/novosalic](https://badges.gitter.im/culturagovbr/novosalic.svg)](https://gitter.im/culturagovbr/novosalic?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ## Sobre a lei Rouanet
 
 A Lei Federal de Incentivo à Cultura (Lei no 8.313 de 23 de dezembro de 1991) é a lei que
